@@ -301,10 +301,10 @@ PREPARE TYPE PERMISSIONS
 			
 			if (descendantValue==0){
 				if (effectiveVal==1){
-					elDescendant.find('> .permButton .icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+					elDescendant.find('> .permButton .fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 				}
 				else if (effectiveVal==-1){
-					elDescendant.find('> .permButton .icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+					elDescendant.find('> .permButton .fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				}
 			}
 			else if (descendantValue==effectiveVal && clearRedundant){

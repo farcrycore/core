@@ -21,13 +21,16 @@ ENVIRONMENT VARIABLES
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
 		##webtopTree a.permission-explicit:hover, ##webtopTree a.permission-inherit:hover { text-decoration:none; }
-		##webtopTree a.permission-explicit .icon-ok-sign { color:##006600; }
-		##webtopTree a.permission-inherit .icon-ok-sign { color:##8bd68b; }
-		##webtopTree a.permission-explicit .icon-remove-sign { color:##FF0000; }
-		##webtopTree a.permission-inherit .icon-remove-sign { color:##FF8080; }
+		##webtopTree a.permission-explicit .fa-check-circle { color:##006600; }
+		##webtopTree a.permission-inherit .fa-check-circle { color:##8bd68b; }
+		##webtopTree a.permission-explicit .fa-times-circle { color:##FF0000; }
+		##webtopTree a.permission-inherit .fa-times-circle { color:##FF8080; }
 		##webtopTree a.permButton, ##webtopTree a.permButton:hover, ##bAllowAccess, ##bAllowAccess:hover { cursor:pointer; text-decoration:none;font-size:14px;}
-		##bAllowAccess .icon-ok-sign { color:##006600; }
-		##bAllowAccess .icon-remove-sign { color:##FF0000; }
+		##bAllowAccess .fa-check-circle { color:##006600; }
+		##bAllowAccess .fa-times-circle { color:##FF0000; }
+		##bAllowAccess .fa { font-size: 16px; margin-top: 5px;}
+		##webtopTree .fa { position:relative; font-size: 16px; line-height: 14px; top: -2px; }
+		##webtopTree .nodelabel { font-size: 13px; line-height: 14px; color: inherit; }
 	</style>
 </cfoutput></skin:htmlHead>
 
@@ -48,6 +51,10 @@ ENVIRONMENT VARIABLES
 			AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.selectPermission#">
 </cfquery>
 
+<cfoutput>
+<div style="float:left; width:100%">
+</cfoutput>
+
 <ft:field label="Webtop Access">
 	<cfset accessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
 	<cfif application.fapi.arrayFind(stobj.aPermissions, accessPermissionID)>
@@ -57,23 +64,20 @@ ENVIRONMENT VARIABLES
 	</cfif>
 	
 	<cfif allowAccess EQ 1>
-		<cfset icon = "icon-ok-sign">
+		<cfset icon = "fa-check-circle">
 	<cfelse>
-		<cfset icon = "icon-remove-sign">
+		<cfset icon = "fa-times-circle">
 	</cfif>
 	
-	<cfoutput><a id="bAllowAccess" class="permButton" value="#allowAccess#" ftpermissionid="#accessPermissionID#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="#icon#"></i></a></cfoutput>
+	<cfoutput><a id="bAllowAccess" class="permButton" value="#allowAccess#" ftpermissionid="#accessPermissionID#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="fa #icon# fa-fw"></i></a></cfoutput>
 	
 	<ft:fieldHint><cfoutput>Should this role be allowed to access the webtop?</cfoutput></ft:fieldHint>
 </ft:field>
 
-<cfoutput>
-	<input type="hidden" name="permissionID" value="#form.selectPermission#" />
-	<div id="webtopTreeWrap" <cfif allowAccess EQ -1>style="display:none;"</cfif>>
-</cfoutput>
-
 <ft:field label="Access Permissions" bMultiField="true">
 	<cfoutput>
+	<div id="webtopTreeWrap" <cfif allowAccess EQ -1>style="display:none;"</cfif>>
+		<input type="hidden" name="permissionID" value="#form.selectPermission#" />
 		<ul id="webtopTree">
 			<li>
 	</cfoutput>
@@ -98,10 +102,10 @@ ENVIRONMENT VARIABLES
 	
 	<!--- We always have webtop permission as checked --->
 	<cfoutput>
-		<a id="webtopRoot" class="permButton permission-explicit" onClick="alert('Use the webtop access permission above to turn off access to the webtop.');return false;"><i class="icon-ok-sign"></i></a>
+		<a id="webtopRoot" class="permButton permission-explicit" onClick="alert('Use the webtop access permission above to turn off access to the webtop.');return false;"><i class="fa fa-check-circle fa-fw"></i></a>
 		<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="1">
 		<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="1">
-		<span style="font-size:10px;">&nbsp;Webtop</span>
+		<span class="nodelabel">Webtop</span>
 	</cfoutput>
 	
 	
@@ -141,16 +145,16 @@ ENVIRONMENT VARIABLES
 		</cfif>
 		
 		<cfif currentSectionValue EQ 1>
-			<cfset icon = "icon-ok-sign">
+			<cfset icon = "fa-check-circle">
 		<cfelseif currentSectionValue EQ -1>
-			<cfset icon = "icon-remove-sign">
+			<cfset icon = "fa-times-circle">
 		</cfif>
 		
 		<cfoutput>
-			<a class="permButton #priority#"><i class="#icon#"></i></a>
+			<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 			<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 			<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentWebtopValue#">
-			<span style="font-size:10px;">&nbsp;#stLevel1.label#</span>
+			<span class="nodelabel">#stLevel1.label#</span>
 		</cfoutput>
 		
 		
@@ -189,16 +193,16 @@ ENVIRONMENT VARIABLES
 				</cfif>
 				
 				<cfif currentSubsectionValue EQ 1>
-					<cfset icon = "icon-ok-sign">
+					<cfset icon = "fa-check-circle">
 				<cfelseif currentSubsectionValue EQ -1>
-					<cfset icon = "icon-remove-sign">
+					<cfset icon = "fa-times-circle">
 				</cfif>
 				
 				<cfoutput>
-					<a class="permButton #priority#"><i class="#icon#"></i></a>
+					<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 					<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 					<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentSectionValue#">
-					<span style="font-size:10px;">&nbsp;#stLevel2.label#</span>
+					<span class="nodelabel">#stLevel2.label#</span>
 				</cfoutput>
 				
 				
@@ -237,16 +241,16 @@ ENVIRONMENT VARIABLES
 						</cfif>
 						
 						<cfif currentMenuValue EQ 1>
-							<cfset icon = "icon-ok-sign">
+							<cfset icon = "fa-check-circle">
 						<cfelseif currentMenuValue EQ -1>
-							<cfset icon = "icon-remove-sign">
+							<cfset icon = "fa-times-circle">
 						</cfif>
 						
 						<cfoutput>
-							<a class="permButton #priority#"><i class="#icon#"></i></a>
+							<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 							<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 							<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentSubsectionValue#" />
-							<span style="font-size:10px;">&nbsp;#stLevel3.label#</span>
+							<span class="nodelabel">#stLevel3.label#</span>
 						</cfoutput>
 						
 						<cfif listLen(stLevel3.CHILDORDER)>
@@ -286,16 +290,16 @@ ENVIRONMENT VARIABLES
 								</cfif>
 								
 								<cfif currentMenuItemValue EQ 1>
-									<cfset icon = "icon-ok-sign">
+									<cfset icon = "fa-check-circle">
 								<cfelseif currentMenuItemValue EQ -1>
-									<cfset icon = "icon-remove-sign">
+									<cfset icon = "fa-times-circle">
 								</cfif>
 								
 								<cfoutput>
-										<a class="permButton #priority#"><i class="#icon#"></i></a>
+										<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 										<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 										<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentMenuValue#">
-										<span style="font-size:10px;">&nbsp;#stLevel4.label#</span>
+										<span class="nodelabel">#stLevel4.label#</span>
 									</li>
 								</cfoutput>
 								
@@ -330,10 +334,13 @@ ENVIRONMENT VARIABLES
 			</li>
 		</ul>
 		<input type="hidden" name="webtopPermissionsSubmitted" value="true">
+	</div>
 	</cfoutput>
 </ft:field>
 
-<cfoutput></div></cfoutput>	
+<cfoutput>
+</div>
+</cfoutput>
 
 
 <skin:onReady><cfoutput>
@@ -357,20 +364,20 @@ ENVIRONMENT VARIABLES
 		switch( newValue ) {
 			case -1:
 				el.removeClass("permission-inherit").addClass("permission-explicit")
-					.find(".icon-ok-sign").removeClass("icon-ok-sign").addClass("icon-remove-sign");
+					.find(".fa-check-circle").removeClass("fa-check-circle").addClass("fa-times-circle");
 				break;
 			case 0:
 				el.removeClass("permission-explicit").addClass("permission-inherit");
 				
 				if (inheritBarnacleValue===1)
-					el.find(".icon-remove-sign").removeClass("icon-remove-sign").addClass("icon-ok-sign");
+					el.find(".fa-times-circle").removeClass("fa-times-circle").addClass("fa-check-circle");
 				else
-					el.find(".icon-ok-sign").removeClass("icon-ok-sign").addClass("icon-remove-sign");
+					el.find(".fa-check-circle").removeClass("fa-check-circle").addClass("fa-times-circle");
 				
 				break;
 			case 1:
 				el.removeClass("permission-inherit").addClass("permission-explicit")
-					.find(".icon-remove-sign").removeClass("icon-remove-sign").addClass("icon-ok-sign");
+					.find(".fa-times-circle").removeClass("fa-times-circle").addClass("fa-check-circle");
 				break;
 		}
 		
@@ -399,14 +406,14 @@ ENVIRONMENT VARIABLES
 		if(barnacleValue == 1) {
 			
 			$j(this).attr('ftbarnaclevalue', '-1');
-			$j(this).find('i').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+			$j(this).find('i').removeClass('fa-check-circle').addClass('fa-times-circle');
 			
 			$j('##webtopTreeWrap').hide('fast');
 		
 		} else {
 			
 			$j(this).attr('ftbarnaclevalue', '1');
-			$j(this).find('i').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+			$j(this).find('i').removeClass('fa-times-circle').addClass('fa-check-circle');
 			
 			$j('##webtopTreeWrap').show('fast');
 		};

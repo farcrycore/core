@@ -46,13 +46,15 @@ ENVIRONMENT VARIABLES
 	<skin:htmlHead><cfoutput>
 		<style type="text/css">
 			##webtopTree a.permission-explicit:hover, ##webtopTree a.permission-inherit:hover { text-decoration:none; }
-			##webtopTree a.permission-explicit .icon-ok-sign { color:##006600; }
-			##webtopTree a.permission-inherit .icon-ok-sign { color:##8bd68b; }
-			##webtopTree a.permission-explicit .icon-remove-sign { color:##FF0000; }
-			##webtopTree a.permission-inherit .icon-remove-sign { color:##FF8080; }
-			##webtopTree a.permButton, ##webtopTree a.permButton:hover, ##bAllowAccess, ##bAllowAccess:hover { text-decoration:none;font-size:14px;}
-			##bAllowAccess .icon-ok-sign { color:##006600; }
-			##bAllowAccess .icon-remove-sign { color:##FF0000; }
+			##webtopTree a.permission-explicit .fa-check-circle { color:##006600; }
+			##webtopTree a.permission-inherit .fa-check-circle { color:##8bd68b; }
+			##webtopTree a.permission-explicit .fa-times-circle { color:##FF0000; }
+			##webtopTree a.permission-inherit .fa-times-circle { color:##FF8080; }
+			##webtopTree a.permButton, ##webtopTree a.permButton:hover, ##bAllowAccess, ##bAllowAccess:hover { cursor:pointer; text-decoration:none;font-size:14px;}
+			##bAllowAccess .fa-check-circle { color:##006600; }
+			##bAllowAccess .fa-times-circle { color:##FF0000; }
+			##webtopTree .fa { position:relative; font-size: 16px; line-height: 14px; top: -2px; }
+			##webtopTree .nodelabel { font-size: 13px; line-height: 14px; color: inherit; }
 		</style>
 		<style type="text/css" media="print">
 		  @page { size: landscape; }
@@ -97,12 +99,12 @@ ENVIRONMENT VARIABLES
 		
 		
 		<cfif allowAccess EQ 1>
-			<cfset icon = "icon-ok-sign">
+			<cfset icon = "fa-check-circle">
 		<cfelse>
-			<cfset icon = "icon-remove-sign">
+			<cfset icon = "fa-times-circle">
 		</cfif>
 		
-		<cfoutput><a id="bAllowAccess" class="permButton" value="#allowAccess#" ftpermissionid="#accessPermissionID#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="#icon#"></i></a></cfoutput>
+		<cfoutput><a id="bAllowAccess" class="permButton" value="#allowAccess#" ftpermissionid="#accessPermissionID#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="fa #icon# fa-fw"></i></a></cfoutput>
 		
 	</ft:field>
 	
@@ -152,7 +154,7 @@ ENVIRONMENT VARIABLES
 		
 		<!--- We always have webtop permission as checked --->
 		<cfoutput>
-			<a id="webtopRoot" class="permButton permission-explicit"><i class="icon-ok-sign"></i></a>
+			<a id="webtopRoot" class="permButton permission-explicit"><i class="fa fa-check-circle fa-fw"></i></a>
 			<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="1">
 			<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="1">
 			<span style="font-size:10px;">&nbsp;Webtop</span>
@@ -160,9 +162,9 @@ ENVIRONMENT VARIABLES
 			<cfloop query="qRoles">
 				<div style="float:right;width:100px;text-align:center;">
 					<cfif application.security.checkPermission(permission="admin",role="#qRoles.objectid#")>
-						<i class="icon-ok-sign" style="color:green;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#qRoles.title#"></i>
 					<cfelse>
-						<i class="icon-remove-sign" style="color:red;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#qRoles.title#"></i>
 					</cfif>
 				</div>
 			</cfloop>
@@ -215,13 +217,13 @@ ENVIRONMENT VARIABLES
 			</cfif>
 			
 			<cfif currentSectionValue EQ 1>
-				<cfset icon = "icon-ok-sign">
+				<cfset icon = "fa-check-circle">
 			<cfelseif currentSectionValue EQ -1>
-				<cfset icon = "icon-remove-sign">
+				<cfset icon = "fa-times-circle">
 			</cfif>
 			
 			<cfoutput>
-				<a class="permButton #priority#"><i class="#icon#"></i></a>
+				<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 				<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 				<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentWebtopValue#">
 				<span style="font-size:10px;">&nbsp;#stLevel1.label#</span>
@@ -275,13 +277,13 @@ ENVIRONMENT VARIABLES
 					</cfif>
 					
 					<cfif currentSubsectionValue EQ 1>
-						<cfset icon = "icon-ok-sign">
+						<cfset icon = "fa-check-circle">
 					<cfelseif currentSubsectionValue EQ -1>
-						<cfset icon = "icon-remove-sign">
+						<cfset icon = "fa-times-circle">
 					</cfif>
 					
 					<cfoutput>
-						<a class="permButton #priority#"><i class="#icon#"></i></a>
+						<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 						<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 						<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentSectionValue#">
 						<span style="font-size:10px;">&nbsp;#stLevel2.label#</span>
@@ -334,13 +336,13 @@ ENVIRONMENT VARIABLES
 							</cfif>
 							
 							<cfif currentMenuValue EQ 1>
-								<cfset icon = "icon-ok-sign">
+								<cfset icon = "fa-check-circle">
 							<cfelseif currentMenuValue EQ -1>
-								<cfset icon = "icon-remove-sign">
+								<cfset icon = "fa-times-circle">
 							</cfif>
 							
 							<cfoutput>
-								<a class="permButton #priority#"><i class="#icon#"></i></a>
+								<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 								<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 								<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentSubsectionValue#" />
 								<span style="font-size:10px;">&nbsp;#stLevel3.label#</span>
@@ -394,13 +396,13 @@ ENVIRONMENT VARIABLES
 									</cfif>
 									
 									<cfif currentMenuItemValue EQ 1>
-										<cfset icon = "icon-ok-sign">
+										<cfset icon = "fa-check-circle">
 									<cfelseif currentMenuItemValue EQ -1>
-										<cfset icon = "icon-remove-sign">
+										<cfset icon = "fa-times-circle">
 									</cfif>
 									
 									<cfoutput>
-											<a class="permButton #priority#"><i class="#icon#"></i></a>
+											<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
 											<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 											<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentMenuValue#">
 											<span style="font-size:10px;">&nbsp;#stLevel4.label#</span>
@@ -465,10 +467,10 @@ ENVIRONMENT VARIABLES
 			
 			if (descendantValue==0){
 				if (effectiveVal==1){
-					elDescendant.find('> .permButton .icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+					elDescendant.find('> .permButton .fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 				}
 				else if (effectiveVal==-1){
-					elDescendant.find('> .permButton .icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+					elDescendant.find('> .permButton .fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				}
 			}
 			else if (descendantValue==effectiveVal && clearRedundant){
@@ -532,9 +534,9 @@ ENVIRONMENT VARIABLES
 				
 				<cfif qNodeBarnacle.recordCount>
 					<cfif qNodeBarnacle.barnacleValue EQ 1>
-						<i class="icon-ok-sign" style="color:green;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#qRoles.title#"></i>
 					<cfelseif qNodeBarnacle.barnacleValue EQ -1>
-						<i class="icon-remove-sign" style="color:red;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#qRoles.title#"></i>
 					<cfelse>
 						&nbsp;
 					</cfif>

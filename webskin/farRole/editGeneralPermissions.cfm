@@ -3,8 +3,9 @@
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
 		.general-permissions a.permButton, .general-permissions a.permButton:hover { cursor:pointer; text-decoration:none; }
-		.general-permissions .icon-ok-sign { color:##006600; }
-		.general-permissions .icon-remove-sign { color:##FF0000; }
+		.general-permissions .fa-check-circle { color:##006600; }
+		.general-permissions .fa-times-circle { color:##FF0000; }
+		.general-permissions .fa { font-size: 16px; line-height: 14px; padding: 2px;}
 	</style>
 </cfoutput></skin:htmlHead>
 <skin:onReady><cfoutput>
@@ -25,12 +26,12 @@
 		if(permitted == 1) {
 			$j(this).attr('ftbarnaclevalue', '-1');
 			$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-			$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+			$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 			
 		} else {
 			$j(this).attr('ftbarnaclevalue', '1');
 			$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-			$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+			$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 		};
 		
 		var permitted = $j(this).attr('ftbarnaclevalue');
@@ -93,17 +94,17 @@
 	
 	<cfif allowAccess EQ 1>
 		<cfset priority = "ui-priority-primary">
-		<cfset icon = "icon-ok-sign">
+		<cfset icon = "fa-check-circle">
 	<cfelse>
 		<cfset priority = "ui-priority-secondary">
-		<cfset icon = "icon-remove-sign">
+		<cfset icon = "fa-times-circle">
 	</cfif>
 	
 	<cfoutput>
 		<tr>
 			<td>#qPermissions.shortcut#</td>
 			<td>
-				<a id="perm-#qPermissions.objectid#" class="permButton small barnacleBox #priority#" value="#allowAccess#" ftpermissionid="#qPermissions.objectid#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="#icon# icon-large"></i></a>
+				<a id="perm-#qPermissions.objectid#" class="permButton small barnacleBox #priority#" value="#allowAccess#" ftpermissionid="#qPermissions.objectid#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="fa #icon# fa-fw"></i></a>
 			</td>	
 			<td>#qPermissions.hint#</td>
 		</tr>

@@ -17,11 +17,11 @@
 <cfoutput>
 <style type="text/css">
 	##typeTree a.permission-explicit:hover, ##typeTree a.permission-inherit:hover { text-decoration:none; }
-	##typeTree a.permission-explicit .icon-ok-sign { color:##006600; }
-	##typeTree a.permission-inherit .icon-ok-sign { color:##8bd68b; }
-	##typeTree a.permission-explicit .icon-remove-sign { color:##FF0000; }
-	##typeTree a.permission-inherit .icon-remove-sign { color:##FF8080; }
-	##typeTree a.permButton, ##typeTree a.permButton:hover { cursor:pointer; text-decoration:none; }
+	##typeTree a.permission-explicit .fa-check-circle { color:##006600; }
+	##typeTree a.permission-inherit .fa-check-circle { color:##8bd68b; }
+	##typeTree a.permission-explicit .fa-times-circle { color:##FF0000; }
+	##typeTree a.permission-inherit .fa-times-circle { color:##FF8080; }
+	##typeTree .fa { font-size: 16px; padding:2px; }
 </style>
 </cfoutput>
 </skin:htmlHead>
@@ -67,15 +67,15 @@
 				</cfif>
 				<cfif currentBarnacleValue EQ 1>
 					<cfset priority = "ui-priority-primary">
-					<cfset icon = "icon-ok-sign">
+					<cfset icon = "fa-check-circle">
 				<cfelse>
 					<cfset priority = "ui-priority-secondary">
-					<cfset icon = "icon-remove-sign">
+					<cfset icon = "fa-times-circle">
 				</cfif>
 				
 				<th title="#stPermissionLabels[iPermission]#" style="text-align:center;background-color:##ffffff;background-image:none;">
 					<a id="generic#iPermission#" class="permButton genericPermission permission-explicit <cfif stobj.title EQ 'SysAdmin'>sysadmin</cfif>" value="#currentBarnacleValue#" ftpermissionid="#iPermission#" ftbarnaclevalue="#numberformat(currentBarnacleValue)#">
-						<i class="#icon#"></i>
+						<i class="fa #icon# fa-fw"></i>
 					</a>
 				</th>
 				
@@ -107,24 +107,24 @@
 							<cfset currentBarnacleValue = 0 />
 						</cfif>
 						<cfif currentBarnacleValue EQ 1>
-							<cfset icon = "icon-ok-sign">
+							<cfset icon = "fa-check-circle">
 							<cfset class="permission-explicit" />
 						<cfelseif currentBarnacleValue EQ -1>
-							<cfset icon = "icon-ok-sign">
+							<cfset icon = "fa-check-circle">
 							<cfset class="permission-explicit" />
 						<cfelse>
 							<cfset class="permission-inherit" />
 							<cfif inheritbarnaclevalue EQ 1>
-								<cfset icon = "icon-ok-sign">
+								<cfset icon = "fa-check-circle">
 							<cfelse>
-								<cfset icon = "icon-remove-sign">
+								<cfset icon = "fa-times-circle">
 							</cfif>
 							
 						</cfif>
 						
 						<td title="#stPermissionLabels[iPermission]#" style="text-align:center;">
 							<a id="#hash(stCoapiType.objectid)##iPermission#" class="permButton coapiPermission barnacleBox #iPermission# #class#" value="#currentBarnacleValue#" ftobjecttype="farCoapi" ftreferenceid="#barnacleID#" ftpermissionid="#iPermission#" ftbarnaclevalue="#numberformat(currentBarnacleValue)#" ftinheritbarnaclevalue="#numberformat(inheritbarnaclevalue)#">
-								<i class="#icon#"></i>
+								<i class="fa #icon# fa-fw"></i>
 							</a>
 						</td>
 						
@@ -154,11 +154,11 @@
 		
 			if(permitted == 1) {
 				$j(this).attr('ftbarnaclevalue', '-1');
-				$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+				$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				
 			} else {
 				$j(this).attr('ftbarnaclevalue', '1');
-				$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+				$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 			};
 			
 			var permitted = $j(this).attr('ftbarnaclevalue');
@@ -172,10 +172,10 @@
 				
 				if(barnacleValue == 0) {
 					if(permitted == 1) {
-						$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+						$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 						
 					} else {
-						$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+						$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 					};
 				};
 		   });
@@ -219,34 +219,34 @@
 			if(inheritBarnacleValue == 1) {
 				$j(this).attr('ftbarnaclevalue', '-1');
 				
-				$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+				$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				$j(this).removeClass('permission-inherit').addClass("permission-explicit");
 			} else {
 				$j(this).attr('ftbarnaclevalue', '0');
 				
-				$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+				$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				$j(this).removeClass('permission-explicit').addClass("permission-inherit");
 			}
 		} else if (barnacleValue == -1) {
 		
 			if(inheritBarnacleValue == 1) {
 				$j(this).attr('ftbarnaclevalue', '0');
-				$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+				$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 				$j(this).removeClass('permission-explicit').addClass("permission-inherit");
 			} else {
 				$j(this).attr('ftbarnaclevalue', '1');
-				$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+				$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 				$j(this).removeClass('permission-inherit').addClass("permission-explicit");
 			}	
 		} else {
 			
 			if(inheritBarnacleValue == 1) {
 				$j(this).attr('ftbarnaclevalue', '-1');
-				$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+				$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				$j(this).removeClass('permission-inherit').addClass("permission-explicit");
 			} else {
 				$j(this).attr('ftbarnaclevalue', '1');
-				$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+				$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 				$j(this).removeClass('permission-inherit').addClass("permission-explicit");
 			}	
 		};

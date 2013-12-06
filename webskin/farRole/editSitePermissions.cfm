@@ -37,11 +37,11 @@ Webtop, Section, SubSection, Menu, MenuItem
 		if (  $j(this).parents( 'div,li' ).children( '.permButton' ).length == 1 ) {
 			if(barnacleValue == 1) {
 				$j(this).siblings( '.barnacleValue' ).val(-1);
-				$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+				$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				$j(this).removeClass('inherit');
 			} else {
 				$j(this).siblings( '.barnacleValue' ).val(1);
-				$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+				$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 				$j(this).removeClass('inherit');
 			}
 			
@@ -51,9 +51,9 @@ Webtop, Section, SubSection, Menu, MenuItem
 				$j(this).removeClass('permission-explicit').addClass('permission-inherit');
 				
 				if(inheritBarnacleValue == -1) {
-					$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+					$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				} else {
-					$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+					$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 				};
 			}
 			else{
@@ -61,10 +61,10 @@ Webtop, Section, SubSection, Menu, MenuItem
 				
 				if(inheritBarnacleValue == 1) {
 					$j(this).siblings( '.barnacleValue' ).val(-1);
-					$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+					$j(this).find('.fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
 				} else {
 					$j(this).siblings( '.barnacleValue' ).val(1);
-					$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+					$j(this).find('.fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
 					
 				};
 			};
@@ -88,10 +88,15 @@ Webtop, Section, SubSection, Menu, MenuItem
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
 		##siteTree a.permission-explicit:hover, ##siteTree a.permission-inherit:hover { text-decoration:none; }
-		##siteTree a.permission-explicit .icon-ok-sign { color:##006600; }
-		##siteTree a.permission-inherit .icon-ok-sign { color:##8bd68b; }
-		##siteTree a.permission-explicit .icon-remove-sign { color:##FF0000; }
-		##siteTree a.permission-inherit .icon-remove-sign { color:##FF8080; }
+		##siteTree a.permission-explicit .fa-check-circle { color:##006600; }
+		##siteTree a.permission-inherit .fa-check-circle { color:##8bd68b; }
+		##siteTree a.permission-explicit .fa-times-circle { color:##FF0000; }
+		##siteTree a.permission-inherit .fa-times-circle { color:##FF8080; }
+		##siteTree a.permButton, ##siteTree a.permButton:hover, ##bAllowAccess, ##bAllowAccess:hover { cursor:pointer; text-decoration:none;font-size:14px;}
+		##bAllowAccess .fa-check-circle { color:##006600; }
+		##bAllowAccess .fa-times-circle { color:##FF0000; }
+		##siteTree .fa { position:relative; font-size: 16px; line-height: 14px; top: -2px; }
+		##siteTree .nodelabel { font-size: 13px; line-height: 14px; color: inherit; }
 	</style>
 </cfoutput></skin:htmlHead>
 
@@ -99,6 +104,11 @@ Webtop, Section, SubSection, Menu, MenuItem
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
 
 <cfset qNode = o.getNode(objectid="#application.navID['root']#")>
+
+
+<cfoutput>
+<div style="float:left; width:100%;">
+</cfoutput>
 
 <ft:field label="Permission to Manage">
 	<cfoutput>
@@ -207,7 +217,7 @@ Webtop, Section, SubSection, Menu, MenuItem
 		
 		<cfset value = 0>
 		<cfset priority = "permission-inherit">
-		<cfset icon = "icon-remove-sign">
+		<cfset icon = "fa-times-circle">
 		<cfset bChecked = false>
 		
 	
@@ -215,20 +225,20 @@ Webtop, Section, SubSection, Menu, MenuItem
 			<cfset bChecked = true>
 			<cfset value = 1>
 			<cfset priority = "permission-explicit">
-			<cfset icon = "icon-ok-sign">
+			<cfset icon = "fa-check-circle">
 		<cfelseif currentBarnacleValue EQ -1>
 			<cfset bChecked = false>
 			<cfset value = -1>
 			<cfset priority = "permission-explicit">
-			<cfset icon = "icon-remove-sign">
+			<cfset icon = "fa-times-circle">
 		<cfelse>
 			<cfif inheritBarnacleValue EQ 1>
 				<cfset bChecked = true>
 				<cfset priority = "permission-inherit">
-				<cfset icon = "icon-ok-sign">
+				<cfset icon = "fa-check-circle">
 			<cfelse>
 				<cfset priority = "permission-inherit">
-				<cfset icon = "icon-remove-sign">
+				<cfset icon = "fa-times-circle">
 			</cfif>
 			
 			<cfset value = 0>
@@ -236,14 +246,10 @@ Webtop, Section, SubSection, Menu, MenuItem
 		
 		<cfoutput>
 			<li <cfif value EQ 0>class="closed"</cfif>>	
-			
-				<a id="node-#qNav.objectid#" class="permButton barnacleBox #priority#"><i class="#icon#"></i></a>
+				<a id="node-#qNav.objectid#" class="permButton barnacleBox #priority#"><i class="fa #icon# fa-fw"></i></a>
 				<input type="hidden" class="barnacleValue" id="barnacleValue-#qNav.objectid#" name="barnacleValue-#qNav.objectid#" value="#value#" style="width:10px;">
 				<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#qNav.objectid#" value="#inheritBarnacleValue#" style="width:10px;">
-			
-				<span style="font-size:10px;">
-					&nbsp;#trim(qNav.ObjectName)#
-				</span>
+				<span class="nodelabel">#trim(qNav.ObjectName)#</span>
 		</cfoutput>
 	</cfloop>
 	
@@ -252,3 +258,7 @@ Webtop, Section, SubSection, Menu, MenuItem
 		<input type="hidden" name="sitePermissionsSubmitted" value="true">
 	</cfoutput>
 </ft:field>
+
+<cfoutput>
+</div>
+</cfoutput>
