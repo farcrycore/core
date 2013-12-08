@@ -11,8 +11,10 @@
 	
 	<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
+
 	<cfset aJS = arraynew(1) />
-	
+	<cfset CRLF = chr(13) & chr(10) />
+
 	<!--- Remove alias duplicates --->
 	<cfloop list="#arraytolist(request.inHead.aJSLibraries)#" index="i">
 		<cfif len(request.inHead.stJSLibraries[i].aliasOf) and arrayfind(request.inHead.aJSLibraries,request.inHead.stJSLibraries[i].aliasOf)>
@@ -115,9 +117,9 @@
 		
 		<cfsavecontent variable="JS">
 
-			<cfoutput>#chr(13)#</cfoutput>
 			<cfif structKeyExists(url, "debug") AND url.debug eq 1>
-<cfoutput><!-- 
+<cfoutput>
+<!-- 
 ID: #stJS.id#<cfif len(stJS.lCombineIDs)>
 PACKAGED: #stJS.lCombineIDs#</cfif>
 FILES: #stJS.lFullFilebaseHREFs#
@@ -126,7 +128,7 @@ FILES: #stJS.lFullFilebaseHREFs#
 			</cfif>
 				
 			<cfif len(stJS.condition)>
-				<cfoutput><!--[#stJS.condition#]>#chr(13)#</cfoutput>
+				<cfoutput><!--[#stJS.condition#]>#CRLF#</cfoutput>
 			</cfif>
 			
 			<cfif stJS.bCombine>
@@ -148,9 +150,10 @@ FILES: #stJS.lFullFilebaseHREFs#
 				<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 			</cfif>
 			<cfif len(stJS.condition)>
-				<cfoutput>#chr(13)#<![endif]--></cfoutput>	
+				<cfoutput>#CRLF#<![endif]--></cfoutput>	
 			</cfif>	
 			
+			<cfoutput>#CRLF#</cfoutput>
 		</cfsavecontent>
 		
 		<cfif structkeyexists(attributes,"r_html")>

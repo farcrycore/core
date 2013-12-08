@@ -8,7 +8,8 @@
 	<cfimport taglib="/farcry/core/tags/core" prefix="core" />
 	
 	<cfset aResult = arraynew(1) />
-	
+	<cfset CRLF = chr(13) & chr(10) />
+
 	<core:cssInHead r_html="aResult" />
 	<core:jsInHead r_html="aResult" />
 	
@@ -24,7 +25,7 @@
 				<cfif structKeyExists(request.inHead.stCustom, request.inHead.aCustomIDs[i])>
 					<cfset st = structnew() />
 					<cfset st["id"] = "inhead-#request.inHead.aCustomIDs[i]#" />
-					<cfset st["html"] = '<meta id="inhead-#request.inHead.aCustomIDs[i]#" name="inheadid" content="#request.inHead.aCustomIDs[i]#">' & request.inHead.stCustom[request.inHead.aCustomIDs[i]]>
+					<cfset st["html"] = chr(13) & '<meta id="inhead-#request.inHead.aCustomIDs[i]#" name="inheadid" content="#request.inHead.aCustomIDs[i]#">' & request.inHead.stCustom[request.inHead.aCustomIDs[i]]>
 					<cfset arrayappend(aResult,st) />
 				</cfif>
 			</cfloop>
@@ -48,6 +49,11 @@
 			<cfset arrayappend(aResult,st) />
 		</cfif>
 	</cfif>
+
+	<cfset st = structnew() />
+	<cfset st["id"] = "CRLF" />
+	<cfset st["html"] = CRLF />
+	<cfset arrayappend(aResult,st) />
 	
 	<cfset caller[attributes.variable] = aResult />
 	

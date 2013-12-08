@@ -11,8 +11,10 @@
 	
 	<cfparam name="request.inHead.aCSSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stCSSLibraries" default="#structNew()#" />
+
 	<cfset aCSS = arraynew(1) />
-	
+	<cfset CRLF = chr(13) & chr(10) />
+
 	<!--- Processes library packages --->
 	<cfset toremove = "" />
 	<cfloop from="#arraylen(request.inHead.aCSSLibraries)#" to="1" index="i" step="-1">
@@ -108,9 +110,9 @@
 	
 		<cfsavecontent variable="css">
 
-			<cfoutput>#chr(13)#</cfoutput>
 			<cfif structKeyExists(url, "debug") AND url.debug eq 1>
-<cfoutput><!-- 
+<cfoutput>
+<!-- 
 ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
 PACKAGED: #stCSS.lCombineIDs#</cfif>
 FILES: #stCSS.lFullFilebaseHREFs#
@@ -119,7 +121,7 @@ FILES: #stCSS.lFullFilebaseHREFs#
 			</cfif>
 
 			<cfif len(stCSS.condition)>
-				<cfoutput><!--[#stCSS.condition#]>#chr(13)#</cfoutput>
+				<cfoutput><!--[#stCSS.condition#]>#CRLF#</cfoutput>
 			</cfif>
 		
 			<cfif stCSS.bCombine>
@@ -141,8 +143,10 @@ FILES: #stCSS.lFullFilebaseHREFs#
 				<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 			</cfif>
 			<cfif len(stCSS.condition)>
-				<cfoutput>#chr(13)#<![endif]--></cfoutput>	
+				<cfoutput>#CRLF#<![endif]--></cfoutput>	
 			</cfif>
+
+			<cfoutput>#CRLF#</cfoutput>
 		</cfsavecontent>
 		
 		<cfif structkeyexists(attributes,"r_html")>
