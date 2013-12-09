@@ -9,6 +9,7 @@
 <skin:loadJS id="fc-underscore" />
 <skin:loadJS id="fc-backbone" />
 <skin:loadJS id="fc-handlebars" />
+<skin:loadJS id="fc-moment" />
 
 <skin:loadJS id="farcry-form" />
 <skin:loadJS id="fc-farcry-devicetype" />
@@ -1389,7 +1390,7 @@ alert(response.message);
 
 					var colDateTime = '';
 					if (!this.options.bRenderTreeOnly) {
-						colDateTime = '<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> ';
+						colDateTime = '<td class="fc-hidden-compact fc-prettydate" title="' + row["datetimelastupdated"] + '" data-datetime="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> ';
 					}
 
 					var spacer = '<i class="fc-icon-spacer-' + row["spacers"] + '"></i>';

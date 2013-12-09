@@ -32,6 +32,7 @@
 <skin:loadJS id="farcry-form" />
 <skin:loadJS id="fc-farcry-devicetype" />
 <skin:loadJS id="fc-jquery-ui" />
+<skin:loadJS id="fc-moment" />
 <skin:loadCSS id="jquery-ui" />
 <skin:loadCSS id="objectadmin-ie7" />
 

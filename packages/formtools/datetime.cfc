@@ -370,7 +370,7 @@
 			
 			<cfsavecontent variable="html">
 				<cfif arguments.stMetadata.ftDisplayPrettyDate>
-					<cfoutput><span title="#renderDate#">#application.fapi.prettyDate(arguments.stMetadata.value)#</span></cfoutput>
+					<cfoutput><span class="fc-prettydate" title="#renderDate#" data-datetime="#dateFormat(arguments.stMetadata.value,"yyyy-mm-dd")# #timeFormat(arguments.stMetadata.value,"HH:mm:ss")#">#application.fapi.prettyDate(arguments.stMetadata.value)#</span></cfoutput>
 				<cfelse>
 					<cfoutput>#renderDate#</cfoutput>
 				</cfif>

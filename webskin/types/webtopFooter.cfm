@@ -55,6 +55,21 @@
 				return false;
 			});
 
+			/* live pretty dates */
+			if (typeof moment != "undefined") {
+				function livePrettyDate(){
+					$j(".fc-prettydate").each(function(){
+						var el = $j(this);
+						var d = el.data("datetime");
+						if (d) {
+							el.html(moment(d).fromNow());
+						}
+					})
+				};
+				livePrettyDate();
+				setInterval(livePrettyDate, 30000);
+			}
+
 			/* remove updateapp from URL */
 			var newURL = window.location.href.replace(/(updateapp=.*?([&]+|$))/gi, "").replace(/&$/gi, "");
 			if (window.history.replaceState && newURL != window.location.href) {
