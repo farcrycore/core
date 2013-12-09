@@ -155,11 +155,16 @@
 		<skin:registerJS	id="webtop7" core="true"
 							baseHREF='#application.url.webtop#/js'
 							lFiles="webtop7.js" />
-							
+
 		<skin:registerJS	id="typeahead" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/select2" 
 							lFiles="select2.js,typeahead.js" />
-		
+
+		<skin:registerJS	id="fc-moment" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/moment-2.4.0" 
+							lFiles="moment.js" />
+
+
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop7"
 							baseHREF="#application.url.webtop#/css"
