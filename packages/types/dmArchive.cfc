@@ -154,13 +154,13 @@
 			<cfset stResult.metadata = stMeta />
 			
 			<!--- Restore archived media --->
-			<cfloop query="#stMeta.files#">
+			<cfloop query="stMeta.files">
 				<cfset stMetadata = application.stCOAPI[stArchiveDetail.typename].stProps[stMeta.files.property].metadata />
 				<cfparam name="stMetadata.ftType" default="#stMetadata.type#" />
 				
 				<cfif structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onRollback")>
 					<!--- onRollback ALWAYS uses makeUnique - if the property has the same file with the same name, it will NOT be overwritten --->
-					<cfset stArchiveDetail[stMeta.files.property] = application.formtools[stMetadata.ftType].oFactory.onRollback(typename=stLocal.stObj.typename,stObject=stLocal.stObj,stMetadata=stMetadata,archiveID=stProps.objectid) />
+					<cfset stArchiveDetail[stMeta.files.property] = application.formtools[stMetadata.ftType].oFactory.onRollback(typename=stResult.object.typename,stObject=stResult.object,stMetadata=stMetadata,archiveID=arguments.archiveID) />
 				</cfif>
 			</cfloop>
 			
@@ -168,12 +168,12 @@
 			<cfset application.fapi.setData(stProperties=stArchiveDetail,auditNote='Archive rolled back')>
 			
 			<!--- Remove deprecated media --->
-			<cfloop query="#stMeta.files#">
+			<cfloop query="stMeta.files">
 				<cfset stMetadata = application.stCOAPI[stArchiveDetail.typename].stProps[stMeta.files.property].metadata />
 				
 				<cfif structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onRollback") and structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onDelete") and stResult.previous[stMeta.files.property] neq stArchiveDetail[stMeta.files.property]>
 					<!--- in many cases, rolled back files will change from abc.pdf => abc1.pdf, and we need to delete the old filename --->
-					<cfset  application.formtools[stMetadata.ftType].oFactory.onDelete(typename=stLocal.stObj.typename,stObject=stResult.previous,stMetadata=stMetadata) />
+					<cfset  application.formtools[stMetadata.ftType].oFactory.onDelete(typename=stResult.object.typename,stObject=stResult.previous,stMetadata=stMetadata) />
 				</cfif>
 			</cfloop>
 			

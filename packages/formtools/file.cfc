@@ -787,7 +787,7 @@
 		<cfreturn archiveFile />
 	</cffunction>
 	
-	<cffunction name="onRollback" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+	<cffunction name="onRollback" access="public" output="false" returntype="string" hint="Called from setData when an object is deleted">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -797,14 +797,14 @@
 		<cfset var archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
 		<cfset var targetlocation = "" />
 		
-		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
-		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and filepermission>
+		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved") and filepermission>
 			<cfset targetlocation = "publicfiles" />
 		<cfelse>
 			<cfset targetlocation = "privatefiles" />
 		</cfif>
 		
-		<cfset application.fc.lib.cdn.ioMoveFile(source_location="archive",source_file=archiveFile,dest_location=targetlocation,dest_file=arguments.stObject[arguments.stMetadata.value]) />
+		<cfreturn application.fc.lib.cdn.ioMoveFile(source_location="archive",source_file=archiveFile,dest_location=targetlocation,dest_file=arguments.stObject[arguments.stMetadata.name]) />
 	</cffunction>
 	
 	
