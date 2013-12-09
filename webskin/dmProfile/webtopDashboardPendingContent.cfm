@@ -2,7 +2,8 @@
 <!--- @@displayname: Dashboard Pending Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
-<!--- @@cardClass: fc-dashboard-card-large --->
+<!--- @@cardClass: fc-dashboard-card-medium --->
+<!--- @@cardHeight: 400px --->
 
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
@@ -37,7 +38,7 @@
 				<tr>			
 					<th>Type</th>
 					<th>Label</th>
-					<th>Last Updated</th>
+					<th>Updated</th>
 				</tr>
 			</thead>
 			

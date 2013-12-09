@@ -2,7 +2,8 @@
 <!--- @@displayname: Dashboard Draft Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
-<!--- @@cardClass: fc-dashboard-card-large --->
+<!--- @@cardClass: fc-dashboard-card-medium --->
+<!--- @@cardHeight: 400px --->
 
 
 
@@ -39,7 +40,7 @@
 				<tr>			
 					<th>Type</th>
 					<th>Label</th>
-					<th>Last Updated</th>
+					<th>Updated</th>
 				</tr>
 			</thead>
 	
