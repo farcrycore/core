@@ -57,6 +57,7 @@
 
 			/* live pretty dates */
 			if (typeof moment != "undefined") {
+				moment.langData("en")._relativeTime.s = "moments";
 				function livePrettyDate(){
 					$j(".fc-prettydate").each(function(){
 						var el = $j(this);
