@@ -19,21 +19,15 @@
 <!--- 
  // show pending content 
 --------------------------------------------------------------------------------->
-
-<skin:tooltip selector="##tip_contentPending"><cfoutput>
-	<p>Content items pending approval</p>
-</cfoutput></skin:tooltip>
-
 <cfoutput>
-<h3>Content Pending Approval <img id="tip_contentPending" src="#application.url.webtop#/images/tooltip.png" /></h3>
+<i class="fa fa-question-circle fa-lg pull-right" title="Content items pending approval"></i>
+<h3>Content Pending Approval</h3>
 </cfoutput>
 
 <cfif qPending.recordcount>
 	
-	
-	<cfoutput>
-		
-		<table width="100%" class="table table-striped">
+	<cfoutput>	
+		<table class="table table-striped">
 			<thead>
 				<tr>			
 					<th>Type</th>
@@ -46,8 +40,8 @@
 	</cfoutput>
 	
 	<cfoutput query="qPending">
-		<tr class="#IIF(qPending.currentrow MOD 2, de("alt"), de(""))#">
-			<td nowrap="true">#application.fapi.getContentTypeMetadata(typename="#qPending.typename#", md="displayname", default="Unknown")#</td>
+		<tr>
+			<td><i class="fa #application.fapi.getContentTypeMetadata(typename="#qPending.typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#qPending.typename#", md="displayname", default="Unknown")#"></i></td>
 			<td><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#qpending.objectid#&typename=#qpending.typename#">#qPending.label#</a></td>
 			<td nowrap="true">#application.fapi.prettyDate(qPending.datetimelastupdated)#</td>
 		</tr>
@@ -58,7 +52,7 @@
 		</table>
 	</cfoutput>
 <cfelse>
-	<cfoutput><p>No items pending approval.</p></cfoutput>
+	<cfoutput><p>You don't have any content pending approval.</p></cfoutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />

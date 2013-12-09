@@ -20,22 +20,14 @@
 <!--- 
  // show draft content 
 --------------------------------------------------------------------------------->
-
-<skin:tooltip selector="##tip_contentInDraft"><cfoutput>
-	<p>These are content items where:</p>
-	<ul>
-		<li>They are in draft</li>
-		<li>You were the last one to save them while in draft</li>
-	</ul>
-</cfoutput></skin:tooltip>
-
-<cfoutput><h3>Content You Have In Draft <i id="tip_contentInDraft" class="fa fa-info"></i></h3></cfoutput>
+<cfoutput>
+<i class="fa fa-question-circle fa-lg pull-right" title="You were the last one to save them while in draft"></i>
+<h3>Content You Have In Draft</h3></cfoutput>
 
 <cfif qdraft.recordcount>
 	
 	<cfoutput>
-		
-		<table width="100%" class="table table-striped">
+		<table class="table table-striped">
 			<thead>
 				<tr>			
 					<th>Type</th>
@@ -48,8 +40,8 @@
 	</cfoutput>
 	
 	<cfoutput query="qdraft">
-		<tr class="#IIF(qDraft.currentrow MOD 2, de("alt"), de(""))#">
-			<td nowrap="true">#application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="displayname", default="Unknown")#</td>
+		<tr>
+			<td><i class="fa #application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="displayname", default="Unknown")#"></i></td>
 			<td><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#qdraft.objectid#&typename=#qdraft.typename#">#qdraft.label#</a></td>
 			<td nowrap="true">#application.fapi.prettyDate(qDraft.datetimelastupdated)#</td>
 		</tr>
@@ -60,7 +52,7 @@
 		</table>
 	</cfoutput>
 <cfelse>
-	<cfoutput><p>No items in draft.</p></cfoutput>
+	<cfoutput><p>You don't have any content in draft.</p></cfoutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />
