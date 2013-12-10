@@ -489,7 +489,7 @@
 		$j('##fcModal').css('width', $settings.width);
 		$j('.modal-body').css('max-width', $settings.width);
 		
-		$j('.modal-body',$j('##fcModal')).css('height', $settings.height - 41);
+		$j('.modal-body',$j('##fcModal')).css('height', $settings.height - 36);
 	
 	 	modalLeftPos = ( $j(window).width() - $j('##fcModal').width() ) / 2;
 		$j('##fcModal').css('left', modalLeftPos);
