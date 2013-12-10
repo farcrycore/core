@@ -287,7 +287,7 @@
 		
 		<!--- Undelete children --->
 		<cfif structkeyexists(aResult[1].metadata,"tree") and structkeyexists(aResult[1].metadata.tree,"children")>
-			<cfloop query="#aResult[1].metadata.tree.children#">
+			<cfloop query="aResult[1].metadata.tree.children">
 				<cfset q = application.fapi.getContentObjects(typename="dmArchive",archiveID_eq=aResult[1].metadata.tree.children.objectid,bDeleted_eq=true) />
 				
 				<cfif q.recordcount>
