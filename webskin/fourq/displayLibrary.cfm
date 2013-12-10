@@ -184,13 +184,24 @@
 		</skin:pagination>
 				
 		<cfoutput>
-		<script type="text/javascript">
-		$j(function(){
-			fcForm.initLibrary('#stobj.typename#','#stobj.objectid#','#url.property#');
-			fcForm.selections.reinitpage();
-		});
-		</script>
+			<script type="text/javascript">
+			$j(function(){
+				fcForm.initLibrary('#stobj.typename#','#stobj.objectid#','#url.property#');
+				fcForm.selections.reinitpage();
+			});
+			</script>
 		</cfoutput>
 		
 	</ft:form>
+
+	<cfoutput>
+		<div style="height: 60px;">
+		<div style="position:fixed; left:0; right: 0; bottom: 0;">
+			<div class="" style="padding: 10px 20px; text-align: right; border-top: 1px solid ##eee; background: ##f8f8f8;">
+				<button class="btn btn-primary" style="padding: 8px 20px" onclick="$fc.closeBootstrapModal();">Close</button>
+			</div>
+		</div>
+		</div>
+	</cfoutput>
+
 </cfif>
