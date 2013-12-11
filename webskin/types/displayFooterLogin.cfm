@@ -26,7 +26,7 @@
 				</div><!-- /.content-main -->
 			</div><!-- /.content-block -->
 			<div class="footer">
-				<cfif oEnv.getEnvironment() neq "production">
+				<cfif oEnv.getEnvironment() eq "development">
 					<p class="copyright">Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#.<br />#application.sysInfo.farcryVersionTagLine#</p>
 				</cfif>
 			</div>
