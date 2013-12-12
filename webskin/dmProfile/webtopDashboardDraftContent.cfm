@@ -42,7 +42,7 @@
 	<cfoutput query="qdraft">
 		<tr>
 			<td><i class="fa #application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="displayname", default="Unknown")#"></i></td>
-			<td><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#qdraft.objectid#&typename=#qdraft.typename#">#qdraft.label#</a></td>
+			<td><skin:buildlink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qdraft.objectid#&typename=#qdraft.typename#" linktext="#qdraft.label#" title="Editing: #qdraft.label#" bmodal="true" /></td>
 			<td nowrap="true">#application.fapi.prettyDate(qDraft.datetimelastupdated)#</td>
 		</tr>
 	</cfoutput>
