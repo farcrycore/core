@@ -12,7 +12,6 @@
 		
 		<!--- THE FOLLOWING VARIABLES ARE DEPRECATED --->
 		<!--- THIS CODE SHOULD BE BURNT IN A FIRE AND SCATTERED OVER MOVING WATER --->
-		<cfset application.factory.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation") />
 		<cfset application.factory.oAuthentication = createObject("component","#application.securitypackagepath#.authentication") />
 		
 		<cfset application.dmSec.lDefaultPolicyGroups = this.factory.role.getDefaultRoles() />
