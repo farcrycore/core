@@ -25,7 +25,7 @@
 			</menu>
 			<menu id="categorisation" sequence="40" permission="ContentCategorisationTab" label="Category Management">
 				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" typename="dmCategory" />		
-				<menuitem id="quickcategorybuilder" sequence="20" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />	
+				<menuitem id="quickcategorybuilder" sequence="20" label="Category Tree Quick Builder" typename="dmCategory" bodyview="webtopBodyQuickBuilder" />
 			</menu>
 			<menu id="undeletemenu" sequence="70" label="Content Archive">
 				<menuitem id="undelete" sequence="10" label="Undelete Content" typename="dmArchive" />
