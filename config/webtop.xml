@@ -12,7 +12,7 @@
 		</subsection>
 		<subsection id="tools" sequence="2" label="Tools">
 			<menu id="site" sequence="1" label="Site Utilities">
-				<menuitem id="builder" sequence="1" label="Quick Site Builder" link="/admin/quickBuilder.cfm" description="Build your information hierarchy with the Quick Site Builder.  Useful for rapidly creating new sites or branches of content in the site overview tree." />
+				<menuitem id="builder" sequence="1" label="Quick Site Builder" typename="dmNavigation" bodyview="webtopBodyQuickBuilder" />
 				<menuitem id="root" sequence="2" label="Site Tree Root" typename="dmNavigation" urlparameters="alias=root" />
 			</menu>
 		</subsection>
