@@ -5,7 +5,7 @@
 	</section>
 	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" description="Manage your website's menu structure and HTML content">
 		<subsection id="tree" sequence="1" permission="MainNavSiteTab" label="Navigation" typename="dmNavigation">
-			<menu id="nav" sequence="1" label="Site Tree">
+			<menu id="nav" sequence="1" label="Navigation">
 				<menuitem id="home" sequence="1" label="Site Navigation" typename="dmNavigation" />
 				<menuitem id="utility" sequence="2" label="Utility Navigation" typename="dmNavigation" urlparameters="alias=hidden" />
 			</menu>
