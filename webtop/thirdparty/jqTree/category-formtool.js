@@ -365,11 +365,11 @@ jQuery.fn.unblock = function(){
 				var html = ["<span class='node-options'>"];
 				
 				if (node.id !== options.rootid && options.allowEdit)
-					html.push("<i class='icon-pencil'></i>");
+					html.push("<i class='fa fa-pencil'></i>");
 				if (options.allowAdd)
-					html.push("<i class='icon-plus'></i>");
+					html.push("<i class='fa fa-plus'></i>");
 				if (node.id !== options.rootid && options.allowRemove)
-					html.push("<i class='icon-trash'></i>");
+					html.push("<i class='fa fa-trash-o'></i>");
 				
 				html.push("</span>");
 				
@@ -470,12 +470,12 @@ jQuery.fn.unblock = function(){
 			});
 		}
 		if (options.allowEdit) {
-			$this.delegate(".icon-pencil", "click", function(event){
+			$this.delegate(".fa-pencil", "click", function(event){
 				options.onEditNode.call($this.get(0),$(this).parents("li").first().data("node"));
 			});
 		}
 		if (options.allowAdd) {
-			$this.delegate(".icon-plus", "click", function(event){
+			$this.delegate(".fa-plus", "click", function(event){
 				if ($fc.tree.newid === "") 
 					return;
 				
@@ -483,7 +483,7 @@ jQuery.fn.unblock = function(){
 			});
 		}
 		if (options.allowRemove) {
-			$this.delegate(".icon-trash", "click", function(event){
+			$this.delegate(".fa-trash-o", "click", function(event){
 				options.onRemoveNode.call($this.get(0), $(this).parents("li").first().data("node"));
 			});
 		}

@@ -149,8 +149,12 @@ ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
 .jqtree-selected > .jqtree-element .node-options { 
 	display:inline; 
 }
+.jqtree-element:hover .node-options { 
+    display:inline; 
+}
 .node-options i { 
-	padding:2px 2px 5px 5px; 
+	padding:3px; 
+    margin-left: 3px;
 }
 .node-options i:hover{
 	color:#FFFFFF;
@@ -159,14 +163,13 @@ ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
 ul.jqtree-tree .jqtree-element {
 	padding: 7px;
 }
-ul.jqtree-tree li.jqtree-selected > .jqtree-element {
-    background: transparent;
-}
-ul.jqtree-tree li.selected > .jqtree-element, ul.jqtree-tree li.selected > .jqtree-element:hover {
-    background: #f9e6d4;
-}
-ul.jqtree-tree li > .jqtree-element:hover, ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+ul.jqtree-tree li > .jqtree-element:hover, 
+ul.jqtree-tree li > .jqtree-element:hover, 
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
     background: #FFF6EB;
+}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element {
+    background: #f9e6d4;
 }
 ul.jqtree-tree .jqtree-title {
 	color: #333333;
