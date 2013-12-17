@@ -28,7 +28,7 @@ $fc.addFavourite = function(api,url,label){
 			$j(".favourites-menu li:nth-child("+result.position+")").before("<li><a href='"+url+"'>"+label+"</a></li>");
 			$j(".favourites-menu li.none").hide();
 			$j(".favourited").addClass("active");
-			$j(".favourited i").removeClass("icon-star-empty").addClass("icon-star");
+			$j(".favourited i").removeClass("fa-star-o").addClass("fa-star");
 		}
 	});
 };
@@ -42,7 +42,7 @@ $fc.removeFavourite = function(api,url){
 				$j(".favourites-menu li.none").show();
 			}
 			$j(".favourited").removeClass("active");
-			$j(".favourited i").removeClass("icon-star").addClass("icon-star-empty");
+			$j(".favourited i").removeClass("fa-star").addClass("fa-star-o");
 		}
 	});
 };
