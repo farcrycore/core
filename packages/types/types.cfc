@@ -828,7 +828,7 @@ default handlers
 			<cfsavecontent variable="onExitProcess.content">
 				<cfoutput>
 					<script type="text/javascript">
-						parent.location = parent.location;
+						$fc.closeBootstrapModal();
 					</script>
 				</cfoutput>
 			</cfsavecontent>
@@ -1049,9 +1049,7 @@ default handlers
 				<cfsavecontent variable="onExitProcess.content">
 					<cfoutput>
 						<script type="text/javascript">
-							<!--- parent.location.reload(); --->
-							parent.location = parent.location;
-							parent.closeDialog();		
+							$fc.closeBootstrapModal();
 						</script>
 					</cfoutput>
 				</cfsavecontent>

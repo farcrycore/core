@@ -135,7 +135,7 @@
 				<cfsavecontent variable="onExitProcess.Content">
 					<cfoutput>
 						<script type="text/javascript">
-							parent.location = parent.location;
+							$fc.closeBootstrapModal();
 						</script>
 					</cfoutput>
 				</cfsavecontent>
@@ -150,13 +150,11 @@
 					</cfoutput>
 				</cfsavecontent>
 			<cfelseif structKeyExists(url, "dialogID")>
-										
-
 				<cfset onExitProcess.type = "HTML">
 				<cfsavecontent variable="onExitProcess.content">
 					<cfoutput>
 					<script type="text/javascript">
-					$fc.closeBootstrapModal();
+						$fc.closeBootstrapModal();
 					</script>
 					</cfoutput>
 				</cfsavecontent>
