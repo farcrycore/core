@@ -209,7 +209,7 @@
 
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
-		.icon-info, .icon-remove, .icon-save {
+		.fa-info, .fa-times, .fa-save {
 			cursor:pointer;
 		}
 		.info {
@@ -237,7 +237,7 @@
 	<script id="upload-area-template" type="text/x-handlebars-template">
 		<div class="targetarea">
 			<span class="btn btn-primary btn-large fileinput-button">
-				<i class="icon-plus icon-white"></i>
+				<i class="fa fa-plus fa-white"></i>
 				<span>Add files...</span>
 				<!-- The file input field used as target for the file upload widget -->
 				<input id="fileupload" type="file" name="file" multiple>
@@ -248,7 +248,7 @@
 	<script id="added-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.queuedToUpload@text',default='Queued to upload')#</span>
-			<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
+			<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
 		</span>
 		<div class="information">
 			<span class="name">{{name}}</span>
@@ -258,7 +258,7 @@
 	<script id="uploading-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.uploading@text',default='Uploading <span class="progress-loaded">{{filesize progress.loading}}</span> of <span class="progress-total">{{filesize progress.total}}</span>, <span class="progress-bitrate">{{bitrate progress.bitrate}}</span>')#</span>
-			<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
+			<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
 		</span>
 		<div class="information">
 			<span class="name">{{name}}</span>
@@ -270,8 +270,8 @@
 	</script>
 	<script id="uploaddone-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
-			<span class="status"><i class='icon-spinner icon-spin'></i> #application.fapi.getResource(key='webtop.utilities.bulkupload.status.queuedForProcessing@text',default='Queued for processing')#</span>
-			<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file (this file will still be added to the database)')#"></i>
+			<span class="status"><i class='fa fa-spinner fa-spin'></i> #application.fapi.getResource(key='webtop.utilities.bulkupload.status.queuedForProcessing@text',default='Queued for processing')#</span>
+			<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file (this file will still be added to the database)')#"></i>
 		</span>
 		<div class="information">
 			<span class="name">{{name}}</span>
@@ -288,8 +288,8 @@
 					{{{editHTML}}}
 				</td>
 				<td width='50px' valign='top' class='actions'>
-					<i class='save icon-save' title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.save@text',default='Save content changes')#"></i>
-					<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
+					<i class='save fa fa-save' title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.save@text',default='Save content changes')#"></i>
+					<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
 				</td>
 			</tr>
 		</table>
@@ -297,7 +297,7 @@
 	<script id="saved-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.saved@text',default='Saved')#</span>
-			<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
+			<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
 		</span>
 		<div class="information">
 			{{##if teaserHTML}}
@@ -311,7 +311,7 @@
 	<script id="failed-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.failed@text',default='Failed')#</span>
-			<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file')#"></i>
+			<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file')#"></i>
 		</span>
 		<div class="information">
 			{{##if teaserHTML}}
@@ -323,7 +323,7 @@
 		</div>
 		<div class="alert alert-error">
 			<span class="pull-right">
-				<i class="icon-info"></i>
+				<i class="fa fa-info"></i>
 			</span>
 			{{error.message}}
 			<div class='info'><pre>{{syntaxhighlight error}}</pre></div></div>
@@ -331,9 +331,9 @@
 	</script>
 	<script id="general-error-template" type="text/x-handlebars-template">
 		<div class="alert alert-error">
-			<i class="remove icon-remove"></i>
+			<i class="remove fa fa-times"></i>
 			<span class="pull-right">
-				<i class="icon-info"></i>
+				<i class="fa fa-info"></i>
 			</span>
 			{{error.message}}
 			<div class='info'><pre>{{syntaxhighlight error}}</pre></div></div>
@@ -422,7 +422,7 @@
 		<cfoutput>
 			<div id="defaultProperties">
 				<div class="title">
-					<i class="icon-sort pull-right"></i>
+					<i class="fa fa-sort pull-right"></i>
 					<admin:resource key="webtop.utilities.bulkupload.defaultproperties.title@text">Default Properties</admin:resource>
 				</div>
 				<div class="body">
