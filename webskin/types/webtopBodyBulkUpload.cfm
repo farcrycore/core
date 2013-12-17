@@ -24,16 +24,24 @@
 <cfset lDefaultFields = application.stCOAPI[stObj.name].bulkUploadDefaultFields />
 <cfset lEditFields = application.stCOAPI[stObj.name].bulkUploadEditFields />
 
+<cfset lFileIDs = "">
+
 <cfset exit = false />
 <ft:processform action="Save and Close">
-	<ft:processformobjects typename="#stObj.name#" />
-	
+	<ft:processformobjects typename="#stObj.name#">
+		<cfset lFileIDs = listAppend(lFileIDs, stProperties.objectid)>
+	</ft:processformobjects>
 	<cfset exit = true />
 </ft:processform>
 <cfif exit>
 	<cfoutput>
 		<script type="text/javascript">
-			parent.$fc.closeBootstrapModal();
+			<cfif mode eq "formtool">
+				$j('###url.fieldname#', parent.document).val($j('###url.fieldname#', parent.document).val() + ',' + '#lFileIDs#');
+				$fc.closeBootstrapModal();
+			<cfelse>
+				parent.$fc.closeBootstrapModal();
+			</cfif>
 		</script>
 	</cfoutput>
 	<cfexit method="exittemplate" />
@@ -437,14 +445,8 @@
 	</cfoutput>
 	
 	<ft:buttonPanel>
-		<cfif mode eq "formtool">
-			<span>NOTE: Files that haven't been processed will still be added, but may appear in the array as (incomplete). Files that haven't been uploaded will NOT be added.</span>
-			<ft:button value="Add Items" onclick="$j('###url.fieldname#', parent.document).val($j('###url.fieldname#', parent.document).val() + ',' + Window.app.fileCollection.getFileIDs()); $fc.closeBootstrapModal(); return false;" />
-			<ft:button value="Cancel" onclick="$fc.closeBootstrapModal();" />
-		<cfelseif mode eq "standalone">
-			<ft:button value="Save and Close" />
-			<ft:button value="Close" onclick="$fc.closeBootstrapModal();" />
-		</cfif>
+		<ft:button value="Save and Close" />
+		<ft:button value="Close" onclick="$fc.closeBootstrapModal();" />
 	</ft:buttonPanel>
 	
 </ft:form>
