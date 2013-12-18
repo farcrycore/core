@@ -48,6 +48,7 @@
 	<cfset stResult = structNew()>
 	<cfset stResult.bSuccess = true>
 	<cfset stResult.message = "#arrayLen(stTable.aInsertSQL)# pages generated.">
+	<cfset stResult.name = stTable.name>
 	<cfset stResult.bExportComplete = application.fapi.getContentType("farSkeleton").isExportComplete(stobj.objectid)>
 		
 	<cfcontent 	

@@ -112,9 +112,6 @@
 	<cffunction name="deleteOldExport">
 
 		<cftry>
-			<!--- remove SQL scripts --->
-			<cfset deleteSQLExportData()>
-
 			<!--- cleanup zip staging area --->
 			<cfif directoryexists('#application.path.project#/project_export')>
 				<cfdirectory action="delete" directory="#application.path.project#/project_export" mode="777" recurse="true" />

@@ -39,11 +39,11 @@
 </ft:processForm>
 
 <ft:processForm action="Delete Old Export" url="refresh">
-	<cfset stResult = oSkeleton.deleteOldExport() />
-	<cfset structDelete(session.stTempObjectStoreKeys.farSkeleton,"NewExport")>
+	<cfset stResult = oSkeleton.deleteSQLExportData()>
 	<skin:bubble message="#stResult.message#" />
-	<!--- GB: who is your daddy, and what does he do? --->
-	<!--- <skin:location url="#cgi.script_name#?#cgi.query_string#" /> --->
+	<cfset stResult = oSkeleton.deleteOldExport() />
+	<skin:bubble message="#stResult.message#" />
+	<cfset structDelete(session.stTempObjectStoreKeys.farSkeleton,"NewExport")>
 </ft:processForm>
 
 
@@ -73,8 +73,8 @@
 </cfif>
 
 
-<skin:loadJS id="jquery" />
-<skin:loadJS id="jquery.ajaxq" lFiles="#application.url.webtop#/thirdparty/jquery.ajaxq/jquery.ajaxq-0.0.1.js" />
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="jquery.ajaxq" core="true" lFiles="#application.url.webtop#/thirdparty/jquery.ajaxq/jquery.ajaxq-0.0.1.js" />
 
 <cfoutput>
 	<h1>Skeleton Export Utility</h1>
@@ -88,27 +88,36 @@
  // view: download exported skeleton
 --------------------------------------------------------------------------------->
 <ft:form>
-	<ft:button value="Delete Old Export" icon="fa fa-bolt" class="btn-large" />
+<cfoutput>
+	<div class="alert alert-info">
+		<i class="fa fa-info-circle"></i> You have successfully exported your database. Choose a project download option below.
+	</div>
 
-	<cfoutput><div>
-	<h3><i class="fa fa-book"></i> Project Data Only (#numberFormat(SQLDataSize, "99.99")# Mb)</h3>
-	<p>FarCry project data can be used to replace the data in an existing project, perform a database only installation or database migration.</p>
-	</cfoutput>
-	<ft:button value="Download Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
-	<ft:button value="Refresh Data" icon="fa fa-repeat" class="btn-large" />
-	<cfoutput></div></cfoutput>
+	<div style="padding-top: 5px">
+		<h3><i class="fa fa-book fa-fw"></i> Project Data Only (#numberFormat(SQLDataSize, "9.99")# Mb)</h3>
+		<p>FarCry project data can be used to replace the data in an existing project, perform a database only installation or database migration.</p>
+		<ft:button value="Download Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
+	</div>
 	
-	<cfoutput><div style="padding-top: 15px">
-	<h3><i class="fa fa-code"></i> Project Code &amp; Data</h3></cfoutput>
-	<cfoutput><p>This export includes the project data, code base, core framework and all installed plugins.</p></cfoutput>
-	<ft:button value="Download Code And Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
-	<cfoutput></div></cfoutput>
+	<div style="padding-top: 20px">
+		<h3><i class="fa fa-code fa-fw"></i> Project Code &amp; Data</h3>
+		<p>This export includes the project data, code base, core framework and all installed plugins.</p>
+		<ft:button value="Download Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
+	</div>
 	
-	<cfoutput><div style="padding-top: 15px">
-	<h3><i class="fa fa-picture-o"></i> Project Media, Code, &amp; Data</h3></cfoutput>
-	<cfoutput><p>Choose this option only if you want the complete kit and dice, including all images and files.</p></cfoutput>
-	<ft:button value="Download Media, Code, &amp; Data" icon="fa fa-download" class="btn-primary btn-large disabled" disableOnSubmit="false" />
-	<cfoutput></div></cfoutput>
+	<div style="padding-top: 20px">
+		<h3><i class="fa fa-picture-o fa-fw"></i> Project Media, Code &amp; Data</h3>
+		<p>Choose this option only if you want the complete kit and dice, including all images and files.</p>
+		<ft:button value="Download Media, Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large disabled" disableOnSubmit="false" />
+	</div>
+
+
+	<div style="padding-top: 20px">
+		<hr>
+		<h3><i class="fa fa-repeat fa-fw"></i> Delete Old Export and Start Again</h3>
+		<ft:button value="Delete Old Export" icon="fa fa-trash-o" class="btn-large" />
+	</div>
+</cfoutput>
 </ft:form>
 
 </cfcase>
