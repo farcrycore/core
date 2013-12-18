@@ -291,7 +291,7 @@
 			
 			<!--- If we are validating this form, load and initialise the validation engine.  --->
 			<cfif attributes.validation>
-				<skin:loadJS id="jquery-validate" />
+				<skin:loadJS id="fc-jquery-validate" />
 				
 				<!--- Setup farcry form validation (fv) --->
 				<skin:onReady>
