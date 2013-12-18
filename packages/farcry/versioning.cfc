@@ -538,8 +538,14 @@ You may edit this page by browsing to the following location:
 		<cfargument name="objectId" type="UUID" required="true" hint="The ObjectId of object to be checked">
 		<cfargument name="type" type="string" required="true" hint="Object type to be checked">
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="true" hint="Database DSN">
+
+		<cfset var qCheckIsDraft = "">
+
+		<cfquery datasource="#arguments.dsn#" name="qCheckIsDraft">
+			SELECT objectID,status from #application.dbowner##arguments.type# where versionID = '#arguments.objectID#'
+		</cfquery>
 		
-		<cfreturn application.fapi.getContentObjects(typename=arguments.type,lProperties="objectid,status",versionid_eq=arguments.objectid) />
+		<cfreturn qCheckIsDraft>
 	</cffunction>
 	
 </cfcomponent>
