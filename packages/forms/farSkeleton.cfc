@@ -27,7 +27,7 @@
 		<cfset var directoryInfo = "">
 
 		<!--- is there any exported data? --->
-		<cfdirectory action="list" directory="#expandPath('#application.path.project#')#/install" name="qSQL" filter="*.sql" />
+		<cfdirectory action="list" directory="#application.path.project#/install" name="qSQL" filter="*.sql" />
 		
 		<cfif qSQL.recordcount>
 			<cfquery name="directoryInfo" dbtype="query">
@@ -95,7 +95,7 @@
 		<cfset var qSQL = "">
 
 		<cftry>
-		<cfdirectory action="list" directory="#expandPath('#application.path.project#')#/install" name="qSQL" filter="*.sql" />
+		<cfdirectory action="list" directory="#application.path.project#/install" name="qSQL" filter="*.sql" />
 		<cfloop query="qSQL">
 			<cffile action="delete" file="#qsql.directory#/#qsql.name#">
 		</cfloop>
