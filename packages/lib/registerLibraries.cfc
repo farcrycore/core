@@ -51,9 +51,10 @@
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
 							lFiles="tinymce.min.js" />
 
-		<skin:registerJS 	id="jquery-validate" core="true"
+		<skin:registerJS 	id="fc-jquery-validate" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
 							lFiles="jquery.validate.js" />
+		<skin:registerJS 	id="jquery-validate" aliasof="fc-jquery-validate" core="false" />
 
 		<skin:registerJS 	id="jquery-tooltip" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltipster/js"
