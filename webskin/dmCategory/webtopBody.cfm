@@ -59,7 +59,7 @@
 		<h1><admin:resource key="">Manage Keywords</admin:resource></h1>
 		<table width="100%">
 			<tr>
-				<td style="width:300px;padding-right:20px;" valign="top">
+				<td style="width:310px;padding-right:20px;border-right:2px solid ##eee;margin-right:10px" valign="top">
 					#application.formtools.category.oFactory.edit(argumentCollection=stArgs)#
 				</td>
 				<td id="cateditframe"></td>

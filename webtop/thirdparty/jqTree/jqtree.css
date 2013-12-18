@@ -183,3 +183,7 @@ ul.jqtree-tree span.jqtree-border {
 	margin-right: 10px;
 	vertical-align: middle;
 }
+
+ul.jqtree-tree .jqtree-toggler {
+    left: -14px;
+}
