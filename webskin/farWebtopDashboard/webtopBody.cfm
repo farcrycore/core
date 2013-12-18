@@ -3,8 +3,8 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
 
-<skin:loadJS id="jquery" />
-<skin:loadJS id="masonry" lFiles="#application.url.webtop#/thirdparty/masonry/masonry.pkgd.min.js" />
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="masonry" core="true" lFiles="#application.url.webtop#/thirdparty/masonry/masonry.pkgd.min.js" />
 
 <skin:loadJS>
 <cfoutput>

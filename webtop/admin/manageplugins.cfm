@@ -57,7 +57,7 @@
 
 <admin:header title="Add / Remove Plugins">
 
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 <skin:loadJS id="jquery-modal" />
 <skin:loadCSS id="jquery-modal" />
 <skin:htmlHead><cfoutput>
