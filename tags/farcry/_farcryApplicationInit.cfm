@@ -84,7 +84,6 @@ test for the existance of each and act accordingly
 	application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning");
 	application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow");
 	application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category");
-	application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin");
 	application.factory.oCon = createObject("component","#application.packagepath#.rules.container");
 	application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator");
 	application.bGeoLocatorInit = application.factory.oGeoLocator.init();

@@ -105,7 +105,6 @@
 		<cfset application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning") />
 		<cfset application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow") />
 		<cfset application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category") />
-		<cfset application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin") />
 		<cfset application.factory.oCon = createObject("component","#application.packagepath#.rules.container") />
 		<cfset application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator") />
 		<cfset application.bGeoLocatorInit = application.factory.oGeoLocator.init() />
