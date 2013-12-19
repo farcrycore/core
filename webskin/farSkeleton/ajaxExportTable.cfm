@@ -8,8 +8,8 @@
 	<cfset stTable = stobj.exportData.aTables[url.position]>
 
 	<!--- create folder under current project for SQL install scripts --->
-	<cfif NOT directoryExists("#application.path.project#/install")>
-		<cfdirectory action="create" directory="#application.path.project#/install" />
+	<cfif NOT directoryExists("#getSQLStagingPath()#")>
+		<cfdirectory action="create" directory="#getSQLStagingPath()#" />
 	</cfif>
 
 	<cfloop from="1" to="#arrayLen(stTable.aDeploySQL)#" index="iType">

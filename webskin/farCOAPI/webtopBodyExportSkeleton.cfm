@@ -16,29 +16,26 @@
 <!--- 
  // process form 
 --------------------------------------------------------------------------------->
-<!--- ## remove all data from the ./myproject/install directory and reset for export --->
-<ft:processForm action="Refresh Data" url="refresh">
-	<cfset oSkeleton.deleteSQLExportData()>
-	<cfset structDelete(session.stTempObjectStoreKeys.farSkeleton,"NewExport")>
-</ft:processForm>
 
 <!--- ## create zip of data only and download --->
-<ft:processForm action="Download Data">
+<ft:processForm action="downloaddata">
 	<cfset zipFile = oSkeleton.zipSQLDATA()>
 	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-data.zip" />
 	<cfheader name="content-length" value="#getFileInfo(zipFile).size#" />
 	<cfcontent type="application/zip" file="#zipFile#" reset="true" />
 </ft:processForm>
 
+<!--- downloadcode --->
+
 <!--- ## create zip of code and data only and download --->
-<ft:processForm action="Download Code &amp; Data">
+<ft:processForm action="downloadall">
 	<cfset zipFile = oSkeleton.zipInstaller()>
 	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-project.zip" />
 	<cfheader name="content-length" value="#getFileInfo(zipFile).size#" />
 	<cfcontent type="application/zip" file="#zipFile#" reset="true" />
 </ft:processForm>
 
-<ft:processForm action="Delete Old Export" url="refresh">
+<ft:processForm action="deleteexport" url="refresh">
 	<cfset stResult = oSkeleton.deleteSQLExportData()>
 	<skin:bubble message="#stResult.message#" />
 	<cfset stResult = oSkeleton.deleteOldExport() />
@@ -47,7 +44,7 @@
 </ft:processForm>
 
 
-<ft:processForm action="Export Data" url="refresh">
+<ft:processForm action="exportdata" url="refresh">
 	<ft:processFormObjects typename="farSkeleton" bSessionOnly="true" />
 
 	<cfset stResult = oSkeleton.exportStepCreateSQL(stSkeletonExport.objectid) />
@@ -79,7 +76,6 @@
 <cfoutput>
 	<h1>Skeleton Export Utility</h1>
 </cfoutput>
-<!--- <skin:pop /> --->
 
 
 <cfswitch expression="#exportState#">
@@ -94,28 +90,27 @@
 	</div>
 
 	<div style="padding-top: 5px">
-		<h3><i class="fa fa-book fa-fw"></i> Project Data Only (#numberFormat(SQLDataSize, "9.99")# Mb)</h3>
+		<h3><i class="fa fa-book fa-fw"></i> Project Data Only (#numberFormat(SQLDataSize, "9.99")# MB, uncompressed)</h3>
 		<p>FarCry project data can be used to replace the data in an existing project, perform a database only installation or database migration.</p>
-		<ft:button value="Download Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
+		<ft:button value="downloaddata" text="Download Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
 	</div>
 	
-	<div style="padding-top: 20px">
+	<div style="padding-top: 20px; opacity: 0.3;">
 		<h3><i class="fa fa-code fa-fw"></i> Project Code &amp; Data</h3>
 		<p>This export includes the project data, code base, core framework and all installed plugins.</p>
-		<ft:button value="Download Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
+		<ft:button value="downloadcode" text="Download Code &amp; Data" icon="fa fa-download" class="btn-large disabled" disableOnSubmit="false" disabled="true" />
 	</div>
 	
 	<div style="padding-top: 20px">
 		<h3><i class="fa fa-picture-o fa-fw"></i> Project Media, Code &amp; Data</h3>
 		<p>Choose this option only if you want the complete kit and dice, including all images and files.</p>
-		<ft:button value="Download Media, Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large disabled" disableOnSubmit="false" />
+		<ft:button value="downloadall" text="Download Media, Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
 	</div>
-
 
 	<div style="padding-top: 20px">
 		<hr>
 		<h3><i class="fa fa-repeat fa-fw"></i> Delete Old Export and Start Again</h3>
-		<ft:button value="Delete Old Export" icon="fa fa-trash-o" class="btn-large" />
+		<ft:button value="deleteexport" text="Delete Old Export" icon="fa fa-trash-o" class="btn-large" disableOnSubmit="false" />
 	</div>
 </cfoutput>
 </ft:form>
@@ -138,7 +133,7 @@
 			lFields="lExcludeData" />
 
 		<ft:buttonPanel>
-			<ft:button id="btn-export" value="Export Data" confirmText="Are you sure you want to export. This will lock your application and may take some time depending on the size of your data." />
+			<ft:button id="btn-export" value="exportdata" text="Export Data" confirmText="Are you sure you want to export. This will lock your application and may take some time depending on the size of your data." />
 		</ft:buttonPanel>
 	</cfif>
 	
@@ -147,6 +142,11 @@
 		<cfoutput>
 		<cfif bExportComplete>
 			<p><i id="progress" class="fa fa-check-square-o" style="color:green;" title="Complete"></i> Export is Complete</p>
+
+			<ft:buttonPanel>
+				<ft:button id="btn-refresh-data" value="deleteexport" text="Delete Old Export" />
+			</ft:buttonPanel>
+
 		<cfelse>
 			<div id="exportTable-wrap">
 				<p>Tables to Export: #arrayLen(stSkeletonExport.exportData.aTables)#</p>
@@ -204,7 +204,7 @@
 			</div>
 
 			<ft:buttonPanel>
-				<ft:button id="btn-export-complete" value="Export Complete" disabled="true" />
+				<ft:button id="btn-export-complete" value="View Downloads" disabled="true" />
 			</ft:buttonPanel>
 		</cfif>
 		

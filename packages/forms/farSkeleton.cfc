@@ -27,7 +27,7 @@
 		<cfset var directoryInfo = "">
 
 		<!--- is there any exported data? --->
-		<cfdirectory action="list" directory="#application.path.project#/install" name="qSQL" filter="*.sql" />
+		<cfdirectory action="list" directory="#getSQLStagingPath()#" name="qSQL" filter="*.sql" />
 		
 		<cfif qSQL.recordcount>
 			<cfquery name="directoryInfo" dbtype="query">
@@ -85,8 +85,14 @@
 <!--- 
  // file export functions 
 --------------------------------------------------------------------------------->
+	<cffunction name="getSQLStagingPath" hint="Returns path to temp staging directory for assembling zips">
+		<cfset var path = "#getTempDirectory()#/#application.projectDirectoryName#/sql">
+
+		<cfreturn path>
+	</cffunction>
+
 	<cffunction name="getZipStagingPath" hint="Returns path to temp staging directory for assembling zips">
-		<cfset var path = "">
+		<cfset var path = "#getTempDirectory()#/#application.projectDirectoryName#">
 
 		<cfreturn path>
 	</cffunction>
@@ -95,7 +101,7 @@
 		<cfset var qSQL = "">
 
 		<cftry>
-		<cfdirectory action="list" directory="#application.path.project#/install" name="qSQL" filter="*.sql" />
+		<cfdirectory action="list" directory="#getSQLStagingPath()#" name="qSQL" filter="*.sql" />
 		<cfloop query="qSQL">
 			<cffile action="delete" file="#qsql.directory#/#qsql.name#">
 		</cfloop>
@@ -140,7 +146,7 @@
 		</cfif>
 		
 		<cfzip action="zip" recurse="true" 
-			source="#application.path.project#/install"
+			source="#getSQLStagingPath()#"
 			file="#zipFile#" />
 		
 		<cfreturn zipFile>
@@ -247,7 +253,7 @@
 		<cfset stSkeleton.exportData.aTables = arrayNew(1)>
 		<cfset stSkeleton.exportData.dbTypes = application.fc.lib.db.getDBTypes()>
 		<cfset stSkeleton.exportData.lDBTypes = "">
-		<cfset stSkeleton.exportData.sqlFilesPath = "#application.path.project#/install">
+		<cfset stSkeleton.exportData.sqlFilesPath = "#getSQLStagingPath()#">
 
 		<cfloop list="#structKeyList(stSkeleton.exportData.dbTypes)#" index="iDBType">
 			<cfif iDBType NEQ "BaseGateway">
@@ -282,7 +288,7 @@
 				<cfset stDeploymentSQL.dbType = idbType>
 				<cfset stDeploymentSQL.sql = deploymentSQL>
 				<cfset arrayAppend(stCoapiExportTable.aDeploySQL,stDeploymentSQL)>
-				<!--- <cffile action="write" file="#application.path.project#/install/sql/DEPLOY-#idbType#_#iTable#.sql" output="#deploymentSQL#"> --->
+				<!--- <cffile action="write" file="#getSQLStagingPath()#/sql/DEPLOY-#idbType#_#iTable#.sql" output="#deploymentSQL#"> --->
 			</cfloop>
 
 			<!--- exclude abstract classes; only actual tables will have metadata --->
@@ -310,7 +316,7 @@
 							<cfset stDeploymentSQL.dbType = idbType>
 							<cfset stDeploymentSQL.sql = deploymentSQL>
 							<cfset arrayAppend(stArrayExportTable.aDeploySQL,stDeploymentSQL)>
-							<!--- <cffile action="write" file="#application.path.project#/install/sql/DEPLOY-#idbType#_#iTable#_#iField#.sql" output="#deploymentSQL#"> --->
+							<!--- <cffile action="write" file="#getSQLStagingPath()#/sql/DEPLOY-#idbType#_#iTable#_#iField#.sql" output="#deploymentSQL#"> --->
 						</cfloop>
 										
 					</cfif>
