@@ -38,9 +38,9 @@
 				<h1>There was a problem with that last request</h1>
 				<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
 			</cfif>
-			<cfif not showError><!--</cfif>
-			#errorHTML#
-			<cfif not showError>--></cfif>
+			<cfif showError>
+				#errorHTML#
+			</cfif>
 		</body>
 	</html>		
 </cfoutput>
