@@ -75,7 +75,6 @@
 	<cffunction name="onRequestStart" access="public" output="false" returntype="void" hint="This function should be executed on page request start">
 
 		<!--- These variables are depreciated --->
-		<cfset request.dmSec.oAuthorisation = createObject("component","#application.securitypackagepath#.authorisation") />
 		<cfset request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication") />
 	</cffunction>
 

@@ -4,7 +4,6 @@
 environment references (might be nice to clean these up)
 	session.dmProfile.locale
 	session.dmSec.authentication
-	request.dmsec.oAuthorisation
 	application.url.farcry
 	application.adminBundle[session.dmProfile.locale]
 	application.thisCalendar

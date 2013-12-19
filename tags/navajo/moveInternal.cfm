@@ -68,7 +68,6 @@ $out:$
 		parentObjectID = qGetParent.parentID;
 	}	
 	//get permissions for this action
-	//iState = request.dmsec.oAuthorisation.checkInheritedPermission(permissionName="Edit",objectid=parentobjectid,bThrowOnError=1);	
 	iState = 1; //temp till i implement cfc dmsec
 </cfscript>
 

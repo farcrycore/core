@@ -242,7 +242,7 @@
 				application.factory.oTree.deleteBranch(objectid=stObj.objectID);
 				
 				// remove permissions
-				application.factory.oAuthorisation.deletePermissionBarnacle(objectid=stObj.objectID);
+				application.fapi.getContentType(typename="farBarnacle").deleteObjectBarnacles(objectid=stObj.objectID);
 				
 			</cfscript>
 			
