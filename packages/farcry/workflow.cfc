@@ -48,25 +48,10 @@ $out:$
 		<cfreturn stReturn>
 	</cffunction>
 	
-	<cffunction name="getNewsPendingApproval" access="public" returntype="struct" hint="Returns all news pending approval by user">
-				
-		<cfinclude template="_workflow/getNewsPendingApproval.cfm">
-		
-		<cfreturn stPendingNews>
-	</cffunction>
-	
 	<cffunction name="getObjectApprovers" access="public" returntype="struct" hint="Returns all users that can approve pending objects">
 		<cfargument name="objectID" type="UUID" required="yes">
 		
 		<cfinclude template="_workflow/getObjectApprovers.cfm">
-		
-		<cfreturn stApprovers>
-	</cffunction>
-	
-	<cffunction name="getNewsApprovers" access="public" returntype="struct" hint="Returns all users that can approve pending news objects">
-		<cfargument name="objectID" type="UUID" required="yes">
-		
-		<cfinclude template="_workflow/getNewsApprovers.cfm">
 		
 		<cfreturn stApprovers>
 	</cffunction>
