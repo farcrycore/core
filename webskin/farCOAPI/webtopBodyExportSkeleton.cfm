@@ -136,6 +136,10 @@
 		<ft:object typename="#stSkeletonExport.typename#" objectid="#stSkeletonExport.objectid#"
 			legend="Export Skeleton Data" 
 			lFields="lExcludeData" />
+
+		<ft:buttonPanel>
+			<ft:button id="btn-export" value="Export Data" confirmText="Are you sure you want to export. This will lock your application and may take some time depending on the size of your data." />
+		</ft:buttonPanel>
 	</cfif>
 	
 
@@ -176,11 +180,7 @@
 									$j('##response-#iTable#').html(data);
 
 									if (data.BEXPORTCOMPLETE == 1){
-										$j('##exportTable-wrap').html('<p><i id="progress" class="fa fa-check-square-o" style="color:green;" title="Complete"></i> Export is Complete</p>');
-										$j('##btn-export').hide('slow');
-										$j('##btn-download').show();
-										$j('##btn-start-again').show();
-
+										$j('##btn-export-complete').prop("disabled", false).click();
 									}
 									
 								}, 
@@ -202,14 +202,15 @@
 				</cfloop>
 				</table>
 			</div>
+
+			<ft:buttonPanel>
+				<ft:button id="btn-export-complete" value="Export Complete" disabled="true" />
+			</ft:buttonPanel>
 		</cfif>
 		
 		</cfoutput>
 	</cfif>
-	
-	<ft:buttonPanel>
-		<ft:button id="btn-export" value="Export Data" confirmText="Are you sure you want to export. This will lock your application and may take some time depending on the size of your data." />
-	</ft:buttonPanel>
+
 </ft:form>
 </cfcase>
 

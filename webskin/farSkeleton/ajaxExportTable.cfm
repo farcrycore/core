@@ -36,7 +36,7 @@
 		</cfsavecontent>
 		
 					   													
-		<cffile action="write" file="#url.sqlFilesPath#/INSERT-#stTable.name#-#iPage#.sql" output="#insertSQL#" charset="utf-8">
+		<cffile action="write" file="#stobj.exportData.sqlFilesPath#/INSERT-#stTable.name#-#iPage#.sql" output="#insertSQL#" charset="utf-8">
 			
 	</cfloop>
 
