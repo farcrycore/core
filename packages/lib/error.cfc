@@ -521,7 +521,7 @@
 			and isdefined("application.stCOAPI.#url.type#.stWebskins.#url.view#.mimeType")>
 			
 			<cfswitch expression="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#">
-				<cfcase value="json,text/json" delimiters=",">
+				<cfcase value="json,application/json,text/json" delimiters=",">
 					<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
 					<cfif showError>
 						<cfcontent type="text/json" variable="#ToBinary( ToBase64( '{ "error":' & formatError(exception=arguments.stException,format='json') & '}' ) )#" reset="Yes" />
