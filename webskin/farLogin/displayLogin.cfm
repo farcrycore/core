@@ -105,23 +105,19 @@ FARCRY IMPORT FILES
 	<cfset hasPrev = false />
 	<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
 		<skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid"><cfoutput>Forgot Username</cfoutput></skin:buildLink>
-		
 		<cfset hasPrev = true />
 	</sec:CheckPermission>
 	<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
 		<cfif hasPrev>
 			<cfoutput> &middot; </cfoutput>
 		</cfif>
-		
 		<skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword"><cfoutput>Forgot Password</cfoutput></skin:buildLink>
-		
 		<cfset hasPrev = true />
 	</sec:CheckPermission>
 	<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
 		<cfif hasPrev>
 			<cfoutput> &middot; </cfoutput>
 		</cfif>
-		
 		<skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser"><cfoutput>Register New User</cfoutput></skin:buildLink>
 	</sec:CheckPermission>
 	

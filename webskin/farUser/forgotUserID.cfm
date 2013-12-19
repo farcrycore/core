@@ -46,9 +46,7 @@
 
 <cfoutput><div class="loginInfo"></cfoutput>
 	<ft:form>
-	
-		
-		
+
 		<cfif structKeyExists(request, "notFound")>
 			<cfoutput>
 				<p id="errorMsg"><admin:resource key="coapi.farUser.forgotuserid.emailnotonrecord@text">We do not have that email address on record. Please try again.</admin:resource></p>
@@ -64,34 +62,32 @@
 				<p><admin:resource key="coapi.farUser.forgotuserid.blurb@text">So you forgot your User ID. Please enter your email address below to reset. An email with your new password will be sent to your email address.</admin:resource></p>
 			</cfoutput>
 
-				<ft:object typename="dmProfile" lfields="emailAddress" />
+			<ft:object typename="dmProfile" lfields="emailAddress" />
 
-				<ft:buttonPanel>
-					<ft:button value="Retrieve User ID" rbkey="security.button.retrieveuserid" />
-				</ft:buttonPanel>
+			<ft:buttonPanel>
+				<ft:button value="Retrieve User ID" rbkey="security.button.retrieveuserid" />
+			</ft:buttonPanel>
 
 		</cfif>
 
-		
-	
-		<cfoutput><ul class="loginForgot"></cfoutput>
-		<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
-			<cfoutput>
-				<li><skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword">Forgot Password</skin:buildLink></li></cfoutput>
-		</sec:CheckPermission>		
-		<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-			<cfoutput>
-				<li><skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser">Register New User</skin:buildLink></li></cfoutput>
-		</sec:CheckPermission>			
-			
+
 		<cfoutput>
-			<li><skin:buildLink href="#application.url.webtoplogin#" rbkey="coapi.farLogin.login.login">Login</skin:buildLink></li></cfoutput>
-		<cfoutput></ul></cfoutput>
-	
-			
+			<p class="help-inline">
+				<skin:buildLink href="#application.url.webtoplogin#" rbkey="coapi.farLogin.login.login">Login</skin:buildLink>
+				<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
+					&middot;
+					<skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword">Forgot Password</skin:buildLink>
+				</sec:CheckPermission>
+				<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
+					&middot;
+					<skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser">Register New User</skin:buildLink>
+				</sec:CheckPermission>
+			</p>
+		</cfoutput>
+
+
 	</ft:form>
 
-	
 <cfoutput></div></cfoutput>
 
 
