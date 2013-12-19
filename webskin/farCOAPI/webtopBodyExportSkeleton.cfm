@@ -31,7 +31,7 @@
 </ft:processForm>
 
 <!--- ## create zip of code and data only and download --->
-<ft:processForm action="Download Code And Data">
+<ft:processForm action="Download Code &amp; Data">
 	<cfset zipFile = oSkeleton.zipInstaller()>
 	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-project.zip" />
 	<cfheader name="content-length" value="#getFileInfo(zipFile).size#" />

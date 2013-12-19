@@ -166,34 +166,29 @@
 							directory=expandpath("/farcry/plugins"), 
 							ignoreDirectories=excludeDir, 
 							ignoreFiles="project.zip")>
-		
+
+
 		<!--- create ZIP for entire project, core and plugins --->
 		<cfzip action="zip" file="#zipFile#" overwrite="true">
 
 			<cfloop query="qProject">
 				<cfif qproject.type neq "Dir">
 					<cfset filepath = "farcry/projects/" & application.projectDirectoryName & replacenocase(qProject.directory, application.path.project, "") & "/" & qproject.name>
-					<cfzipparam
-						source="#qProject.directory#/#qproject.name#"
-						entrypath="#filepath#" />
+					<cfzipparam source="#qProject.directory#/#qproject.name#" entrypath="#filepath#">
 				</cfif>
 			</cfloop>
 
 			<cfloop query="qCore">
 				<cfif qCore.type neq "Dir">
-					<cfset filepath = "farcry/core/" & replacenocase(qCore.directory, expandpath("/farcry/core"), "") & "/" & qCore.name>
-					<cfzipparam
-						source="#qCore.directory#/#qCore.name#"
-						entrypath="#filepath#" />
+					<cfset filepath = "farcry/core" & replace(replacenocase(qCore.directory, expandpath("/farcry/core"), ""), "\", "/", "all") & "/" & qCore.name>
+					<cfzipparam source="#qCore.directory#/#qCore.name#" entrypath="#filepath#">
 				</cfif>
 			</cfloop>
 
 			<cfloop query="qPlugins">
 				<cfif qPlugins.type neq "Dir">
-					<cfset filepath = "farcry/plugins/" & replacenocase(qPlugins.directory, expandpath("/farcry/plugins"), "") & "/" & qPlugins.name>
-					<cfzipparam
-						source="#qPlugins.directory#/#qPlugins.name#"
-						entrypath="#filepath#" />
+					<cfset filepath = "farcry/plugins" & replace(replacenocase(qPlugins.directory, expandpath("/farcry/plugins"), ""), "\", "/", "all") & "/" & qPlugins.name>
+					<cfzipparam source="#qPlugins.directory#/#qPlugins.name#" entrypath="#filepath#">
 				</cfif>
 			</cfloop>
 
@@ -215,7 +210,7 @@
 		<cfset var qDir = "">
 		<cfset var aDir = listtoarray(arguments.ignoreDirectories, "|")>
 
-		<cfdirectory action="list" directory="#expandPath(arguments.directory)#" name="qDir" recurse="true" />
+		<cfdirectory action="list" directory="#arguments.directory#" name="qDir" recurse="true" />
 		
 		<cfquery dbtype="query" name="qDir">
 		SELECT * FROM qDir 
@@ -223,6 +218,7 @@
 		<cfif len(arguments.ignoreFiles)>AND name NOT IN (#ListQualify(arguments.ignoreFiles, "'", "|")#)</cfif>
 		<cfif NOT arguments.showhidden>AND attributes <> 'H'</cfif>
 		<cfloop from="1" to="#arrayLen(aDir)#" index="i">
+			AND directory NOT LIKE '%\#aDir[i]#%'
 			AND directory NOT LIKE '%/#aDir[i]#%'
 		</cfloop>
 		</cfquery>
