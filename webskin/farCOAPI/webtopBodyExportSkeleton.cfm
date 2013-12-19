@@ -170,7 +170,7 @@
 							
 								type: "POST",
 								cache: false,
-								url: '/index.cfm?ajaxmode=1&type=farSkeleton&objectid=#stSkeletonExport.objectid#&view=ajaxExportTable&position=#iTable#', 
+								url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=farSkeleton&objectid=#stSkeletonExport.objectid#&view=ajaxExportTable&position=#iTable#', 
 								
 								beforeSend: function(data){
 									$j('##progress-#iTable#').removeClass('fa-check-square-o').addClass('fa-spinner fa-spin').attr('title','Processing');

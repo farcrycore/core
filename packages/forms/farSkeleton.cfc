@@ -346,102 +346,101 @@
 
 
 	<cffunction name="setupInsertSQL" returnType="string" output="true">
-	        <cfargument name="stTable" type="struct" required="true">
-	        <cfargument name="perPage" type="numeric" default="1000">
-	        <cfargument name="maxPages" type="numeric" default="100">
+		<cfargument name="stTable" type="struct" required="true">
+		<cfargument name="perPage" type="numeric" default="1000">
+		<cfargument name="maxPages" type="numeric" default="100">
 
-	        <cfset var i = 1>
-	        <cfset var j = 1>
-	        <cfset var k = 0>
-	        <cfset var temp = "">
-	        <cfset var qTableCounter = "">
-	        <cfset var qryTemp = "">
-	        <cfset var aTableColMD = "">
-	        <cfset var str = "">
-	        <cfset var textstr = "">
-	        <cfset var iPage = 0>
-	        <cfset var thisfield = "">
-			<cfset var insertFields = "">
-			<cfset var insertSQL = "">
-			<cfset var oGateway = application.fc.lib.db.getGateway(dsn=application.dsn)>
+		<cfset var i = 1>
+		<cfset var j = 1>
+		<cfset var k = 0>
+		<cfset var temp = "">
+		<cfset var qTableCounter = "">
+		<cfset var qryTemp = "">
+		<cfset var aTableColMD = "">
+		<cfset var str = "">
+		<cfset var textstr = "">
+		<cfset var iPage = 0>
+		<cfset var thisfield = "">
+		<cfset var insertFields = "">
+		<cfset var insertSQL = "">
+		<cfset var oGateway = application.fc.lib.db.getGateway(dsn=application.dsn)>
 
-			<cfif structKeyExists(stTable.stMetadata, "fields")>
+		<cfif structKeyExists(stTable.stMetadata, "fields")>
 
-				<cfset selectFields = "">
-				<cfloop list="#structKeyList(stTable.stMetadata.fields)#" index="iProp">
-					<cfif stTable.stMetadata.fields[iProp].type NEQ "Array">
-						<cfset selectFields = listAppend(selectFields,"#iProp#")>
-					</cfif>
-				</cfloop>
-			<cfelse>
-				<cfset selectFields = "*">
-			</cfif>
-			
+			<cfset selectFields = "">
+			<cfloop list="#structKeyList(stTable.stMetadata.fields)#" index="iProp">
+				<cfif stTable.stMetadata.fields[iProp].type NEQ "Array">
+					<cfset selectFields = listAppend(selectFields,"#iProp#")>
+				</cfif>
+			</cfloop>
+		<cfelse>
+			<cfset selectFields = "*">
+		</cfif>
 		
-	        <!--- Getting table data --->
-	        <cfquery name="qTableCounter" datasource="#application.dsn#">
-	        select count(*) as counter from #arguments.stTable.name#
-	        </cfquery>
-			
-			<cfquery name="qSelectFields" datasource="#application.dsn#" maxrows="1">
-			SELECT #selectFields#
-			FROM #arguments.stTable.name#
-			</cfquery>
+	
+		<!--- Getting table data --->
+		<cfquery name="qTableCounter" datasource="#application.dsn#">
+		select count(*) as counter from #arguments.stTable.name#
+		</cfquery>
+		
+		<cfquery name="qSelectFields" datasource="#application.dsn#" maxrows="1">
+		SELECT #selectFields#
+		FROM #arguments.stTable.name#
+		</cfquery>
 
 
-	        <!--- Getting meta information of executed query --->
-	        <cfset aTableColMD = getMetaData(qSelectFields)>
-			
-			<!--- set relevant order by for table type --->
-			<cfif listFindNoCase(qSelectFields.columnList,"dateTimeLastUpdated")>
-				<cfset orderBy = "dateTimeLastUpdated">
-			<cfelseif listFindNoCase(qSelectFields.columnList,"objectid")>
-				<cfset orderBy = "objectid">
-			<cfelseif listFindNoCase(qSelectFields.columnList,"parentID")>
-				<cfset orderBy = "parentID">
-			<cfelse>
-				<cfabort showerror="not a valid table to export">
-			</cfif>
+		<!--- Getting meta information of executed query --->
+		<cfset aTableColMD = getMetaData(qSelectFields)>
+		
+		<!--- set relevant order by for table type --->
+		<cfif listFindNoCase(qSelectFields.columnList,"dateTimeLastUpdated")>
+			<cfset orderBy = "dateTimeLastUpdated">
+		<cfelseif listFindNoCase(qSelectFields.columnList,"objectid")>
+			<cfset orderBy = "objectid">
+		<cfelseif listFindNoCase(qSelectFields.columnList,"parentID")>
+			<cfset orderBy = "parentID">
+		<cfelse>
+			<cfabort showerror="not a valid table to export">
+		</cfif>
 
-			<cfset k = ArrayLen(aTableColMD) >
-			<!--- -1 removes [RowNum] column which is last column --->
+		<cfset k = ArrayLen(aTableColMD) >
+		<!--- -1 removes [RowNum] column which is last column --->
+		
+		<!--- build field names for INSERT statement --->
+		<cfsavecontent variable="stTable.insertFieldnames">
+			<cfloop index="j" from="1" to="#k#"><cfoutput>#aTableColMD[j].Name#<cfif j NEQ k >,</cfif></cfoutput></cfloop>
+		</cfsavecontent>
+		
+		<cfif qTableCounter.counter GT 0>
 			
-			<!--- build field names for INSERT statement --->
-			<cfsavecontent variable="stTable.insertFieldnames">
-				<cfloop index="j" from="1" to="#k#"><cfoutput>#aTableColMD[j].Name#<cfif j NEQ k >,</cfif></cfoutput></cfloop>
-			</cfsavecontent>
+			<cfset pages = Ceiling(qTableCounter.counter/arguments.perPage)>
 			
-			<cfif qTableCounter.counter GT 0>
+			<cfloop from="1" to="#pages#" index="iPage">
 				
-				<cfset pages = Ceiling(qTableCounter.counter/arguments.perPage)>
+				<cfif iPage GT arguments.maxPages>
+					<cfbreak>
+				</cfif>
+				<cfset iFrom = iPage*arguments.perPage-(arguments.perPage) + 1>
+				<cfset iTo = iFrom + (arguments.perPage) - 1>
 				
-				<cfloop from="1" to="#pages#" index="iPage">
-					
-					<cfif iPage GT arguments.maxPages>
-						<cfbreak>
-					</cfif>
-					<cfset iFrom = iPage*arguments.perPage-(arguments.perPage) + 1>
-					<cfset iTo = iFrom + (arguments.perPage) - 1>
-					
-					<cfif iTo GT qTableCounter.counter>
-						<cfset iTo = qTableCounter.counter>
-					</cfif>
-					
+				<cfif iTo GT qTableCounter.counter>
+					<cfset iTo = qTableCounter.counter>
+				</cfif>
+				
 
-					<cfset insertSQL = oGateway.getInsertSQL(	table="#arguments.stTable.name#",
-																aTableColMD="#aTableColMD#",
-																orderBy="#orderBy#",
-																from="#iFrom#",
-																to="#iTo#" )>
-					
+				<cfset insertSQL = oGateway.getInsertSQL(	table="#arguments.stTable.name#",
+															aTableColMD="#aTableColMD#",
+															orderBy="#orderBy#",
+															from="#iFrom#",
+															to="#iTo#" )>
+				
 
-					<!--- GB: how does this work? ie. how is stTable returned? --->
-					<cfset arrayAppend(stTable.aInsertSQL, insertSQL)>
+				<cfset arrayAppend(stTable.aInsertSQL, insertSQL)>
 
-				</cfloop>
-			</cfif>
+			</cfloop>
+		</cfif>
 
-	        <cfreturn "done">
+		<cfreturn "done">
 	</cffunction>
 
 
@@ -463,36 +462,36 @@
 	 @version 3.2, March 21, 2013 
 	--->
 	<cffunction name="dCopy" output="false" returntype="void">
-	    <cfargument name="source" required="true" type="string">
-	    <cfargument name="destination" required="true" type="string">
-	    <cfargument name="ignore" required="false" type="string" default="">
+		<cfargument name="source" required="true" type="string">
+		<cfargument name="destination" required="true" type="string">
+		<cfargument name="ignore" required="false" type="string" default="">
 
-	    <cfset var contents = "">
-	    
-	    <cfif not(directoryExists(arguments.destination))>
-	        <cfdirectory action="create" directory="#arguments.destination#">
-	    </cfif>
-	    
-	    <cfdirectory action="list" directory="#arguments.source#" name="contents">
+		<cfset var contents = "">
+		
+		<cfif not(directoryExists(arguments.destination))>
+			<cfdirectory action="create" directory="#arguments.destination#">
+		</cfif>
+		
+		<cfdirectory action="list" directory="#arguments.source#" name="contents">
 
-	    <cfif len(arguments.ignore)>
-	        <cfquery dbtype="query" name="contents">
-	        select * from contents where name not in(#ListQualify(arguments.ignore, "'")#)
-	        </cfquery>
-	    </cfif>
-	    
-	    <cfloop query="contents">
-	        <cfif contents.type eq "file">
-	            <cftry>
-		            <cffile action="copy" source="#arguments.source#/#name#" destination="#arguments.destination#/#name#">
-		            <cfcatch type="any">
-			            <cfdump var="#cfcatch#" label="Cant copy #arguments.source#/#name# to #arguments.destination#/#name#"><cfabort>
+		<cfif len(arguments.ignore)>
+			<cfquery dbtype="query" name="contents">
+			select * from contents where name not in(#ListQualify(arguments.ignore, "'")#)
+			</cfquery>
+		</cfif>
+		
+		<cfloop query="contents">
+			<cfif contents.type eq "file">
+				<cftry>
+					<cffile action="copy" source="#arguments.source#/#name#" destination="#arguments.destination#/#name#">
+					<cfcatch type="any">
+						<cfdump var="#cfcatch#" label="Cant copy #arguments.source#/#name# to #arguments.destination#/#name#"><cfabort>
 					</cfcatch>
 				</cftry>
-	        <cfelseif contents.type eq "dir" AND name neq '.svn'>
-	            <cfset dCopy(arguments.source & "/" & name, arguments.destination & "/" & name)>
-	        </cfif>
-	    </cfloop>
+			<cfelseif contents.type eq "dir" AND name neq '.svn'>
+				<cfset dCopy(arguments.source & "/" & name, arguments.destination & "/" & name)>
+			</cfif>
+		</cfloop>
 	</cffunction>
 
 

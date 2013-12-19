@@ -367,7 +367,7 @@
 		
 		<cfset var resultSQL = "">
 		<cfset var j = 0>
-		
+
 		<cfsavecontent variable="resultSQL">
 		
 		<cfoutput>
@@ -385,14 +385,14 @@
 					'|---|' , COALESCE(#arguments.aTableColMD[j].Name#,'') , '|---|'
 					<!--- '|---|' + isNull(#arguments.aTableColMD[j].Name#,'') + '|---|' --->
 				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>
-						'|---|' , COALESCE( CAST( #arguments.aTableColMD[j].Name# as UNSIGNED),'') , '|---|'
+						'|---|' , COALESCE( CAST( #arguments.aTableColMD[j].Name# as VARCHAR),'') , '|---|'
 						<!--- '|---|' + isNull(CONVERT ( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|' --->
 				<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
 					'|---|' , COALESCE( DATE_FORMAT(#arguments.aTableColMD[j].Name#, '%Y:%m:%d %H:%i:%s') ,'NULL') , '|---|'
 					<!--- '|---|' + isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21),'NULL') + '|---|' --->
 				<cfelse>
 					<!--- <cfset temp = temp & qryTemp[#arguments.aTableColMD[j].Name#][i] > --->
-					COALESCE( CAST( #arguments.aTableColMD[j].Name# as UNSIGNED),'|???|')
+					COALESCE( CAST( #arguments.aTableColMD[j].Name# as VARCHAR),'|???|')
 					<!--- isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#),'|???|') --->
 				</cfif>
 				
