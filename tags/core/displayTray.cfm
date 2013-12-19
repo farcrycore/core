@@ -41,13 +41,11 @@
 		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadJS id="fc-bootstrap-tray" />
-		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadJS id="farcry-form" />
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="fc-bootstrap-tray" />
 		<skin:loadCSS id="farcry-form" />
 		<skin:loadCSS id="farcry-tray" />	
-		<skin:loadCSS id="jquery-tooltip" />
 		<skin:loadCSS id="fc-fontawesome" />
 
 		<cfoutput>	
