@@ -1248,6 +1248,11 @@ br[style*="clear:both"] {
 		position: absolute;
 	}
 }
+@media only screen and (max-height: 700px) {
+	.navbar-fixed-top {
+		position: absolute;
+	}
+}
 /* undo bootstrap responsive nav padding changes */
 .navbar-fixed-top .navbar-inner {
 	padding: 0;
