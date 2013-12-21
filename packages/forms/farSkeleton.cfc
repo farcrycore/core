@@ -7,7 +7,6 @@
 		ftSeq="14" ftFieldset="" ftLabel="Exclude Data" 
 		ftType="list" ftRenderType="checkbox" 
 		ftListData="getTablesToExport" ftListDataTypename="farSkeleton"
-		ftHint="The deploy scripts will still be generated."
 		hint="What tables should be excluded from the data export ">
 
 	<cfproperty name="exportData" type="longchar" default="" hint="A structure containing the export data"
@@ -85,17 +84,19 @@
 <!--- 
  // file export functions 
 --------------------------------------------------------------------------------->
-	<cffunction name="getSQLStagingPath" hint="Returns path to temp staging directory for assembling zips">
-		<cfset var path = "#getTempDirectory()#/#application.projectDirectoryName#/sql">
-
-		<cfreturn path>
-	</cffunction>
 
 	<cffunction name="getZipStagingPath" hint="Returns path to temp staging directory for assembling zips">
-		<cfset var path = "#getTempDirectory()#/#application.projectDirectoryName#">
+		<cfset var path = "#getTempDirectory()#/#application.applicationname#">
 
 		<cfreturn path>
 	</cffunction>
+
+	<cffunction name="getSQLStagingPath" hint="Returns path to temp staging directory for assembling zips">
+		<cfset var path = "#getZipStagingPath()#/sql">
+
+		<cfreturn path>
+	</cffunction>
+
 
 	<cffunction name="deleteSQLExportData">
 		<cfset var qSQL = "">
@@ -117,6 +118,8 @@
 
 	<cffunction name="deleteOldExport">
 
+		<cfset var zipFile = "#getZipStagingPath()#/#application.applicationname#-project.zip">
+
 		<cftry>
 			<!--- cleanup zip staging area --->
 			<cfif directoryexists('#application.path.project#/project_export')>
@@ -133,13 +136,13 @@
 			</cfcatch>
 		</cftry>
 
-		<cfreturn application.fapi.success("Old export deleted") />
+		<cfreturn application.fapi.success("Project export deleted") />
 
 	</cffunction>
 
 	<cffunction name="zipSQLData">
 		<!--- build zip in temp directory --->
-		<cfset var zipFile = "#getTempDirectory()##application.applicationname#-data.zip" />
+		<cfset var zipFile = "#getZipStagingPath()#/#application.applicationname#-data.zip" />
 		
 		<cfif fileExists(zipFile)>
 			<cffile action="delete"  file="#zipFile#">	
@@ -155,7 +158,7 @@
 
 	<cffunction name="zipInstaller" hint="Package code into a ZIP for the installer; excludes media.">
 		
-		<cfset var zipFile = "#getTempDirectory()##application.applicationname#-project.zip">
+		<cfset var zipFile = "#getZipStagingPath()#/#application.applicationname#-project.zip">
 		<cfset var excludeDir = ".git|.svn|mediaArchive|www/cache|www/images|www/files">
 
 		<cfset var qProject = getDirContents(
@@ -176,6 +179,8 @@
 
 		<!--- create ZIP for entire project, core and plugins --->
 		<cfzip action="zip" file="#zipFile#" overwrite="true">
+
+<!--- TODO: project "www" folder should come from the webroot for standalone installs --->
 
 			<cfloop query="qProject">
 				<cfif qproject.type neq "Dir">
