@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -17,12 +17,18 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 
-
-<!--- Import tag libraries --->
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/container/" prefix="con">
-<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/grid/" prefix="grid" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+
+<ft:processform action="Save">
+	<ft:processformobjects typename="container">
+		<cfset stProperties.bShared = 1>
+		<cfset stObj.label = stProperties.label>
+	</ft:processformobjects>
+</ft:processform>
+<ft:processform action="Cancel" exit="true" />
 
 <ft:processform action="Complete" exit="true" />
 
@@ -40,22 +46,41 @@
 <cfset request.mode.design = 1 />
 <cfset request.mode.showcontainers = 1 />
 
-<grid:div style="max-width:800px;_width:800px;border:1px dashed ##CACACA;padding:10px;">
 
+<cfoutput>
 
-	<ft:form>
-		<ft:buttonPanel>
-			<ft:button value="Complete" />
-		</ft:buttonPanel>
-	</ft:form>
-	
-	<con:container label="#stObj.label#" defaultMirrorLabel="#stObj.label#">
+	<cfif stObj.label eq "(incomplete)" or stObj.label eq "">
+		<cfset stObj.label = "">
 
-	<ft:form>
-		<ft:buttonPanel>
-			<ft:button value="Complete" />
-		</ft:buttonPanel>
-	</ft:form>
-	
-</grid:div>
-<cfsetting enablecfoutputonly="false" />
+		<h1><i class="fa fa-wrench"></i> Create Reflected Container</h1>
+
+		<cfset stMeta = structNew()>
+		<cfset stMeta.label = structNeW()>
+		<cfset stMeta.label.ftLabel = "Container Label">
+		<cfset stMeta.label.ftValidation = "required">
+
+		<ft:form>
+			<ft:object typename="container" stObject="#stObj#" lFields="label" stPropMetadata="#stMeta#" />
+			<ft:buttonPanel>
+				<ft:button value="Save" />
+				<ft:button value="Cancel" />
+			</ft:buttonPanel>
+		</ft:form>
+
+	<cfelse>
+
+		<h1><i class="fa fa-wrench"></i> #stObj.label#</h1>
+
+		<con:container objectid="#stObj.objectid#" label="#stObj.label#">
+
+		<ft:form>
+			<ft:buttonPanel>
+				<ft:button value="Complete" />
+			</ft:buttonPanel>
+		</ft:form>
+		
+	</cfif>
+
+</cfoutput>
+
+<cfsetting enablecfoutputonly="false">

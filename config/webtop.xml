@@ -31,9 +31,9 @@
 				<menuitem id="undelete" sequence="10" label="Undelete Content" typename="dmArchive" />
 			</menu>
 		</subsection>
-		<subsection id="containermanagement" sequence="100" label="Rules &amp; Containers">
-			<menu id="containermanagementmenu" sequence="60" label="Container Management">
-				<menuitem id="reflectedContainers" sequence="10" label="Reflected Containers" link="/admin/customadmin.cfm?module=customlists/container.cfm" />		
+		<subsection id="container" sequence="100" label="Rules &amp; Containers">
+			<menu id="manage" sequence="60" label="Container Management">
+				<menuitem id="reflected" sequence="10" label="Reflected Containers" typename="farCOAPI" bodyview="webtopBodyReflectedContainers" />		
 			</menu>
 		</subsection>
 	</section>
