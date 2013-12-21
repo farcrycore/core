@@ -47,11 +47,11 @@
 			</menu>
 			
 			<menu id="systemstatus" sequence="220" label="System Status">
-				<menuitem id="systeminfo" sequence="40" label="System Information" type="farCOAPI" bodyView="webtopBodySystemInfo" />
-				<menuitem id="objbrokersummary" sequence="50" label="Caching Status" link="/admin/objectBrokerReport.cfm" />
+				<menuitem id="systeminfo" sequence="40" label="System Information" typename="farCOAPI" bodyview="webtopBodySystemInfo" />
+				<menuitem id="objbrokersummary" sequence="50" label="Object Broker Status" typename="farCOAPI" bodyview="webtopBodyObjectBrokerReport" />
 			</menu>
 		</subsection>
-		
+
 		<subsection id="security" sequence="50" permission="AdminGeneralTab" label="Users &amp; Roles" >
 			<menu id="farcryud" sequence="100" label="User Directory" permission="SecurityPolicyManagementTab">
 				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="dmProfile" />
