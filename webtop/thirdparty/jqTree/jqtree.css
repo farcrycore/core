@@ -152,6 +152,9 @@ ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
 .jqtree-element:hover .node-options { 
     display:inline; 
 }
+.control-group .jqtree-element .node-options { 
+    display:none !important; 
+}
 .node-options i { 
 	padding:3px; 
     margin-left: 3px;
@@ -186,4 +189,7 @@ ul.jqtree-tree span.jqtree-border {
 
 ul.jqtree-tree .jqtree-toggler {
     left: -14px;
+}
+ul.jqtree-tree li.jqtree_common {
+    clear:none;
 }
