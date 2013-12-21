@@ -760,7 +760,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- only create a record in refObjects if one doesnt already exist --->
-		<cfif len(application.fapi.findType(objectId = stReturn.objectId)) eq 0><cflog file="debug" text="refObjects">
+		<cfif len(application.fapi.findType(objectId = stReturn.objectId)) eq 0>
 			<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#stReturn.objectid#", typename=getTypeName(), dsn=arguments.dsn, dbowner=arguments.dbowner, dbtype=arguments.dbtype) />
 		</cfif>
 		
