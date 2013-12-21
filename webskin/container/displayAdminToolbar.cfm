@@ -129,7 +129,7 @@ $j('a.con-admin').on(
 <cfset containerID = replace(stParam.originalID,'-','','ALL') />
 
 <cfoutput>
-	<div class="containeradmin" <cfif stobj.bShared>style="background-color:##5B7FB9;"</cfif>>
+	<div class="containeradmin clearfix" <cfif stobj.bShared>style="background-color:##5B7FB9;"</cfif>>
 		
 		
 		<!--- Container Label --->

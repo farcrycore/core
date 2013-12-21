@@ -16,7 +16,7 @@
 
 
 <cfoutput>
-	<div class="ruleadmin">
+	<div class="ruleadmin clearfix">
 		
 		<!--- Rule Label --->
 		<div style="float:left;padding:2px;">
