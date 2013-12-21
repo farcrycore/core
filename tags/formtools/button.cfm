@@ -69,14 +69,6 @@
 	<!--- I18 conversion of label --->
 	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
 	
-	<cfif not len(attributes.title)>
-		<cfif len(attributes.text)>
-			<cfset attributes.title = attributes.text>
-		<cfelse>
-			<cfset attributes.title = attributes.value>
-		</cfif>
-	</cfif>
-
 	<!--- Default validate to true if submitting and false if just a button --->
 	<cfif not len(attributes.validate)>
 		<cfif attributes.type EQ "submit">
