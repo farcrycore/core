@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <webtop>
 	<section id="dashboard" sequence="1000" permission="MainNavMyFarcryTab" label="Dashboard" dynamicmenu="farWebtopDashboard.dynamicMenu">
-		<subsection id="webtopdashboard" sequence="100" typename="farWebtopDashboard" bodyView="webtopBody" label="Dashboard" />
+		<subsection id="webtopdashboard" sequence="100" typename="farWebtopDashboard" bodyview="webtopBody" label="Dashboard" />
 	</section>
 	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" description="Manage your website's menu structure and HTML content">
 		<subsection id="tree" sequence="1" permission="MainNavSiteTab" label="Navigation" typename="dmNavigation">
@@ -43,7 +43,7 @@
 			<menu id="settings" sequence="10" label="Application Settings">
 				<menuitem id="listfarconfig" sequence="1" label="Config Files" typename="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" typename="dmCron" />
-				<menuitem id="webtopDashboards" sequence="20" label="Webtop Dashboards" type="farWebtopDashboard" bodyView="webtopBodyAdmin" />
+				<menuitem id="webtopDashboards" sequence="20" label="Webtop Dashboards" type="farWebtopDashboard" bodyview="webtopBodyAdmin" />
 			</menu>
 			
 			<menu id="systemstatus" sequence="220" label="System Status">
@@ -69,7 +69,7 @@
 				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />
 			</menu>
 		</subsection>
-		
+
 		<subsection id="coapi" sequence="100" permission="AdminCOAPITab" label="Developer Utilities" >
 			<menu id="application" sequence="10" label="Application">
 				<menuitem id="updateapp" sequence="10" label="Reload application" typename="UpdateApp" />
@@ -79,7 +79,7 @@
 			</menu>
 			<menu id="coapitools" sequence="20" label="COAPI Tools">
 				<menuitem id="coapioverview" sequence="10" label="COAPI Content Types" typename="farCOAPI" />
-				<menuitem id="coapisqllog" sequence="20" label="SQL Log" typename="farCOAPI" bodyView="webtopBodySQLLog" />
+				<menuitem id="coapisqllog" sequence="20" label="SQL Log" typename="farCOAPI" bodyview="webtopBodySQLLog" />
 			</menu>
 			<menu id="coapirepair" sequence="30" label="COAPI Repair Tools">
 				<menuitem id="rebuildtree" sequence="10" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
@@ -98,12 +98,12 @@
 				<menuitem id="sendemail" sequence="10" label="Send Test Email" link="/admin/customadmin.cfm?module=utilities/email.cfm" />
 			</menu>
 			<menu id="tasksqueue" sequence="100" label="Task Queue">
-				<menuitem id="queuethreads" sequence="10" label="Threads" typename="configTaskQueue" bodyView="webtopBody" />
-				<menuitem id="queuetasks" sequence="20" label="Queued Tasks" typename="farQueueTask" bodyView="webtopBody" />
-				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" bodyView="webtopBody" />
+				<menuitem id="queuethreads" sequence="10" label="Threads" typename="configTaskQueue" bodyview="webtopBody" />
+				<menuitem id="queuetasks" sequence="20" label="Queued Tasks" typename="farQueueTask" bodyview="webtopBody" />
+				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" bodyview="webtopBody" />
 			</menu>
 			<menu id="skeleton" sequence="100" label="Skeleton">
-				<menuitem id="skeletonexport" sequence="10" label="Skeleton Export" typename="farCOAPI" bodyView="webtopBodyExportSkeleton" />
+				<menuitem id="skeletonexport" sequence="10" label="Skeleton Export" typename="farCOAPI" bodyview="webtopBodyExportSkeleton" />
 
 			</menu>
 		</subsection>
