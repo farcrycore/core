@@ -91,13 +91,13 @@ function lessDashboardCard(cardID) {
 	width: 230px;
 }
 .fc-dashboard-card-medium {
-	width: 468px;
+	width: 470px;
 }
 .fc-dashboard-card-large {
-	width: 706px;
+	width: 710px;
 }
 .fc-dashboard-card-xlarge {
-	width: 944px;
+	width: 950px;
 }
 
 @media (max-width: 767px) {
