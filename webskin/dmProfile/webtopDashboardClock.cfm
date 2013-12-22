@@ -4,6 +4,7 @@
 <!--- @@viewbinding: type --->
 <!--- @@cardClass: fc-dashboard-card-small --->
 <!--- @@cardHeight: 200px --->
+<!--- @@seq: 1 --->
 
 <cfset stJava = createObject("java", "java.lang.System").getProperties()>
 <cfset utcNow = dateConvert("local2UTC", now())>
@@ -16,14 +17,14 @@
 <div style="padding: 0 6px; color: ##999;">
 	<i id="fc-clock-utc" class="fa fa-clock-o" data-serverdatetime="#utcDateTime#"></i> <span id="fc-clock-day">#dateFormat(now(), "dddd")#</span>
 </div>
-<div style="margin-top: 25px; font-size: 56px; line-height: 1; padding: 4px;">
+<div style="padding: 38px 4px 0 4px; font-size: 56px; line-height: 1;">
 	<span id="fc-clock-time">#timeFormat(now(), "h:mm")#</span><span id="fc-clock-ampm" style="font-size: 40%; padding-left:5px">#timeFormat(now(), "tt")#</span>
 </div>
 <div style="padding: 0 6px; color: ##999;">
 	<span id="fc-clock-date">#dateFormat(now(), "d mmmm yyyy")#</span>
 </div>
-<div style="padding: 25px 6px 0 6px; color: ##999; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
-	<i class="fa fa-globe"></i> <span style="font-size:10px; text-transform:uppercase">#stJava["user.timezone"]#</span>
+<div style="padding: 20px 6px 0 6px; color: ##999; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+	<i class="fa fa-globe"></i> <span style="font-size:11px; text-transform:uppercase">#stJava["user.timezone"]#</span>
 </div>
 
 <script type="text/javascript">
@@ -44,6 +45,5 @@
 </script>
 
 </cfoutput>
-
 
 <cfsetting enablecfoutputonly="false">

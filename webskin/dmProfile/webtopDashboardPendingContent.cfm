@@ -2,11 +2,8 @@
 <!--- @@displayname: Dashboard Pending Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
-<!--- @@cardClass: fc-dashboard-card-medium --->
-<!--- @@cardHeight: 400px --->
-<!--- @@seq: 200 --->
-
-
+<!--- @@cardClass: fc-dashboard-card-large --->
+<!--- @@seq: 90 --->
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
