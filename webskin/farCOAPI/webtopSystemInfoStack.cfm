@@ -24,7 +24,13 @@
 			</tr>
 			<tr>
 				<td>CFML Engine</td>
-				<td>#server.coldfusion.productname# #server.coldfusion.productversion#</td>
+				<td>
+					<cfif structKeyExists(server, "railo")>
+						#server.coldfusion.productname# #server.railo.version# (#server.railo.state#) (Compatible #server.coldfusion.productversion#)
+					<cfelse>
+						#server.coldfusion.productname# #server.coldfusion.productversion#
+					</cfif>
+				</td>
 			</tr>
 			<tr>
 				<td>Database</td>
