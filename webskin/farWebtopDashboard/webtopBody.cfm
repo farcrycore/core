@@ -4,6 +4,7 @@
 
 
 <skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-moment" />
 <skin:loadJS id="masonry" core="true" lFiles="#application.url.webtop#/thirdparty/masonry/masonry.pkgd.min.js" />
 
 <skin:loadJS>
