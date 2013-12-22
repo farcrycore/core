@@ -151,35 +151,59 @@ function lessDashboardCard(cardID) {
 		
 <cfelseif NOT application.fapi.getContentType("farWebtopDashboard").hasDashboards()>
 
+	<cfset qWebskins = application.stcoapi["farCOAPI"].qWebskins />
+	<cfquery dbtype="query" name="qCards">
+	SELECT *, '' AS typename, 1000 AS seq FROM qWebskins
+	WHERE 1=0
+	</cfquery>
+
 	<cfloop collection="#application.stCoapi#" item="iTypename">
 		<cfset qWebskins = application.stcoapi[iTypename].qWebskins />
 		
-		<cfquery dbtype="query" name="qDashboardCardWebskins">
-		SELECT * FROM qWebskins
+		<cfquery dbtype="query" name="qTypeCards">
+		SELECT *, '#iTypename#' AS typename, 1000 AS seq FROM qWebskins
 		WHERE lower(qWebskins.name) LIKE 'webtopdashboard%'
 		</cfquery>
-	
-		<cfoutput query="qDashboardCardWebskins">
-			<cfif application.fapi.checkWebskinPermission(type="#iTypename#",webskin="#qDashboardCardWebskins.methodname#")>
-				<cfset stDashboardCard = structNew()>
-				<cfset stDashboardCard.typename = iTypename>
-				<cfset stDashboardCard.webskin = qDashboardCardWebskins.methodname>
-				<cfset stDashboardCard.displayname = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin].displayname>
-				
-				<cfloop list="bAjax:0,cardWidth:auto,cardHeight:auto,cardClass:fc-dashboard-card-medium" index="iCardMetadata">
-					<cfif structKeyExists(application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin], listFirst(iCardMetadata,":"))>
-						<cfset stDashboardCard[listFirst(iCardMetadata,":")] = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin][listFirst(iCardMetadata,":")]>
-					<cfelse>
-						<cfset stDashboardCard[listFirst(iCardMetadata,":")] = listLast(iCardMetadata,":") />
-					</cfif>
-				</cfloop>
-				
-				<cfset arrayAppend(aDashboardCardWebskins, stDashboardCard)>
-	
+
+		<cfloop query="qTypeCards">
+			<cfif structKeyExists(application.stCoapi[qTypeCards.typename].stWebskins[qTypeCards.methodname], "seq")>
+				<cfset querySetCell(qTypeCards, "seq", application.stCoapi[qTypeCards.typename].stWebskins[qTypeCards.methodname].seq, qTypeCards.currentRow)>
 			</cfif>
-		</cfoutput>
-		
+		</cfloop>
+
+		<cfquery dbtype="query" name="qCards">
+		SELECT * FROM qCards
+		UNION
+		SELECT * FROM qTypeCards
+		</cfquery>
+
 	</cfloop>
+
+	<cfquery dbtype="query" name="qDashboardCardWebskins">
+	SELECT * FROM qCards
+	ORDER BY seq ASC
+	</cfquery>
+
+	<cfoutput query="qDashboardCardWebskins">
+		<cfif application.fapi.checkWebskinPermission(type=qDashboardCardWebskins.typename,webskin=qDashboardCardWebskins.methodname)>
+			<cfset stDashboardCard = structNew()>
+			<cfset stDashboardCard.typename = qDashboardCardWebskins.typename>
+			<cfset stDashboardCard.webskin = qDashboardCardWebskins.methodname>
+			<cfset stDashboardCard.displayname = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin].displayname>
+			
+			<cfloop list="bAjax:0,cardWidth:auto,cardHeight:auto,cardClass:fc-dashboard-card-medium" index="iCardMetadata">
+				<cfif structKeyExists(application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin], listFirst(iCardMetadata,":"))>
+					<cfset stDashboardCard[listFirst(iCardMetadata,":")] = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin][listFirst(iCardMetadata,":")]>
+				<cfelse>
+					<cfset stDashboardCard[listFirst(iCardMetadata,":")] = listLast(iCardMetadata,":") />
+				</cfif>
+			</cfloop>
+			
+			<cfset arrayAppend(aDashboardCardWebskins, stDashboardCard)>
+
+		</cfif>
+	</cfoutput>
+		
 	
 </cfif>
 
