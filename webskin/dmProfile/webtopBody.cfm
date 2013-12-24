@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,16 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| DESCRIPTION ||
-$Description: Permission administration. $
-
-|| DEVELOPER ||
-$Developer: Blair McKenzie (blair@daemon.com.au) $
---->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
@@ -39,10 +32,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 			<skin:bubble title="Error" message="This profile does not have a valid user attached. Please edit this profile to create a username/password." tags="security,error" />
 		<cfelse>
 
-
 			<skin:onReady>
 			<cfoutput>
-				$fc.openDialog('Edit Password', '#application.fapi.getLink(type="farUser",objectid="#stUser.objectid#", view="webtopPageModal",  bodyView="editPassword")#')
+				$fc.openDialog('Edit Password', '#application.fapi.getLink(type="farUser",objectid="#stUser.objectid#", view="webtopPageModal",  bodyView="editPassword", ampDelim="&", bWebtop=true)#');
 			</cfoutput>
 			</skin:onReady>
 			<!--- <cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editPassword&ref=typeadmin&module=customlists/dmProfile.cfm" /> --->
@@ -60,12 +52,10 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 	<skin:onReady>
 	<cfoutput>
-		$fc.openDialog('Preview Webtop Security', '#application.fapi.getLink(type="dmProfile", objectid="#stProfile.objectid#", view="webtopPageModal",  bodyView="webtopBodyWebtopSecurity")#');
+		$fc.openDialog('Preview Webtop Security', '#application.fapi.getLink(type="dmProfile", objectid="#stProfile.objectid#", view="webtopPageModal",  bodyView="webtopBodyWebtopSecurity", ampDelim="&", bWebtop=true)#');
 	</cfoutput>
 	</skin:onReady>
 </ft:processform>
-<!--- set up page header --->
-<admin:header title="User Admin" />
 
 
 <!--- ONLY ALLOW DELETE BUTTON FOR PERMISSION NAME dmProfileDelete --->
@@ -87,4 +77,4 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	sqlorderby="username asc" 
  />
 
-<admin:footer />
+<cfsetting enablecfoutputonly="false">
