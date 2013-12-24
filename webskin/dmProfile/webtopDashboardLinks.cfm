@@ -16,25 +16,29 @@
 	.fc-dashboard-links a:hover {
 		color: ##0E65A2;
 	}
+	.fc-dashboard-h4 {
+		font-size: inherit;
+		font-weight: bold;
+	}
 </style>
 
 <div class="fc-dashboard-links">
 
 <h4 class="fc-dashboard-h4">FarCry Links</h4>
 
-<a href="##">FarCry Core</a><br>
-<a href="##">FarCry CMS Contributor Guide</a><br>
-<a href="##">FarCry Developer Guide</a><br>
-<a href="##">FarCry API Documentation</a><br>
-<a href="##">FarCry Bug Tracker (JIRA)</a><br>
-<a href="##">FarCry Wiki (Confluence)</a><br>
+<a target="_blank" href="http://www.farcrycore.org">FarCry Core (farcrycore.org)</a><br>
+<a target="_blank" href="https://farcry.jira.com/wiki/download/attachments/12451867/FC60-training-manual.pdf?version=1&modificationDate=1299903122723&api=v2">FarCry CMS Contributor Guide</a><br>
+<a target="_blank" href="https://farcry.jira.com/wiki/display/FCDEV60/Book+of+FarCry">FarCry Developer Course</a><br>
+<a target="_blank" href="http://docs.farcrycore.org">FarCry API Documentation</a><br>
+<a target="_blank" href="https://farcry.jira.com">FarCry Bug Tracker (JIRA)</a><br>
+<a target="_blank" href="https://farcry.jira.com/wiki">FarCry Wiki (Confluence)</a><br>
 <br>
 
 <h4 class="fc-dashboard-h4">Google Tools</h4>
 
-<a href="##">Google Analytics</a><br>
-<a href="##">Google Webmaster Tools</a><br>
-<a href="##">Google API Console</a><br>
+<a target="_blank" href="http://www.google.com.au/analytics">Google Analytics</a><br>
+<a target="_blank" href="https://code.google.com/apis/console">Google API Console</a><br>
+<a target="_blank" href="https://www.google.com/webmasters/tools">Google Webmaster Tools</a><br>
 
 </div>
 
