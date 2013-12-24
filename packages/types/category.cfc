@@ -114,11 +114,14 @@
 		<cfset var aID=arraynew(1)>
 		<cfset var lResult="">
 
+
 		<!--- get all descendent categories --->
 		<cfloop list="#arguments.lCategoryIDs#" index="i">
 			<cfset q = application.factory.oTree.getDescendants(objectid=i, bIncludeSelf=true)>
-			<cfset r_lcategoryids = ValueList(q.objectID)>
-			<cfset arguments.lCategoryIDs = ListAppend(arguments.lCategoryIDs,r_lcategoryids)>
+			<cfif q.recordcount>
+				<cfset r_lcategoryids = ValueList(q.objectID)>
+				<cfset arguments.lCategoryIDs = ListAppend(arguments.lCategoryIDs,r_lcategoryids)>
+			</cfif>
 		</cfloop>
 
 		<!--- dedupe the categoryids --->
