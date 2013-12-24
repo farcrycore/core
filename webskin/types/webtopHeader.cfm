@@ -43,6 +43,7 @@
 
 <skin:loadCSS id="fc-bootstrap" />
 <skin:loadCSS id="fc-fontawesome" />
+<skin:loadCSS id="fc-chardin" />
 <skin:loadCSS id="webtop7" />
 
 <skin:loadJS id="fc-jquery" />
@@ -51,6 +52,7 @@
 <skin:loadJS id="jquery-tooltip" />
 <skin:loadJS id="jquery-tooltip-auto" />
 <skin:loadJS id="farcry-form" />
+<skin:loadJS id="fc-chardin" />
 <skin:loadJS id="webtop7" />
 
 <cfoutput>
@@ -61,7 +63,7 @@
 		<div class="container-fluid farcry-header-top">
 			<div class="farcry-header-top-row">
 				<div class="farcry-header-brand">
-					<a target="_blank" href="/">
+					<a target="_blank" href="/" data-intro="Preview your site in a new tab" data-position="right">
 						<cfif len(application.fapi.getConfig("general", "webtoplogopath"))>
 							<img src="#application.fapi.getConfig("general", "webtoplogopath")#" alt="#application.config.general.sitetitle#"><!--- fit inside 180x60 --->
 						<cfelse>
@@ -87,7 +89,7 @@
 					</div>
 					<div class="farcry-header-user dropdown">
 						<div class="farcry-header-profile dropdown-toggle" data-toggle="dropdown">
-							<span class="avatar">
+							<span class="avatar" data-intro="Your user profile menu" data-position="left">
 								<cfif len(webtopAvatar)>
 									<img src="#webtopAvatar#" width="24" height="25" onerror="this.style.visibility='hidden';">
 								<cfelseif webtopGravatarHash neq "">
@@ -160,7 +162,7 @@
 						</admin:loopwebtop>
 
 					</ul>
-					<ul class="nav pull-right">
+					<ul class="nav pull-right" data-intro="Star your favourite pages" data-position="left">
 						<li id="favourites" class="dropdown">
 							<cfset active = false />
 							<cfset aFavourites = application.fapi.getPersonalConfig("favourites",arraynew(1)) />
@@ -181,7 +183,7 @@
 								<li class="none" <cfif arraylen(aFavourites)>style="display:none;"</cfif>><admin:resource key="webtop.utilities.favourites.none@text">No favourites</admin:resource></li>
 							</ul>
 						</li>
-						<li><a href="##"><i class="fa fa-question-circle"></i> Help</a></li>
+						<li><a href="javascript:void(0);" onclick="$j('body').chardinJs('start')"><i class="fa fa-question-circle"></i> Help</a></li>
 					</ul>
 				</div>
 			</div>

@@ -8,7 +8,7 @@
 
 <cfoutput>
 
-<div style="margin:-10px;">
+<div style="margin:-10px;" data-intro="#application.sysInfo.farcryVersionTagLine#" data-position="bottom">
 	<img src="#application.url.webtop#/images/farcry-dashboard-logo.jpg" />
 </div>
 

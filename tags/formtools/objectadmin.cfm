@@ -716,11 +716,11 @@
 
 	<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
 		<cfoutput>
-			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
+			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2"  data-intro="Perform complex searches with advanced filtering options" data-position="left">
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="fa fa-filter only-icon"></b></button>
 				</cfif>
-				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
+				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
 				<cfif len(form.q)>
 					<button type="button" class="btn" onclick="$j('##farcry-objectadmin-q').val(''); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
 				</cfif>
@@ -1044,7 +1044,7 @@
 								</cfoutput>
 							</cfif>
 							<cfif attributes.bShowActionList>
-								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="">#st.action#</td></cfoutput>
+								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="" <cfif st.bFirst>data-intro="Overview, Edit, Preview" data-position="right"</cfif>>#st.action#</td></cfoutput>
 							</cfif>
 
 				 			<cfset statusOutput = "">
