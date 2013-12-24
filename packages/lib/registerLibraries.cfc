@@ -165,6 +165,10 @@
 							baseHREF="#application.url.webtop#/thirdparty/moment-2.4.0" 
 							lFiles="moment.js" />
 
+		<skin:registerJS	id="fc-chardin" core="true" bCombine="false"
+							baseHREF="#application.url.webtop#/thirdparty/chardin" 
+							lFiles="chardinjs.min.js" />
+
 
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop7"
@@ -275,7 +279,19 @@
 		<skin:registerCSS	id="typeahead" 
 							baseHREf="#application.url.webtop#/thirdparty/select2" 
 							lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />	
-														
+
+		<skin:registerCSS	id="fc-chardin" 
+							baseHREf="#application.url.webtop#/thirdparty/chardin" 
+							lFiles="chardinjs.css">
+
+							<cfoutput>
+								.chardinjs-show-element {
+									opacity: 0.8;
+									z-index: 9999999 !important;
+								}
+							</cfoutput>
+		</skin:registerCSS>
+
 	</cffunction>	
 	
 </cfcomponent>
