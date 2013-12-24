@@ -1364,6 +1364,7 @@
 			<cfargument name="linktext" default=""><!--- Text used for the link --->
 			<cfargument name="target" default="_self"><!--- target window for link --->
 			<cfargument name="bShowTarget" default="false"><!--- @@attrhint: Show the target link in the anchor tag  @@options: false,true --->
+			<cfargument name="bWebtop" default="false">
 			<cfargument name="externallink" default="">
 			<cfargument name="id" default=""><!--- Anchor tag ID --->
 			<cfargument name="class" default=""><!--- Anchor tag classes --->
@@ -1437,6 +1438,8 @@
 					<cfelse>
 						<cfset returnURL = "http://#arguments.Domain##application.url.webroot#">
 					</cfif>
+				<cfelseif arguments.bWebtop>
+					<cfset returnURL = application.url.webtop />
 				<cfelse>
 					<cfset returnURL = application.url.webroot />
 				</cfif>
@@ -1451,11 +1454,14 @@
 					<cfset linkID = getNavID(alias="#arguments.alias#") />
 				</cfif>
 		
-				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#", ampDelim=arguments.ampDelim)>
-		
-				
+				<cfif arguments.bWebtop>
+					<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim,addValues="objectid=#linkID#&typename=#arguments.type#&view=#arguments.view#&bodyView=#arguments.bodyview#")>
+				<cfelse>
+					<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#", ampDelim=arguments.ampDelim)>
+				</cfif>
+
 			</cfif>
-			
+
 			<!--- Add missing URL --->			
 			<cfif not len(returnURL) and isdefined("url.furl")>
 				<cfset returnURL = url.furl />
