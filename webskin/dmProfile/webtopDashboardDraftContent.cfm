@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Dashboard Draft Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
@@ -7,24 +7,18 @@
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<!--- 
- // get all draft content for current user 
---------------------------------------------------------------------------------->
 <cfset stProfile = application.fapi.getCurrentUser() />
 <cfset dashboard = application.fapi.getcontenttype("dashboard") />
 <cfset qDraft = dashboard.getDraftContent(lastupdatedby=stProfile.userName) />
 
 
-<!--- 
- // show draft content 
---------------------------------------------------------------------------------->
 <cfoutput>
-<i class="fa fa-question-circle fa-lg pull-right" title="You were the last one to save them while in draft"></i>
-<h3>Content You Have In Draft</h3></cfoutput>
+<div style="padding: 0 6px;">
 
-<cfif qdraft.recordcount>
-	
-	<cfoutput>
+	<i class="fa fa-question-circle fa-lg pull-right" style="margin-top:6px" title="You were the last one to save them while in draft"></i>
+	<h3>Your Draft Content</h3>
+
+	<cfif qDraft.recordcount>
 		<table class="table table-striped">
 			<thead>
 				<tr>			
@@ -33,24 +27,21 @@
 					<th>Updated</th>
 				</tr>
 			</thead>
-	
 			<tbody>
-	</cfoutput>
-	
-	<cfoutput query="qdraft">
-		<tr>
-			<td><i class="fa #application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="displayname", default="Unknown")#"></i></td>
-			<td><skin:buildlink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qdraft.objectid#&typename=#qdraft.typename#" linktext="#qdraft.label#" title="Editing: #qdraft.label#" bmodal="true" /></td>
-			<td nowrap="true">#application.fapi.prettyDate(qDraft.datetimelastupdated)#</td>
-		</tr>
-	</cfoutput>
-	
-	<cfoutput>
+				<cfloop query="qDraft">
+					<tr>
+						<td><i class="fa #application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#qDraft.typename#", md="displayname", default="Unknown")#"></i></td>
+						<td><skin:buildlink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qDraft.objectid#&typename=#qDraft.typename#" linktext="#qDraft.label#" title="Editing: #qDraft.label#" bmodal="true" /></td>
+						<td nowrap="true">#application.fapi.prettyDate(qDraft.datetimelastupdated)#</td>
+					</tr>
+				</cfloop>
 			</tbody>
 		</table>
-	</cfoutput>
-<cfelse>
-	<cfoutput><p>You don't have any content in draft.</p></cfoutput>
-</cfif>
+	<cfelse>
+		<p>You don't have any content in draft.</p>
+	</cfif>
 
-<cfsetting enablecfoutputonly="false" />
+</div>
+</cfoutput>
+
+<cfsetting enablecfoutputonly="false">

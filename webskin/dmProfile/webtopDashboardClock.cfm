@@ -15,15 +15,14 @@
 <cfoutput>
 
 <div style="padding: 0 6px; color: ##999;">
-	<i id="fc-clock-utc" class="fa fa-clock-o" data-serverdatetime="#utcDateTime#"></i> <span id="fc-clock-day">#dateFormat(now(), "dddd")#</span>
-</div>
-<div style="padding: 38px 4px 0 4px; font-size: 56px; line-height: 1;">
-	<span id="fc-clock-time">#timeFormat(now(), "h:mm")#</span><span id="fc-clock-ampm" style="font-size: 40%; padding-left:5px">#timeFormat(now(), "tt")#</span>
-</div>
-<div style="padding: 0 6px; color: ##999;">
+	<i id="fc-clock-utc" class="fa fa-clock-o" data-serverdatetime="#utcDateTime#"></i>
+	<span id="fc-clock-day">#dateFormat(now(), "dddd")#</span>,
 	<span id="fc-clock-date">#dateFormat(now(), "d mmmm yyyy")#</span>
 </div>
-<div style="padding: 20px 6px 0 6px; color: ##999; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+<div style="padding: 40px 4px 0 4px; font-size: 56px; line-height: 1;">
+	<span id="fc-clock-time">#timeFormat(now(), "h:mm")#</span><span id="fc-clock-ampm" style="font-size: 40%; padding-left:5px">#timeFormat(now(), "tt")#</span>
+</div>
+<div style="padding: 40px 6px 0 6px; color: ##999; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
 	<i class="fa fa-globe"></i> <span style="font-size:11px; text-transform:uppercase">#stJava["user.timezone"]#</span>
 </div>
 
@@ -33,7 +32,7 @@
 			return 60000 - (new Date().getTime() % 60000);
 		};
 		var updateClock = function() {
-			$j("##fc-clock-day").html(moment().format("dddd"));
+			$j("##fc-clock-day").html(moment().format("ddd"));
 			$j("##fc-clock-time").html(moment().startOf("minute").format("h:mm"));
 			$j("##fc-clock-ampm").html(moment().format("A"));
 			$j("##fc-clock-date").html(moment().format("D MMMM YYYY"));
