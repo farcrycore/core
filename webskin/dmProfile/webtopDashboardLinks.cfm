@@ -30,11 +30,12 @@
 
 <h4 class="fc-dashboard-h4">FarCry Core Community</h4>
 <a target="_blank" href="http://www.farcrycore.org">FarCry Core (farcrycore.org)</a><br>
+<a target="_blank" href="https://github.com/farcrycore">FarCry Core on GitHub</a><br>
 <a target="_blank" href="https://plus.google.com/communities/107650642291146266954">FarCry on Google+</a><br>
 <a target="_blank" href="https://twitter.com/farcry">@FarCry on Twitter</a><br>
 <a target="_blank" href="https://groups.google.com/d/forum/farcry-dev">farcry-dev Google Group</a><br>
-<a target="_blank" href="http://blog.farcrycore.org">Core Committers Blog</a><br>
-<a target="_blank" href="http://www.daemon.com.au">Daemon Support</a><br>
+<a target="_blank" href="http://blog.farcrycore.org">FarCry Core Blog</a><br>
+<a target="_blank" href="http://www.daemon.com.au">Commercial FarCry Support</a><br>
 <br>
 
 <h4 class="fc-dashboard-h4">FarCry Documentation</h4>
@@ -49,7 +50,6 @@
 <a target="_blank" href="http://www.google.com.au/analytics">Google Analytics</a><br>
 <a target="_blank" href="https://code.google.com/apis/console">Google API Console</a><br>
 <a target="_blank" href="https://www.google.com/webmasters/tools">Google Webmaster Tools</a><br>
-<br>
 
 </div>
 
