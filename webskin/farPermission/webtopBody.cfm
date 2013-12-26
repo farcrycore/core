@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,20 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| DESCRIPTION ||
-$Description: Permission administration. $
-
-|| DEVELOPER ||
-$Developer: Blair McKenzie (blair@daemon.com.au) $
---->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-
-<!--- set up page header --->
-<admin:header title="Permission Admin" />
 
 <cfset aCustomColumns = arraynew(1) />
 <cfset aCustomColumns[1] = structnew() />
@@ -46,5 +36,4 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
     bPreviewCol="false"
 	sqlorderby="shortcut asc" />
 
-<admin:footer />
-
+<cfsetting enablecfoutputonly="false">
