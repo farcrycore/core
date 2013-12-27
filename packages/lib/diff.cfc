@@ -228,11 +228,21 @@
 				<cfset stResult.leftHighlighted = "" />
 				<cfif len(stResult.left) AND isValid("uuid", stResult.left)>
 					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.left) />
+					<!--- check if related object no longer exists --->
+					<cfif structIsEmpty(stTemp)>
+						<cfset stTemp.label = "(Object No Longer Exists)">
+						<cfset stTemp.typename = "farCOAPI">
+					</cfif>
 					<cfset stResult.leftHighlighted = stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 				</cfif>
 				<cfset stResult.rightHighlighted = "" />
 				<cfif len(stResult.right) AND isValid("uuid", stResult.right)>
 					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right) />
+					<!--- check if related object no longer exists --->
+					<cfif structIsEmpty(stTemp)>
+						<cfset stTemp.label = "(Object No Longer Exists)">
+						<cfset stTemp.typename = "farCOAPI">
+					</cfif>
 					<cfset stResult.rightHighlighted = stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 				</cfif>
 				<cfset stResult.different = compare(stResult.leftHighlighted,stResult.rightHighlighted) neq 0 />
