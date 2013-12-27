@@ -74,8 +74,7 @@
 			<menu id="application" sequence="10" label="Application">
 				<menuitem id="updateapp" sequence="10" label="Reload application" typename="UpdateApp" />
 				<!--<menuitem id="manageplugins" sequence="20" label="Add / Remove Plugins" link="/admin/manageplugins.cfm" />-->
-				<menuitem id="scopedump" sequence="30" label="Scope Dump" link="/admin/yxplorer.cfm" />
-				
+				<menuitem id="scopedump" sequence="30" label="Scope Dump" typename="farCOAPI" bodyview="webtopBodyScopeDump" />
 			</menu>
 			<menu id="coapitools" sequence="20" label="COAPI Tools">
 				<menuitem id="coapioverview" sequence="10" label="COAPI Content Types" typename="farCOAPI" />
