@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <webtop>
 	<section id="dashboard" sequence="1000" permission="MainNavMyFarcryTab" label="Dashboard" dynamicmenu="farWebtopDashboard.dynamicMenu">
-		<subsection id="webtopdashboard" sequence="100" typename="farWebtopDashboard" bodyview="webtopBody" label="Dashboard" />
+		<subsection id="webtopdashboard" sequence="100" typename="farWebtopDashboard" label="Dashboard" />
 	</section>
 	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" description="Manage your website's menu structure and HTML content">
 		<subsection id="tree" sequence="1" permission="MainNavSiteTab" label="Navigation" typename="dmNavigation">
@@ -37,7 +37,6 @@
 			</menu>
 		</subsection>
 	</section>
-
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin" description="Configure and secure your website">
 		<subsection id="general" sequence="10" label="General Admin" permission="AdminGeneralTab">
 			<menu id="settings" sequence="10" label="Application Settings">
@@ -45,13 +44,11 @@
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" typename="dmCron" />
 				<menuitem id="webtopDashboards" sequence="20" label="Webtop Dashboards" type="farWebtopDashboard" bodyview="webtopBodyAdmin" />
 			</menu>
-			
 			<menu id="systemstatus" sequence="220" label="System Status">
 				<menuitem id="systeminfo" sequence="40" label="System Information" typename="farCOAPI" bodyview="webtopBodySystemInfo" />
 				<menuitem id="objbrokersummary" sequence="50" label="Object Broker Status" typename="farCOAPI" bodyview="webtopBodyObjectBrokerReport" />
 			</menu>
 		</subsection>
-
 		<subsection id="security" sequence="50" permission="AdminGeneralTab" label="Users &amp; Roles" >
 			<menu id="farcryud" sequence="100" label="User Directory" permission="SecurityPolicyManagementTab">
 				<menuitem id="listprofiles" sequence="10" label="Users" typename="dmProfile" />
@@ -69,7 +66,6 @@
 				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />
 			</menu>
 		</subsection>
-
 		<subsection id="coapi" sequence="100" permission="AdminCOAPITab" label="Developer Utilities" >
 			<menu id="application" sequence="10" label="Application">
 				<menuitem id="updateapp" sequence="10" label="Reload application" typename="UpdateApp" />
@@ -97,15 +93,13 @@
 				<menuitem id="sendemail" sequence="10" label="Send Test Email" link="/admin/customadmin.cfm?module=utilities/email.cfm" />
 			</menu>
 			<menu id="tasksqueue" sequence="100" label="Task Queue">
-				<menuitem id="queuethreads" sequence="10" label="Threads" typename="configTaskQueue" bodyview="webtopBody" />
-				<menuitem id="queuetasks" sequence="20" label="Queued Tasks" typename="farQueueTask" bodyview="webtopBody" />
-				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" bodyview="webtopBody" />
+				<menuitem id="queuethreads" sequence="10" label="Threads" typename="configTaskQueue" />
+				<menuitem id="queuetasks" sequence="20" label="Queued Tasks" typename="farQueueTask" />
+				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" />
 			</menu>
 			<menu id="skeleton" sequence="100" label="Skeleton">
 				<menuitem id="skeletonexport" sequence="10" label="Skeleton Export" typename="farCOAPI" bodyview="webtopBodyExportSkeleton" />
-
 			</menu>
 		</subsection>
-
 	</section>
 </webtop>
