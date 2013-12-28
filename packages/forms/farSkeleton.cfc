@@ -97,6 +97,18 @@
 		<cfreturn path>
 	</cffunction>
 
+	<cffunction name="getExcludeString" hint="Returns a pipe separated list of directories to exclude in an export">
+		<cfargument name="excludeMedia" type="boolean" default="false">
+
+		<cfset var excludeDir = ".git|.svn|www/cache|#application.projectDirectoryName#/cache">
+
+		<cfif arguments.excludeMedia>
+			<cfset excludeDir = excludeDir & "|mediaArchive|www/images|www/files|#application.projectDirectoryName#/images|#application.projectDirectoryName#/files">
+		</cfif>
+
+		<cfreturn excludeDir>
+	</cffunction>
+
 
 	<cffunction name="deleteSQLExportData">
 		<cfset var qSQL = "">
@@ -157,9 +169,11 @@
 	</cffunction>
 
 	<cffunction name="zipInstaller" hint="Package code into a ZIP for the installer; excludes media.">
-		
+		<cfargument name="excludeMedia" type="boolean" default="false">
+
 		<cfset var zipFile = "#getZipStagingPath()#/#application.applicationname#-project.zip">
-		<cfset var excludeDir = ".git|.svn|mediaArchive|www/cache|www/images|www/files">
+		<cfset var excludeDir = getExcludeString(excludeMedia=arguments.excludeMedia)>
+		<cfset var sqlDirectory = getSQLStagingPath()>
 
 		<cfset var qProject = getDirContents(
 							directory=application.path.project, 
@@ -173,6 +187,11 @@
 
 		<cfset var qPlugins = getDirContents(
 							directory=expandpath("/farcry/plugins"), 
+							ignoreDirectories=excludeDir, 
+							ignoreFiles="project.zip")>
+
+		<cfset var qSQL = getDirContents(
+							directory=sqlDirectory, 
 							ignoreDirectories=excludeDir, 
 							ignoreFiles="project.zip")>
 
@@ -203,6 +222,13 @@
 				</cfif>
 			</cfloop>
 
+			<cfloop query="qSQL">
+				<cfif qSQL.type neq "Dir">
+					<cfset filepath = "farcry/projects/" & application.projectDirectoryName & "/install/" & qSQL.name>
+					<cfzipparam source="#qSQL.directory#/#qSQL.name#" entrypath="#filepath#">
+				</cfif>
+			</cfloop>
+
 		</cfzip>
 		<!--- create installer CFM into ./farcry --->
 		<!--- TODO: needs blank Application.cfm to block framework interference --->
@@ -229,8 +255,8 @@
 		<cfif len(arguments.ignoreFiles)>AND name NOT IN (#ListQualify(arguments.ignoreFiles, "'", "|")#)</cfif>
 		<cfif NOT arguments.showhidden>AND attributes <> 'H'</cfif>
 		<cfloop from="1" to="#arrayLen(aDir)#" index="i">
-			AND directory NOT LIKE '%\#aDir[i]#%'
-			AND directory NOT LIKE '%/#aDir[i]#%'
+			AND directory NOT LIKE '%\#replace(aDir[i], "/", "\", "all")#%'
+			AND directory NOT LIKE '%/#replace(aDir[i], "\", "/", "all")#%'
 		</cfloop>
 		</cfquery>
 

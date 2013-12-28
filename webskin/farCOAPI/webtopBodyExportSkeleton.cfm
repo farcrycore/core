@@ -18,9 +18,15 @@
 	<cfcontent type="application/zip" file="#zipFile#" reset="true" />
 </ft:processForm>
 
-<!--- TODO: downloadcode --->
-
 <!--- create zip of code and data only and download --->
+<ft:processForm action="downloadcode">
+	<cfset zipFile = oSkeleton.zipInstaller(excludeMedia=true)>
+	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-project.zip" />
+	<cfheader name="content-length" value="#getFileInfo(zipFile).size#" />
+	<cfcontent type="application/zip" file="#zipFile#" reset="true" />
+</ft:processForm>
+
+<!--- create zip of code, data and media and download --->
 <ft:processForm action="downloadall">
 	<cfset zipFile = oSkeleton.zipInstaller()>
 	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-project.zip" />
@@ -168,16 +174,16 @@
 				<ft:button value="downloaddata" text="Download Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
 			</div>
 			
-			<div style="padding-top: 20px; opacity: 0.3;">
+			<div style="padding-top: 20px;">
 				<h3><i class="fa fa-code fa-fw"></i> Project Code &amp; Data</h3>
 				<p>This export includes the project data, code base, core framework and all installed plugins.</p>
-				<ft:button value="downloadcode" text="Download Code &amp; Data" icon="fa fa-download" class="btn-large disabled" disableOnSubmit="false" disabled="true" />
+				<ft:button value="downloadcode" text="Download Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
 			</div>
 			
 			<div style="padding-top: 20px">
-				<h3><i class="fa fa-picture-o fa-fw"></i> Project Media, Code &amp; Data</h3>
+				<h3><i class="fa fa-picture-o fa-fw"></i> Project Code, Data &amp; Media</h3>
 				<p>Choose this option only if you want the complete kit and dice, including all images and files.</p>
-				<ft:button value="downloadall" text="Download Media, Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
+				<ft:button value="downloadall" text="Download Code, Data &amp; Media" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
 			</div>
 
 			<div style="padding-top: 20px">
