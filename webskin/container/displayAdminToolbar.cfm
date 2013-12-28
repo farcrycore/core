@@ -26,8 +26,8 @@
 <skin:htmlHead id="containers"><cfoutput>
 	<!-- Container styles / javascript -->
 	<style>
-		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px 2px 0; color:##000; padding-bottom:2px; margin:3px 0px;font-size:11px;line-height:16px;}
-		div.containeradmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
+		div.containeradmin { background-color: ##2980b9; font-weight:bold; padding:2px 2px 0; color:##ffffff; padding-bottom:2px; margin:3px 0px;font-size:11px;line-height:16px;}
+		div.containeradmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##ffffff; }
 		div.containeradmin a img { border:0 none !important; margin: 0 !important; padding: 0 !important; background: transparent none repeat scroll 0 0 !important; }
 		div.containeradmin div.type { width: 6.5em; float:left; }
 		div.containeradmin div.title { padding:1px 5px; }
@@ -37,9 +37,9 @@
 		##ajaxindicator { text-align: center; padding: 10px; }
 		##ajaxindicator img { border: 0 none; }
 		
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px 2px 0; color:##000; clear:both; padding-bottom:2px; margin:3px 0px;font-size:11px;line-height:16px;}
+		div.ruleadmin { background-color: ##3498db; font-weight:bold; padding:2px 2px 0; color:##ffffff; clear:both; padding-bottom:2px; margin:3px 0px;font-size:11px;line-height:16px;}
 		div.ruleadmin * { vertical-align: middle; }
-		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
+		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##ffffff; }
 		div.ruleadmin a img { clear:right; border:0 none !important; margin:0 !important; padding: 0 !important; background: transparent none repeat scroll 0 0 !important; }
 		div.ruleadmin div.type { float:left; }
 		div.ruleadmin div.title { padding:1px 5px; }
@@ -51,7 +51,7 @@
 		div.containeradmin a:visited,
 		div.containeradmin a:hover,
 		div.containeradmin a:active {	
-			color:##000;
+			color:##ffffff;
 			padding:2px;	
 			line-height:16px;
 			display:block;
@@ -61,7 +61,7 @@
 		
 		div.containeradmin a:hover {
 			background-color:##ffffff;
-			border:1px solid ##B5B5B5;
+			border:1px solid ##ffffff;
 		} 
 		
 		div.ruleadmin a,
@@ -69,7 +69,7 @@
 		div.ruleadmin a:visited,
 		div.ruleadmin a:hover,
 		div.ruleadmin a:active {	
-			color:##000;
+			color:##ffffff;
 			padding:2px;	
 			line-height:16px;
 			display:block;
@@ -79,7 +79,7 @@
 		
 		div.ruleadmin a:hover {
 			background-color:##ffffff;
-			border:1px solid ##B5B5B5;
+			border:1px solid ##ffffff;
 		} 
 	</style>
 </cfoutput></skin:htmlHead>
@@ -129,7 +129,7 @@ $j('a.con-admin').on(
 <cfset containerID = replace(stParam.originalID,'-','','ALL') />
 
 <cfoutput>
-	<div class="containeradmin clearfix" <cfif stobj.bShared>style="background-color:##5B7FB9;"</cfif>>
+	<div class="containeradmin clearfix" <cfif stobj.bShared>style="background-color:##8e44ad;"</cfif>>
 		
 		
 		<!--- Container Label --->
@@ -149,7 +149,7 @@ $j('a.con-admin').on(
 				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&lRules=#stParam.lRules#&lExcludedRules=#stParam.lExcludedRules#&method=editAddRule&iframe" 
 				con:id="#containerID#"
 				con:url="#containerURL#"
-				rule:title="Add new rule to container: #stParam.desc#">
+				rule:title="#stParam.desc#: Add Rule To Container">
 				
 				<span class="ui-icon ui-icon-plusthick" style="float:left;">&nbsp;</span>
 			</a>	
@@ -161,7 +161,7 @@ $j('a.con-admin').on(
 				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stParam.originalID#&typename=container&method=editManageReflection&iframe" 
 				con:id="#containerID#"
 				con:url="#containerURL#"
-				rule:title="Manage Reflection: #stParam.desc#">
+				rule:title="#stParam.desc#: Manage Reflection">
 				
 				<span class="ui-icon ui-icon-copy" style="float:left;">&nbsp;</span>
 			</a>

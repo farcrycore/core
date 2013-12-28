@@ -1,6 +1,7 @@
 <cfsetting enablecfoutputonly="true" />
-<!--- @@displayname: Rule management toolbar --->
+<!--- @@displayname: Rule Management Toolbar --->
 
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
@@ -13,14 +14,14 @@
 <cfset containerID = replace(stParam.originalID,'-','','ALL') />
 
 <cfset ruleDisplayName = application.fapi.getContentTypeMetadata(stobj.typename, "displayName", stobj.typename) />
-
+<cfset ruleIcon = application.fapi.getContentTypeMetadata(stobj.typename, "icon", "fa-wrench") />
 
 <cfoutput>
 	<div class="ruleadmin clearfix">
 		
 		<!--- Rule Label --->
 		<div style="float:left;padding:2px;">
-			<span style="font-size:10px;">RULE:</span> #application.stCOAPI[stObj.typename].displayname#
+			<i class="fa #ruleIcon# fa-fw"></i> #ruleDisplayName#
 		</div>	
 	
 		<div style="float:right;">

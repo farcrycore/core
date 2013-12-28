@@ -1,16 +1,20 @@
 <cfsetting enablecfoutputonly="true" />
-<!--- @@displayname: Add a new rule to the container --->
+<!--- @@displayname: Add Rule to Container --->
 
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
+<!--- environment variables --->
 <cfparam name="url.lRules" default="" />
 <cfparam name="url.lExcludedRules" default="" />
 
+<!--- get available rules --->
 <cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules(url.lRules,url.lExcludedRules) />
 
-<!--- if there is only one rule then go straight to it --->
+<!--- 
+ // one rule: if there is only one rule then go straight to it 
+--------------------------------------------------------------------------------->
 <cfif qRules.recordcount eq 1>
 	<!--- Setup New Rule --->
 	<cfset stDefaultObject = application.fapi.getNewContentObject(qRules.rulename) />
@@ -22,6 +26,9 @@
 	<skin:location href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&typename=#stDefaultObject.typename#&method=editInPlace&iframe=1" addtoken="false" />
 </cfif>
 
+<!--- 
+ // process container update 
+--------------------------------------------------------------------------------->
 <cfset containerID = replace(stobj.objectid,'-','','ALL') />
 
 <ft:processform action="Cancel" bHideForms="true">
@@ -47,29 +54,36 @@
 </ft:processform>
 
 
-
+<!--- 
+ // view: choose publishing rule 
+--------------------------------------------------------------------------------->
 <ft:form>
-
 	<cfoutput>
-		<fieldset>
-			<cfloop query="qRules">
-				<cfif not qRules.rulename eq "container">
-					<div class="form-horizontal" style="border-bottom: 1px solid ##eee;">
-						<div class="control-group" style="margin: 10px 0 5px 0">
-							<label class="control-label">
-								<ft:button value="Add Rule" text="#qRules.displayName#" rendertype="link" selectedObjectID="#qRules.rulename#" />
-							</label>
-							<div class="controls">
-								<p class="muted" style="padding-top: 5px">#application.rules[qRules.rulename].hint#</p>
-							</div>
-						</div>
-					</div>
-				</cfif>
-			</cfloop>
-		</fieldset>
+		<table class="table table-hover table-striped">
+			<thead>
+				<tr>
+					<th>&nbsp;</th>
+					<th>Publishing Rules</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody>
 	</cfoutput>
-
+	<cfloop query="qRules">
+		<cfif not qRules.rulename eq "container">
+			<cfoutput>
+			<tr>
+				<td><i class="fa #qrules.icon# fa-fw fa-lg"></i></td>
+				<td nowrap><ft:button value="Add Rule" text="<strong>#qRules.displayName#</strong>" rendertype="link" selectedObjectID="#qRules.rulename#" /></td>
+				<td>#qRules.hint#</td>
+			</tr>
+			</cfoutput>
+		</cfif>
+	</cfloop>
+	<cfoutput>
+			</tbody>
+		</table>
+	</cfoutput>
 </ft:form>
-
 
 <cfsetting enablecfoutputonly="false" />
