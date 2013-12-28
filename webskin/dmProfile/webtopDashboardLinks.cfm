@@ -30,11 +30,12 @@
 
 <h4 class="fc-dashboard-h4">FarCry Core Community</h4>
 <a target="_blank" href="http://www.farcrycore.org">FarCry Core (farcrycore.org)</a><br>
+<a target="_blank" href="http://blog.farcrycore.org">FarCry Core Blog</a><br>
+<strong><a target="_blank" href="https://groups.google.com/d/forum/farcry-dev">farcry-dev Google Group</a></strong><br>
 <a target="_blank" href="https://github.com/farcrycore">FarCry Core on GitHub</a><br>
 <a target="_blank" href="https://plus.google.com/communities/107650642291146266954">FarCry on Google+</a><br>
 <a target="_blank" href="https://twitter.com/farcry">@FarCry on Twitter</a><br>
-<a target="_blank" href="https://groups.google.com/d/forum/farcry-dev">farcry-dev Google Group</a><br>
-<a target="_blank" href="http://blog.farcrycore.org">FarCry Core Blog</a><br>
+<a target="_blank" href="https://www.ohloh.net/p/farcry">FarCry Core on Ohloh</a><br>
 <a target="_blank" href="http://www.daemon.com.au">Commercial FarCry Support</a><br>
 <br>
 
