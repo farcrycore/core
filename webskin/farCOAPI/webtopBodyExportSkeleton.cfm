@@ -29,7 +29,7 @@
 <!--- create zip of code, data and media and download --->
 <ft:processForm action="downloadall">
 	<cfset zipFile = oSkeleton.zipInstaller()>
-	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-project.zip" />
+	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-project-all.zip" />
 	<cfheader name="content-length" value="#getFileInfo(zipFile).size#" />
 	<cfcontent type="application/zip" file="#zipFile#" reset="true" />
 </ft:processForm>
