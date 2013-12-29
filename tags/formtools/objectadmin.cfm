@@ -696,7 +696,7 @@
 				
 			<cfoutput>
 			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>clear:both;">
-				<grid:div class="fc-shadowbox" style="width:600px;">
+				<grid:div class="fc-shadowbox" style="width:730px;">
 					<h3>Advanced Filtering</h3>
 					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
 					
