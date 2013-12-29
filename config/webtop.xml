@@ -59,7 +59,7 @@
 				<menuitem id="permissions" sequence="20" label="Permissions" typename="farPermission" />
 			</menu>
 			<menu id="securitylogs" sequence="130" label="Audit Reporting" permission="SecurityPolicyManagementTab">
-				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
+				<menuitem id="securitylogs" sequence="10" label="Security Logs" typename="farLog" bodyview="webtopBodyLogin" />
 				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/admin/customadmin.cfm?module=customlists/farUserActivity.cfm" />
 			</menu>
 			<menu id="securitytools" sequence="150" label="Security Tools">

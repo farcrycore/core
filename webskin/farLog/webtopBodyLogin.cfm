@@ -1,11 +1,8 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true">
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-<!--- set up page header --->
-<admin:header title="Security log" />
 
 <cfset stFilterMetaData = structnew() />
 
@@ -15,16 +12,14 @@
 <cfset stFilterMetaData.userid.ftRenderType = "dropdown" />
 <cfset stFilterMetaData.userid.ftselectmultiple = "false" />
 
-
-
 <cfset stFilterMetaData.event.ftType = "list" />
 <cfset stFilterMetaData.event.ftListData = "getEventList_Security" />
 <cfset stFilterMetaData.event.ftListDataTypeName = "farLog" />
 <cfset stFilterMetaData.event.ftRenderType = "dropdown" />
 <cfset stFilterMetaData.event.ftselectmultiple = "false" />
 
-
 <cfset stFilterMetaData.datetimecreatedby.default = "" />
+
 
 <ft:objectadmin 
 	typename="farLog"
@@ -35,9 +30,7 @@
 	stFilterMetaData="#stFilterMetaData#"
 	bPreviewCol="false"
 	sqlorderby="datetimecreated desc"
-	sqlwhere="type='security'"
-	module="customlists/farLog_security.cfm" />
+	sqlwhere="type='security'" />
 
-<admin:footer />
 
-<cfsetting enablecfoutputonly="false" />
+<cfsetting enablecfoutputonly="false">
