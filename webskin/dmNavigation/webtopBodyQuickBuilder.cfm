@@ -270,7 +270,7 @@ $out:$
 						$j.ajax({
 						   type: "POST",
 						   url: '#application.url.farcry#/facade/quickBuilder.cfc?method=listTemplates',
-						   data: { typename: $j('##makehtml').attr('value') },
+						   data: { typename: $j('##makehtml').val() },
 						   cache: false,
 						   timeout: 10000,
 						   success: function(msg){
