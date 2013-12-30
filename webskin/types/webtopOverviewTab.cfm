@@ -53,6 +53,7 @@ FARCRY INCLUDE FILES
 		font-size: 14px;
 		padding:5px 10px 5px 10px ;
 		text-align:center;
+		text-shadow: none;
 	}
 	.pending {
 		float:right;
@@ -61,6 +62,7 @@ FARCRY INCLUDE FILES
 		font-size: 14px;
 		padding:5px 10px 5px 10px ;
 		text-align:center;
+		text-shadow: none;
 	}
 	.approved {
 		float:right;
@@ -69,6 +71,7 @@ FARCRY INCLUDE FILES
 		font-size: 14px;
 		padding:5px 10px 5px 10px ;
 		text-align:center;
+		text-shadow: none;
 	}
 	
 	.draft a,
