@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,16 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| DESCRIPTION ||
-$Description: Permission administration. $
-
-|| DEVELOPER ||
-$Developer: Blair McKenzie (blair@daemon.com.au) $
---->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
@@ -46,8 +39,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 </skin:onReady>
 </script>
 
-<!--- set up page header --->
-<admin:header title="User Admin" />
 
 <cfscript>	
 	aCustomColumns = arrayNew(1);
@@ -75,4 +66,4 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 </cfoutput>
 
 
-<admin:footer />
+<cfsetting enablecfoutputonly="false">
