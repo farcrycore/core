@@ -16,37 +16,19 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/webtop/admin/quickBuilderCat.cfm,v 1.2 2005/05/30 07:35:15 pottery Exp $
-$Author: pottery $
-$Date: 2005/05/30 07:35:15 $
-$Name: milestone_3-0-1 $
-$Revision: 1.2 $
 
-|| DESCRIPTION || 
-$Description: Quickly builds a category structure$
-$TODO:$
-
-|| DEVELOPER ||
-$Developer: Quentin Zervaas (quentin@mitousa.com) $
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
-<cfprocessingDirective pageencoding="utf-8">
+<cfprocessingdirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+<cfimport taglib="/farcry/core/tags/security/" prefix="sec">
 
 
 <!--- character to indicate levels --->
-<cfset levelToken = "-" />
+<cfset levelToken = "-">
+<cfset out = "">
+
 
 <sec:CheckPermission error="true" permission="developer">
 	<cfif isDefined("form.submit")>
@@ -148,21 +130,24 @@ $out:$
 	            else if(len(items[i].navAlias) GT 0){oCat.setAlias(categoryid=items[i].objectID, alias=items[i].navAlias);}
 	        }
 	    </cfscript>
-	
+
+		<cfsavecontent variable="out">
 	    <cfoutput>
-	        <div class="formTitle">#application.rb.getResource("quickbuilder.headings.catTreeQuickBuilder@text","Category Tree Quick Builder")#</div>
-	        <p>#application.rb.getResource("quickbuilder.labels.followingItemsCreated@text","The following items have been created")#:</p>
-	        <ul>
-				<cfset subS=listToArray('#arrayLen(items)#,"Category"')>
-				<li>#application.rb.formatRBString("quickbuilder.messages.objects@text",subS,"{1} <strong>{2}</strong> content items")#</li>
-	        </ul>
+	        <div class="alert alert-info">
+		        <p>#application.rb.getResource("quickbuilder.labels.followingItemsCreated@text","The following items have been created")#:</p>
+		        <ul>
+					<cfset subS=listToArray('#arrayLen(items)#,"Category"')>
+					<li>#application.rb.formatRBString("quickbuilder.messages.objects@text",subS,"{1} <strong>{2}</strong> content items")#</li>
+		        </ul>
+	        </div>
 	    </cfoutput>
-	<cfelse>
+		</cfsavecontent>	
+	</cfif>
 	
-	    <cfscript>
-	        o = createObject("component", "#application.packagepath#.farcry.tree");
-	        qNodes = o.getDescendants(dsn=application.dsn, objectid=application.catid.root);
-	    </cfscript>
+    <cfscript>
+        o = createObject("component", "#application.packagepath#.farcry.tree");
+        qNodes = o.getDescendants(dsn=application.dsn, objectid=application.catid.root);
+    </cfscript>
 		
 	<cfoutput>
 	<script language="JavaScript">
@@ -177,61 +162,77 @@ $out:$
 	    }
 	</script>
 
+	<h1>#application.rb.getResource("quickbuilder.headings.catTreeQuickBuilder@text","Category Tree Quick Builder")#</h1>
+
+	#out#
+
 	<form method="post" class="f-wrap-1 f-bg-long wider" action="" name="theForm">
 	<fieldset>
 	
-		<h3>#application.rb.getResource("quickbuilder.headings.catTreeQuickBuilder@text","Category Tree Quick Builder")#</h3>
-		
-		<label for="startPoint"><b>#application.rb.getResource("quickbuilder.labels.createStructureWithin@label","Create structure within")#</b>
-		<select name="startPoint" id="startPoint">
-		<option value="#application.catid.root#" selected>#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
-		<cfloop query="qNodes">
-		<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
-		</cfloop>
-		</select><br />
-		</label>
-		
-		<fieldset class="f-checkbox-wrap">
-		
-			<b>#application.rb.getResource("quickbuilder.labels.navAliases@label","Nav Aliases")#</b>
-			
-			<fieldset>
-			
-			<label for="makenavaliases">
-			<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
-			#application.rb.getResource("quickbuilder.labels.createNavAliases@label","Create nav aliases for category nodes down")#
-			</label>
-			
-			<select name="navaliaseslevel">
-	            <option value="0">#application.rb.getResource("quickbuilder.labels.all@label","All")#</option>
-	            <option value="1" selected >1</option>
-	            <option value="2">2</option>
-	            <option value="3">3</option>
-	            <option value="4">4</option>
-	            <option value="5">5</option>
-	            <option value="6">6</option>
-	          </select><br />
-	          #application.rb.getResource("quickbuilder.labels.levels@label","levels")#
-			  <script>updateNavTreeDepthBox()</script>
-			
-			</fieldset>
-		
-		</fieldset>
-		
-		<label for="levelToken"><b>#application.rb.getResource("quickbuilder.labels.levelToken@label","Level Token")#</b>
-		<select name="levelToken" id="levelToken">
-		<option>#levelToken#</option>
-		</select><br />
-		</label>
-		
-		<label for="structure"><b>#application.rb.getResource("quickbuilder.labels.structure@label","Structure")#</b>
-		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
-		</label>
-		
-		<div class="f-submit-wrap">
-		<input type="submit" value="#application.rb.getResource('quickbuilder.labels.buildCategoryStructure@label','Build Category Structure')#" name="submit" class="f-submit" /><br />
+
+		<div class="form-horizontal">
+			<div class="control-group string">
+				<label class="control-label">
+					#application.rb.getResource("quickbuilder.labels.createStructureWithin@label","Create structure within")#
+				</label>
+				<div class="controls">
+					<select name="startPoint" id="startPoint">
+						<option value="#application.catid.root#" selected>#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
+						<cfloop query="qNodes">
+							<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+						</cfloop>
+					</select>
+				</div>
+			</div>	
 		</div>
-		
+		<div class="form-horizontal">
+			<div class="control-group string">
+				<label class="control-label">
+					#application.rb.getResource("quickbuilder.labels.navAliases@label","Nav Aliases")#
+				</label>
+				<div class="controls">
+					<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
+					#application.rb.getResource("quickbuilder.labels.createNavAliases@label","Create nav aliases for category nodes down")#	
+					<br>
+					<select name="navaliaseslevel">
+						<option value="0">#application.rb.getResource("quickbuilder.labels.all@label","All")#</option>
+						<option value="1" selected >1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+					</select>
+					#application.rb.getResource("quickbuilder.labels.levels@label","levels")#
+					<script>updateNavTreeDepthBox()</script>
+				</div>
+			</div>	
+		</div>
+		<div class="form-horizontal">
+			<div class="control-group string">
+				<label class="control-label">
+					#application.rb.getResource("quickbuilder.labels.levelToken@label","Level Token")#
+				</label>
+				<div class="controls">
+					<select name="levelToken" id="levelToken">
+						<option>#levelToken#</option>
+					</select>
+				</div>
+			</div>	
+		</div>
+		<div class="form-horizontal">
+			<div class="control-group string">
+				<label class="control-label">
+					#application.rb.getResource("quickbuilder.labels.structure@label","Structure")#
+				</label>
+				<div class="controls">
+					<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea>
+				</div>
+			</div>	
+		</div>
+
+		<input type="submit" value="#application.rb.getResource('quickbuilder.labels.buildCategoryStructure@label','Build Category Structure')#" name="submit" class="btn btn-primary" /><br />
+
 	</fieldset>
 	</form>
 	
@@ -272,7 +273,7 @@ Item 1
 	</p>
 	
 	</cfoutput>
-	</cfif>
+
 </sec:CheckPermission>
 
 <cfsetting enablecfoutputonly="false">
