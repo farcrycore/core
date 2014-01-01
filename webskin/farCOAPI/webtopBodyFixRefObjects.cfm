@@ -1,20 +1,22 @@
-<cfsetting enablecfoutputonly="Yes" requesttimeout="2000">
-	
+<cfsetting enablecfoutputonly="true" requesttimeout="2000">
 <cfprocessingDirective pageencoding="utf-8">
 
-<!--- set up page header --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<!--- enforce developer permissions on this utility --->
+<sec:CheckPermission 
+	permission="Developer" result="bPermitted"
+	error="true"
+	errorMessage="Your role does not have <strong>Developer</strong> permissions.">
 
-<sec:CheckPermission error="true" permission="AdminCOAPITab" result="bPermitted" />
-
-<cfif bPermitted>
+<!--- 
+ // process form 
+--------------------------------------------------------------------------------->
 	<cfif isDefined("Form.submit")>
-		<cfparam name="Form.bProcessTypes" default=true >
-		<cfparam name="Form.bProcessRules" default=true >
-		<cfparam name="Form.lExcludeItems" default=true ><!--- a list of types and rules to be excluded from the process --->
+		<cfparam name="Form.bProcessTypes" default="true">
+		<cfparam name="Form.bProcessRules" default="true">
+		<cfparam name="Form.lExcludeItems" default="true"><!--- a list of types and rules to be excluded from the process --->
 
 		<!--- loop through all types and rules --->
 		<cfif Form.bProcessTypes>
@@ -127,7 +129,7 @@
 				</cfif>
 			</cfloop>
 		</cfif>
-	
+
 		<cfif Form.bFixNav>
 			<cfoutput><h4>Started dmNavigation Fix</h4></cfoutput>
 			<cfquery name="qGetOrphanedItems" datasource="#application.dsn#">
@@ -149,7 +151,10 @@
 		</cfif>
 		
 		<cfoutput><h4>Repair process has completed.</h4></cfoutput>
-	
+
+<!--- 
+ // view form 
+--------------------------------------------------------------------------------->
 	<cfelse>
 		<cfoutput>
 		<script type="text/javascript">
@@ -160,9 +165,12 @@
 				document.getElementById(el).style.display = "none";
 			}
 		</script>
-		<h3>Repair refObjects Table</h3>
+		<h2>Repair refObjects Table</h2>
+		
 		<form action="" method="post">
-		<h4>Types and Rules</h4>
+		
+		<h3>Types and Rules</h3>
+		
 		Process Types? : <input type="Radio" name="bProcessTypes" value="true" checked /> Yes <input type="Radio" name="bProcessTypes" value="false" /> No
 		<br />
 		Process Rules? : <input type="Radio" name="bProcessRules" value="true" checked /> Yes <input type="Radio" name="bProcessRules" value="false" /> No
@@ -196,7 +204,6 @@
 		</form>
 		</cfoutput>
 	</cfif>
-</cfif>
 
-<admin:footer>
-<cfsetting enablecfoutputonly="No">
+</sec:checkpermission>
+<cfsetting enablecfoutputonly="false">

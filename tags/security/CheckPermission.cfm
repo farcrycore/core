@@ -26,7 +26,7 @@
 <cfparam name="attributes.require" default="all" /><!--- ALL => require all permissions to be granted, ANY => accept if any permissions granted --->
 
 <cfparam name="attributes.error" default="false" />
-<cfparam name="attributes.errormessage" default="You don't have permission to view this page" />
+<cfparam name="attributes.errormessage" default="You don't have permission to view this page." />
 
 <!--- Result variable --->
 <cfparam name="attributes.result" type="string" default="" /><!--- Set to a variable name to output result. Defaults to nothing. --->
@@ -157,15 +157,25 @@
 
 	<!--- If we get to this point, no permissions were granted - throw an error and exit the tag --->
 	<cfif attributes.error>
-		<!--- Translate and output error message --->
+		<cfoutput>
+			<div class="alert alert-block">
+				<h4>Not Permitted.</h4>
+				#attributes.errorMessage#
+			</div>
+		</cfoutput>
+		<!--- Translate and output error message 
+		(leaving as a reference for when we come back to re-apply i18n)
 		<cfoutput>#application.rb.getResource("security.messages.#rereplace(attributes.errormessage,'[^\w]','','ALL')#@text",attributes.errormessage)#</cfoutput>
+		--->
 	</cfif>
+
 	<!--- Save result of check --->
 	<cfif len(attributes.result)>
 		<cfset evaluate("caller.#attributes.result#=0") />
 	</cfif>
 	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag" />
+
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />
