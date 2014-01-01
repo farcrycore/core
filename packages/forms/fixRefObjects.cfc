@@ -23,12 +23,28 @@
  // form functions 
 --------------------------------------------------------------------------------->
 	<cffunction name="getTypesToFix" hint="A query of types/rules to process.">
-		<cfargument name="bRefObjects" type="boolean" required="true">
+		<cfargument name="bRefObjects" type="boolean" required="false">
 
-		<cfset var qResult=queryNew("typename, displayname, icon, bSystem, bRefObjects, class")>
+		<cfset var qResult=queryNew("typename, displayname, icon, bSystem, bRefObjects, class, rowCount, refCount")>
 
 		<cfloop list="#structkeylist(application.stcoapi)#" index="typename">
 			<cfif application.fapi.getContentTypeMetadata(typename=typename, md="class") neq "form">
+				<cftry>
+					<cfquery name="rowCount" datasource="#application.dsn#">
+						SELECT count(ObjectID) as counter 
+						FROM #application.dbowner##typename#
+					</cfquery>
+					<cfcatch><cfset rowCount.counter = "ERROR"></cfcatch>
+				</cftry>
+				<cftry>
+					<cfquery name="refCount" datasource="#application.dsn#">
+						SELECT count(ObjectID) as counter 
+						FROM #application.dbowner#refObjects
+						WHERE typename = '#typename#'
+					</cfquery>
+					<cfcatch><cfset refCount.counter = "ERROR"></cfcatch>
+				</cftry>
+
 				<cfset queryAddRow(qResult)>
 				<cfset querySetCell(qResult, "typename", typename)>
 				<cfset querySetCell(qResult, "displayname", application.fapi.getContentTypeMetadata(typename=typename, md="displayname", default="(unknown)"))>
@@ -36,12 +52,17 @@
 				<cfset querySetCell(qResult, "bSystem", application.fapi.getContentTypeMetadata(typename=typename, md="bSystem", default="false"))>
 				<cfset querySetCell(qResult, "bRefObjects", application.fapi.getContentTypeMetadata(typename=typename, md="bRefObjects", default="true"))>
 				<cfset querySetCell(qResult, "class", application.fapi.getContentTypeMetadata(typename=typename, md="class"))>
+				<cfset querySetCell(qResult, "rowCount", rowCount.counter)>
+				<cfset querySetCell(qResult, "refCount", refCount.counter)>
 			</cfif>
 		</cfloop>
 
 		<cfquery name="qResult" dbtype="query">
 			SELECT * FROM qResult
-			WHERE bRefObjects = #arguments.bRefObjects#
+			<cfif structKeyExists(arguments, "bRefObjects")>
+				WHERE bRefObjects = #arguments.bRefObjects#
+			</cfif>
+			ORDER BY class DESC, typename
 		</cfquery>
 		
 		<cfreturn qResult>
@@ -82,13 +103,8 @@
 		<!--- only process types where component metadata bRefObjects is true --->
 		<cfloop query="qTypes">
 			<cftry>
-				<!--- check if there are any content records in the table --->
-				<cfquery name="qCheck" datasource="#application.dsn#">
-					SELECT count(ObjectID) as counter 
-					FROM #application.dbowner##qTypes.typename#
-				</cfquery>
-			
-				<cfif qCheck.counter GT 0>
+				<!--- process if there are any existing references --->
+				<cfif qTypes.refCount>
 					<!--- remove references from refObjects --->
 					<cfquery name="qDelete" datasource="#application.dsn#">
 						DELETE FROM #application.dbowner#refObjects
