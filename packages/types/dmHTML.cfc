@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2011, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@Description: HTML Page Content Type --->
-<cfcomponent extends="versions" displayname="HTML Page" 
-	hint="Forms the basis of the content framework of the site. HTML content items often include containers and publishing rules." 
+<!--- @@Description: Web Page Content Type --->
+<cfcomponent extends="versions" displayname="Web Page" 
+	hint="A simple web page. Web pages can include a variety of publishing rules." 
 	bUseInTree="1" bFriendly="1" fuAlias="html"
 	bObjectBroker="1"
 	icon="fa-file-o">
