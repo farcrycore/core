@@ -24,33 +24,87 @@
 <!------------------------------
 TYPE PROPERTIES
 -------------------------------->
-	<cfproperty name="userName" type="string" default="" required="yes" hint="The username/login the profile is associated with" ftSeq="1" ftFieldset="Authentication" ftLabel="User ID" ftType="string" bLabel="true" />
-    <cfproperty name="userDirectory" type="string" default="" required="yes" hint="The user directory the profile is associated with." ftSeq="2" ftFieldset="Authentication" ftLabel="User directory" ftType="string" />
-    <cfproperty name="bActive" type="boolean" default="0" required="yes" hint="Is user active" ftSeq="3" ftFieldset="Authentication" ftLabel="Active" ftType="boolean" />
-	
-    <cfproperty name="firstName" type="string" default="" required="no" hint="Profile object first name" ftSeq="21" ftFieldset="Contact details" ftLabel="First Name" />
-    <cfproperty name="lastName" type="string" default="" required="no" hint="Profile object last name" ftSeq="22" ftFieldset="Contact details" ftLabel="Last Name" />
-    <cfproperty name="emailAddress" type="string" default="" required="no" hint="Profile object email address" ftSeq="23" ftFieldset="Contact details" ftLabel="Email Address" ftType="email" />
-    <cfproperty ftSeq="24" ftFieldset="Contact details" name="bReceiveEmail" type="boolean" default="1" required="yes" ftType="boolean" hint="Does user receive workflow and system email notices." fthint="Select this option if you want to receive email notifications from FarCry." ftLabel="Receive Emails" />
-    <cfproperty name="phone" type="string" default="" required="no" hint="Profile object phone number" ftSeq="25" ftFieldset="Contact details" ftLabel="Phone" />
-    <cfproperty name="fax" type="string" default="" required="no" hint="Profile object fax number" ftSeq="26" ftFieldset="Contact details" ftLabel="Fax" />
+	<cfproperty name="userName" type="string" required="yes" default="" 
+		ftSeq="1" ftFieldset="Authentication" ftLabel="User ID" 
+		ftType="string" 
+		bLabel="true"
+		hint="The username/login the profile is associated with">
+
+	<cfproperty name="userDirectory" type="string" required="yes" default="" 
+		ftSeq="2" ftFieldset="Authentication" ftLabel="User directory" 
+		ftType="string"
+		hint="The user directory the profile is associated with.">
+
+	<cfproperty name="bActive" type="boolean" required="yes" default="0" 
+		ftSeq="3" ftFieldset="Authentication" ftLabel="Active" 
+		ftType="boolean"
+		hint="Is user active">
+
+	<cfproperty name="firstName" type="string" required="no" default="" 
+		ftSeq="4" ftFieldset="Contact details" ftLabel="First Name"
+		hint="Profile object first name">
+
+	<cfproperty name="lastName" type="string" required="no" default="" 
+		ftSeq="5" ftFieldset="Contact details" ftLabel="Last Name"
+		hint="Profile object last name">
+
+	<cfproperty name="emailAddress" type="string" required="no" default="" 
+		ftSeq="6" ftFieldset="Contact details" ftLabel="Email Address" 
+		ftType="email"
+		hint="Profile object email address">
+
+	<cfproperty name="bReceiveEmail" type="boolean" required="yes" default="1" 
+		ftSeq="7" ftFieldset="Contact details" ftLabel="Receive Emails" 
+		ftType="boolean"
+		ftHint="Select this option if you want to receive email notifications from FarCry."
+		hint="Does user receive workflow and system email notices.">
+
+	<cfproperty name="phone" type="string" required="no" default="" 
+		ftSeq="8" ftFieldset="Contact details" ftLabel="Phone"
+		hint="Profile object phone number">
+
+	<cfproperty name="fax" type="string" required="no" default="" 
+		ftSeq="9" ftFieldset="Contact details" ftLabel="Fax"
+		hint="Profile object fax number">
 
 	<cfproperty name="avatar" type="string" default="" 
-		ftSeq="30" ftFieldset="Profile" ftLabel="Profile Image" 
-		ftType="image" ftDestination="/images/dmProfile/avatar"
-		ftAutoGenerateType="center" ftImageWidth="80" ftImageHeight="80"
-		ftAllowUpload="true" ftQuality="1.0" ftInterpolation="blackman">
-	
-	<cfproperty name="position" type="string" default="" required="no" hint="Profile object position" ftSeq="31" ftFieldSet="Organisation" ftLabel="Position" />
-    <cfproperty name="department" type="string" default="" required="no" hint="Profile object department" ftSeq="32" ftFieldSet="Organisation" ftLabel="Department" />
-	
-	<cfproperty name="locale" type="string" default="en_AU" ftdefault="application.config.general.locale" required="yes" hint="Profile object locale" ftDefaultType="evaluate" ftSeq="41" ftFieldSet="User settings" ftType="list" ftListDataTypename="dmProfile" ftListData="getLocales" ftLabel="Locale" />
-	<cfproperty name="overviewHome" type="string" default="" required="no" hint="Nav Alias name for this users home node in the overview tree" ftSeq="42" ftFieldSet="User settings" ftType="navigation" ftRenderType="dropdown" ftDefault="application.navid.home" ftDefaultType="evaluate" ftSelectMultiple="false" ftLabel="Default site tree location" ftAlias="root" />
-	
-	<cfproperty name="notes" type="longchar" default="" required="no" hint="Additional notes" ftSeq="51" ftType="longchar" ftLabel="Notes" />
-    
-	<cfproperty name="wddxPersonalisation" type="longchar" default="" required="no" hint="WDDX packet containing a user's personalisation settings." ftLabel="Personalization settings">
-	<cfproperty name="lastLogin" type="datetime" hint="The last login date of this user" />
+		ftSeq="10" ftFieldset="Profile" ftLabel="Profile Image" 
+		ftType="image" ftDestination="/images/dmProfile/avatar" 
+		ftAutoGenerateType="center" ftImageWidth="80" ftImageHeight="80" 
+		ftAllowUpload="true" 
+		ftQuality="1.0" ftInterpolation="blackman">
+
+	<cfproperty name="position" type="string" required="no" default="" 
+		ftSeq="11" ftFieldset="Organisation" ftLabel="Position"
+		hint="Profile object position">
+
+	<cfproperty name="department" type="string" required="no" default="" 
+		ftSeq="12" ftFieldset="Organisation" ftLabel="Department"
+		hint="Profile object department">
+
+	<cfproperty name="locale" type="string" required="yes" default="en_AU" 
+		ftSeq="13" ftFieldset="User settings" ftLabel="Locale" 
+		ftType="list" ftDefaultType="evaluate" ftDefault="application.config.general.locale" 
+		ftListDataTypename="dmProfile" ftListData="getLocales"
+		hint="Profile object locale">
+
+	<cfproperty name="overviewHome" type="string" required="no" default="" 
+		ftSeq="14" ftFieldset="User settings" ftLabel="Default site tree location" 
+		ftType="navigation" ftAlias="root" ftRenderType="dropdown" ftDefaultType="evaluate" ftDefault="application.navid.home" 
+		ftSelectMultiple="false"
+		hint="Nav Alias name for this users home node in the overview tree">
+
+	<cfproperty name="notes" type="longchar" required="no" default="" 
+		ftSeq="15" ftLabel="" 
+		ftType="longchar"
+		hint="Additional notes">
+
+	<cfproperty name="wddxPersonalisation" type="longchar" required="no" default="" 
+		ftLabel=""
+		hint="WDDX packet containing a user's personalisation settings.">
+
+	<cfproperty name="lastLogin" type="datetime"
+		hint="The last login date of this user">
 
 <!------------------------------
 OBJECT METHODS

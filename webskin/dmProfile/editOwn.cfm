@@ -1,11 +1,10 @@
 <cfsetting enablecfoutputonly="true" />
-<!--- @@displayname: Edit Profile --->
+<!--- @@displayname: Edit Personal Profile --->
 <!--- @@description: Form for users editing their own profile --->
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cfset stProfile = getData(objectid=session.dmProfile.objectid) />
 <cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
@@ -17,9 +16,9 @@
 	<cfthrow message="Invalid Profile Change" detail="You can not edit other users' profiles." />
 </cfif>
 
-<!----------------------------- 
-ACTION	
------------------------------->
+<!--- 
+ // process form  
+--------------------------------------------------------------------------------->
 <ft:processform action="Save" url="refresh">
 	<ft:processformobjects objectid="#stobj.objectid#">
 		<cfset structappend(session.dmProfile,stProperties,true) />
@@ -33,14 +32,10 @@ ACTION
 </ft:processform>
 
 
-<admin:header>
-
-<!----------------------------- 
-VIEW	
------------------------------->
+<!--- 
+ // view: personal edit handler 
+--------------------------------------------------------------------------------->
 <cfif session.firstLogin>
-	<!--- todo: i18n --->
-	
 	<cfoutput>
 		<h1>Welcome to FarCry</h1>
 		<p>This seems to be the first time you've logged into the webtop. Please update your profile now.</p>
@@ -52,16 +47,20 @@ VIEW
 </cfif>
 
 <ft:form>
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,phone,fax,emailaddress,breceiveemail,avatar" legend="Contact Details" />
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="position,department" legend="Job Details" />
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="locale" legend="Language Details" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
+		lfields="firstname,lastname,avatar,emailaddress,breceiveemail" 
+		legend="Personal Details" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
+		lfields="locale" 
+		legend="Webtop Settings" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
+		lfields="userName,lastLogin" format="display" 
+		legend="Login Details" />
 	
 	<ft:buttonPanel>
 		<ft:button value="Save" text="Update Profile" color="orange" />
 		<ft:button value="Cancel" validation="false" />
 	</ft:buttonPanel>
 </ft:form>
-
-<admin:footer>
 
 <cfsetting enablecfoutputonly="false" />

@@ -14,7 +14,7 @@ ACTION
 ------------------------------>
 <ft:serverSideValidation />
 
-<ft:processform action="Save" exit="true">
+<ft:processform action="Save Profile" exit="true">
 	<ft:processformobjects typename="farUser" lArrayListGenerate="lgroups" />
 	
 	<!--- track whether we have saved a farUser record--->
@@ -43,27 +43,35 @@ ACTION
 VIEW	
 ------------------------------>
 <cfoutput>
-	<h1>EDIT: <cfif listlen(stObj.username,"_")> #listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")#</cfif> - #stObj.userdirectory#</h1>
+	<h2>User <cfif listlen(stObj.username,"_")> #listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")#<cfelse>#stObj.username#</cfif> <small>Directory #stObj.userdirectory#</small></h2>
 </cfoutput>
 
 <ft:form>
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,avatar,phone,fax,position,department,locale,overviewHome" lhiddenFields="username,userdirectory" legend="User details" />
-	
-	<cfif stObj.userdirectory eq "CLIENTUD" or stObj.userdirectory eq "">
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
+		lfields="firstname,lastname,avatar,emailaddress,breceiveemail,locale,overviewHome"
+		lhiddenFields="username,userdirectory"
+		legend="Profile Details" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
+		lfields="locale,overviewHome"
+		legend="Webtop Settings" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
+		lFields="username,userdirectory,lastLogin" format="display"
+		legend="Login Details" />
 
+	<!--- CLIENTUD: user directory options only for FarCry Directory profiles --->
+	<cfif stObj.userdirectory eq "CLIENTUD" or stObj.userdirectory eq "">
 		<cfset userID = application.factory.oUtils.listSlice(stObj.username,1,-2,"_") />
 		<cfset stUser = oUser.getByUserID(userID) />
 		
 		<cfif structIsEmpty(stUser) or stUser.userid eq "">
 			<skin:view key="newprofileuser" typename="farUser" webskin="editProfileUser" />
 		<cfelse>
-			<ft:object stObject="#stUser#" typename="farUser" lfields="userstatus,aGroups" legend="Security" />
-		</cfif>
-		
+			<ft:object stObject="#stUser#" typename="farUser" lfields="userstatus,aGroups" legend="FarCry User Directory Settings" />
+		</cfif>		
 	</cfif>
 	
 	<ft:buttonPanel>
-		<ft:button value="Save" color="orange" />
+		<ft:button value="Save Profile" />
 		<ft:button value="Cancel" validate="false" />
 	</ft:buttonPanel>
 </ft:form>
