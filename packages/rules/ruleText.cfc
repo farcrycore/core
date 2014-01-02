@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2014, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry CMS Plugin.
 
@@ -15,16 +15,19 @@
     You should have received a copy of the GNU Lesser General Public License
     along with FarCry CMS Plugin.  If not, see <http://www.gnu.org/licenses/>.
 --->
+<cfcomponent 
+    extends="farcry.core.packages.rules.rules" 
+    displayname="Plain Text Block" 
+	hint="Display a plain text block; does not allow embeds or media."
+    icon="fa-font">
 
-<!--- @@displayname: Utility: Plain Text Block --->
-<!--- @@Description: Publishing rule for rendering a block of user definable text/markup in the container. --->
-<!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
-
-<cfcomponent displayname="Utility: Plain Text Block" extends="farcry.core.packages.rules.rules" 
-	hint="Publishing rule for rendering a block of user definable text/markup in the container.">
+    <cfproperty name="title" type="string" required="no" default="" 
+        ftSeq="10" ftFieldset="Plain Text Rule" ftLabel="Admin Title" 
+        ftvalidation="required"
+        fthint="Admin title only. Will not be shown to users.">
 
     <cfproperty name="text" type="longchar" required="yes" default="" 
-        ftSeq="1" ftLabel="Text" 
+        ftSeq="20" ftFieldset="Plain Text Rule" ftLabel="Text Block" 
         ftType="longchar"
         ftHint="Text to display. Can be any combination of content and HTML markup.">
 	
