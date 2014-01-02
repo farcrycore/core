@@ -26,14 +26,8 @@
 	$j(document).ready(function(){
 		$j(".user-stats").click(function(e){
 			e.preventDefault();
-			$j( "##fc-dialog-iframe").attr("src", "#application.url.webtop#/edittabUserStats.cfm?username=" + $j(this).attr('href'))
-			$j( "##fc-dialog-div" ).dialog({
-				height: 800,
-				width: 800,
-				modal: true
-			});
+			$fc.openDialog("User Activity", "#application.url.webtop#/edittabUserStats.cfm?username=" + $j(this).attr('href'));
 		});
-		
 	});
 	</cfoutput>
 </skin:onReady>
@@ -51,7 +45,7 @@
 	
 <ft:objectadmin
 	typename="dmProfile"
-	title="User Administration"
+	title="User Activity Report"
 	columnList="firstname,lastname" 
 	sortableColumns="userid,userstatus"
 	lFilterFields="username"
@@ -60,10 +54,7 @@
 	bSelectCol="false"
 	bShowActionList="false"
 	aCustomColumns="#aCustomColumns#"
- />
-<cfoutput>
-	<div id='fc-dialog-div' style="padding:10px;"><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0' id="fc-dialog-iframe"></iframe></div>
-</cfoutput>
+/>
 
 
 <cfsetting enablecfoutputonly="false">
