@@ -153,7 +153,7 @@
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap-datepicker"
 							lFiles="bootstrap-datepicker.js" />
 		
-		<skin:registerJS	id="webtop7" core="true"
+		<skin:registerJS	id="webtop" core="true"
 							baseHREF='#application.url.webtop#/js'
 							lFiles="webtop7.js" />
 
@@ -171,13 +171,9 @@
 
 
 		<!--- CSS LIBRARIES --->
-		<skin:registerCSS 	id="webtop7"
-							baseHREF="#application.url.webtop#/css"
-							lFiles="webtop7.css,main7.css" />
-
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"
-							lFiles="reset.css,fonts.css,main.css" />
+							lFiles="webtop7.css,main7.css" />
 							
 		<skin:registerCSS	id="bulk-upload"
 							baseHREF="#application.url.webtop#/js/bulkUploader"
@@ -205,10 +201,6 @@
 							baseHREF="#application.url.webtop#"
 							lFiles="/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css"
 							bCombined="false" />
-							
-		<skin:registerCSS	id="fc-icons"
-							baseHREF="#application.url.webtop#/css"
-							lFiles="" /><!--- icons.css. removed for incompatibility with font-awesome. re-apply as required. --->
 							
 		<skin:registerCSS	id="fc-fontawesome"
 							baseHREF="#application.url.webtop#/thirdparty/font-awesome-4.0.0/css"

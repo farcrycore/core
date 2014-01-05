@@ -9,7 +9,7 @@
 <cfset request.fc.inWebtop = 1>
 
 <cfoutput><!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
+<html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -17,7 +17,7 @@
 
 <skin:loadCSS id="fc-bootstrap" />
 <skin:loadCSS id="fc-fontawesome" />
-<skin:loadCSS id="webtop7" />
+<skin:loadCSS id="webtop" />
 
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-bootstrap" />
