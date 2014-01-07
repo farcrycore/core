@@ -9,7 +9,7 @@
 </cfif>
 
 <cfoutput>
-	<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=farConfig&method=edit&ref=typeadmin&module=customlists/farConfig.cfm" onclick="$fc.objectAdminAction('#title#', this.href + '&iframe=1'); return false;">#title#</a>
+	<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=farConfig&method=edit&ref=dialogiframe" onclick="$fc.objectAdminAction('#title#', this.href + '&iframe=1'); return false;">#title#</a>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false" />
