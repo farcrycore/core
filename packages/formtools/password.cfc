@@ -49,13 +49,13 @@
 					<cfoutput>
 						<div class="multiField">
 							<ft:field label="Current password" labelAlignment="block" for="#arguments.fieldname#">
-								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 							<ft:field label="New password" labelAlignment="block" for="#arguments.fieldname#New">
-								<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 							<ft:field label="Re-enter new password" labelAlignment="block" for="#arguments.fieldname#Confirm">
-								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 						</div>
 					</cfoutput>
@@ -66,10 +66,10 @@
 					<cfoutput>				
 						<div class="multiField">
 							<ft:field label="Choose a password" labelAlignment="block" for="#arguments.fieldname#">
-								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 							<ft:field label="Re-enter password" labelAlignment="block" for="#arguments.fieldname#Confirm">
-								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 						</div>
 					</cfoutput>
@@ -78,7 +78,7 @@
 			<cfdefaultcase>
 				<cfsavecontent variable="html">
 					<cfoutput>
-						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#arguments.stMetadata.value#</cfif>" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#arguments.stMetadata.value#</cfif>" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 					</cfoutput>
 				</cfsavecontent>
 			</cfdefaultcase>
