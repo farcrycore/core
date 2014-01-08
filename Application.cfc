@@ -530,6 +530,7 @@
 					<!--- If the updateall flag was on, we also need to deploy default schema updates --->
 					<cfif structkeyexists(url,"updateall")>
 						<cfset application.fc.lib.db.deployDefaultChanges() />
+						<cfset application.fapi.getContentType(typename="fixRefObjects").fixReferences()>
 					</cfif>
 					
 					<!--- set the initialised flag --->
