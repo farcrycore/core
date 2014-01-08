@@ -393,6 +393,57 @@
 		
 		<cfreturn qColumns />
 	</cffunction>
+
+
+	<cffunction name="getInsertSQL" access="public" output="false" returntype="string" hint="Returns the SQL to insert data into the table specified and used by the Farcry Content Export">
+		<cfargument name="table" type="string" required="true" />
+		<cfargument name="aTableColMD" type="array" required="true" />
+		<cfargument name="orderBy" type="string" required="true" />
+		<cfargument name="from" type="numeric" default="1" />
+		<cfargument name="to" type="numeric" default="0" />
+		
+		<cfset var resultSQL = "">
+		<cfset var j = 0>
+
+		<cfsavecontent variable="resultSQL">
+		
+		<cfoutput>
+		SELECT concat(		
+			<cfloop index="j" from="1" to="#ArrayLen(arguments.aTableColMD)#">
+				<cfif j NEQ 1>
+					 ,
+				</cfif>
+				
+				<cfif FindNoCase("char", arguments.aTableColMD[j].TypeName)
+			    OR FindNoCase("unique", arguments.aTableColMD[j].TypeName)
+			    OR FindNoCase("xml", arguments.aTableColMD[j].TypeName)
+			    OR FindNoCase("object", arguments.aTableColMD[j].TypeName)
+			     >
+					'|---|' , COALESCE(#arguments.aTableColMD[j].Name#,'') , '|---|'
+				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>
+					'|---|' , COALESCE( CAST( #arguments.aTableColMD[j].Name# as CHAR),'') , '|---|'
+				<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName) OR FindNoCase("time", arguments.aTableColMD[j].TypeName)>
+					'|---|' ,  COALESCE( FORMATDATETIME(#arguments.aTableColMD[j].Name#, 'yyyy-MM-dd HH:mm:ss') ,'NULL') , '|---|'
+				<cfelse>
+					COALESCE( CAST( #arguments.aTableColMD[j].Name# as CHAR),'|???|') /* #arguments.aTableColMD[j].TypeName# */
+				</cfif>
+
+				<cfif j NEQ ArrayLen(arguments.aTableColMD) >
+					 , ','
+				</cfif>
+				
+			</cfloop>
+			) as insertValues
+		FROM #arguments.table#
+		ORDER BY #arguments.orderBy# desc
+		LIMIT #arguments.from-1#, #arguments.to-arguments.from+1#
+		</cfoutput>
+		
+		</cfsavecontent>
+				
+		<cfreturn resultSQL>	
+	</cffunction>
+
 	
 	<!--- DATABASE INTROSPECTION --->
 	<cffunction name="introspectTable" returntype="struct" access="private" output="false" hint="Constructs a metadata struct for the table">
