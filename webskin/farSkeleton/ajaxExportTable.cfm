@@ -64,6 +64,8 @@
 		<cfset stResult.bSuccess = false>
 		<cfset stResult.message = "#cfcatch.message#">
 		<cfset stResult.bExportComplete = 0>
+
+		<cflog file="farcry-export" text="Error exporting #stTable.name#, #serializeJSON(stResult)#">
 		
 		<cfcontent 	
 			reset="true"
