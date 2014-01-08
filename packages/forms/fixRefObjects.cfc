@@ -10,11 +10,11 @@
 		ftseq="10" ftLabel="Repair Types/Rules?"
 		fthint="Rebuild references for refObjects for components where bRefObjects is true.">
 
-	<cfproperty name="bPurgeTypes" type="boolean" default="1" 
+	<cfproperty name="bPurgeTypes" type="boolean" default="0" 
 		ftseq="20" ftLabel="Purge Types/Rules?"
 		fthint="Remove references from refObjects for components where bRefObjects is false.">
 
-	<cfproperty name="bFixNav" type="boolean" default="1" 
+	<cfproperty name="bFixNav" type="boolean" default="0" 
 		ftseq="30" ftLabel="Remove rogue dmNavigation sub-objects?"
 		fthint="Remove content referenced in dmNavigation that is not present in refObjects (ie. deleted, orphaned)">
 
@@ -103,23 +103,21 @@
 		<!--- only process types where component metadata bRefObjects is true --->
 		<cfloop query="qTypes">
 			<cftry>
-				<!--- process if there are any existing references --->
-				<cfif qTypes.refCount>
-					<!--- remove references from refObjects --->
-					<cfquery name="qDelete" datasource="#application.dsn#">
-						DELETE FROM #application.dbowner#refObjects
+				<!--- Do bulk insert into refObjects --->
+				<cfquery name="qInsert" datasource="#application.dsn#">
+					INSERT INTO refObjects (objectid, typename)
+
+					SELECT objectid, '#qTypes.typename#' as typename
+					FROM #application.dbowner##qTypes.typename#
+					WHERE objectid NOT IN (
+						SELECT objectid
+						FROM #application.dbowner#refObjects
 						WHERE typename = '#qTypes.typename#'
-					</cfquery>
-					<!--- Do bulk insert into refObjects --->
-					<cfquery name="qInsert" datasource="#application.dsn#">
-						INSERT INTO refObjects (objectid, typename)
-							SELECT ObjectID as objectid, '#qTypes.typename#' as typename
-							FROM #application.dbowner##qTypes.typename#
-					</cfquery>
-				</cfif>
+					)
+				</cfquery>
 
 				<cfcatch>
-					<cfset stResult.message = stResult.message & "Error repairing #qtypes.typename#. The component may not have been deployed.<br>">
+					<cfset stResult.message = stResult.message & "Error repairing #qtypes.typename#<br>">
 				</cfcatch>
 			</cftry>
 		</cfloop>
