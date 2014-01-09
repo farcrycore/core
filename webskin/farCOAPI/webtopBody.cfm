@@ -369,7 +369,7 @@
 		<cfoutput>
 			<h2>Conflicts</h2>
 			<div class="alert alert-info">
-				<i class="fa fa-info-circle"></i> Use "Apply Default Resolutions" to deploy or repair the schema. Individually "Resolve conflicts" to make destructive changes such dropping a column.
+				<i class="fa fa-info-circle"></i> Use "Apply Default Resolutions" to deploy or repair the schema. Individually "Resolve conflicts" to make destructive changes such as dropping a column.
 			</div>
 
 			<table style="width:100%;table-layout:fixed;" class="farcry-objectadmin table table-striped table-hover">
