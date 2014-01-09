@@ -673,6 +673,7 @@ $(function(){
 					<cfquery datasource="#form.dsn#" name="qInsert">
 					#preserveSingleQuotes(SQL)#
 					</cfquery>
+					<cfoutput>Deployed #qSQLFiles.name#<br></cfoutput>
 
 					<cfcatch type="any">
 						<cfoutput><strong>ERROR: #qSQLFiles.name# - #cfcatch.message#</strong><br></cfoutput>
@@ -680,7 +681,6 @@ $(function(){
 					</cfcatch>
 				</cftry>
 
-				<cfoutput>Deployed #qSQLFiles.name#<br></cfoutput>
 			</cfloop>
 
 		<cfelse>
@@ -700,6 +700,7 @@ $(function(){
 					<cfquery datasource="#form.dsn#" name="qInsert">
 					#preserveSingleQuotes(SQL)#
 					</cfquery>
+					<cfoutput>Inserted #qSQLFiles.name#<br></cfoutput>
 
 					<cfcatch type="any">
 						<cfoutput><strong>ERROR: #qSQLFiles.name# - #cfcatch.message#</strong><br></cfoutput>
@@ -707,7 +708,6 @@ $(function(){
 					</cfcatch>
 				</cftry>
 
-				<cfoutput>Inserted #qSQLFiles.name#<br></cfoutput>
 			</cfloop>
 
 		<cfelse>
