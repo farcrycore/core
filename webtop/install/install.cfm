@@ -26,12 +26,13 @@
 <!--- process form submissions --->
 <cfif form.installAction eq "install">
 	<cfset updateConstructor(stInstaller)>
-	<cfset stInstallResult = install(stInstaller)>
+	<cfset stConstructor = getConstructorSettings(stInstaller)>
+	<cfset stInstallResult = install(stInstaller, stConstructor)>
 	<cfset stInstaller = getInstallerSettings()>
 </cfif>
 
 <!--- get constructor and database settings --->
-<cfset stConstructor = getConstructorSettings(stInstaller, form)>
+<cfset stConstructor = getConstructorSettings(stInstaller)>
 <cfset stDatabase = getDatabaseSettings(stConstructor)>
 
 <!--- get the current installer state and flight check --->
@@ -205,7 +206,7 @@ code { color: #000; }
 							<p class="help-block">The application name used in the Application.cfc, e.g. <code>myproject</code></p>
 						</div>
 					</div>
-
+<!---
 					<div class="control-group">
 						<label class="control-label" for="projectDirectoryName">Project Folder Name</label>
 						<div class="controls">
@@ -213,7 +214,7 @@ code { color: #000; }
 							<p class="help-block">The project folder name, e.g. <code>myproject</code></p>
 						</div>
 					</div>
-
+--->
 					<div class="control-group">
 						<label class="control-label" for="updateappKey">Update App Key</label>
 						<div class="controls">
@@ -300,7 +301,6 @@ code { color: #000; }
 <pre style="margin:0;">
        Project Title:  #stConstructor.displayname#
     Application Name:  #stConstructor.name#
- Project Folder Name:  #stConstructor.projectDirectoryName#
       Update App Key:  #stConstructor.updateappKey#
 
                  DSN:  #stConstructor.dsn#
@@ -636,11 +636,13 @@ $(function(){
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.dbOwner\s*?=\s*?["'']).*?(["''].*)', '\1#form.dbOwner#\2', 'all')>
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.webtopURL\s*?=\s*?["'']).*?(["''].*)', '\1#stInstaller.farcryWebtopURL#\2', 'all')>
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.updateappKey\s*?=\s*?["'']).*?(["''].*)', '\1#form.updateappKey#\2', 'all')>
-	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["'']).*?(["''].*)', '\1#form.projectDirectoryName#\2', 'all')>
 
-	<!--- TODO: check if projectDirectoryName is commented out, uncomment if it doesn't match form.name --->
-
-
+	<!--- TODO: enable updating constructor folder when folder renaming issue is resolved --->
+<!---
+ 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["'']).*?(["''].*)', '\1#form.projectDirectoryName#\2', 'all')>
+	<!--- uncomment projectDirectoryName --->
+	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*)<!---\s*?(<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["''].*?["'']\s*?/?>)\s*?--->(.*)', '\1\2\3', 'all')>
+ --->
 	<cffile action="write" file="#arguments.stInstaller.projectConstructorPath#" output="#farcryConstructor#" nameconflict="overwrite" charset="utf-8">
 
 </cffunction>
@@ -688,6 +690,7 @@ $(function(){
 
 <cffunction name="install" returntype="struct">
 	<cfargument name="stInstaller">
+	<cfargument name="stConstructor">
 
 	<cfset var stResult = structNew()>
 	<cfset var output = "">
@@ -783,6 +786,12 @@ $(function(){
 			</cftry>
 		</cfif>
 
+		<!--- TODO: rename project, resolve renme permission issues (IIS and advanced install is problematic) --->
+<!---
+ 		<cfif listLast(arguments.stInstaller.projectPath, "/") neq arguments.stConstructor.projectDirectoryName>
+			<cfdirectory action="rename" directory="#arguments.stInstaller.projectPath#" newDirectory="#stConstructor.projectDirectoryName#">
+		</cfif>
+ --->
 	</cfoutput>
 	</cfsavecontent>
 
