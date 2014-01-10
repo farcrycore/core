@@ -64,8 +64,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">
 		<cfset var stAfterSave = "" />
-		<cfset var stResult = super.setData(argumentCollection = arguments) />
-		<cfset var arguments.stProperties.typename = getTypename() />
+		<cfset var stResult = structNew() />
+		<cfset arguments.stProperties.typename = getTypename() />
+		<cfset stResult = super.setData(argumentCollection = arguments) />
 		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>
 			<cfset stAfterSave = afterSave(argumentCollection = arguments) />
 		</cfif>
