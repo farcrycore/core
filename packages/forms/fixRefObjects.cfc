@@ -60,7 +60,7 @@
 		<cfquery name="qResult" dbtype="query">
 			SELECT * FROM qResult
 			<cfif structKeyExists(arguments, "bRefObjects")>
-				WHERE bRefObjects = #arguments.bRefObjects#
+				WHERE bRefObjects = <cfqueryparam cfsqltype="cf_sql_bit" value="#arguments.bRefObjects#" />
 			</cfif>
 			ORDER BY class DESC, typename
 		</cfquery>
