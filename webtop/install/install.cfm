@@ -4,6 +4,7 @@
 <cfparam name="form.farcryUserPassword" default="farcry">
 
 
+
 <!---
 
 	TODO
@@ -187,12 +188,12 @@ code { color: #000; }
 			<div class="form-settings" <cfif stState.bSuccess AND form.installAction neq "setup">style="display:none;"</cfif>>
 
 				<fieldset>
-					<legend>Application</legend>
+					<legend>Application / Project</legend>
 
 					<div class="control-group">
-						<label class="control-label" for="displayName">FarCry Project Title</label>
+						<label class="control-label" for="displayName">Project Title</label>
 						<div class="controls">
-							<input type="text" id="displayName" name="displayName" placeholder="Project Name" value="#stConstructor.displayname#">
+							<input type="text" id="displayName" name="displayName" placeholder="Project Title" value="#stConstructor.displayname#">
 							<p class="help-block">The display name of your project, e.g. <code>My Project</code></p>
 						</div>
 					</div>
@@ -200,8 +201,24 @@ code { color: #000; }
 					<div class="control-group">
 						<label class="control-label" for="name">Application Name</label>
 						<div class="controls">
-							<input type="text" id="name" name="name" placeholder="Project Name" value="#stConstructor.name#">
+							<input type="text" id="name" name="name" placeholder="Application Name" value="#stConstructor.name#">
 							<p class="help-block">The application name used in the Application.cfc, e.g. <code>myproject</code></p>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="projectDirectoryName">Project Folder Name</label>
+						<div class="controls">
+							<input type="text" id="projectDirectoryName" name="projectDirectoryName" placeholder="Project Folder Name" value="#stConstructor.projectDirectoryName#">
+							<p class="help-block">The project folder name, e.g. <code>myproject</code></p>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="updateappKey">Update App Key</label>
+						<div class="controls">
+							<input type="text" id="updateappKey" name="updateappKey" placeholder="Update App Key" value="#stConstructor.updateappKey#">
+							<p class="help-block">The key used on the URL to restart the app, e.g. <code>mysecretkey</code></p>
 						</div>
 					</div>
 
@@ -281,8 +298,11 @@ code { color: #000; }
 				<div class="well">
 					<pre style="font-weight: bold">Installation Settings</pre>
 <pre style="margin:0;">
-FarCry Project Title:  #stConstructor.displayname#
+       Project Title:  #stConstructor.displayname#
     Application Name:  #stConstructor.name#
+ Project Folder Name:  #stConstructor.projectDirectoryName#
+      Update App Key:  #stConstructor.updateappKey#
+
                  DSN:  #stConstructor.dsn#
      Database Server:  #stConstructor.dbType#
 <cfif left(stConstructor.dbType, 5) eq "mssql">DB Owner: #stConstructor.dbOwner#
@@ -331,7 +351,7 @@ During installation the contents of the project "www" folder will be moved into:
 
 				<div class="control-group">
 					<div class="controls">
-						<a href="/farcry/core/webtop" style="width: 255px;" class="btn btn-primary btn-large">Login</a>
+						<a href="#stConstructor.webtopURL#" style="width: 255px;" class="btn btn-primary btn-large">Login</a>
 						<br>
 						<br>
 						<br>
@@ -346,7 +366,7 @@ During installation the contents of the project "www" folder will be moved into:
 					#stInstallResult.output#
 				</div>
 
-				<iframe src="/?updateall=farcry" height="0" width="0" border="0" style="display:none"></iframe>
+				<iframe src="/?updateall=#stConstructor.updateappKey#" height="0" width="0" border="0" style="display:none"></iframe>
 
 			</cfif>
 
@@ -512,6 +532,8 @@ $(function(){
 	<cfset stResult.bHasFarCryFolder = false>
 	<cfset stResult.farcryPath = normalisePath(expandPath("/farcry"))>
 	<cfset stResult.farcryProjectsPath = normalisePath(expandPath("/farcry/projects"))>
+	<cfset stResult.farcryWebtopPath = normalisePath(expandPath("/webtop"))>
+	<cfset stResult.farcryWebtopURL = "/webtop">
 
 	<cfset stResult.bHasProjectFolder = false>
 	<cfset stResult.projectPath = "">
@@ -543,6 +565,12 @@ $(function(){
 		</cfif>
 	</cfif>
 
+	<!--- get webtop path --->
+	<cfif NOT directoryExists(stResult.farcryWebtopPath)>
+		<cfset stResult.farcryWebtopPath = normalisePath(expandPath("/farcry/core/webtop"))>
+		<cfset stResult.farcryWebtopURL = "/farcry/core/webtop">
+	</cfif>
+
 
 	<!--- determine install type --->
 	<cfif findNoCase(stResult.farcryPath, stResult.webrootPath)>
@@ -568,6 +596,9 @@ $(function(){
 	<cfset stResult.dsn = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dsn\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
 	<cfset stResult.dbtype = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dbtype\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
 	<cfset stResult.dbowner = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dbowner\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+	<cfset stResult.webtopURL = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.webtopURL\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+	<cfset stResult.updateappKey = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.updateappKey\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+	<cfset stResult.projectDirectoryName = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
 
 	<!--- set defaults in the form if they aren't already set--->
 	<cfparam name="form.name" default="#stResult.name#">
@@ -575,6 +606,8 @@ $(function(){
 	<cfparam name="form.dsn" default="#stResult.dsn#">
 	<cfparam name="form.dbType" default="#stResult.dbType#">
 	<cfparam name="form.dbOwner" default="#stResult.dbOwner#">
+	<cfparam name="form.updateappKey" default="#stResult.updateappKey#">
+	<cfparam name="form.projectDirectoryName" default="#stResult.projectDirectoryName#">
 
 	<!--- use the values from the form --->
 	<cfset stResult.name = form.name>
@@ -582,6 +615,8 @@ $(function(){
 	<cfset stResult.dsn = form.dsn>
 	<cfset stResult.dbType = form.dbType>
 	<cfset stResult.dbOwner = form.dbOwner>
+	<cfset stResult.updateappKey = form.updateappKey>
+	<cfset stResult.projectDirectoryName = form.projectDirectoryName>
 
 	<cfreturn stResult>
 </cffunction>
@@ -599,6 +634,12 @@ $(function(){
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.dsn\s*?=\s*?["'']).*?(["''].*)', '\1#form.dsn#\2', 'all')>
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.dbType\s*?=\s*?["'']).*?(["''].*)', '\1#form.dbType#\2', 'all')>
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.dbOwner\s*?=\s*?["'']).*?(["''].*)', '\1#form.dbOwner#\2', 'all')>
+	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.webtopURL\s*?=\s*?["'']).*?(["''].*)', '\1#stInstaller.farcryWebtopURL#\2', 'all')>
+	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.updateappKey\s*?=\s*?["'']).*?(["''].*)', '\1#form.updateappKey#\2', 'all')>
+	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["'']).*?(["''].*)', '\1#form.projectDirectoryName#\2', 'all')>
+
+	<!--- TODO: check if projectDirectoryName is commented out, uncomment if it doesn't match form.name --->
+
 
 	<cffile action="write" file="#arguments.stInstaller.projectConstructorPath#" output="#farcryConstructor#" nameconflict="overwrite" charset="utf-8">
 
