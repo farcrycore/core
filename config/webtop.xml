@@ -86,8 +86,8 @@
 				<menuitem id="listfilelocations" sequence="70" label="List File Locations" link="/admin/customadmin.cfm?module=utilities/listfilelocations.cfm" />
 			</menu>
 			<menu id="menufumanagement" sequence="80" label="Friendly URL Tools">
-				<menuitem id="fumanagement" sequence="10" label="Inspect Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />
-				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
+				<menuitem id="fumanagement" sequence="10" label="Inspect Friendly URLs" typename="farFU" />
+				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" typename="farFU" bodyview="webtopBodyRebuild" />
 			</menu>
 			<menu id="emails" sequence="90" label="Test Email">
 				<menuitem id="sendemail" sequence="10" label="Send Test Email" link="/admin/customadmin.cfm?module=utilities/email.cfm" />
