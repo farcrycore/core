@@ -184,7 +184,7 @@
 		<cfargument name="objectid" required="true" />
 		
 		<cfset var stWorkflow = getData(objectid="#arguments.objectID#") />
-		<cfset var stWorkflowDef = createobject("component", application.stcoapi.farWorkflowDef.packagPath).getData(objectid="#stWorkflow.workflowDefID#") />
+		<cfset var stWorkflowDef = createobject("component", application.stcoapi.farWorkflowDef.packagePath).getData(objectid="#stWorkflow.workflowDefID#") />
 		<cfset var stResult = structNew() />
 		
 		<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stWorkflowDef.workflowStart#">
