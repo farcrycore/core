@@ -74,7 +74,7 @@
 	
 	
 	<cfoutput>
-	<form 	action="#attributes.Action#" 
+	<form 	action="#application.fc.lib.esapi.encodeForHTMLAttribute(attributes.Action)#" 
 			method="#attributes.Method#" 
 			id="#attributes.Name#" 
 			name="#attributes.Name#" 
