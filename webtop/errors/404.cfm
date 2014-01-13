@@ -39,9 +39,9 @@
 			<h1>#application.fapi.getResource('error.404@title','That page could not be found')#</h1>
 			#application.fapi.getResource('error.goback@html','<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>')#
 			
-			<cfif not showError><!--</cfif>
-			#errorHTML#
-			<cfif not showError>--></cfif>
+			<cfif showError>
+				#errorHTML#
+			</cfif>
 		</body>
 	</html>		
 </cfoutput>
