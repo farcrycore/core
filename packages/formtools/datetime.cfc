@@ -53,7 +53,7 @@
 <cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types"> 
 
 	<!--- edit handler options --->
-	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
+	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery)" />
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
 	<cfproperty name="ftDateFormatMask" default="d mmm yyyy" hint="Coldfusion mask for date for edit handler" />
 	<cfproperty name="ftStartYearShift" default="0" hint="Used when ftRenderType is set to dropDown, sets start of year range in select list." />
