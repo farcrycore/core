@@ -9,8 +9,8 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<skin:buildlink objectid="#stObj.objectid#" view="feedRSS" r_url="urlRSSFeed" includeDomain="true" />
-<skin:buildlink objectid="#stObj.objectid#" view="feedAtom" r_url="urlAtomFeed" includeDomain="true" />
+<skin:buildLink objectid="#stObj.objectid#" view="feedRSS" r_url="urlRSSFeed" includeDomain="true" />
+<skin:buildLink objectid="#stObj.objectid#" view="feedAtom" r_url="urlAtomFeed" includeDomain="true" />
 
 
 <cfsavecontent variable="linksText">
@@ -23,11 +23,11 @@
 <skin:htmlhead text="#linksText#" />
 
 <div class="feedRSSTeaser">
-	<skin:buildlink objectid="#stObj.objectid#" view="feedRSS"  />
+	<skin:buildLink objectid="#stObj.objectid#" view="feedRSS"  />
 </div>
 
 <div class="feedAtomTeaser">
-	<skin:buildlink objectid="#stObj.objectid#" view="feedAtom"  />
+	<skin:buildLink objectid="#stObj.objectid#" view="feedAtom"  />
 </div>
 
 <cfsetting enablecfoutputonly="false" />

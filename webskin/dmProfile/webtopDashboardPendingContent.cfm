@@ -31,7 +31,7 @@
 				<cfloop query="qPending">
 					<tr>
 						<td><i class="fa #application.fapi.getContentTypeMetadata(typename="#qPending.typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#qPending.typename#", md="displayname", default="Unknown")#"></i></td>
-						<td><skin:buildlink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qpending.objectid#&typename=#qpending.typename#" bmodal="true" linktext="#qPending.label#" title="Editing: #qPending.label#" /></td>
+						<td><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qpending.objectid#&typename=#qpending.typename#" bmodal="true" linktext="#qPending.label#" title="Editing: #qPending.label#" /></td>
 						<td nowrap="true">#application.fapi.prettyDate(qPending.datetimelastupdated)#</td>
 					</tr>
 				</cfloop>

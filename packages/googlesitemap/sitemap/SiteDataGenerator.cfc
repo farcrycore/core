@@ -171,7 +171,7 @@
 		<cfsavecontent variable="xmlString">
 			<cfloop query="arguments.qNavData">
 				<cfsavecontent variable="strUrl">
-					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNavData.objectid#" externallink="#qNavData.externallink#" />
+					<skin:buildLink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNavData.objectid#" externallink="#qNavData.externallink#" />
 				</cfsavecontent> 
 				<!--- avoiding white space here hence the 1 line of code --->
 				<cfoutput> 
@@ -191,7 +191,7 @@
 		<cfsavecontent variable="xmlString">
 			<cfloop query="arguments.qTypeData">
 				<cfsavecontent variable="strUrl">
-					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qTypeData.objectid#" />
+					<skin:buildLink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qTypeData.objectid#" />
 				</cfsavecontent> 
 				<!--- avoiding white space here hence the 1 line of code --->
 				<cfoutput> 
@@ -251,7 +251,7 @@
 		<cfsavecontent variable="xmlString">
 			<cfloop query="arguments.qNewsData">
 				<cfsavecontent variable="strUrl">
-					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNewsData.objectid#" />
+					<skin:buildLink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNewsData.objectid#" />
 				</cfsavecontent> 
 				<!--- avoiding white space here hence the 1 line of code --->
 				<cfoutput> 
