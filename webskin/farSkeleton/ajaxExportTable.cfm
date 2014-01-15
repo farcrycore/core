@@ -62,7 +62,7 @@
 	<cfcatch type="any">
 		<cfset stResult = structNew()>
 		<cfset stResult.bSuccess = false>
-		<cfset stResult.message = "#cfcatch.message#">
+		<cfset stResult.message = cfcatch>
 		<cfset stResult.bExportComplete = 0>
 
 		<cflog file="farcry-export" text="Error exporting #stTable.name#, #serializeJSON(stResult)#">

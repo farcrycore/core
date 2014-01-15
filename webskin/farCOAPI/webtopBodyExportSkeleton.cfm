@@ -101,7 +101,6 @@
 				<div id="exportTable-wrap">
 					<p>Tables to Export: #arrayLen(stSkeletonExport.exportData.aTables)#</p>
 					<p>DBs to Export: #stSkeletonExport.exportData.lDBTypes#</p>
-				
 					
 					<table class="table table-striped">
 					<cfloop from="1" to="#arrayLen(stSkeletonExport.exportData.aTables)#" index="iTable">
@@ -120,19 +119,26 @@
 								
 									type: "POST",
 									cache: false,
-									url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=farSkeleton&objectid=#stSkeletonExport.objectid#&view=ajaxExportTable&position=#iTable#', 
+									url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=farSkeleton&objectid=#stSkeletonExport.objectid#&view=ajaxExportTable&position=#iTable#&contentType=#stSkeletonExport.exportData.aTables[iTable].name#&bCoapi=#stSkeletonExport.exportData.aTables[iTable].bCoapi#', 
 									
 									beforeSend: function(data){
 										$j('##progress-#iTable#').removeClass('fa-check-square-o').addClass('fa-spinner fa-spin').attr('title','Processing');
 									},
 									success: function(data){;
-										$j('##progress-#iTable#').removeClass('fa-times-circle fa-spinner fa-spin').addClass('fa-check-square-o').css('color','green').attr('title','Success');
+										
 										$j('##response-#iTable#').html(data);
+
+										if (data.BSUCCESS == true){
+											$j('##progress-#iTable#').removeClass('fa-times-circle fa-spinner fa-spin').addClass('fa-check-square-o').css('color','green').attr('title','Success');
+										} else {
+											$j('##progress-#iTable#').removeClass('fa-times-circle fa-spinner fa-spin').addClass('fa-exclamation-triangle').css('color','red').attr('title','Error');
+										}
+
 
 										if (data.BEXPORTCOMPLETE == 1){
 											$j('##btn-export-complete').prop("disabled", false).click();
-										}
-										
+										};
+
 									}, 
 									error: function(data){	
 										$j('##progress-#iTable#').removeClass('fa-times-circle fa-spinner fa-spin').addClass('fa-exclamation-triangle').css('color','red').attr('title','Error');
