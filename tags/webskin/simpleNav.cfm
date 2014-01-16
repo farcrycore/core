@@ -73,8 +73,10 @@
 
 		<!--- find child folders --->
 		<cfif qNav.nRight - qNav.nLeft gt 1 AND qNav.nlevel+1 lt treeMaxLevel>
-			<cfset hasChildren = true>
-			<cfset thisClass = listAppend(thisClass, "#attributes.itemNestedClass#", " ")>
+			<cfif qNav.recordCount gt qNav.currentRow and qNav.nlevel[qNav.currentRow+1] gt qNav.nlevel[qNav.currentRow]>
+				<cfset hasChildren = true>
+				<cfset thisClass = listAppend(thisClass, "#attributes.itemNestedClass#", " ")>
+			</cfif>
 		</cfif>
 		<!--- find active nav item --->
 		<cfif listFindNoCase(lAncestors, qNav.objectid)>
