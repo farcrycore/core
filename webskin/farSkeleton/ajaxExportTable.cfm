@@ -27,6 +27,7 @@
 		<cfloop query="qryTemp">
 			<cfset formattedValues = replaceNoCase(qryTemp.insertValues,'|???|','null','all')>
 			<cfset formattedValues = replaceNoCase(formattedValues,"'","''","all")>
+			<cfset formattedValues = replaceNoCase(formattedValues,"\","\\","all")>
 			<cfset formattedValues = replaceNoCase(formattedValues,"|---|","'","all")>
 			<cfset formattedValues = rereplace(formattedValues,'\{ts ([^}]*)\}','\1','all')>
 			<cfset formattedValues = replaceNoCase(formattedValues,"'NULL'","NULL","all")>
