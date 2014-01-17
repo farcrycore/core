@@ -284,7 +284,6 @@
 		<cfset stSkeleton.exportData.aTables = arrayNew(1)>
 		<cfset stSkeleton.exportData.dbTypes = application.fc.lib.db.getDBTypes()>
 		<cfset stSkeleton.exportData.lDBTypes = "">
-		<cfset stSkeleton.exportData.sqlFilesPath = "#getSQLStagingPath()#">
 
 		<cfloop list="#structKeyList(stSkeleton.exportData.dbTypes)#" index="iDBType">
 			<cfif iDBType NEQ "BaseGateway">
@@ -473,6 +472,82 @@
 
 		<cfreturn "done">
 	</cffunction>
+
+
+	<cffunction name="exportTable" returntype="struct">
+		<cfargument name="stObj">
+		<cfargument name="position">
+
+		<cfset var stResult = structNew()>
+		<cfset var iType = 0>
+		<cfset var iPage = 0>
+		<cfset var stTable = structNew()>
+		<cfset var insertSQL = "">
+		<cfset var qryTemp = queryNew("")>
+		<cfset var formattedValues = "">
+
+		<cftry>
+			<cfset stTable = stObj.exportData.aTables[arguments.position]>
+
+			<!--- create folder under current project for SQL install scripts --->
+			<cfif NOT directoryExists("#getSQLStagingPath()#")>
+				<cfdirectory action="create" directory="#getSQLStagingPath()#" />
+			</cfif>
+
+			<cfloop from="1" to="#arrayLen(stTable.aDeploySQL)#" index="iType">
+				<cffile action="write" file="#getSQLStagingPath()#/DEPLOY-#stTable.aDeploySQL[iType].dbType#_#stTable.name#.sql" output="#stTable.aDeploySQL[iType].sql#" charset="utf-8">
+			</cfloop>
+			
+			<cfloop from="1" to="#arrayLen(stTable.aInsertSQL)#" index="iPage">
+				
+				<cfset insertSQL = stTable.aInsertSQL[iPage]>
+				<cfquery datasource="#application.dsn#" name="qryTemp">
+				#preserveSingleQuotes(insertSQL)#
+				</cfquery>
+				
+				<cfsavecontent variable="insertSQL">
+				<cfloop query="qryTemp">
+					<cfset formattedValues = replaceNoCase(qryTemp.insertValues,'|???|','null','all')>
+					<cfset formattedValues = replaceNoCase(formattedValues,"'","''","all")>
+					<cfset formattedValues = replaceNoCase(formattedValues,"\","\\","all")>
+					<cfset formattedValues = replaceNoCase(formattedValues,"|---|","'","all")>
+					<cfset formattedValues = reReplace(formattedValues,'\{ts ([^}]*)\}','\1','all')>
+					<cfset formattedValues = replaceNoCase(formattedValues,"'NULL'","NULL","all")>
+					<cfoutput>INSERT INTO #stTable.name# (#stTable.insertFieldnames#) VALUES (#formattedValues#);#chr(13)##chr(10)#</cfoutput>
+				</cfloop>
+				</cfsavecontent>
+							   													
+				<cffile action="write" file="#getSQLStagingPath()#/INSERT-#stTable.name#-#iPage#.sql" output="#insertSQL#" charset="utf-8">
+					
+			</cfloop>
+
+			<cfset stTable.bComplete = 1>
+			<cfset setData(stProperties="#stObj#", bSessionOnly="true") />
+
+
+			<!--- RETURN RESULT --->
+			<cfset stResult = structNew()>
+			<cfset stResult.bSuccess = true>
+			<cfset stResult.message = "#arrayLen(stTable.aInsertSQL)# pages generated.">
+			<cfset stResult.name = stTable.name>
+			<cfset stResult.bExportComplete = application.fapi.getContentType("farSkeleton").isExportComplete(stObj.objectid)>
+				
+			
+			<!--- CATCH ANY ERRORS --->
+			<cfcatch type="any">
+				<cfset stResult = structNew()>
+				<cfset stResult.bSuccess = false>
+				<cfset stResult.message = cfcatch>
+				<cfset stResult.bExportComplete = 0>
+
+				<cflog file="farcry-export" text="Error exporting #stTable.name#, #serializeJSON(stResult)#">
+				
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stResult>
+	</cffunction>
+
 
 
 <!--- 
