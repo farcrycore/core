@@ -611,19 +611,13 @@
 			    OR FindNoCase("unique", arguments.aTableColMD[j].TypeName)
 			    OR FindNoCase("xml", arguments.aTableColMD[j].TypeName)
 			     >
-					
 					'|---|' + COALESCE(#arguments.aTableColMD[j].Name#,'') + '|---|'
-					<!--- '|---|' + isNull(#arguments.aTableColMD[j].Name#,'') + '|---|' --->
 				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>
-						'|---|' + COALESCE( CONVERT( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|'
-						<!--- '|---|' + isNull(CONVERT ( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|' --->
+					'|---|' + COALESCE( CONVERT( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|'
 					<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
 					'|---|' + COALESCE( CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21) ,'NULL') + '|---|'
-					<!--- '|---|' + isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21),'NULL') + '|---|' --->
 				<cfelse>
-					<!--- <cfset temp = temp & qryTemp[#arguments.aTableColMD[j].Name#][i] > --->
 					COALESCE( CONVERT( varchar, #arguments.aTableColMD[j].Name#),'|???|')
-					<!--- isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#),'|???|') --->
 				</cfif>
 				
 				<cfif j NEQ ArrayLen(arguments.aTableColMD) >
