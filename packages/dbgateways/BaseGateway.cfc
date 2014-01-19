@@ -833,8 +833,8 @@
 					<!--- '|---|' + isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21),'NULL') + '|---|' --->
 				<cfelse>
 					<!--- <cfset temp = temp & qryTemp[#arguments.aTableColMD[j].Name#][i] > --->
-					COALESCE( CAST( #arguments.aTableColMD[j].Name# as VARCHAR),'|???|')
-					<!--- isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#),'|???|') --->
+					COALESCE( CAST( #arguments.aTableColMD[j].Name# as VARCHAR),'=???=')
+					<!--- isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#),'=???=') --->
 				</cfif>
 				
 				<cfif j NEQ ArrayLen(arguments.aTableColMD) >

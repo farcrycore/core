@@ -387,7 +387,7 @@
 				<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName) OR FindNoCase("time", arguments.aTableColMD[j].TypeName)>
 					'|---|' , COALESCE( DATE_FORMAT(#arguments.aTableColMD[j].Name#, '%Y-%m-%d %H:%i:%s') ,'NULL') , '|---|'
 				<cfelse>
-					COALESCE( CAST( #arguments.aTableColMD[j].Name# as CHAR),'|???|')
+					COALESCE( CAST( #arguments.aTableColMD[j].Name# as CHAR),'=???=')
 				</cfif>
 				
 				<cfif j NEQ ArrayLen(arguments.aTableColMD) >

@@ -617,7 +617,7 @@
 					<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
 					'|---|' + COALESCE( CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21) ,'NULL') + '|---|'
 				<cfelse>
-					COALESCE( CONVERT( varchar, #arguments.aTableColMD[j].Name#),'|???|')
+					COALESCE( CONVERT( varchar, #arguments.aTableColMD[j].Name#),'=???=')
 				</cfif>
 				
 				<cfif j NEQ ArrayLen(arguments.aTableColMD) >

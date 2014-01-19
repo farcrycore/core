@@ -507,7 +507,7 @@
 				
 				<cfsavecontent variable="insertSQL">
 				<cfloop query="qryTemp">
-					<cfset formattedValues = replaceNoCase(qryTemp.insertValues,'|???|','null','all')>
+					<cfset formattedValues = replaceNoCase(qryTemp.insertValues,'=???=','null','all')>
 					<cfset formattedValues = replaceNoCase(formattedValues,"'","''","all")>
 					<cfset formattedValues = replaceNoCase(formattedValues,"\","\\","all")>
 					<cfset formattedValues = replaceNoCase(formattedValues,"|---|","'","all")>
