@@ -98,7 +98,7 @@
 				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" />
 			</menu>
 			<menu id="skeleton" sequence="100" label="Skeleton">
-				<menuitem id="skeletonexport" sequence="10" label="Skeleton Export" typename="farCOAPI" bodyview="webtopBodyExportSkeleton" />
+				<menuitem id="skeletonexport" sequence="10" label="Skeleton Export" typename="farSkeleton" />
 			</menu>
 		</subsection>
 	</section>
