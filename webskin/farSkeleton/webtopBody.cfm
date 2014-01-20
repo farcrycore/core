@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+<cfsetting enablecfoutputonly="true" requesttimeout="999">
 <!--- @@displayname: Export Skeleton --->
 
 <!--- tag libraries --->

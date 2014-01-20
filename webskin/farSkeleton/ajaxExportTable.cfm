@@ -1,4 +1,4 @@
-<cfsetting requesttimeout="999" />
+<cfsetting requesttimeout="999">
 <!--- 
  // export table data 
  - called via AJAX from ./webskin/farCOAPI/webtopBodyExportSkeleton.cfm
