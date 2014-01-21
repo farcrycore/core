@@ -355,13 +355,14 @@
 						AND ( 1=2
 							<cfloop list="#listPrepend(attributes.lFilterFields, "label,title,name")#" index="i">
 								<cfif structKeyExists(PrimaryPackage.stProps, i) AND listFindNoCase("string,nstring,list,uuid", PrimaryPackage.stProps[i].metadata.ftType)>
-									OR #i# LIKE '%#form.q#%'
+									<cfset whereValue = replaceNoCase(trim(lcase(form.q)),"'", "''", "all") />
+									OR lower(#i#) LIKE '%#whereValue#%'
 								</cfif>
 							</cfloop>
 						)
 					</cfif>
 				</cfoutput>
-				
+
 			</cfsavecontent>
 	
 	</cfif>
