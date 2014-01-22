@@ -1168,20 +1168,17 @@
 		<cfargument name="formtool" required="true" type="string" hint="The formtool containing the property" />
 		
 		<cfset var stResult = structNew() />
-		<cfset var stPropMetadata = structNew() />
+		<cfset var stFormtool = structNew() />
 		<cfset var i = "" />
 		
 		<cfif not structKeyExists(application.formtools, arguments.formtool)>
 			<cfset arguments.formtool = "string" />
 		</cfif>	
 		
-		
-		<cfif structKeyExists(application.formtools[arguments.formtool], "stProps")>
-
-			<cfloop collection="#application.formtools['#arguments.formtool#'].stProps#" item="i">
-				<cfset stPropMetadata = application.formtools['#arguments.formtool#'].stProps['#i#'].METADATA />
-
-				<cfset stResult[i] = stPropMetadata.default />
+		<cfset stFormtool = application.formtools[arguments.formtool] />
+		<cfif structKeyExists(stFormtool, "stProps")>
+			<cfloop collection="#stFormtool.stProps#" item="i">
+				<cfset stResult[i] = stFormtool.stProps[i].METADATA.default />
 			</cfloop>
 		</cfif>
 		
