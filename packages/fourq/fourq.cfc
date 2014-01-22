@@ -54,6 +54,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 <cfcomponent displayname="FourQ COAPI" extends="farcry.core.packages.schema.schema" bAbstract="true">
 
+	<cfset variables.typePath = "">
+	<cfset variables.typeName = "">
+
 	<cffunction name="getView" access="public" output="false" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="string" default="" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
@@ -1134,20 +1137,26 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfreturn result />
 	</cffunction>
-	
+
 	<!---*************  METADATA METHODS  *************--->
 	<cffunction name="getTypePath" access="public" returntype="string" output="false">
-		<cfset var stMD = getMetadata(this) />
-		
-		<cfreturn stMD.fullname />
+		<cfset var stMD = "" />
+		<cfif NOT len(variables.typePath)>
+			<cfset stMD = getMetadata(this) />
+			<cfset variables.typePath = stMD.fullname />
+		</cfif>
+		<cfreturn variables.typePath />
 	</cffunction>
-	
+
 	<cffunction name="getTypeName" access="public" returntype="string" output="false">
-		<cfset var stMD = getMetadata(this) />
-		
-		<cfreturn listlast(stMD.fullname,'.') />
+		<cfset var stMD = "" />
+		<cfif NOT len(variables.typeName)>
+			<cfset stMD = getMetadata(this) />
+			<cfset variables.typeName = listlast(stMD.fullname,'.') />
+		</cfif>
+		<cfreturn variables.typeName />
 	</cffunction>
-	
+
 	<!--- private functions --->
 	<cffunction name="mergeWebskins" access="private" hint="Merge webskin result queries, skipping duplicates. Non destructive." output="false" returntype="query">
 		<cfargument name="query1" type="query" required="true" />
