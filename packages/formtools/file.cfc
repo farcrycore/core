@@ -352,6 +352,7 @@
 		<cfset var newFileName = "" />
 		<cfset var stObj = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
 		<cfset var filepermission = 0 />
+		<cfset var objStatus = "">
 			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
@@ -366,6 +367,9 @@
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="html">
+				<cfif structKeyExists(stObj,"status")>
+					<cfset objStatus = stObj.status>
+				</cfif>
 				<cfset stResult = handleFilePost(
 					objectid=arguments.objectid,
 					typename=arguments.typename,
@@ -373,7 +377,7 @@
 					uploadField="#stMetadata.FormFieldPrefix##stMetadata.Name#NEW",
 					destination=arguments.stMetadata.ftDestination,
 					secure=arguments.stMetadata.ftSecure,
-					status=iif(structkeyexists(stObj,"status"),"stObj.status",""""),
+					status=objStatus,
 					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
 					sizeLimit=arguments.stMetadata.ftMaxsize,
 					bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive),
