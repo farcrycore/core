@@ -89,50 +89,27 @@ It just ignores the inner ones.
 		<cfelse>
 			<cfset attributes.Validation = 0>
 		</cfif>
-		
+
 		<!--- Keep the form information available in the request scope --->
-		<cfset Request.farcryForm = "#StructNew()#" />
-		<cfset Request.farcryForm.Name = "#attributes.Name#" />
-		<cfset Request.farcryForm.Target = "#attributes.Target#" />
-		<cfset Request.farcryForm.Action = "#attributes.Action#" />
-		<cfset Request.farcryForm.Method = "#attributes.Method#" />
-		<cfset Request.farcryForm.onSubmit = "#attributes.onSubmit#" />
-		<cfset Request.farcryForm.Validation = "#attributes.Validation#" />
-		<cfset Request.farcryForm.stObjects = "#StructNew()#" />
-		<cfset Request.farcryForm.bAjaxSubmission = "#attributes.bAjaxSubmission#" />
-		<cfset Request.farcryForm.lFarcryObjectsRendered = "" />	
-		<cfset Request.farcryForm.defaultAction = "#attributes.defaultAction#" />	
-		<cfset Request.farcryForm.autoSave = "" />	
-		
+		<cfset Request.farcryForm = structNew()>
+		<cfset Request.farcryForm.Name = attributes.Name>
+		<cfset Request.farcryForm.Target = attributes.Target>
+		<cfset Request.farcryForm.Action = attributes.Action>
+		<cfset Request.farcryForm.Method = attributes.Method>
+		<cfset Request.farcryForm.onSubmit = attributes.onSubmit>
+		<cfset Request.farcryForm.Validation = attributes.Validation>
+		<cfset Request.farcryForm.stObjects = structNew()>
+		<cfset Request.farcryForm.bAjaxSubmission = attributes.bAjaxSubmission>
+		<cfset Request.farcryForm.lFarcryObjectsRendered = "">	
+		<cfset Request.farcryForm.defaultAction = attributes.defaultAction>	
+		<cfset Request.farcryForm.autoSave = "">	
+
 
 		<!--- Add form protection --->
-		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
-		<cfparam name="session.stFarCryFormSpamProtection['#attributes.Name#']" default="#structNew()#" />
-			
-		
-		<!--- <cfoutput>
-			
-			<!--- Setup the ajax wrapper if this is the first render of the form. When the ajax submission is made, the returned HTML is placed in this div. --->
-			<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
-				<div id="#attributes.Name#formwrap" class="ajaxformwrap">				
-			</cfif>
-			
-			<form 	action="#attributes.Action#" 
-					method="#attributes.Method#" 
-					id="#attributes.Name#" 
-					name="#attributes.Name#" 
-					<cfif len(attributes.Target)> target="#attributes.Target#"</cfif> 
-					enctype="multipart/form-data" 
-					class="#attributes.class#"  
-					style="#attributes.style#" >
-			
-			<cfif attributes.bAjaxSubmission>
-				<!--- We use the hidden field to tell the submission that we do not need to include the wrap. --->
-				<input type="hidden" name="farcryformajaxsubmission" value="1" #tagEnding#>
-			</cfif>
-					
-		</cfoutput>  --->
-	
+		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#">
+		<cfparam name="session.stFarCryFormSpamProtection['#attributes.Name#']" default="#structNew()#">
+
+
 	</cfif>
 	
 	<cfif thistag.ExecutionMode EQ "End" and isDefined("Variables.CorrectForm")>
