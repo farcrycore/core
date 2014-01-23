@@ -50,9 +50,9 @@
 	<cfset var aVariables = arraynew(1) />
 	
 	<cfif stCoreVersion.svndate eq "">
-		<cfreturn application.fapi.getResource("webtop@copyright","You are currently running version <strong>{1}</strong> of <a href='http://www.farcrycore.org' target='_blank'>FarCry Core</a>.","#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch#") />
+		<cfreturn application.fapi.getResource("webtop@copyright","You are currently running version <strong>{1}</strong> of <a href='http://www.farcrycore.org' target='_blank'>FarCry Core</a>.","#stCoreVersion.major#.#stCoreVersion.minor#.#stCoreVersion.patch#") />
 	<cfelse>
-		<cfset arrayappend(aVariables,"#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch#") />
+		<cfset arrayappend(aVariables,"#stCoreVersion.major#.#stCoreVersion.minor#.#stCoreVersion.patch#") />
 		<cfset arrayappend(aVariables,stCoreVersion.svndate) />
 		<cfreturn application.fapi.getResource("webtop@copyrightwithsvn","You are currently running version <strong>{1} from SVN on {2}</strong> of <a href='http://www.farcrycore.org' target='_blank'>FarCry Core</a>.",aVariables) />
 	</cfif>
