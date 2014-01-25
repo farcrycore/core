@@ -857,12 +857,16 @@
 		</cfif>
 		
 		
-		<!--- Strongest match: the exact FU is in database --->
-		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
-			SELECT		farFU.objectid as objectid,farFU.friendlyURL as friendlyURL,refobjects.typename as typename
-			FROM 		farFU INNER JOIN refObjects on farFu.refobjectid = refObjects.objectid
-			WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
-			ORDER BY 	farFU.bDefault DESC, farFU.fuStatus DESC
+		<!--- Strongest match: the exact FU is in database ---> 
+		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet"> 
+		SELECT
+			farFU.objectid as objectid,farFU.friendlyURL as friendlyURL,refObjects.typename as typename 
+		FROM 
+			farFU INNER JOIN refObjects on farFU.refobjectid = refObjects.objectid 
+		WHERE
+			farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" /> 
+		ORDER BY 
+			farFU.bDefault DESC, farFU.fuStatus DESC 
 		</cfquery>
 		
 		<cfif stLocal.qGet.recordcount>
