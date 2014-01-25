@@ -64,7 +64,7 @@
 	</cfsavecontent>
 </ft:processForm>
 
-<ft:form action="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#">
+<ft:form>
 	
 	<cfoutput>
 		<div id="tabs">	
