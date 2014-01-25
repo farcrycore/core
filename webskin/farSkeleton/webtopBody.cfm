@@ -68,6 +68,13 @@
 <cfoutput>
 <h1>Skeleton Export Utility</h1>
 
+<style type="text/css">
+.controls .multiField label {
+	display: inline;
+	line-height: 1.8;
+}
+</style>
+
 <cfswitch expression="#exportState#">
 
 	<cfcase value="exportdata">
