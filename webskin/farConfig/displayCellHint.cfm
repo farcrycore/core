@@ -1,15 +1,8 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Config hint --->
 
-<cfset formname = getForm(key=stObj.configkey) />
-<cfset hint = "" />
-
-<cfif len(formname) and structkeyexists(application.stCOAPI[formname],"hint")>
-	<cfset hint = application.stCOAPI[formname].hint />
+<cfif len(stObj.configtypename) and structkeyexists(application.stCOAPI[stObj.configtypename],"hint")>
+	<cfoutput>#application.stCOAPI[stObj.configtypename].hint#</cfoutput>
 </cfif>
 
-<cfoutput>
-	#hint#
-</cfoutput>
-
-<cfsetting enablecfoutputonly="false" />
+<cfsetting enablecfoutputonly="false">

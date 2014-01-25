@@ -26,11 +26,10 @@ ACTION
 			<cfset stConfig = oConfig.getData(objectid=thisconfig) />
 			<cfset oConfig.delete(objectid=thisconfig) />
 			
-			<cfset thisform = oConfig.getForm(key=stConfig.configkey) />
-			<cfif len(thisform)>
+			<cfif len(stConfig.configtypename)>
 				<cfset application.config[stConfig.configkey] = oConfig.getConfig(key=stConfig.configkey) />
-				<cfif structkeyexists(application.stCOAPI[thisform],"displayname")>
-					<cfset stConfig.configkey = application.stCOAPI[thisform].displayname />
+				<cfif structkeyexists(application.stCOAPI[stConfig.configtypename],"displayname")>
+					<cfset stConfig.configkey = application.stCOAPI[stConfig.configtypename].displayname />
 				</cfif>
 				<skin:bubble title="Configuration reset" message="#stconfig.configkey# has been reset" tags="farConfig,info" />
 			<cfelse>

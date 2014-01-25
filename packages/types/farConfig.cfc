@@ -20,23 +20,26 @@
 type properties
 ----------------------------------------------->
 	<cfproperty name="configkey" type="string" default="" hint="The variable used in the config struct" ftLabel="Config" ftType="string" ftValidation="required" />
+	<cfproperty name="configtypename" type="string" default="" ftLabel="Config Typename" ftType="string" ftValidation="required" />
 	<cfproperty ftSeq="1" ftFieldSet="Config" name="configdata" type="longchar" default="" hint="The config values encoded in JSON" ftLabel="Config" ftType="longchar" ftShowLabel="false" />
 
 <!---------------------------------------------- 
 object methods
 ----------------------------------------------->
 	<cffunction name="getForm" access="public" returntype="string" description="Returns the name of the form for the given key" output="false">
-		<cfargument name="key" type="string" required="true" hint="The key" />
+		<cfargument name="key" type="string" required="true" hint="The key">
 		
-		<cfset var thisform = "" />
+		<cfset var thisform = "">
 		
 		<cfloop collection="#application.stCOAPI#" item="thisform">
-			<cfif structkeyexists(application.stCOAPI[thisform],"key") and application.stCOAPI[thisform].key eq arguments.key>
-				<cfreturn thisform />
+			<cfif left(thisform,6) eq "config">
+				<cfif structkeyexists(application.stCOAPI[thisform],"key") and application.stCOAPI[thisform].key eq arguments.key>
+					<cfreturn thisform>
+				</cfif>
 			</cfif>
 		</cfloop>
-		
-		<cfreturn "" />
+
+		<cfreturn "">
 	</cffunction>
 	
 	<cffunction name="ftEditConfigData" access="public" returntype="string" description="Provides edit functionality for config data" output="false">
@@ -220,10 +223,9 @@ object methods
 		<cfargument name="stProperties" required="true" type="struct">
 
 		<cfset var newLabel = stProperties.configkey>
-		<cfset var configTypename = getForm(key=stProperties.configkey)>
 
-		<cfif len(configTypename) and isDefined("application.stCOAPI.#configTypename#.displayname")>
-			<cfset newLabel = trim(application.stCOAPI[configTypename].displayname)>			
+		<cfif len(stProperties.configtypename) and isDefined("application.stCOAPI.#stProperties.configtypename#.displayname")>
+			<cfset newLabel = trim(application.stCOAPI[stProperties.configtypename].displayname)>			
 		</cfif>
 		
 		<cfreturn newLabel>
@@ -283,6 +285,10 @@ object methods
 					</cfif>
 				</cfloop>
 				<cfset stResult.typename = thisform />
+				<!--- Ensure the config typename is set in the farConfig record for faster lookups --->
+				<cfif NOT len(qConfig.configtypename)>
+					<cfset bChanged = true />
+				</cfif>
 			</cfif>
 		</cfloop>
 		
@@ -298,6 +304,7 @@ object methods
 			</cfif>
 			<cfset stObj.typename = "farConfig" />
 			<cfset stObj.configkey = arguments.key />
+			<cfset stObj.configtypename = stResult.typename />
 			<cfset stObj.label = autoSetLabel(stProperties=stObj)>				
 			<cfset stObj.datetimecreated = now() />
 				
@@ -344,13 +351,12 @@ object methods
 		
 		<cfset var config = "" />
 		<cfset var thisprop = "" />
-		<cfset var configTypename = getForm(arguments.stProperties.configKey) />
 		
 		<cfset config = deserializeJSON(arguments.stProperties.configdata)>
 		
 		<!--- run the config object's process method --->
-		<cfif len(configTypename) and structkeyexists(application.stCOAPI,configTypename)>
-			<cfset config = application.fapi.getContentType(configTypename).process(fields = config) />
+		<cfif len(stProperties.configtypename) and structkeyexists(application.stCOAPI,stProperties.configtypename)>
+			<cfset config = application.fapi.getContentType(stProperties.configtypename).process(fields = config) />
 		</cfif>
 		
 		<cfset application.config[arguments.stProperties.configkey] = duplicate(config) />
