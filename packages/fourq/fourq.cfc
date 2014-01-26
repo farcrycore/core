@@ -760,6 +760,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		
+		<cfset var bRefCreated = false>
 		<cfset var stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- only create a record in refObjects if one doesnt already exist --->
@@ -952,7 +953,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif not stResult.bSuccess and stResult.message eq "Object does not exist">
 			   		<cfset structappend(arguments.stProperties,getDefaultObject(arguments.stProperties.objectid,arguments.stProperties.typename),false) />
 					<cfset stResult = application.fc.lib.db.createData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	
-					<cfset stProperties.objectid = stResult.objectid />
+					<cfset arguments.stProperties.objectid = stResult.objectid />
 				</cfif>
 		   		
 			   	<!--- Make sure we remove the object from the TempObjectStore if we update something --->
@@ -981,6 +982,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var aRelated = arraynew(1) />
 		<cfset var stRelated = structnew() />
 		<cfset var foundOtherJoin = false />
+		<cfset var qRelated = queryNew("") />
+
 
 
 		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid,typename=arguments.stProperties.typename) />
@@ -988,7 +991,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!------------------------------------------------------------------ 
 		IF THIS OBJECT HAS A STATUS PROPERTY SUBMITTED THEN CHANGE STATUS 
 		--------------------------------------------------------------->
-		<cfif structKeyExists(arguments.stProperties, "status") AND structKeyExists(application.stcoapi[stProperties.typename].stprops, "status")>
+		<cfif structKeyExists(arguments.stProperties, "status") AND structKeyExists(application.stcoapi[(arguments.stProperties.typename].stprops, "status")>
 						
 			<cfif arguments.stProperties.status EQ "approved">
 				<!--- IF CHANGING TO APPROVED, THEN WE WANT TO APPROVE ALL RELATED CONTENT --->
@@ -1005,7 +1008,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset stObject = getData(objectid=arguments.stProperties.objectid) />
 				
 				<!--- Loop through all joins in this object searching for related content --->
-				<cfloop list="#structKeyList(application.stcoapi[stProperties.typename].stprops)#" index="thisfield">
+				<cfloop list="#structKeyList(application.stcoapi[(arguments.stProperties.typename].stprops)#" index="thisfield">
 					
 					<!--- Array properties --->
 					<cfif application.stCOAPI[stObject.typename].stprops[thisfield].metadata.type EQ "array"
@@ -1077,7 +1080,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						
 						<cfif aRelated[i].status neq changeStatus>
 							<cfset aRelated[i].status = changeStatus />
-							<cfset stResult = application.fapi.setData(stProperties=aRelated[i],auditNote="Status changed to #changeStatus#") />
+							<cfset application.fapi.setData(stProperties=aRelated[i],auditNote="Status changed to #changeStatus#") />
 						</cfif>
 					</cfif>
 				</cfloop>
@@ -1086,7 +1089,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 		</cfif>
 		
-		<cfreturn stProperties />
+		<cfreturn arguments.stProperties />
 	</cffunction>
 
 	
@@ -1102,6 +1105,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stProps = structNew() />
 		<cfset var prop = "" />
 		<cfset var tablename = "" />
+		<cfset var qdeleteRefData = queryNew("") />
+		<cfset var qdeleteFUs = queryNew("") />
 		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.message = "Object deleted successfully">
