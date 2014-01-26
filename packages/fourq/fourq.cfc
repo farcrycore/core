@@ -975,7 +975,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset var changeStatus = "" />
 		<cfset var stVersionRules = "" />
-		<cfset var stObject = getData(objectid=arguments.stProperties.objectid) />
+		<cfset var stObject = structnew() />
 		<cfset var i = 0 />
 		<cfset var j = 0 />
 		<cfset var thisfield = "" />
