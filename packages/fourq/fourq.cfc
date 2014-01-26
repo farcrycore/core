@@ -991,7 +991,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!------------------------------------------------------------------ 
 		IF THIS OBJECT HAS A STATUS PROPERTY SUBMITTED THEN CHANGE STATUS 
 		--------------------------------------------------------------->
-		<cfif structKeyExists(arguments.stProperties, "status") AND structKeyExists(application.stcoapi[(arguments.stProperties.typename].stprops, "status")>
+		<cfif structKeyExists(arguments.stProperties, "status") AND structKeyExists(application.stcoapi[arguments.stProperties.typename].stprops, "status")>
 						
 			<cfif arguments.stProperties.status EQ "approved">
 				<!--- IF CHANGING TO APPROVED, THEN WE WANT TO APPROVE ALL RELATED CONTENT --->
@@ -1008,7 +1008,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset stObject = getData(objectid=arguments.stProperties.objectid) />
 				
 				<!--- Loop through all joins in this object searching for related content --->
-				<cfloop list="#structKeyList(application.stcoapi[(arguments.stProperties.typename].stprops)#" index="thisfield">
+				<cfloop list="#structKeyList(application.stcoapi[arguments.stProperties.typename].stprops)#" index="thisfield">
 					
 					<!--- Array properties --->
 					<cfif application.stCOAPI[stObject.typename].stprops[thisfield].metadata.type EQ "array"
