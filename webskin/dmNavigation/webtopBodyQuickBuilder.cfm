@@ -1,20 +1,20 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
-    This file is part of FarCry.
+	This file is part of FarCry.
 
-    FarCry is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	FarCry is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    FarCry is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	FarCry is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!---
 || VERSION CONTROL ||
@@ -45,7 +45,7 @@ $out:$
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-	    
+		
 <!--- character to indicate levels --->
 <cfset levelToken = "-" />
 
@@ -57,160 +57,160 @@ $out:$
 		<cfparam name="form.makeHTML" default="" />
 		<cfparam name="form.displayMethod" default="" />
 		
-	    <cfscript>
-		    aliasDelimiter = "||";
-	        startPoint = form.startPoint;
-	        if (len(form.makeHTML))
-	            displayMethod = form.displayMethod;
+		<cfscript>
+			aliasDelimiter = "||";
+			startPoint = form.startPoint;
+			if (len(form.makeHTML))
+				displayMethod = form.displayMethod;
 	
-	        createdBy = application.security.getCurrentUserID();
-	        status = form.status;
+			createdBy = application.security.getCurrentUserID();
+			status = "draft";
 	
-	        structure = form.structure;
+			structure = form.structure;
 	
-	        lines = listToArray(structure, "#chr(13)##chr(10)#");
+			lines = listToArray(structure, "#chr(13)##chr(10)#");
 	
-	        // setup items with their level and objectids
-	        items = arrayNew(1);
-	        lastlevel = 1;
+			// setup items with their level and objectids
+			items = arrayNew(1);
+			lastlevel = 1;
 	
-	        for (i = 1; i lte arraylen(lines); i = i + 1) {
-	            prefix = spanIncluding(trim(lines[i]), levelToken);
-	            prefixLen = len(prefix);
+			for (i = 1; i lte arraylen(lines); i = i + 1) {
+				prefix = spanIncluding(trim(lines[i]), levelToken);
+				prefixLen = len(prefix);
 	
-	            line = trim(lines[i]);
-	            lineLen = len(line);
+				line = trim(lines[i]);
+				lineLen = len(line);
 	
-	            level = prefixLen + 1;
-	            if (level gt lastlevel)
-	                level = lastlevel + 1;
-	            title = trim(right(lines[i], lineLen - prefixLen));
+				level = prefixLen + 1;
+				if (level gt lastlevel)
+					level = lastlevel + 1;
+				title = trim(right(lines[i], lineLen - prefixLen));
 	
-	            if (len(title) gt 0) {
-	                item = structNew();
-	                //item.title = ReplaceNoCase(title, "'", "''", "ALL");
-	                item.title = listFirst(title,aliasDelimiter);
-	                if(listLen(title,aliasDelimiter) eq 2){
-	                	item.navAlias = lcase(replace(trim(listLast(title,aliasDelimiter))," ","_","ALL"));
-	                }
-	                else item.navAlias = "";
-	               
-	                item.level = level;
-	                item.objectid = application.fc.utils.createJavaUUID();
-	                item.parentid = '';
-	                arrayAppend(items, item);
-	                lastlevel = item.level;
-	            }
-	        }
+				if (len(title) gt 0) {
+					item = structNew();
+					//item.title = ReplaceNoCase(title, "'", "''", "ALL");
+					item.title = listFirst(title,aliasDelimiter);
+					if(listLen(title,aliasDelimiter) eq 2){
+						item.navAlias = lcase(replace(trim(listLast(title,aliasDelimiter))," ","_","ALL"));
+					}
+					else item.navAlias = "";
+				   
+					item.level = level;
+					item.objectid = application.fc.utils.createJavaUUID();
+					item.parentid = '';
+					arrayAppend(items, item);
+					lastlevel = item.level;
+				}
+			}
 	
-	        parentstack = arrayNew(1);
-	        navstack = arrayNew(1);
-	        arrayAppend(parentstack, startPoint);
+			parentstack = arrayNew(1);
+			navstack = arrayNew(1);
+			arrayAppend(parentstack, startPoint);
 	
-	        // now figure out each item's parent node
-	        lastlevel = 0;
-	        for (i = 1; i lte arraylen(items); i = i + 1) {
-	            if (items[i].level lt lastlevel) {
-	                diff = lastlevel - items[i].level;
-	                for (j = 0; j lte diff; j = j + 1) {
-	                    arrayDeleteAt(parentstack, arraylen(parentstack));
-	                    arrayDeleteAt(navstack, arraylen(navstack));
-	                }
-	            }
-	            else if (items[i].level eq lastlevel) {
-	                arrayDeleteAt(parentstack, arraylen(parentstack));
-	                arrayDeleteAt(navstack, arraylen(navstack));
-	            }
+			// now figure out each item's parent node
+			lastlevel = 0;
+			for (i = 1; i lte arraylen(items); i = i + 1) {
+				if (items[i].level lt lastlevel) {
+					diff = lastlevel - items[i].level;
+					for (j = 0; j lte diff; j = j + 1) {
+						arrayDeleteAt(parentstack, arraylen(parentstack));
+						arrayDeleteAt(navstack, arraylen(navstack));
+					}
+				}
+				else if (items[i].level eq lastlevel) {
+					arrayDeleteAt(parentstack, arraylen(parentstack));
+					arrayDeleteAt(navstack, arraylen(navstack));
+				}
 	
-	            items[i].parentid = parentstack[arraylen(parentstack)];
+				items[i].parentid = parentstack[arraylen(parentstack)];
 	
-	            arrayAppend(parentstack, items[i].objectid);
+				arrayAppend(parentstack, items[i].objectid);
 	
-	            navtitle = lcase(rereplacenocase(items[i].title, "\W+", "_", "all"));
-	            arrayAppend(navstack, rereplace(navtitle, "_+", "_", "all"));
+				navtitle = lcase(rereplacenocase(items[i].title, "\W+", "_", "all"));
+				arrayAppend(navstack, rereplace(navtitle, "_+", "_", "all"));
 	
-	            if(items[i].navAlias neq ""){
-	            	items[i].lNavIDAlias = items[i].navAlias;
-	            }
-	            else
-	                items[i].lNavIDAlias = '';
+				if(items[i].navAlias neq ""){
+					items[i].lNavIDAlias = items[i].navAlias;
+				}
+				else
+					items[i].lNavIDAlias = '';
 	
-	            lastlevel = items[i].level;
-	        }
+				lastlevel = items[i].level;
+			}
 			
 		
-	        htmlItems = arrayNew(1);
+			htmlItems = arrayNew(1);
 	
-	        // now finish setting up the structure of each item
-	        for (i = 1; i lte arraylen(items); i = i + 1) {
-	            items[i].status = status;
-	            items[i].ExternalLink = '';
-	            items[i].target = '';
-	            items[i].options = '';
-	            items[i].label = items[i].title;
-	            items[i].createdby = createdBy;
-	            items[i].datetimecreated = now();
-	            items[i].datetimelastupdated = now();
-	            items[i].lastupdatedby = createdBy;
+			// now finish setting up the structure of each item
+			for (i = 1; i lte arraylen(items); i = i + 1) {
+				items[i].status = status;
+				items[i].ExternalLink = '';
+				items[i].target = '';
+				items[i].options = '';
+				items[i].label = items[i].title;
+				items[i].createdby = createdBy;
+				items[i].datetimecreated = now();
+				items[i].datetimelastupdated = now();
+				items[i].lastupdatedby = createdBy;
 	
-	            if (len(form.makeHtml)) {
-	                htmlItem = structNew();
-	                htmlItem.aObjectIDs = arrayNew(1);
-	                htmlItem.aRelatedIDs = arrayNew(1);
-	                htmlItem.aTeaserImageIDs = arrayNew(1);
-	                htmlItem.body = "";
-	                htmlItem.createdBy = createdBy;
-	                htmlItem.datetimecreated = now();
-	                htmlItem.datetimelastupdated = now();
-	                htmlItem.displayMethod = displayMethod;
-	                htmlItem.title = items[i].title;
-	                htmlItem.label = htmlItem.title;
-	                htmlItem.lastUpdatedBy = createdBy;
-	                htmlItem.metaKeywords = "";
-	                htmlItem.objectID = application.fc.utils.createJavaUUID();
-	                htmlItem.status = status;
-	                htmlItem.teaser = "";
-	                htmlItem.typeName = form.makeHtml;
-	                htmlItem.versionID = "";
-	                htmlItem.extendedMetaData = "";
+				if (len(form.makeHtml)) {
+					htmlItem = structNew();
+					htmlItem.aObjectIDs = arrayNew(1);
+					htmlItem.aRelatedIDs = arrayNew(1);
+					htmlItem.aTeaserImageIDs = arrayNew(1);
+					htmlItem.body = "";
+					htmlItem.createdBy = createdBy;
+					htmlItem.datetimecreated = now();
+					htmlItem.datetimelastupdated = now();
+					htmlItem.displayMethod = displayMethod;
+					htmlItem.title = items[i].title;
+					htmlItem.label = htmlItem.title;
+					htmlItem.lastUpdatedBy = createdBy;
+					htmlItem.metaKeywords = "";
+					htmlItem.objectID = application.fc.utils.createJavaUUID();
+					htmlItem.status = status;
+					htmlItem.teaser = "";
+					htmlItem.typeName = form.makeHtml;
+					htmlItem.versionID = "";
+					htmlItem.extendedMetaData = "";
 	
-	                arrayAppend(htmlItems, htmlItem);
+					arrayAppend(htmlItems, htmlItem);
 	
-	                items[i].aObjectIDs = arrayNew(1);
-	                items[i].aObjectIDs[1] = htmlItem.objectID;
-	            }
+					items[i].aObjectIDs = arrayNew(1);
+					items[i].aObjectIDs[1] = htmlItem.objectID;
+				}
 	
-	            structDelete(items[i], "level");
-	        }
-	    </cfscript>
+				structDelete(items[i], "level");
+			}
+		</cfscript>
 
 		
 	
-	    <cfloop index="i" from="1" to="#arrayLen(htmlItems)#">
-	        <q4:contentobjectcreate typename="#application.types[htmlItems[i].typeName].typePath#" stProperties="#htmlItems[i]#" bAudit="false">
+		<cfloop index="i" from="1" to="#arrayLen(htmlItems)#">
+			<q4:contentobjectcreate typename="#application.types[htmlItems[i].typeName].typePath#" stProperties="#htmlItems[i]#" bAudit="false">
 		</cfloop>
 	
-	    <cfscript>
-	        o_dmNav = createObject("component", application.types.dmNavigation.typePath);
-	        o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree");
+		<cfscript>
+			o_dmNav = createObject("component", application.types.dmNavigation.typePath);
+			o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree");
 	
-	        for (i = 1; i lte arraylen(items); i = i + 1) {
-	            o_dmNav.createData(dsn=application.dsn,stProperties=items[i],bAudit=false);
-	            o_farCryTree.setYoungest(dsn=application.dsn,parentID=items[i].parentID,objectID=items[i].objectID,objectName=items[i].title,typeName='dmNavigation');
-	        }
-	    </cfscript>
+			for (i = 1; i lte arraylen(items); i = i + 1) {
+				o_dmNav.createData(dsn=application.dsn,stProperties=items[i],bAudit=false);
+				o_farCryTree.setYoungest(dsn=application.dsn,parentID=items[i].parentID,objectID=items[i].objectID,objectName=items[i].title,typeName='dmNavigation');
+			}
+		</cfscript>
 	
 		<skin:bubble title="Navigation Tree Quick Builder" sticky="true" tags="quickbuilder,info">
-		    <cfoutput>
-			    #arrayLen(items)# 
+			<cfoutput>
+				#arrayLen(items)# 
 				#lcase(application.fapi.getContentTypeMetadata('dmNavigation', 'displayName', 'navigation'))# 
 				#application.fapi.getResource('quickbuilder.labels.contentItemsCreated@text', 'content item(s) have been created')#
 				<!---	<cfset subS=listToArray('#arrayLen(items)#,"dmNavigation"')>
 					#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1} <strong>{2}</strong> content items")#
 					<cfset subS=listToArray('#arrayLen(htmlItems)#,"dmHTML"')>
-		          	#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1} <strong>{2}</strong> content items")#
-		        --->
-		    </cfoutput>
+					#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1} <strong>{2}</strong> content items")#
+				--->
+			</cfoutput>
 		</skin:bubble>
 	</ft:processForm>
 	
@@ -222,13 +222,13 @@ $out:$
 		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="jquery-autoresize" />
 		
-	    <cfset o = createObject("component", "#application.packagepath#.farcry.tree") />
-	    <cfset qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root) />
+		<cfset o = createObject("component", "#application.packagepath#.farcry.tree") />
+		<cfset qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root) />
 		
 		
 		<ft:form>
 		
-			<cfoutput><h1>#application.rb.getResource("sitetree.headings.navTreeQuickBuilder@text","Navigation Tree Quick Builder")#</h1></cfoutput>
+			<cfoutput><h1><i class="fa fa-sitemap"></i> #application.rb.getResource("sitetree.headings.navTreeQuickBuilder@text","Navigation Tree Quick Builder")#</h1></cfoutput>
 		
 			
 			<ft:fieldset>
@@ -266,7 +266,7 @@ $out:$
 				<skin:htmlHead>
 				<cfoutput>
 					<script type="application/javascript">
-                	function getDisplayMethod() {
+					function getDisplayMethod() {
 						$j.ajax({
 						   type: "POST",
 						   url: '#application.url.farcry#/facade/quickBuilder.cfc?method=listTemplates',
@@ -274,15 +274,13 @@ $out:$
 						   cache: false,
 						   timeout: 10000,
 						   success: function(msg){
-						   		$j('##displayMethods').html(msg);			     	
+								$j('##displayMethods').html(msg);			     	
 						   }
 						});
 					}
 					</script>
-                </cfoutput>
+				</cfoutput>
 				</skin:htmlHead>
-				
-				
 				
 				
 				<ft:field label="#application.rb.getResource('quickbuilder.labels.createStructureWithin@label','Create structure within')#">
@@ -302,22 +300,6 @@ $out:$
 					</ft:fieldHint>
 				</ft:field>
 				
-				<ft:field label="#application.rb.getResource('workflow.labels.status@label','Status')#">
-					<cfoutput>
-	                	<select name="status" id="status">
-							<option value="draft">#application.rb.getResource("workflow.constants.draft@label","Draft")#</option>
-							<option value="approved">#application.rb.getResource("workflow.constants.approved@label","Approved")#</option>	            
-						</select>
-	                </cfoutput>
-					
-					<ft:fieldHint>
-						<cfoutput>
-						Would you like the items you create to be set as draft or approved?
-						</cfoutput>
-					</ft:fieldHint>
-				</ft:field>
-			
-				
 				
 				<sec:CheckPermission permission="Create" objectid="#application.navid.home#">
 					<ft:field label="Auto Create Children">
@@ -334,7 +316,7 @@ $out:$
 						<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
 						<cfif ArrayLen(aTypesUseInTree)>
 							<cfoutput>
-                            	
+								
 									<table>
 									<tr>
 										<td style="width:100px;">Type: </td>
@@ -355,7 +337,7 @@ $out:$
 									</tr>
 									</table>
 								
-                            </cfoutput>
+							</cfoutput>
 						</cfif>
 						
 						<ft:fieldHint>
