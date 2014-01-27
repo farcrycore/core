@@ -11,6 +11,9 @@
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
+
+<cfset errormsg = "Password reset failed">
+
 <ft:processForm action="Reset Password">
 	<!--- check user again --->
 	<cfif StructKeyExists(session,"resetPWUserID")
@@ -19,7 +22,7 @@
 		>
 		
 		<ft:validateFormObjects typename="farUser" objectid="#session.resetPWUserID#" />
-		
+
 		<cfif request.stFarcryFormValidation.bSuccess>
 			<ft:processFormObjects typename="farUser" r_stProperties="stProperties">
 				<cfif structKeyExists(stProperties, "password")>
@@ -36,6 +39,13 @@
 			</ft:processFormObjects>
 		<cfelse>
 			<cfset request.error = true />
+			<cfset errormsg = "Your passwords did not match. Please try again.">
+			<cfif structKeyExists(request.stFarcryFormValidation, session.resetPWUserID)>
+				<cfset errorObj = request.stFarcryFormValidation[session.resetPWUserID]>
+				<cfif isDefined("errorObj.password.stError.message")>
+					<cfset errormsg = errorObj.password.stError.message>
+				</cfif>
+			</cfif>
 		</cfif>
 	<cfelse>
 		<cfset request.error = true />
@@ -46,28 +56,26 @@
 <skin:view typename="farUser" template="displayHeaderLogin" />
 
 
-<cfoutput><div class="loginInfo"></cfoutput>
+<cfoutput>
+
+<div class="loginInfo">
 	<ft:form>
 		
 		<cfif structKeyExists(request, "error")>
-			<cfoutput><p id="errorMsg">Password reset failed</p></cfoutput>
+			<p class="alert alert-error">#errormsg#</p>
 		</cfif>	
 			
 		<cfif structKeyExists(request, "pwchanged")>
-			<cfoutput>
-				<p id="OKMsg">
-					<admin:resource key="coapi.farUser.forgotpassword.passwordchanged@text">Your password has been changed!</admin:resource><br/>
-					<skin:buildLink href="#application.url.webtoplogin#" rbkey="coapi.farLogin.login.login">Login</skin:buildLink>
-				</p>
-			</cfoutput>
+			<p class="alert alert-success">
+				<admin:resource key="coapi.farUser.forgotpassword.passwordchanged@text">Your password has been changed!</admin:resource><br/>
+			</p>
 		<cfelse>
-			<cfif StructKeyExists(session,"resetPWUserID")> <!--- typed in a wrong password --->
+			<cfif structKeyExists(session,"resetPWUserID")> <!--- typed in a wrong password --->
 				<ft:object typename="farUser" objectid="#session.resetPWUserID#" lfields="password" />
-
 				<ft:buttonPanel>
 					<ft:button value="Reset Password" />
 				</ft:buttonPanel>
-			<cfelseif StructKeyExists(url,"rh") and application.fc.utils.isGeneratedRandomString(url.rh)> <!--- coming from email --->
+			<cfelseif structKeyExists(url,"rh") and application.fc.utils.isGeneratedRandomString(url.rh)> <!--- coming from email --->
 				<!--- check which user it is --->
 				<cfquery datasource="#application.dsn#" name="qFarUser">
 					SELECT objectid
@@ -85,34 +93,34 @@
 						<ft:button value="Reset Password" />
 					</ft:buttonPanel>
 				<cfelse>
-					<cfoutput><p id="errorMsg"><admin:resource key="coapi.farUser.forgotpassword.resetfailed@text">Password reset failed</admin:resource></p></cfoutput>
+					<p class="alert alert-error"><admin:resource key="coapi.farUser.forgotpassword.resetfailed@text">Password reset failed</admin:resource></p>
 				</cfif>			
 			<cfelseif NOT structKeyExists(request, "error")> <!--- page called without valid reset hash --->
-				<cfoutput><p id="errorMsg"><admin:resource key="coapi.farUser.forgotpassword.resetfailed@text">Password reset failed</admin:resource></p></cfoutput>
+				<p class="alert alert-error"><admin:resource key="coapi.farUser.forgotpassword.resetfailed@text">Password reset failed</admin:resource></p>
 			</cfif>
 			
 		</cfif>
 	
-		<cfoutput><ul class="loginForgot"></cfoutput>
-		<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
-			<cfoutput>
-				<li><skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword">Forgot Password</skin:buildLink></li></cfoutput>
-		</sec:CheckPermission>		
-		<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-			<cfoutput>
-				<li><skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser">Register New User</skin:buildLink></li></cfoutput>
-		</sec:CheckPermission>			
-			
-		<cfoutput>
-			<li><skin:buildLink href="#application.url.webtoplogin#" rbkey="coapi.farLogin.login.login">Login</skin:buildLink></li></cfoutput>
-		<cfoutput></ul></cfoutput>
-	
-			
+		<p class="help-inline">
+			<skin:buildLink href="#application.url.webtoplogin#" rbkey="coapi.farLogin.login.login">Login</skin:buildLink>
+			<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
+				&middot;
+				<skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid">Forgot Username</skin:buildLink>
+			</sec:CheckPermission>
+			<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
+				&middot;
+				<skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword">Forgot Password</skin:buildLink>
+			</sec:CheckPermission>
+			<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
+				&middot;
+				<skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser">Register New User</skin:buildLink>	
+			</sec:CheckPermission>
+		</p>
+
 	</ft:form>
-
 	
-<cfoutput></div></cfoutput>
-
+</div>
+</cfoutput>
 
 <skin:view typename="farUser" template="displayFooterLogin" />
 
