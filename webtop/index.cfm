@@ -77,7 +77,18 @@
 
 <!--- determine which view to use --->
 <!--- should use url variables first, then variables from webtop.xml, then default values --->
-<cfset stItem = application.factory.oWebtop.getItemDetails(stWebtop, url.id)>
+<cftry>
+	<cfset stItem = application.factory.oWebtop.getItemDetails(stWebtop, url.id)>
+	<cfcatch>
+		<!--- webtop 404 --->
+		<cfset stItem = structNew()>
+		<cfset url.sec = listfirst(stWebtop.childorder)>
+		<cfset url.id = url.sec>
+		<cfset url.typename = "farCOAPI">
+		<cfset url.view = "webtopPageStandard">
+		<cfset url.bodyView = "webtopBodyNotFound">
+	</cfcatch>
+</cftry>
 <cfif structKeyExists(stItem, "type")>
 	<cfparam name="defaultTypename" default="#stItem.type#" />
 </cfif>
