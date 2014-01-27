@@ -8,6 +8,7 @@
 		
 		<cfset var resultSQL = "">
 		<cfset var bAddedOne = false />
+		<cfset var stVal = structNew()>
 		
 		<cfsavecontent variable="resultSQL">
 			<cfoutput>
@@ -129,6 +130,7 @@
 		<cfset var stProp = arguments.schema.fields[arguments.propertyname] />
 		<cfset var stResult = structnew() />
 		<cfset var queryresult = "" />
+		<cfset var stVal = structNew()>
 		
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.results = arraynew(1) />
@@ -198,6 +200,7 @@
 		<cfset var stCurrentSchema = introspectTable(arguments.schema.tablename) />
 		<cfset var thisindex = "" />
 		<cfset var lIndexesToRestore = "" />
+		<cfset var stVal = structNew()>
 		
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.results = arraynew(1) />
