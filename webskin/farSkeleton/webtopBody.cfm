@@ -70,8 +70,12 @@
 
 <style type="text/css">
 .controls .multiField label {
-	display: inline;
+	float: left;
+	width: 16em;
 	line-height: 1.8;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 </style>
 
