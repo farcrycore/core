@@ -167,13 +167,9 @@ object methods
 			<!--- Validate the data --->
 			<ft:validateFormObjects typename="#arguments.stFieldPost.stSupporting.formname#">
 				<cfloop collection="#stProperties#" item="prop">
-					<cfif NOT isValid("string", stProperties[prop])>
-						<cfset stResult.bSuccess = false>
-					</cfif>
 					<cfif not listcontainsnocase("typename,objectid",prop)>
 						<cfset stResult.bSuccess = stResult.bSuccess and request.stFarcryFormValidation[stProperties.ObjectID][prop].bSuccess />
 					</cfif>
-					
 				</cfloop>
 				
 				<cfset structappend(stObj,stProperties,true) />
@@ -408,7 +404,6 @@ object methods
 		</cfif>
 		
 		<ft:processForm action="Save" Exit="true">
-
 			<ft:processFormObjects typename="#stobj.typename#" />
 		</ft:processForm>
 	
