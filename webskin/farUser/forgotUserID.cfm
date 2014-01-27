@@ -38,7 +38,7 @@
 			<cfelse>
 				<cfset request.notFound = true />
 				<cfsavecontent variable="errormsg">
-					<admin:resource key="coapi.farUser.forgotuserid.emailnotonrecord@text">We do not have that email address on record. Please try again.</admin:resource>
+					<cfoutput><admin:resource key="coapi.farUser.forgotuserid.emailnotonrecord@text">We do not have that email address on record. Please try again.</admin:resource></cfoutput>
 				</cfsavecontent>
 			</cfif>
 		</cfif>
