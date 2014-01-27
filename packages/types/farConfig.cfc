@@ -282,7 +282,7 @@ object methods
 				</cfloop>
 				<cfset stResult.typename = thisform />
 				<!--- Ensure the config typename is set in the farConfig record for faster lookups --->
-				<cfif NOT len(qConfig.configtypename)>
+				<cfif structKeyExists(qConfig, "configtypename") AND NOT len(qConfig.configtypename)>
 					<cfset bChanged = true />
 				</cfif>
 			</cfif>
