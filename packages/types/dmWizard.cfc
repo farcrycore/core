@@ -1,4 +1,4 @@
-<cfcomponent extends="types" name="dmWizard" displayname="wizard" hint="wizard" bSystem="true" 
+<cfcomponent extends="types" name="dmWizard" displayname="Wizard" hint="wizard" bSystem="true" 
 	bAudit="false"
 	bRefObjects="false">
 	
