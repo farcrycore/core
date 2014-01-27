@@ -57,7 +57,7 @@ $out:$
 	        <cfcase value="mysql,mysql5">
 	            <cfset temptablename = "tbltemp_fixtree" />
 	            <cfquery datasource="#dsn#" name="q">
-	                drop table if exists #temptablename#
+	                drop temporary table if exists #temptablename#
 	            </cfquery>
 	            <cfquery datasource="#dsn#" name="q">
 	                create temporary table #temptablename# (
