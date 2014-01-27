@@ -279,7 +279,7 @@
 							</cfswitch>
 						</cfloop>
 			<cfif len(arguments.orderBy)>
-				ORDER BY #arguments.orderBy#
+				ORDER BY #preserveSingleQuotes(arguments.orderBy)#
 			</cfif>
 		</cfquery>
 		
