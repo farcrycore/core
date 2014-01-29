@@ -635,32 +635,29 @@
 			.end()
 		.click(function(event) {	
 			if (event.target.type !== 'checkbox' && event.target.type !== 'radio') {
-				$j('input', this).attr('checked', function() {
-					$j(this).attr('checked',(this.checked=="checked" ? "" : "checked"));
-					$j(this).trigger('click');
-					if(this.type == 'checkbox'){
-						return this.checked=="checked" ? "" : "checked";
-					}
-				});
+				$j('input', this).trigger('click');
 			};
 		});
 
 
-		$j("input.checker").click(function(e) {			
+		$j("input.checker").click(function(e) {	
+			if ($j(this).prop("checked")) {
+				$j(this).parents('tr.selector-wrap').addClass('selected');
+			}
+			else {
+				$j(this).parents('tr.selector-wrap').removeClass('selected');
+			}
 			if(e.target.type == 'radio'){
 				$j('tr.selector-wrap').removeClass('selected');
 				$j(this).parents('tr.selector-wrap').addClass('selected');
-			} else {
-				$j(this).parents('tr.selector-wrap').toggleClass('selected');
-			};
-						
+			}
 		});
 		
 		$j("input.checkall").click(function(e) {			
-			if($j(e.target).attr('checked')){
-				$j("input.checker").attr('checked',true);
+			if($j(e.target).prop('checked')){
+				$j("input.checker").prop('checked',true).parents('tr.selector-wrap').addClass('selected');
 			} else {
-				$j("input.checker").attr('checked',false);
+				$j("input.checker").prop('checked',false).parents('tr.selector-wrap').removeClass('selected');
 			};
 						
 		});
@@ -756,7 +753,7 @@
 		},
 		reinitpage: function() {
 			$j('tr.selector-wrap').removeClass('selected');
-			$j("tr.selector-wrap input[name='selected']").attr('checked',false);
+			$j("tr.selector-wrap input[name='selected']").prop('checked',false);
 			$j.each(userselection, function(){
 				$j("tr.selector-wrap input[value='"+this+"']").prop('checked',true).parents('tr.selector-wrap').addClass('selected');
 			});
