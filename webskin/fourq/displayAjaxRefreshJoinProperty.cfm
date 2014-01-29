@@ -9,23 +9,6 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/wizard" prefix="wiz" />
 
-
-<!--- 
-<cfparam name="url.libraryType" type="string" /><!--- Can be Array or UUID. If UUID, only 1 value can be stored. --->
-<cfparam name="url.PrimaryObjectID" type="UUID" />
-<cfparam name="url.PrimaryTypename" type="string" />
-<cfparam name="url.PrimaryFieldName" type="string" />
-<cfparam name="url.PrimaryFormFieldName" type="string" />
-<cfparam name="url.DataObjectID" type="string" /><!--- this could be a UUID to be added or a list of UUID's if we are re-sorting --->
-<cfparam name="url.DataTypename" type="string" />
-<cfparam name="url.wizardID" type="string" default="" />
-<cfparam name="url.Action" type="string" default="Add" />
-<cfparam name="url.ftLibrarySelectedWebskin" type="string" default="selected" />
-<cfparam name="url.ftLibrarySelectedWebskinListClass" type="string" default="selected" />
-<cfparam name="url.ftLibrarySelectedWebskinListStyle" type="string" default="" />
-<cfparam name="url.packageType" type="string" default="types" />
- --->
-
 <cfparam name="url.property" type="string" /><!--- The name of the property we are updating. --->
 <cfparam name="url.prefix" default="" />
 
@@ -42,12 +25,18 @@
 					prefix="#url.prefix#" />
 	<cfelse>
 		<cfset objPropValues = structNew()>
+		<cfset stMetadata = application.fapi.getPropertyMetadata(typename=stobj.typename, property=url.property) />
 		<cfif structKeyExists(form, "propertyValue") AND len(form.propertyValue)>
-			<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 			<cfif stMetadata.type EQ "array">
 				<cfset objPropValues[url.property] = listToArray(form.propertyValue)>
 			<cfelse>
 				<cfset objPropValues[url.property] = form.propertyValue>
+			</cfif>
+		<cfelse>
+			<cfif stMetadata.type EQ "array">
+				<cfset objPropValues[url.property] = arrayNew(1)>
+			<cfelse>
+				<cfset objPropValues[url.property] = "">
 			</cfif>
 		</cfif>
 		
