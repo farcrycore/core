@@ -1139,20 +1139,22 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 
 	<!---*************  METADATA METHODS  *************--->
+	<cffunction name="getTypeMetadata" access="public" output="false">
+		<cfset var stMD = getMetadata(this) />
+		<cfset variables.typePath = stMD.fullname />
+		<cfset variables.typeName = listlast(stMD.fullname,'.') />
+	</cffunction>
+
 	<cffunction name="getTypePath" access="public" returntype="string" output="false">
-		<cfset var stMD = "" />
 		<cfif NOT len(variables.typePath)>
-			<cfset stMD = getMetadata(this) />
-			<cfset variables.typePath = stMD.fullname />
+			<cfset getTypeMetadata() />
 		</cfif>
 		<cfreturn variables.typePath />
 	</cffunction>
 
 	<cffunction name="getTypeName" access="public" returntype="string" output="false">
-		<cfset var stMD = "" />
 		<cfif NOT len(variables.typeName)>
-			<cfset stMD = getMetadata(this) />
-			<cfset variables.typeName = listlast(stMD.fullname,'.') />
+			<cfset getTypeMetadata() />
 		</cfif>
 		<cfreturn variables.typeName />
 	</cffunction>
