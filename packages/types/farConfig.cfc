@@ -245,7 +245,7 @@ object methods
 		
 		<!--- Find a config item that stores this config data --->
 		<cfquery datasource="#application.dsn#" name="qConfig">
-			select	*
+			select	*, 'farConfig' AS typename
 			from	farConfig
 			where	configkey = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.key#" />
 		</cfquery>
