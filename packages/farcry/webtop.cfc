@@ -1,3 +1,4 @@
+<cfcomponent output="false">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -29,11 +30,10 @@ $Description: Webtop component. $
 || DEVELOPER ||
 $Developer: Blair McKenzie (blair@daemon.com.au)$
 --->
-<cfcomponent>
 	
 	<cfset this.stWebtop = structnew() />
 
-	<cffunction name="init" access="public" output="true" returntype="any" hint="Initialise component with XML configs from core and custom admin.">
+	<cffunction name="init" access="public" output="false" returntype="any" hint="Initialise component with XML configs from core and custom admin.">
 		<cfset var plugin = "" /><!--- Used in the loop of plugins --->
 		<cfset var dirlist = "" /><!--- List of directories to check --->
 		<cfset var thisdir = "" /><!--- Used in loop of directories --->
