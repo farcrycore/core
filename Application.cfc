@@ -383,7 +383,7 @@
 					<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
 		</cfif>
 		
-		<cfparam name="session.loginReturnURL" default="#application.fapi.getLink(alias='home')#" />
+		<cfparam name="session.loginReturnURL" default="#application.url.webroot#" />
 		
 		<cfif structKeyExists(url, "returnURL")>
 			<cfset session.loginReturnURL = application.fapi.fixURL(url.returnURL) />
