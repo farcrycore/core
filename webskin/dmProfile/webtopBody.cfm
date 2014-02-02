@@ -21,7 +21,7 @@
 
 			<skin:onReady>
 			<cfoutput>
-				$fc.openDialog('Edit Password', '#application.fapi.getLink(type="farUser",objectid="#stUser.objectid#", view="webtopPageModal",  bodyView="editPassword", ampDelim="&", bWebtop=true)#');
+				$fc.openDialog('Edit Password', '?id=#url.id#&type=farUser&objectid=#stUser.objectid#&view=webtopPageModal&bodyView=editPassword');
 			</cfoutput>
 			</skin:onReady>
 		</cfif>
@@ -38,7 +38,7 @@
 
 	<skin:onReady>
 	<cfoutput>
-		$fc.openDialog('Preview Webtop Security', '#application.fapi.getLink(type="dmProfile", objectid="#stProfile.objectid#", view="webtopPageModal",  bodyView="webtopBodyWebtopSecurity", ampDelim="&", bWebtop=true)#');
+		$fc.openDialog('Preview Webtop Security', '?id=#url.id#&type=dmProfile&objectid=#stProfile.objectid#&view=webtopPageModal&bodyView=webtopBodyWebtopSecurity');
 	</cfoutput>
 	</skin:onReady>
 </ft:processform>
