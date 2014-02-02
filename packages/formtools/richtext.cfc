@@ -59,8 +59,8 @@
 
 		<cfif structKeyExists(arguments.stMetadata,'ftRichtextConfig') and len(trim(arguments.stMetadata.ftRichtextConfig)) and structKeyExists(oType,arguments.stMetadata.ftRichtextConfig)>
 			<cfinvoke component="#oType#" method="#arguments.stMetadata.ftRichtextConfig#" returnvariable="configJS" />
-		<cfelseif isdefined("application.config.tinyMCE.tinyMCE_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE_config))>
-			<cfset configJS = application.config.tinyMCE.tinyMCE_config />
+		<cfelseif isdefined("application.config.tinyMCE.tinyMCE4_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE4_config))>
+			<cfset configJS = application.config.tinyMCE.tinyMCE4_config />
 		<cfelse>
 			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
 		</cfif>	
