@@ -353,7 +353,7 @@ object methods
 		<cfset config = deserializeJSON(arguments.stProperties.configdata)>
 		
 		<!--- run the config object's process method --->
-		<cfif len(stProperties.configtypename) and structkeyexists(application.stCOAPI,stProperties.configtypename)>
+		<cfif structKeyExists(stProperties, "configtypename") AND len(stProperties.configtypename) and structkeyexists(application.stCOAPI,stProperties.configtypename)>
 			<cfset config = application.fapi.getContentType(stProperties.configtypename).process(fields = config) />
 		</cfif>
 		
