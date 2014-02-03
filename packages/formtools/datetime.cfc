@@ -280,8 +280,7 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 
-						<cfset formtheme = application.fapi.getDefaultFormTheme()>
-						<cfif formtheme eq "bootstrap">
+						<cfif application.fapi.getDefaultFormTheme() eq "bootstrap">
 							<div class="input-prepend">
 								<span class="add-on"><i class="fa fa-calendar-o"></i></span>
 								<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
