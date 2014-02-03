@@ -280,10 +280,15 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 
-						<div class="input-prepend">
-							<span class="add-on"><i class="fa fa-calendar-o"></i></span>
+						<cfset formtheme = application.fapi.getDefaultFormTheme()>
+						<cfif formtheme eq "bootstrap">
+							<div class="input-prepend">
+								<span class="add-on"><i class="fa fa-calendar-o"></i></span>
+								<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
+							</div>
+						<cfelse>
 							<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
-						</div>
+						</cfif>
 
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 
