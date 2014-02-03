@@ -7,12 +7,16 @@
  // form properties 
 --------------------------------------------------------------------------------->
 	<cfproperty name="bProcessTypes" type="boolean" default="1" 
-		ftseq="10" ftLabel="Repair Types/Rules?"
-		fthint="Rebuild references for refObjects for components where bRefObjects is true.">
+		ftseq="10" ftLabel="Update Types/Rules?"
+		fthint="Rebuild references for refObjects for components where bRefObjects is true">
+
+	<cfproperty name="bPurgeMissingObjects" type="boolean" default="0" 
+		ftseq="15" ftLabel="Purge Missing Objects?"
+		fthint="Remove references from refObjects for missing content objects">
 
 	<cfproperty name="bPurgeTypes" type="boolean" default="0" 
 		ftseq="20" ftLabel="Purge Types/Rules?"
-		fthint="Remove references from refObjects for components where bRefObjects is false.">
+		fthint="Remove references from refObjects for components where bRefObjects is false">
 
 	<cfproperty name="bFixNav" type="boolean" default="0" 
 		ftseq="30" ftLabel="Remove rogue dmNavigation sub-objects?"
@@ -126,6 +130,32 @@
 	</cffunction>
 
 
+	<cffunction name="purgeMissingReferences" hint="Remove references from refObjects table where the content object no longer exists.">
+		<cfset var qTypes = getTypesToFix()>
+		<cfset var stResult = structNew()>
+		<cfset stResult.message = "Purged #qTypes.recordCount# types and rules tables.<br>">
+
+		<cfloop query="qTypes">
+			<cftry>
+				<!--- remove references from refObjects where bRefObjects is false --->
+				<cfquery name="qPurge" datasource="#application.dsn#">
+					DELETE FROM #application.dbowner#refObjects
+					WHERE typename = '#qTypes.typename#'
+						AND objectid NOT IN (
+							SELECT objectid
+							FROM #application.dbowner##qTypes.typename#
+						)
+				</cfquery>
+				<cfcatch>
+					<cfset stResult.message = stResult.message & "Error purging #qtypes.typename#. The component may not have been deployed.<br>">
+				</cfcatch>
+			</cftry>
+		</cfloop>
+
+		<cfreturn stResult>
+	</cffunction>
+
+
 	<cffunction name="purgeReferences" hint="Remove references from refObjects table.">
 		<cfset var qTypes = getTypesToFix(bRefObjects=false)>
 		<cfset var stResult = structNew()>
@@ -146,6 +176,6 @@
 
 		<cfreturn stResult>
 	</cffunction>
-		
+
 
 </cfcomponent>

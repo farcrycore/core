@@ -20,7 +20,11 @@
 	<ft:processFormObjects typename="fixRefObjects">
 		<cfif stproperties.bProcessTypes>
 			<cfset stResult = fixReferences()>
-			<skin:bubble title="Rebuild Type/Rule References" message="#stResult.message#" tags="success" />
+			<skin:bubble title="Update Type/Rule References" message="#stResult.message#" tags="success" />
+		</cfif>
+		<cfif stproperties.bPurgeMissingObjects>
+			<cfset stResult = purgeMissingReferences()>
+			<skin:bubble title="Purge Missing Object References" message="#stResult.message#" tags="success" />
 		</cfif>
 		<cfif stproperties.bPurgeTypes>
 			<cfset stResult = purgeReferences()>
@@ -113,7 +117,6 @@
 	</table>
 </cfoutput>
 
-<!--- <cfdump var="#qTypes#" label="refObjects Usage"> --->
 
 </sec:checkpermission>
 <cfsetting enablecfoutputonly="false">
