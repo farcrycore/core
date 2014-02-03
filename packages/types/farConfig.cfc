@@ -220,13 +220,13 @@ object methods
 
 		<cfset var newLabel = stProperties.configkey>
 
-		<cfif len(stProperties.configtypename) and isDefined("application.stCOAPI.#stProperties.configtypename#.displayname")>
+		<cfif structKeyExists(stProperties, "configtypename") AND len(stProperties.configtypename) and isDefined("application.stCOAPI.#stProperties.configtypename#.displayname")>
 			<cfset newLabel = trim(application.stCOAPI[stProperties.configtypename].displayname)>			
 		</cfif>
-		
+
 		<cfreturn newLabel>
 	</cffunction>
-	
+
 	<cffunction name="getConfig" access="public" output="true" returntype="struct" hint="Finds the config for the specified config, create it if it doesn't exist, then return it">
 		<cfargument name="key" type="string" required="true" hint="The key of the config to load" />
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Allows the installer to not audit" />
@@ -264,7 +264,7 @@ object methods
 		</cfif>
 		
 		<!--- make sure the result is a struct --->
-		<cfif not isstruct(stResult)>
+		<cfif not isStruct(stResult)>
 			<cfset stResult = structnew() />
 			<cfset bChanged = true />
 		</cfif>
@@ -287,11 +287,11 @@ object methods
 				</cfif>
 			</cfif>
 		</cfloop>
-		
+
 		<cfif bChanged>
 			<!--- Copy the result back to an stObj --->
 			<cfset stObj.configdata = serializeJSON(stResult)>
-			
+
 			<!--- Set up the config item values --->
 			<cfif qConfig.recordcount>
 				<cfset stObj.objectid = qConfig.objectid[1] />
@@ -300,14 +300,16 @@ object methods
 			</cfif>
 			<cfset stObj.typename = "farConfig" />
 			<cfset stObj.configkey = arguments.key />
-			<cfset stObj.configtypename = stResult.typename />
+			<cfif structKeyExists(stResult, "typename")>
+				<cfset stObj.configtypename = stResult.typename />				
+			</cfif>
 			<cfset stObj.label = autoSetLabel(stProperties=stObj)>				
 			<cfset stObj.datetimecreated = now() />
-				
+
 			<!--- Save the config data (ensures that new configs and new properties are saved) --->
 			<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
 		</cfif>
-		
+
 		<cfif structkeyexists(stResult,"typename")>
 			<cfset structdelete(stResult,"typename") />
 		</cfif>
