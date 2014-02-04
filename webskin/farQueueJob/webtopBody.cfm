@@ -142,6 +142,21 @@
 			ev.preventDefault();
 			return false;
 		});
+		
+		$j("##objectadmin").on("click","a:contains('View all results')",function(ev){
+			var jobid = $j(this).closest("tr").find("input[name='objectid']").val();
+			
+			if (!confirm('Are you sure you want to close this job?')) 
+				return false;
+			
+			$fc.openBootstrapModal({ 
+				title : "Job Tasks",
+				url : "#application.url.webtop#/index.cfm?id=#url.id#&type=farQueueResult&view=webtopPageModal&jobid="+jobid+"&resultStatus=all"
+			});
+			
+			ev.preventDefault();
+			return false;
+		});
 	</cfoutput></skin:onReady>
 	
 	<cfset aButtons = arraynew(1) />
@@ -178,7 +193,7 @@
 		lButtons="clearresults,endjob,testtask"
 		aButtons="#aButtons#"
 		lButtonsEmpty="testtask"
-		lCustomActions="View tasks,Reset processing tasks,View failed results,View all results,Clear results"
+		lCustomActions="View tasks,Reset processing tasks,View failed results,View all results,Clear results,Close job"
 		emptymessage="There are currently no jobs in the system"
 		bViewCol="false"
 		bPreviewCol="false"
