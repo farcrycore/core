@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true"><cfsilent>
 <!--- @@displayname: Resource --->
 <!--- @@description: Retrieves the specified resource --->
 
@@ -25,4 +25,4 @@
 	</cfif>
 </cfif>
 
-<cfsetting enablecfoutputonly="false" />
+</cfsilent><cfsetting enablecfoutputonly="false">

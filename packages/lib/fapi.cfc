@@ -1,3 +1,5 @@
+<cfcomponent displayname="FarCry API" hint="The API for all things FarCry" output="false" 
+	bDocument="true" scopelocation="application.fapi">
 <!--- @@Copyright: Daemon Pty Limited 2002-2009, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,8 +17,6 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent displayname="FarCry API" hint="The API for all things FarCry" 
-	output="false" bDocument="true" scopelocation="application.fapi">
 
 	<cffunction name="init" access="public" returntype="fapi" output="false" hint="FAPI Constructor" bDocument="false">
 		<cfreturn this />
