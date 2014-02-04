@@ -73,8 +73,8 @@
 		<cfif not qRules.rulename eq "container">
 			<cfoutput>
 			<tr>
-				<td><i class="fa #qrules.icon# fa-fw fa-lg"></i></td>
-				<td nowrap><ft:button value="Add Rule" text="<strong>#qRules.displayName#</strong>" rendertype="link" selectedObjectID="#qRules.rulename#" /></td>
+				<td><i class="fa #qrules.icon# fa-fw"></i></td>
+				<td nowrap><ft:button value="Add Rule" text="#qRules.displayName#" rendertype="link" selectedObjectID="#qRules.rulename#" /></td>
 				<td>#qRules.hint#</td>
 			</tr>
 			</cfoutput>
