@@ -156,7 +156,7 @@
 </cfif>
 
 <!--- If type isn't deployed, display error --->
-<cfif not application.fc.lib.db.isDeployed(typename=attributes.typename,dsn=application.dsn)>
+<cfif not structkeyexists(attributes,"qRecordSet") and not application.fc.lib.db.isDeployed(typename=attributes.typename,dsn=application.dsn)>
 
 	<cfoutput>
 		<h1><admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource></h1>
@@ -1094,7 +1094,8 @@
 							</cfif>
 
 							<cfif len(attributes.columnList)>
-								<ft:object objectID="#st.objectid#" typename="#attributes.typename#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
+								<cfparam name="st.typename" default="#attributes.typename#" />
+								<ft:object stObject="#st#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 

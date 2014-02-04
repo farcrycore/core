@@ -168,7 +168,46 @@
 		<skin:registerJS	id="fc-chardin" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/chardin" 
 							lFiles="chardinjs.min.js" />
-
+							
+		<skin:registerJS id="formatjson" core="true"><cfoutput>
+			window.$fc = window.$fc || {};
+			
+			$fc.syntaxHighlight = function(json) {
+				if (typeof json != 'string')
+					json = JSON.stringify(json, undefined, 2);
+				
+				json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+					var cls = 'number';
+					if (/^"/.test(match)) {
+						if (/:$/.test(match)) {
+							cls = 'key';
+						} else {
+							cls = 'string';
+						}
+					} else if (/true|false/.test(match)) {
+						cls = 'boolean';
+					} else if (/null/.test(match)) {
+						cls = 'null';
+					}
+					return '<span class="' + cls + '">' + match + '</span>';
+				});
+			}
+			
+			if ($j){
+				$j.fn.formatJSON = function(){
+					return this.each(function(){
+						var el = $j(this);
+						
+						el.html($fc.syntaxHighlight(el.html()));
+					});
+				}
+				
+				$j(function(){
+					$j(".formatjson").formatJSON();
+				});
+			}
+		</cfoutput></skin:registerJS>
 
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop"
@@ -283,6 +322,47 @@
 								}
 							</cfoutput>
 		</skin:registerCSS>
+
+		<skin:registerCSS id="formatjson"><cfoutput>
+			.alert .fa-info-circle {
+				cursor:pointer;
+			}
+			##results .alert, .results .alert {
+				border-color: -moz-use-text-color;
+				border-style: none solid;
+				border-width: 0 1px;
+				margin-bottom: 0;
+				margin-top: 0;
+				padding: 4px 8px;
+			}
+			##results .alert:first-child, .results .alert:first-child {
+				border-top: 1px solid;
+			}
+			##results .alert:last-child, .results .alert:last-child {
+				border-bottom: 1px solid;
+			}
+			.alert .fa-info, .alert .fa-info-circle {
+				cursor:pointer;
+			}
+			.alert .info {
+				display:none;
+			}
+				.alert .info .key, .details .key {
+					color:##a020f0;
+				}
+				.alert .info .number, .details .number {
+					color:##ff0000;
+				}
+				.alert .info .string, .details .string {
+					color:##000000;
+				}
+				.alert .info .boolean, .details .boolean {
+					color:##ffa500;
+				}
+				.alert .info .null, .details .null {
+					color:##0000ff;
+				}
+		</cfoutput></skin:registerCSS>
 
 	</cffunction>	
 	

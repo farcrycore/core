@@ -23,12 +23,9 @@ environment references (might be nice to clean these up)
 	<!--- <cfset attributes.bdebug="true"> --->
 
 	
-	<cfif structKeyExists(application.types, variables.attributes.typename)>
-		<cfset variables.PrimaryPackage = application.types[variables.attributes.typename] />
-		<cfset variables.PrimaryPackagePath = application.types[variables.attributes.typename].typepath />
-	<cfelse>
-		<cfset variables.PrimaryPackage = application.rules[variables.attributes.typename] />
-		<cfset variables.PrimaryPackagePath = application.rules[variables.attributes.typename].rulepath />
+	<cfif structKeyExists(application.stCOAPI, variables.attributes.typename)>
+		<cfset variables.PrimaryPackage = application.stCOAPI[variables.attributes.typename] />
+		<cfset variables.PrimaryPackagePath = application.stCOAPI[variables.attributes.typename].packagepath />
 	</cfif>
 		
 	

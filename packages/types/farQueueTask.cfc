@@ -12,12 +12,12 @@
 	
 	<cfproperty name="jobType" type="string" required="false" default="Unkown"
 		ftSeq="1" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Job Type"
-		ftDisplayOnly="true" />
+		ftDisplayOnly="true" dbIndex="getStatus:1" />
 	
 	<cfproperty name="jobID" type="uuid" required="false"
 		ftSeq="2" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Job ID"
 		ftDisplayOnly="true" ftDisplayMethod="ftDisplayUUID"
-		dbIndex="true" />
+		dbIndex="byJobID:1,getStatus:2" />
 
 	<cfproperty name="action" type="string" required="false"
 		ftSeq="3" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Action"
@@ -25,20 +25,20 @@
 	
 	<cfproperty name="taskOwnedBy" type="string" required="false"
 		ftSeq="4" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Owned By"
-		ftDisplayOnly="true" />
+		ftDisplayOnly="true" dbIndex="getStatus:3" />
 	
 	<cfproperty name="wddxDetails" type="longchar" required="false"
 		ftSeq="5" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Details"
 		ftDisplayOnly="true" ftDisplayMethod="displayWDDX" />
 
 	<cfproperty name="wddxStackTrace" type="longchar" required="false"
-		ftSeq="6" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Details"
+		ftSeq="6" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Stack trace"
 		ftDisplayOnly="true" ftDisplayMethod="displayWDDX" />
 
 	<cfproperty name="taskStatus" type="string" required="false"
 		ftSeq="7" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Status"
 		ftType="list" ftList="queued:Queued,processing:Processing"
-		ftDisplayOnly="true" />
+		ftDisplayOnly="true" dbIndex="getStatus:4" />
 
 	<cfproperty name="taskTimestamp" type="date" required="false" 
 		ftSeq="8" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Timestamp"

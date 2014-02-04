@@ -21,8 +21,6 @@
 
 
 <skin:loadJS id="fc-jquery" />
-<skin:loadJS id="jquery-modal" />
-<skin:loadCSS id="jquery-modal" />
 
 <ft:form id="objectadmin">
 	<cfset stThreads = duplicate(application.fc.lib.tasks.threads) />

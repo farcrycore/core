@@ -267,19 +267,92 @@
 		<cfreturn aResult />
 	</cffunction>
 	
-	<cffunction name="getResultJobs" output="false" access="public" returntype="query" description="Returns all jobs that have results logged">
+	<cffunction name="getJobs" output="false" access="public" returntype="query" description="Returns all jobs that have results logged">
 		<cfset var q = "" />
+		<cfset var st = structnew() />
+		<cfset var k = "" />
 		
 		<cflock name="result-queue-update" timeout="5" throwontimeout="true">
+			<cfquery datasource="#application.dsn#" name="q">
+				select 		jobType, jobID, taskOwnedBy, taskStatus, count(*) as taskCount
+				from		farQueueTask
+				group by	jobType, jobID, taskOwnedBy, taskStatus
+			</cfquery>
+			<cfloop query="q">
+				<cfif not structkeyexists(st,q.jobID)>
+					<cfset st[q.jobID] = { "jobType"=q.jobType, "jobID"=q.jobID, "jobOwner"=q.taskOwnedBy, "jobStatus"="queued", "taskCount"=0, "resultCount"=0, "datetimeLatest"=createdate(1970,1,1) }/>
+				</cfif>
+				<cfset st[q.jobID]["taskCount"] = st[q.jobID]["taskCount"] + q.taskCount />
+				<cfif q.taskStatus eq "processing">
+					<cfset st[q.jobID]["jobStatus"] = "processing" />
+				</cfif>
+			</cfloop>
+			
 			<cfquery datasource="#application.dsn#" name="q">
 				select 		jobType, jobID, taskOwnedBy, count(*) as resultCount, max(resultTimestamp) as datetimeLatest
 				from		farQueueResult
 				group by	jobType, jobID, taskOwnedBy
-				order by	datetimeLatest desc
 			</cfquery>
+			<cfloop query="q">
+				<cfif not structkeyexists(st,q.jobID)>
+					<cfset st[q.jobID] = { "jobType"=q.jobType, "jobID"=q.jobID, "jobOwner"=q.taskOwnedBy, "jobStatus"="complete", "taskCount"=0, "resultCount"=0, "datetimeLatest"=createdate(1970,1,1) }/>
+				</cfif>
+				<cfset st[q.jobID]["resultCount"] = st[q.jobID]["resultCount"] + q.resultCount />
+				<cfif q.datetimeLatest gt st[q.jobid]["datetimeLatest"]>
+					<cfset st[q.jobID]["datetimeLatest"] = q.datetimeLatest />
+				</cfif>
+			</cfloop>
 		</cflock>
 		
+		<cfset q = querynew("objectid,typename,jobType,jobOwner,jobStatus,taskCount,resultCount,datetimeLatest","varchar,varchar,varchar,varchar,varchar,bigint,bigint,date") />
+		<cfloop collection="#st#" item="k">
+			<cfset queryaddrow(q) />
+			<cfset querysetcell(q,"objectid",st[k].jobID) />
+			<cfset querysetcell(q,"typename","farQueueJob") />
+			<cfset querysetcell(q,"jobType",st[k].jobType) />
+			<cfset querysetcell(q,"jobOwner",st[k].jobOwner) />
+			<cfset querysetcell(q,"jobStatus",st[k].jobStatus) />
+			<cfset querysetcell(q,"taskCount",st[k].taskCount) />
+			<cfset querysetcell(q,"resultCount",st[k].resultCount) />
+			<cfset querysetcell(q,"datetimeLatest",st[k].datetimeLatest) />
+		</cfloop>
+		
 		<cfreturn q />
+	</cffunction>
+	
+	<cffunction name="resetTasks" output="false" access="public" returntype="void" description="Remotes all tasks and results for a job, and stops any thread running one of it's tasks">
+		<cfargument name="jobID" type="uuid" required="true" />
+		
+		<!--- stop threads processing this job --->
+		<cfloop collection="#this.threads#" item="key">
+			<cfif structkeyexists(this.threads[key],"task") and this.threads[key].task.jobID eq arguments.jobID>
+				<cfset killThread(key) />
+			</cfif>
+		</cfloop>
+		
+		<!--- reset processing tasks --->
+		<cfquery datasource="#application.dsn#">
+			update		farQueueTask
+			set			taskStatus='queued'
+			where		jobID=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.jobID#">
+		</cfquery>
+	</cffunction>
+	
+	<cffunction name="endJob" output="false" access="public" returntype="void" description="Remotes all tasks and results for a job, and stops any thread running one of it's tasks">
+		<cfargument name="jobID" type="uuid" required="true" />
+		
+		<!--- stop threads processing this job --->
+		<cfloop collection="#this.threads#" item="key">
+			<cfif structkeyexists(this.threads[key],"task") and this.threads[key].task.jobID eq arguments.jobID>
+				<cfset killThread(key,false) />
+			</cfif>
+		</cfloop>
+		
+		<!--- delete job tasks --->
+		<cfquery datasource="#application.dsn#">delete from farQueueTask where jobID=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.jobID#"></cfquery>
+		
+		<!--- delete job results --->
+		<cfquery datasource="#application.dsn#">delete from farQueueResult where jobID=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.jobID#"></cfquery>
 	</cffunction>
 	
 	<cffunction name="clearTaskResults" output="false" access="public" returntype="void" description="Removes results that are too old from the queue">
@@ -309,7 +382,7 @@
 		<cfset var thisfield = "" />
 		
 		<cflock name="task-queue-update" timeout="5" throwontimeout="true">
-			<cfset q = application.fapi.getContentObjects(typename="farQueueTask",lProperties="*",taskStatus_eq="queued",orderby="taskTimestamp desc",maxrows=1) />
+			<cfset q = application.fapi.getContentObjects(typename="farQueueTask",lProperties="*",taskStatus_eq="queued",orderby="taskTimestamp asc",maxrows=1) />
 			
 			<cfif q.recordcount>
 				
@@ -352,12 +425,15 @@
 	
 	<cffunction name="killThread" output="false" access="public" returntype="void" description="Terminates a specified thread">
 		<cfargument name="threadID" type="string" required="true" />
+		<cfargument name="requeueTask" type="boolean" required="false" default="true" />
 		
 		<cfset var stTask = "" />
 		
-		<cfif isdefined("this.threads.#arguments.threadID#.thread")>
-			<!--- terminate thread --->
-			<cfset this.threads[arguments.threadID].thread.cancel() />
+		<cfif isdefined("this.threads.#arguments.threadID#")>
+			<cfif structkeyexists(this.threads[arguments.threadID],"thread")>
+				<!--- terminate thread --->
+				<cfset this.threads[arguments.threadID].thread.cancel() />
+			</cfif>
 			
 			<!--- get the task currently being processed --->
 			<cfif structkeyexists(this.threads[arguments.threadID],"task")>
@@ -368,13 +444,17 @@
 			<cfset structdelete(this.threads,arguments.threadID) />
 			
 			<!--- requeue the task --->
-			<cfif isstruct(stTask)>
+			<cfif isstruct(stTask) and arguments.requeueTask>
 				<cfset requeueTask(taskID=stTask.objectid) />
 			</cfif>
 			
 			<cflog file="#application.applicationname#_tasks" text="killed thread #arguments.threadID#" />
-			
 		</cfif>
+	</cffunction>
+	
+	<cffunction name="getThreadCount" output="false" access="public" returntype="numeric" description="Returns number of threads">
+		
+		<cfreturn structcount(this.threads) />
 	</cffunction>
 	
 	<cffunction name="clearProcessingThreads" output="false" access="public" returntype="void" description="Terminates threads that haven't done work in a while">

@@ -13,16 +13,16 @@
 
 	<cfproperty name="jobType" type="string" required="false" default="Unkknown"
 		ftSeq="2" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Job Type"
-		ftDisplayOnly="true" />
+		ftDisplayOnly="true" dbIndex="getStatus:1" />
 	
 	<cfproperty name="jobID" type="uuid" required="false" 
 		ftSeq="3" ftWizardStep="Task Result" ftFieldset="Task Result" ftLabel="Job" 
 		ftDisplayOnly="true" ftDisplayMethod="ftDisplayUUID"
-		dbIndex="byJobID:1" />
+		dbIndex="byJobID:1,getStatus:2" />
 
 	<cfproperty name="taskOwnedBy" type="string" required="false" 
 		ftSeq="4" ftWizardStep="Task Result" ftFieldset="Task Result" ftLabel="Owned By" 
-		ftDisplayOnly="true">
+		ftDisplayOnly="true" dbIndex="getStatus:3" />
 
 	<cfproperty name="wddxResult" type="longchar" required="false" 
 		ftSeq="5" ftWizardStep="Task Result" ftFieldset="Task Result" ftLabel="Details" 

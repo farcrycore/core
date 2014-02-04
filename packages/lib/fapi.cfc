@@ -2474,6 +2474,50 @@
 		<cfreturn />
 	</cffunction>	
 	
+	<cffunction name="formatJSON" access="public" returntype="string">
+		<cfargument name="str" type="string" required="true" />
+		
+		<cfset var fjson = '' />
+		<cfset var pos = 0 />
+		<cfset var strLen = len(replace(arguments.str,"\/","/","ALL")) />
+		<cfset var indentStr = "    " /><!--- Adjust Indent Token If you Like --->
+		<cfset var newLine = chr(10) /><!--- Adjust New Line Token If you Like <BR> --->
+		<cfset var i = 0 />
+		<cfset var j = 0 />
+		<cfset var char = "" />
+		
+		<cfset arguments.str = replace(arguments.str,"\/","/","ALL") />
+		
+		<cfloop from="1" to="#strLen#" index="i">
+			<cfset char = mid(arguments.str,i,1) />
+			
+			<cfif char eq '}' or char eq ']'>
+				<cfset fjson &= newLine />
+				<cfset pos = pos - 1 />
+				
+				<cfloop from="1" to="#pos#" index="j">
+					<cfset fjson = fjson & indentStr />
+				</cfloop>
+			</cfif>
+			
+			<cfset fjson &= char />
+			
+			<cfif char eq '{' or char eq '[' or char eq ','>
+				<cfset fjson = fjson & newLine />
+				
+				<cfif char eq '{' or char eq '['>
+					<cfset pos = pos + 1 />
+				</cfif>
+				
+				<cfloop from="1" to="#pos#" index="j">
+					<cfset fjson = fjson & indentStr />
+				</cfloop>
+			</cfif>
+		</cfloop>
+		
+		<cfreturn fjson />
+	</cffunction>
+	
 	
 	
 	<cffunction name="addProfilePoint" access="public" output="false" returnType="numeric" hint="If profiling is enabled, adds a point to the request profile">
