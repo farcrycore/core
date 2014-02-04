@@ -14,14 +14,14 @@
 <cfset containerID = replace(stParam.originalID,'-','','ALL') />
 
 <cfset ruleDisplayName = application.fapi.getContentTypeMetadata(stobj.typename, "displayName", stobj.typename) />
-<cfset ruleIcon = application.fapi.getContentTypeMetadata(stobj.typename, "icon", "fa-wrench") />
+
 
 <cfoutput>
 	<div class="ruleadmin clearfix">
 		
 		<!--- Rule Label --->
 		<div style="float:left;padding:2px;">
-			<i class="fa #ruleIcon# fa-fw"></i> #ruleDisplayName#
+			<span style="display:inline-block;margin-right:0" class="ui-icon ui-icon-wrench"></span> #ruleDisplayName#
 		</div>	
 	
 		<div style="float:right;">

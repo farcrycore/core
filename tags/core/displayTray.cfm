@@ -46,7 +46,6 @@
 		<skin:loadCSS id="fc-bootstrap-tray" />
 		<skin:loadCSS id="farcry-form" />
 		<skin:loadCSS id="farcry-tray" />	
-		<skin:loadCSS id="fc-fontawesome" />
 
 		<cfoutput>	
 		<skin:onReady>
