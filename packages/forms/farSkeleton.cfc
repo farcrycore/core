@@ -203,7 +203,7 @@
 
 			<cfloop query="qProject">
 				<cfif qproject.type neq "Dir">
-					<cfset filepath = "farcry/projects/" & application.projectDirectoryName & replacenocase(qProject.directory, application.path.project, "") & "/" & qproject.name>
+					<cfset filepath = "farcry/projects/" & application.projectDirectoryName & replace(replacenocase(qProject.directory, application.path.project, ""), "\", "/", "all") & "/" & qproject.name>
 					<cfzipparam source="#qProject.directory#/#qproject.name#" entrypath="#filepath#">
 				</cfif>
 			</cfloop>
