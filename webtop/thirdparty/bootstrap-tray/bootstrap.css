@@ -176,6 +176,9 @@
   border-radius: 1px;
   border: 1px solid #c0c0c0;
 }
+.fc-tray .in {
+  display: block !important;
+}
 
 .fc-tray .modal-header h3 {
   font-size: 18px;
@@ -200,6 +203,7 @@
   color: #ccc;
   text-decoration: none;
   cursor: pointer;
+  opacity: 1 !important;
 }
 .fc-tray .modal-header .close:hover {
   color: #999;
