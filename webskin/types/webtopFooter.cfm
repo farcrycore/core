@@ -63,7 +63,7 @@
 						var el = $j(this);
 						var d = el.data("datetime");
 						if (d) {
-							el.html(moment(d + " #numberFormat(decimalFormat((getTimeZoneInfo().utcTotalOffset+0.00001)/3600) *-1*100, "+0000")#", "YYYY-MM-DD HH:mm Z").fromNow());
+							el.html(moment(d + " #numberFormat((getTimeZoneInfo().utcHourOffset*-1*100)+(getTimeZoneInfo().utcMinuteOffset*-1), "+0000")#", "YYYY-MM-DD HH:mm Z").fromNow());
 						}
 					})
 				};
