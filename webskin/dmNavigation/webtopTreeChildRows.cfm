@@ -383,7 +383,7 @@
 
 <!--- output response --->
 <cfif request.mode.ajax>
-	<cfcontent reset="true" type="application/json">		
+	<cfcontent reset="true" type="application/json; charset=utf-8">
 </cfif>
 <cfoutput>#serializeJSON(stResponse)#</cfoutput>
 
