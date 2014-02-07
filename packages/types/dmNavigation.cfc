@@ -22,7 +22,7 @@
 	<!------------------------------------------------------------------------
 	type properties
 	------------------------------------------------------------------------->	
-	<cfproperty name="title" type="nstring" required="no" default=""  hint="Object title.  Same as Label, but required for overview tree render."
+	<cfproperty name="title" type="string" required="no" default="" hint="Object title. Same as Label, but required for overview tree render."
 		ftSeq="1" ftFieldSet="General Details" ftLabel="Navigation Menu Title" 	 
 		ftHint="The navigation title is used when building the navigation menu for your website. Consider using a short menu title." />
 	

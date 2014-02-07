@@ -33,7 +33,7 @@
 	<cfproperty ftSeq="9" ftWizardStep="General" ftFieldset="Feed" name="language" type="string" hint="" ftDefault="en-au" ftLabel="language" ftType="string" ftValidation="required" />
 	<cfproperty ftSeq="10" ftWizardStep="General" ftFieldset="Feed" name="copyright" type="string" default="" hint="" ftLabel="Copyright" ftType="string" />
 	<cfproperty ftSeq="11" ftWizardStep="General" ftFieldset="Feed" name="keywords" type="string" default="" hint="" ftLabel="Keywords" ftType="string" ftHint="List of keywords (max. 12)" />
-	<cfproperty ftSeq="12" ftwizardstep="General" ftFieldSet="Feed" name="generator" type="nstring" hint="Generator Info. Example: My Company - mycompany.com" required="false" default="http://www.farcrycms.org/" ftLabel="Generator" />
+	<cfproperty ftSeq="12" ftwizardstep="General" ftFieldSet="Feed" name="generator" type="string" hint="Generator Info. Example: My Company - mycompany.com" required="false" default="http://www.farcrycms.org/" ftLabel="Generator" />
 
 	<cfproperty ftSeq="21" ftWizardStep="General" ftFieldset="Content Type" name="itemtype" type="string" default="" hint="The type that webfeed items are created from" ftLabel="Type" ftType="list" ftListData="getTypesList" ftValidation="required,validate-selection" />
 

@@ -31,11 +31,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
 <cfcomponent extends="farcry.core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management." bObjectBroker="true" fuAlias="container" bRefObjects="false" icon="fa-wrench">
 	<cfproperty name="objectID" hint="Container instance primary key." type="uuid" required="true" />
-	<cfproperty name="label" hint="Label for the container instance."  type="nstring" default="(unspecified)">
+	<cfproperty name="label" hint="Label for the container instance." type="string" default="(unspecified)">
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
 	<cfproperty name="bShared" hint="Flags whether or not this container is to be shared amongst various objects and scheduled by publishing rule." type="boolean" default="0">
-	<cfproperty name="mirrorID" hint="The UUID of a shared container to be used instead of this container; a mirror container if you like." type="UUID" default="">
-	<cfproperty name="displayMethod" hint="The webskin that will encapsulate container content" type="nstring" default=""> 
+	<cfproperty name="mirrorID" hint="The UUID of a shared container to be used instead of this container; a mirror container if you like." type="uuid" default="">
+	<cfproperty name="displayMethod" hint="The webskin that will encapsulate container content" type="string" default=""> 
 	
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
