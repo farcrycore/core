@@ -2653,6 +2653,23 @@
 
 	
 	<!--- @@examples:
+		<p>Returns true if the current request was made within the webtop, based on request.fc.inWebtop.</p>
+		<code>
+			#application.fapi.isInWebtop()# 
+		</code>
+	 --->	
+	<cffunction name="isInWebtop" access="public" output="false" returnType="string" hint="Returns true if the current request was made within the webtop, based on request.fc.inWebtop">
+		<cfset var bWebtop = false>
+	
+		<cfif structKeyExists(request.fc, "inWebtop")>
+			<cfset bWebtop = true>
+		</cfif>
+
+		<cfreturn bWebtop />
+	</cffunction>	
+
+	
+	<!--- @@examples:
 		<p>Returns the current form theme based on request.fc.inWebtop.</p>
 		<code>
 			#application.fapi.getDefaultFormTheme()# 
