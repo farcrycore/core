@@ -502,7 +502,7 @@
 				plugins : "farcrycontenttemplates,layer,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,code,textcolor",
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 				menubar : false,
-				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table farcryuploadcontent farcrycontenttemplates | code fullpage",
+				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table farcryuploadcontent farcrycontenttemplates | code | fullscreen",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
 				relative_urls : false,
