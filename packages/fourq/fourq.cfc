@@ -1277,7 +1277,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.objectBrokerWebskinCacheTimeout" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
- 		<cfparam name="stReturnMetadata.fuAlias" default="#lcase(rereplace(stReturnMetadata.displayname,'[^\w]+','-','ALL'))#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
+ 		<cfparam name="stReturnMetadata.fuAlias" default="#componentname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
 		<cfparam name="stReturnMetadata.bSystem" default="false" />
 		<cfparam name="stReturnMetadata.bUseInTree"default="false" />
 		
