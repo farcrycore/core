@@ -20,7 +20,7 @@
 <!--- @@description:   --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
 <cfset request.fc.inwebtop = true>
 
@@ -32,22 +32,28 @@
 
 
 <cfset webtopLogoPath = application.fapi.getConfig("general", "webtopLogoPath", "")>
-<cfset webtopBackgroundPath = application.fc.lib.cdn.ioGetFileLocation(location="images",file=application.fapi.getConfig("general", "webtopBackgroundPath", "")).path>
-<cfset webtopBackgroundPosition = application.fapi.getConfig("general", "webtopBackgroundPosition", '')>
+<cfset bodyStyle = "">
+<cfset webtopBackgroundPath = application.fapi.getConfig("general", "webtopBackgroundPath", "")>
+<cfif len(webtopBackgroundPath)>
+	<cfset webtopBackgroundPath = application.fc.lib.cdn.ioGetFileLocation(location="images",file=webtopBackgroundPath).path>
+	<cfset bodyStyle = "background-image:url(#webtopBackgroundPath#);">
+	<cfset webtopBackgroundPosition = application.fapi.getConfig("general", "webtopBackgroundPosition", "")>
+	<cfif len(webtopBackgroundPosition)>
+		<cfset bodyStyle = bodyStyle & "background-position:#webtopBackgroundPosition#;">
+	</cfif>
+</cfif>
 <cfset bWebtopBackgroundMask = application.fapi.getConfig("general", "bWebtopBackgroundMask", false)>
 
 
-<cfoutput>
-<!DOCTYPE HTML>
+<cfoutput><!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
+	<meta charset="utf-8">
 	<title>FarCry Login</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="#application.url.webtop#/css/icons.css" rel="stylesheet" media="screen">
 </head>
 
-<body style="<cfif len(webtopBackgroundPath)>background-image:url(#webtopBackgroundPath#);</cfif><cfif len(webtopBackgroundPosition)>background-position:#webtopBackgroundPosition#;</cfif>">
+<body style="#bodyStyle#">
 	<div class="wrap" <cfif bWebtopBackgroundMask>style="background-image:url(#application.url.webtop#/css/images/bg-mask-dot.png);"</cfif>>
 		<div class="content-main">
 			<div class="content-block">
