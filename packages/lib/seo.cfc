@@ -79,11 +79,11 @@
 				<!--- return the first matching property value --->
 				<cfif structKeyExists(arguments.stObject, item) AND len(trim(arguments.stObject[item]))>
 					<cfif arguments.stripHTML>
-						<cfset value = reReplace(arguments.stObject[item], "<[^>]*>", "", "all")>
+						<cfset value = trim(reReplace(arguments.stObject[item], "<[^>]*>", "", "all"))>
 					<cfelse>
-						<cfset value = arguments.stObject[item]>
+						<cfset value = trim(arguments.stObject[item])>
 					</cfif>
-					<cfif len(trim(value))>
+					<cfif len(value)>
 						<cfbreak>
 					</cfif>
 				</cfif>
