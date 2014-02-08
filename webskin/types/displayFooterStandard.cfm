@@ -16,8 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@displayname: Standard Core Footer --->
-<!--- @@description: Very basic footer and is available to all content types  --->
+<!--- @@displayname: Standard Footer --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 

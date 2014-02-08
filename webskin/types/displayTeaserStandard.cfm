@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry CMS Plugin.
@@ -16,7 +16,6 @@
     You should have received a copy of the GNU Lesser General Public License
     along with FarCry CMS Plugin.  If not, see <http://www.gnu.org/licenses/>.
 --->
-
 <!--- @@displayname: Standard Teaser --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au)--->
 
@@ -24,8 +23,8 @@
 <!--- IMPORT TAG LIBRARIES --->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
-<cfif structKeyExists(stobj, "title")>
-	<cfset teaserTitle = stObj.Title />
+<cfif structKeyExists(stObj, "title")>
+	<cfset teaserTitle = stObj.title />
 <cfelse>
 	<cfset teaserTitle = stObj.label />
 </cfif>
@@ -33,12 +32,12 @@
 <cfoutput>
 	<h4>#teaserTitle#</h4>
 	<p>
-		<cfif structKeyExists(stobj, "Teaser")>
+		<cfif structKeyExists(stObj, "teaser")>
 			#stObj.Teaser#			
 		</cfif>
-		<skin:buildLink objectid="#stobj.objectID#" class="morelink">More<span>about:#teaserTitle#</span></skin:buildLink>
+		<skin:buildLink objectid="#stObj.objectID#" class="morelink">More<span>about:#teaserTitle#</span></skin:buildLink>
 	</p>
 </cfoutput>
 
 
-<cfsetting enablecfoutputonly="false" />
+<cfsetting enablecfoutputonly="false">

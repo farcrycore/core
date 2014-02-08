@@ -1,15 +1,15 @@
 <cfsetting enablecfoutputonly="true">
 
-<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
-<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin">
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
-<cfparam name="session.writingDir" default="ltr" />
-<cfparam name="session.userLanguage" default="en" />
+<cfparam name="session.writingDir" default="ltr">
+<cfparam name="session.userLanguage" default="en">
 
 <cfset request.fc.inWebtop = 1>
 
 <!--- get sections --->
-<cfset stWebtop = application.factory.oWebtop.getAllItems() />
+<cfset stWebtop = application.factory.oWebtop.getAllItems()>
 
 <!--- init user profile info --->
 <cfset webtopUsername = "FarCry User">

@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true" /> 
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -16,16 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@displayname: Generic type body display --->
-<!--- @@description:   --->
+<!--- @@displayname: Standard Body --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
-
 
 <cfoutput>
 <h1>#stObj.label#</h1>
-<cfif structKeyExists(stobj, "body")>
+<cfif structKeyExists(stObj, "body")>
 	#stObj.body#
 </cfif>
 </cfoutput>
 
-<cfsetting enablecfoutputonly="false" /> 
+<cfsetting enablecfoutputonly="false">
