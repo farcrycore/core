@@ -16,20 +16,21 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@displayname: Standard Core Header --->
+<!--- @@displayname: Standard Header --->
 <!--- @@description: Very basic header and is available to all content types  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
-<cfparam name="stParam.pageTitle" default="" />
+<cfparam name="stParam.pageTitle" default="#application.fc.lib.seo.getTitle()#">
 
-<cfoutput>
+
+<cfoutput><!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>#application.config.general.sitetitle#: #stParam.pageTitle#</title>
+	<title>#stParam.pageTitle# - #application.fapi.getConfig("general", "sitetitle")#</title>
 </head>
 <body>
 

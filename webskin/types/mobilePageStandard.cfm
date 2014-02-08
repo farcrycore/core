@@ -4,7 +4,7 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
-<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" template="mobileHeaderStandard" pageTitle="#stObj.label#" />
+<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" template="mobileHeaderStandard" />
 
 <skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" template="#url.bodyView#" />
 

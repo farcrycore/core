@@ -1,16 +1,15 @@
-<cfsetting enablecfoutputonly="true" /> 
-
-<!--- @@displayname: Core standard display --->
+<cfsetting enablecfoutputonly="true">
+<!--- @@displayname: Standard Page --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au)--->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" template="displayHeaderStandard" pageTitle="#stObj.label#" />
-		
-	<skin:breadcrumb separator=" / ">
-	
-	<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="#url.bodyView#" />
+<skin:view objectid="#stObj.objectid#" typename="#stObj.typename#" template="displayHeaderStandard" />
 
-<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" template="displayFooterStandard" />
+<skin:breadcrumb separator=" / ">
 
-<cfsetting enablecfoutputonly="false" /> 
+<skin:view typename="#stObj.typename#" objectid="#stObj.objectid#" webskin="#url.bodyView#" />
+
+<skin:view objectid="#stObj.objectid#" typename="#stObj.typename#" template="displayFooterStandard" />
+
+<cfsetting enablecfoutputonly="false">

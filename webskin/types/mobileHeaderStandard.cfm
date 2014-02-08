@@ -4,16 +4,15 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
-<cfparam name="stParam.pageTitle" default="">
+<cfparam name="stParam.pageTitle" default="#application.fc.lib.seo.getTitle()#">
 
-<cfcontent reset="true">
 
-<cfoutput><!doctype html>
+<cfoutput><!DOCTYPE html>
 <html>
 
 <head>
 <meta charset="utf-8">
-<title>#stParam.pageTitle# - #application.config.general.sitetitle#</title>
+<title>#stParam.pageTitle# - #application.fapi.getConfig("general", "sitetitle")#</title>
 
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="farcry-devicetype" />
