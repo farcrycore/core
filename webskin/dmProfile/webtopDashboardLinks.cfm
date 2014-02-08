@@ -44,6 +44,7 @@
 <a target="_blank" href="https://farcry.jira.com/wiki/display/FCDEV60/Book+of+FarCry">FarCry Developer Course</a><br>
 <a target="_blank" href="http://docs.farcrycore.org">FarCry API Documentation</a><br>
 <a target="_blank" href="https://farcry.jira.com">FarCry Bug Tracker (JIRA)</a><br>
+<a target="_blank" href="https://farcry.jira.com/wiki/questions">FarCry Questions (Confluence)</a><br>
 <a target="_blank" href="https://farcry.jira.com/wiki">FarCry Wiki (Confluence)</a><br>
 <br>
 
