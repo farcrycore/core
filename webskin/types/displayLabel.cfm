@@ -17,9 +17,7 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@displayname: Display Label --->
-<!--- @@description: Displays the label of the object and is available to all content types  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
-<!--- @@cachestatus: -1 --->
 
 
 <!------------------ 
