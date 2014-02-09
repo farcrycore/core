@@ -2,7 +2,6 @@
 <!--- @@displayname: COAPI Conflict --->
 <!--- @@description: Details about conflicts for a specific content type --->
 
-<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
@@ -12,8 +11,6 @@
 
 <cfset stDiff = application.fc.lib.db.diffSchema(typename=url.typepath,dsn=application.dsn) />
 
-
-<admin:header />
 
 <skin:loadJS id="fc-jquery" />
 <skin:htmlHead><cfoutput>
@@ -25,6 +22,12 @@
 		.undeployed { color:##23d729; }
 		.deleted { color:##ff0000; }
 		.altered { color:##d78b23; }
+		input[type=radio] {
+			margin-top: 2px !important;
+		}
+		input.rename[type=radio] {
+			margin-top: 6px !important;
+		}
 	</style>
 </cfoutput></skin:htmlHead>
 
@@ -39,14 +42,14 @@
 	<cfloop collection="#stDiff.tables#" item="thistable">
 		<cfswitch expression="#stDiff.tables[thistable].resolution#">
 			<cfcase value="x">
-				<ft:field label="#thistable#" bMultiField="true" style="font-weight:bold; background-color:##f5f5f5; border-bottom:1px solid ##666666;">
+				<ft:field label="&nbsp;<strong>#thistable#</strong>" bMultiField="true" style="font-weight:bold; border-bottom:2px solid ##ddd;">
 					<cfoutput>
 						<label for="field_#thistable#_ignore" class="radio inline">
-							<input type="radio" name="field_#thistable#" id="field_#thistable#_ignore" value="#thistable#" checked onclick="$j('.table-#thistable#.ignore').attr('checked','checked');" />
+							<input type="radio" name="field_#thistable#" id="field_#thistable#_ignore" value="#thistable#" checked onclick="$j('.table-#thistable#.ignore').prop('checked',true);" />
 							Ignore All
 						</label>
 						<label for="field_#thistable#_deploy" class="radio inline">
-							<input type="radio" name="field_#thistable#" id="field_#thistable#_deploy" value="#thistable#" onclick="$j('.table-#thistable#.default').attr('checked','checked');" />
+							<input type="radio" name="field_#thistable#" id="field_#thistable#_deploy" value="#thistable#" onclick="$j('.table-#thistable#.default').prop('checked',true);" />
 							Deploy All Defaults
 						</label>
 					</cfoutput>
@@ -55,7 +58,7 @@
 				<cfloop collection="#stDiff.tables[thistable].fields#" item="thisfield">
 					<cfswitch expression="#stDiff.tables[thistable].fields[thisfield].resolution#">
 						<cfcase value="x">
-							<ft:field label="&nbsp;&nbsp;&nbsp;<span id='index_#thistable#_#thisfield#_conflicts'>#thisfield#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisfield#_conflicts'>#thisfield#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisfield#_conflicts" selector="##index_#thistable#_#thisfield#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].fields[thisfield])#" />
 								<cfoutput>
 									<label for="field_#thistable#_#thisfield#_ignore" class="radio inline">
@@ -70,7 +73,7 @@
 							</ft:field>
 						</cfcase>
 						<cfcase value="+">
-							<ft:field label="&nbsp;&nbsp;&nbsp;<span id='index_#thistable#_#thisfield#_conflicts'>#thisfield#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisfield#_conflicts'>#thisfield#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisfield#_conflicts" selector="##index_#thistable#_#thisfield#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].fields[thisfield])#" />
 								<cfoutput>
 									<label for="field_#thistable#_#thisfield#_ignore" class="radio inline">
@@ -85,21 +88,21 @@
 							</ft:field>
 						</cfcase>
 						<cfcase value="-">
-							<ft:field label="&nbsp;&nbsp;&nbsp;<span id='index_#thistable#_#thisfield#_conflicts'>#thisfield#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisfield#_conflicts'>#thisfield#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisfield#_conflicts" selector="##index_#thistable#_#thisfield#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].fields[thisfield])#" />
 								<cfoutput>
 									<label for="field_#thistable#_#thisfield#_ignore" class="radio inline">
-										<input type="radio" name="field_#thistable#_#thisfield#" id="field_#thistable#_#thisfield#_ignore" class="table-#thistable# ignore" value="ignore" checked />
+										<input type="radio" name="field_#thistable#_#thisfield#" id="field_#thistable#_#thisfield#_ignore" class="table-#thistable# ignore default" value="ignore" checked />
 										Ignore
 									</label>
 									<label for="field_#thistable#_#thisfield#_drop" class="radio inline">
-										<input type="radio" name="field_#thistable#_#thisfield#" id="field_#thistable#_#thisfield#_drop" class="table-#thistable# default" value="drop" />
+										<input type="radio" name="field_#thistable#_#thisfield#" id="field_#thistable#_#thisfield#_drop" class="table-#thistable#" value="drop" />
 										Drop
 									</label>
 									
 									<cfset foundoption = false />
 									<cfsavecontent variable="renameoptions">
-										<select name="field_#thistable#_#thisfield#_rename_new" id="field_#thistable#_#thisfield#_rename_new">
+										<select name="field_#thistable#_#thisfield#_rename_new" id="field_#thistable#_#thisfield#_rename_new" onchange="$j('##field_#thistable#_#thisfield#_rename').prop('checked',true);">
 											<option value="">-- select --</option>
 											<cfloop collection="#stDiff.tables[thistable].fields#" item="otherfield">
 												<cfif structkeyexists(stDiff.tables[thistable].fields[otherfield],"resolution") and stDiff.tables[thistable].fields[thisfield].resolution eq "-">
@@ -111,11 +114,9 @@
 									</cfsavecontent>
 									
 									<cfif foundoption>
-										<label for="field_#thistable#_#thisfield#_rename" class="radio inline">
-											<input type="radio" name="field_#thistable#_#thisfield#" id="field_#thistable#_#thisfield#_rename" value="rename" />
-											Rename
-											
-											#renameoptions#
+										<label for="field_#thistable#_#thisfield#_rename" class="radio inline" style="white-space: nowrap;padding-top:7px">
+											<input type="radio" class="rename" name="field_#thistable#_#thisfield#" id="field_#thistable#_#thisfield#_rename" value="rename" />
+											Rename &nbsp;#trim(renameoptions)#
 										</label>
 									</cfif>
 								</cfoutput>
@@ -127,7 +128,7 @@
 				<cfloop collection="#stDiff.tables[thistable].indexes#" item="thisindex">
 					<cfswitch expression="#stDiff.tables[thistable].indexes[thisindex].resolution#">
 						<cfcase value="x">
-							<ft:field label="&nbsp;&nbsp;&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisindex#_conflicts" selector="##index_#thistable#_#thisindex#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].indexes[thisindex])#" />
 								<cfoutput>
 									<label for="index_#thistable#_#thisindex#_ignore" class="radio inline">
@@ -142,7 +143,7 @@
 							</ft:field>
 						</cfcase>
 						<cfcase value="+">
-							<ft:field label="&nbsp;&nbsp;&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisindex#_conflicts" selector="##index_#thistable#_#thisindex#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].indexes[thisindex])#" />
 								<cfoutput>
 									<label for="index_#thistable#_#thisindex#_ignore" class="radio inline">
@@ -157,7 +158,7 @@
 							</ft:field>
 						</cfcase>
 						<cfcase value="-">
-							<ft:field label="&nbsp;&nbsp;&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisindex#_conflicts" selector="##index_#thistable#_#thisindex#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].indexes[thisindex])#" />
 								<cfoutput>
 									<label for="index_#thistable#_#thisindex#_ignore" class="radio inline">
@@ -222,7 +223,6 @@
 	</ft:buttonPanel>
 </ft:form>
 
-<admin:footer />
 
 <cffunction name="summariseChanges" output="false" returntype="string" hint="Returns a string summarising the changes">
 	<cfargument name="resolution" type="string" required="true" hint="+,x,-" />
