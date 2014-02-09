@@ -57,6 +57,9 @@
 <body id="sec-#url.sec#" class="webtop">
 
 	<div class="navbar navbar-fixed-top farcry-header">
+
+		<skin:view typename="configEnvironment" webskin="displayLabel" />
+
 		<div class="container-fluid farcry-header-top">
 			<div class="farcry-header-top-row">
 				<div class="farcry-header-brand">
@@ -76,9 +79,6 @@
 						</admin:loopwebtop>
 
 					</ul>
-
-					<skin:view typename="configEnvironment" webskin="displayLabel" />
-
 				</div>
 				<div class="farcry-header-utility">
 					<div class="farcry-header-logo">

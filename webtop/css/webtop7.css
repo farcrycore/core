@@ -127,22 +127,30 @@ a:hover {
 
 .farcry-header-environment {
 	position: absolute;
-	overflow: hidden;
 	top: 0;
-	left: 50%;
-	margin-left: -12.5%;
+	left: 0;
+	width: 100%;
+	text-align:center;
+	line-height: 1;
+}
+.farcry-header-environment-label {
+	display:inline-block;
+	overflow: hidden;
+	max-height: 2px;
 	font-size: 13px;
-	padding: 3px 12px;
+	font-weight: bold;
+	vertical-align: top;
+	padding: 2px 12px;
 	background: #aaaaaa;
 	color: white;
-	max-height: 0px;
 	text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+	line-height: 2;
 }
-.farcry-header-environment:hover {
+.farcry-header-environment-label:hover {
 	max-height: none;
-	padding: 4px 12px;
+	padding: 7px 12px;
+	line-height: 1;
 }
-
 
 
 /* customise bootstrap tabs for the main farcry tabbed nav */
