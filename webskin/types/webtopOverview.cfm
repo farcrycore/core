@@ -21,21 +21,8 @@
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 
-<!------------------ 
-FARCRY INCLUDE FILES
- ------------------>
-
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
-<cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
-
-<!------------------ 
-START WEBSKIN
- ------------------>
-
 
 
 <skin:loadJS id="fc-jquery" />
@@ -72,22 +59,18 @@ TO: A refactor is required of all this now that we have webskin goodness.
 	<tr>
 		<td id="webtopOverviewActions" style="vertical-align:top;width:190px;padding:5px;">
 	</cfoutput>
-			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewActionsPrimary" />	
+			<skin:view stObject="#stObj#" webskin="webtopOverviewActionsPrimary" />	
 	<cfoutput>
 		</td><td style="vertical-align:top;padding:5px;">		
     </cfoutput>	
-			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewTab" />	
+			<skin:view stObject="#stObj#" webskin="webtopOverviewTab" />	
 	<cfoutput>
 
 	</tr>
 	</table>		
     </cfoutput>
 
-			
-			
-
 </ft:form>
 
 
 <cfsetting enablecfoutputonly="false">
-

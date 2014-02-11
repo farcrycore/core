@@ -63,10 +63,14 @@ If a versionid is passed then that is the one we wish to render as the overview.
 	<cfset url.typename = application.fapi.findType(variables.overviewID) />
 </cfif>
 
+<!--- get the content object from storage, not object broker --->
+<cfset stObject = application.fapi.getContentType(typename=url.typename).getData(objectid=variables.overviewID, bUseInstanceCache=false)>
+
+
 <skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
 <sec:CheckPermission error="true" permission="ObjectOverviewTab">
-	<skin:view objectid="#variables.overviewID#" typename="#url.typename#" webskin="webtopOverview" />
+	<skin:view stObject="#stObject#" webskin="webtopOverview" />
 </sec:CheckPermission>
 
 <!--- setup footer --->
