@@ -139,6 +139,7 @@ test for the existance of each and act accordingly
 
 <!--- Load config data --->
 <cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
+<cfset application.config = structNew() />
 <cfloop list="#oConfig.getConfigKeys()#" index="configkey">
 	<cfset application.config[configkey] = oConfig.getConfig(configkey) />
 </cfloop>

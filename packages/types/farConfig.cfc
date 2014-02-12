@@ -60,6 +60,8 @@ object methods
 		<cfset var lFieldSets	= '' />
 		<cfset var iFieldset	= '' />
 		<cfset var qFieldset	= '' />
+		<cfset var propertyFormat = '' />
+		<cfset var stMeta = structNew() />
 
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -100,8 +102,24 @@ object methods
 							WHERE 		ftFieldset = '#iFieldset#'
 							ORDER BY 	ftSeq
 						</cfquery>
-						
-						<ft:object stObject="#stObj#" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#iFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+
+						<ft:fieldset Legend="#iFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#">
+							<cfloop query="qFieldset">
+
+								<cfset propertyFormat = "edit">
+								<cfif isDefined("application.config._readonly.#arguments.stObject.configkey#.#qFieldset.propertyname#")>
+									<cfset propertyFormat = "display">
+									<cfset stMeta = structNew()>
+									<cfset stMeta[qFieldset.propertyname] = structNew()>
+									<cfset stMeta[qFieldset.propertyname].ftHint = "This field is read only and cannot be edited via the webtop">
+									<cfset stMeta[qFieldset.propertyname].value = application.config._readonly[arguments.stObject.configkey][qFieldset.propertyname]>
+								</cfif>
+
+								<ft:object stObject="#stObj#" format="#propertyFormat#" lExcludeFields="label" lFields="#qFieldset.propertyname#" stPropMetadata="#stMeta#" inTable="false" IncludeFieldSet="false" />
+
+							</cfloop>
+						</ft:fieldset>
+
 					</cfloop>
 						
 				<cfelse>
@@ -351,6 +369,11 @@ object methods
 		<cfset var thisprop = "" />
 		
 		<cfset config = deserializeJSON(arguments.stProperties.configdata)>
+
+		<!--- re-apply read only properties --->
+		<cfif isDefined("application.config._readonly.#arguments.stProperties.configkey#")>
+			<cfset structAppend(config, application.config._readonly[arguments.stProperties.configkey], true)>
+		</cfif>
 		
 		<!--- run the config object's process method --->
 		<cfif structKeyExists(stProperties, "configtypename") AND len(stProperties.configtypename) and structkeyexists(application.stCOAPI,stProperties.configtypename)>

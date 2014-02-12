@@ -1231,17 +1231,22 @@
 			<cfargument name="key" required="true" hint="The Config Key identifying the config form the property is located in." />
 			<cfargument name="name" required="true" hint="The name of the config property you wish to retrieve a value for." />
 			<cfargument name="value" required="true" hint="The value to set the config item to." />
-			
-			
+			<cfargument name="bReadOnly" required="false" default="false" hint="Flag this config item as read only so that it cannot be edited via the webtop." />
+
 			<cfif isDefined("application.config.#arguments.key#.#arguments.name#")>
 				<cfset application.config[arguments.key][arguments.name] = arguments.value />
+				<cfif arguments.bReadOnly>
+					<cfparam name="application.config._readonly" default="#structNew()#">
+					<cfparam name="application.config._readonly.#arguments.key#" default="#structNew()#">
+					<cfset application.config._readonly[arguments.key][arguments.name] = arguments.value>
+				</cfif>
 			<cfelse>
 				<cfthrow message="The config item [#arguments.key#:#arguments.name#] was not found." />
 			</cfif>
-			
+
 			<cfreturn />
-		</cffunction>		
-		
+		</cffunction>
+
 		<!--- @@examples:
 			<p>Link to the archive navigation node if it has been defined:</p>
 			<code>
