@@ -20,7 +20,7 @@
 		ftSeq="15" ftFieldset="Webtop / Login Appearance" ftLabel="Login Background Position" 
 		ftType="list"
 		ftList="left top,left center,left bottom,right top,right center,right bottom,center top,:center center,center bottom"
-		ftHint="The css position of the login background position">
+		ftHint="The CSS position of the login background image">
 	<cfproperty name="bWebtopBackgroundMask" type="boolean" default="false" 
 		ftSeq="16" ftFieldset="Webtop / Login Appearance" ftLabel="Login Background Mask"
 		ftType="boolean"
