@@ -85,7 +85,7 @@
 
 <cfparam name="attributes.lButtons" default="*" type="string">
 <cfparam name="attributes.lButtonsEmpty" default="add,bulk upload,undelete" type="string">
-<cfparam name="attributes.bPaginateTop" default="true" type="boolean">
+<cfparam name="attributes.bPaginateTop" default="false" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
 <cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
 
@@ -824,9 +824,9 @@
 				oddRowClass="alt"
 				evenRowClass=""
 				r_stObject="st"
-				top="false"
+				top="#attributes.bPaginateTop#"
+				bottom="#attributes.bPaginateBottom#"
 				bDisplayTotalRecords="#attributes.bDisplayTotalRecords#">
-
 
 		
 			<cfif st.bFirst>
