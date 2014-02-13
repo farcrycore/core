@@ -1,6 +1,6 @@
 <cfcomponent name="objectBrokerStats" hint="Records statistics for an object broker's events" output="false">
 
-	<!--- Put counters in public "this" scope so yxplorer can find them --->
+	<!--- Put counters in public "this" scope --->
 	<cfset this.summaryCounters = structNew() />
 	<cfset this.typeCounters = structNew() />
 	<cfset this.objectCounters = structNew() />
