@@ -617,8 +617,8 @@
 					'|---|' + COALESCE(#arguments.aTableColMD[j].Name#,'') + '|---|'
 				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>
 					'|---|' + COALESCE( CONVERT( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|'
-					<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
-					'|---|' + COALESCE( CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21) ,'NULL') + '|---|'
+				<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
+					'|---|' + COALESCE( CONVERT ( varchar(19) , #arguments.aTableColMD[j].Name#, 120) ,'NULL') + '|---|'
 				<cfelse>
 					COALESCE( CONVERT( varchar, #arguments.aTableColMD[j].Name#),'=???=')
 				</cfif>
