@@ -383,6 +383,7 @@
 				<cfif FindNoCase("char", arguments.aTableColMD[j].TypeName)
 			    OR FindNoCase("unique", arguments.aTableColMD[j].TypeName)
 			    OR FindNoCase("xml", arguments.aTableColMD[j].TypeName)
+			    OR FindNoCase("object", arguments.aTableColMD[j].TypeName)
 			     >
 					'|---|' , COALESCE(#arguments.aTableColMD[j].Name#,'') , '|---|'
 				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>

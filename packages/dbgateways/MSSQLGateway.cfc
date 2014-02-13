@@ -613,11 +613,12 @@
 				<cfif FindNoCase("char", arguments.aTableColMD[j].TypeName)
 			    OR FindNoCase("unique", arguments.aTableColMD[j].TypeName)
 			    OR FindNoCase("xml", arguments.aTableColMD[j].TypeName)
+			    OR FindNoCase("object", arguments.aTableColMD[j].TypeName)
 			     >
 					'|---|' + COALESCE(#arguments.aTableColMD[j].Name#,'') + '|---|'
 				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>
 					'|---|' + COALESCE( CONVERT( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|'
-				<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
+				<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName) OR FindNoCase("time", arguments.aTableColMD[j].TypeName)>
 					'|---|' + COALESCE( CONVERT ( varchar(19) , #arguments.aTableColMD[j].Name#, 120) ,'NULL') + '|---|'
 				<cfelse>
 					COALESCE( CONVERT( varchar, #arguments.aTableColMD[j].Name#),'=???=')
