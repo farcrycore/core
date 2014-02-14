@@ -215,76 +215,8 @@
 		$j('.fc-selected-object-id').attr('value',objectid);
 	}	
 
-						
-	function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,iconCls){
-		// shorthand
-	    var Tree = Ext.tree;
-	    var checkRoot = false;
-	    
-	    tree = new Tree.TreePanel({
-	        animate:true, 
-	        loader: new Tree.TreeLoader({
-	            dataUrl:dataURL,
-	            baseAttrs: {checked:false,iconCls:'categoryIconCls'},
-	            baseParams: {selectedObjectIDs:selectedIDs}
-	        }),
-	        enableDD:true,
-	        containerScroll: true,
-	        border:false
-	    });
-
-		tree.on('checkchange', function(n,c) {
-			var newList = "";
-			var currentTreeList = Ext.getDom(fieldname).value;
-			if(c){ 
-				if(currentTreeList.length){
-			  		currentTreeList = currentTreeList + ','
-			  	}
-				Ext.getDom(fieldname).value = currentTreeList + n.id
-			} else {
-				var valueArray = currentTreeList.split(",");
-				for(var i=0; i < valueArray.length; i++){
-				  //do something by accessing valueArray[i];
-				  if(n.id != valueArray[i]){
-				  	if(newList.length){
-				  		newList = newList + ',';
-				  	}
-				  	newList = newList + valueArray[i]
-				  }
-				}
-				Ext.getDom(fieldname).value = newList;
-			}	
-
-		});
-		
-		if(selectedIDs.match(rootID)){
-			checkRoot = true;
-		}
-		
-	    // set the root node
-	    var root = new Tree.AsyncTreeNode({
-	        text: rootNodeText,
-	        draggable:false,
-	        id:rootID,
-	        iconCls:iconCls,
-	        checked:checkRoot
-	    });
-	    tree.setRootNode(root);
-
-	    // render the tree
-	    tree.render(fieldname + '-tree-div');
-	    root.expand();
-	    
-	}
-
-					
-					
 	function selectedObjectID(objectid) {
 		$j('.fc-selected-object-id').attr('value',objectid);
-		<!--- f = Ext.query('.fc-selected-object-id');
-		for(var i=0; i<f.length; i++){
-			f[i].value=objectid;
-		} --->
 	}	
 		
 		
@@ -308,26 +240,14 @@
 		
 	function btnClick(formName,value) {
 		$j('.fc-button-clicked').attr('value',value);
-	<!---    	f = Ext.query('.fc-button-clicked');
-	   	for(var i=0; i<f.length; i++){
-			f[i].value = value;
-		} --->
 	}
 
 	function btnTurnOnServerSideValidation() {
 		$j('.fc-server-side-validation').attr('value',1);
-		<!--- f = Ext.query('.fc-server-side-validation');
-	   	for(var i=0; i<f.length; i++){
-			f[i].value = 0;
-		} --->
 	}
 
 	function btnTurnOffServerSideValidation() {
 		$j('.fc-server-side-validation').attr('value',0);
-		<!--- f = Ext.query('.fc-server-side-validation');
-	   	for(var i=0; i<f.length; i++){
-			f[i].value = 0;
-		} --->
 	}
 		
 			
@@ -335,7 +255,6 @@
 	   	btnClick(formName,value);
 		if (formName != '') {
 			$j('##' + formName).submit();	
-			<!--- Ext.get(formName).dom.submit(); --->
 		}
 	}
 			
@@ -379,8 +298,6 @@
 			}
 		}
 	}
-
-
 
 
 	function setRowBackground (childCheckbox) {
