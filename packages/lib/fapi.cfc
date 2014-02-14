@@ -768,6 +768,8 @@
 		
 		<cfset var tmp = "" />
 		<cfset var field = "" />
+		<cfset var fields = "" />
+		<cfset var i = "" />
 		
 		<cfif structkeyexists(arguments,"filename") and len(arguments.filename)>
 			<cfheader name="Content-Disposition" value="attachment; filename=#arguments.filename#" />
@@ -834,8 +836,32 @@
 						</cfloop>
 					</cfloop>
 					<cfset arguments.content = tmp.toString() />
+				<cfelseif isarray(arguments.content) and arraylen(arguments.content) and isstruct(arguments.content[1])>
+					<cfset tmp = createObject("java","java.lang.StringBuffer").init() />
+					<cfif structkeyexists(arguments.content[1],"columnlist")>
+						<cfset fields = arguments.content[1].columnlist />
+					<cfelse>
+						<cfset fields = structkeylist(arguments.content[1]) />
+					</cfif>
+					<cfloop from="1" to="#arraylen(arguments.content)#" index="i">
+						<cfloop list="#fields#" index="field">
+							<cfif field neq listfirst(fields)>
+								<cfset tmp.append(",") />
+							</cfif>
+							<cfif isnumeric(arguments.content[i][field]) or isboolean(arguments.content[i][field])>
+								<cfset tmp.append(arguments.content[i][field]) />
+							<cfelse>
+								<cfset tmp.append('"') />
+								<cfset tmp.append(arguments.content[i][field]) />
+								<cfset tmp.append('"') />
+							</cfif>
+						</cfloop>
+						<cfset tmp.append("
+") />
+					</cfloop>
+					<cfset arguments.content = tmp.toString() />
 				<cfelseif not issimplevalue(arguments.content)>
-					<cfthrow message="Content must be a string or a query when streaming a CSV" />
+					<cfthrow message="Content must be a string or a query or an array of structs when streaming a CSV" />
 				</cfif>
 			</cfcase>
 		</cfswitch>
