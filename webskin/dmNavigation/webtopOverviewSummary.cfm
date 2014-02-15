@@ -78,21 +78,21 @@
 	<cfif stObj.navType eq "externalLink" or (len(stObj.navType) eq "" and len(stObj.externalLink))>
 		<ft:field label="Content Mirror" bMultiField="true" hint="When a visitor to your site browses to this navigation item, they will be shown the content above instead of the children of this item.">
 			<cfoutput>
-				<table class="objectAdmin" style="width:100%;">	
+				<table class="table" style="width:100%;">	
 					<cfset contentTypename = application.fapi.findType(objectid="#stobj.externalLink#") />
 					
 					<tr>
-						<td>
+						<td style="vertical-align:middle;padding-bottom:3px">
+							<ft:button icon="fa-th" value="Manage" text="Overview" selectedObjectID="#stobj.externalLink#" />
 							<cfif structKeyExists(application.stCOAPI,contentTypename)>
 								<cfif len(application.stCOAPI[contentTypename].icon)>
-									<i class="#application.stCOAPI[contentTypename].icon#"></i>
+									<i class="fa #application.stCOAPI[contentTypename].icon# fa-fw"></i>
 								<cfelse>
-									<i class="fa fa-file-o"></i>
+									<i class="fa fa-file-o fa-fw"></i>
 								</cfif>
 								<skin:view typename="#contentTypename#" objectid="#stobj.externalLink#" webskin="displayLabel" />
 							</cfif>
 						</td>	
-						<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.externalLink#" /></td>	
 					</tr>	
 				</table>
 			</cfoutput>
@@ -111,20 +111,20 @@
 			<cfoutput>
 				
 				<cfif arrayLen(stobj.aObjectIDs)>
-					<table class="objectAdmin" style="width:100%;">	
+					<table class="table" style="width:100%;">	
 					<cfloop from="1" to="#arrayLen(stobj.aObjectIDs)#" index="i">
 						<cfset contentTypename = application.fapi.findType(objectid="#stobj.aObjectIDs[i]#") />
 						
 						<tr>
-							<td>
+							<td style="vertical-align:middle;padding-bottom:3px">
+								<ft:button icon="fa-th" value="Manage" text="Overview" selectedObjectID="#stobj.aObjectIDs[i]#" />
 								<cfif len(application.stCOAPI[contentTypename].icon)>
-									<i class="fa #application.stCOAPI[contentTypename].icon#"></i>
+									<i class="fa #application.stCOAPI[contentTypename].icon# fa-fw"></i>
 								<cfelse>
-									<i class="fa fa-file-o"></i>
+									<i class="fa fa-file-o fa-fw"></i>
 								</cfif>
 								<skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" />
 							</td>	
-							<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.aObjectIDs[i]#" /></td>	
 						</tr>
 							
 					</cfloop>	
@@ -168,21 +168,21 @@
 		
 		<ft:field label="Internal Redirect" bMultiField="true" hint="This navigation item redirects to another page in the website.">
 			<cfoutput>
-				<table class="objectAdmin" style="width:100%;">	
+				<table class="table" style="width:100%;">	
 					<cfset contentTypename = application.fapi.findType(objectid="#stobj.internalRedirectID#") />
 					
 					<tr>
-						<td>
+						<td style="vertical-align:middle;padding-bottom:3px">
+							<ft:button icon="fa-th" value="Manage" text="Overview" selectedObjectID="#stobj.internalRedirectID#" />
 							<cfif structKeyExists(application.stCOAPI,contentTypename)>
 								<cfif len(application.stCOAPI[contentTypename].icon)>
-									<i class="fa #application.stCOAPI[contentTypename].icon#"></i>
+									<i class="fa #application.stCOAPI[contentTypename].icon# fa-fw"></i>
 								<cfelse>
-									<i class="fa fa-file-o"></i>
+									<i class="fa fa-file-o fa-fw"></i>
 								</cfif>
 								<skin:view typename="#contentTypename#" objectid="#stobj.internalRedirectID#" webskin="displayLabel" />
 							</cfif>
 						</td>	
-						<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.internalRedirectID#" /></td>	
 					</tr>	
 				</table>
 			</cfoutput>
