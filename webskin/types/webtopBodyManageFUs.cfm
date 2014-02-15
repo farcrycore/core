@@ -92,19 +92,31 @@ manage friendly urls for a particular object id
 <cfset qFUArchived = application.fc.factory.farFU.getFUList(objectid=stObj.objectid, fuStatus="archived") />
 
 
+<cfoutput>
+	<h1>
+		<cfif len(application.stCOAPI[stobj.typename].icon)>
+			<i class="fa #application.stCOAPI[stobj.typename].icon#"></i>
+		<cfelse>
+			<i class="fa fa-file"></i>
+		</cfif>
+		#stobj.label#
+	</h1>
+</cfoutput>
+
+
 <admin:tabs id="fu-tabs">
-	<admin:tabItem id="create-alternative" title="Create Alternative">
+	<admin:tabItem id="create-alternative" title="Add Alternative URL">
 		<ft:form>
 			<ft:object typename="farFU" key="newFU" lexcludeFields="label,refObjectID,fuStatus,querystring,applicationname" includeFieldSet="false" />
 			<ft:buttonPanel>
-				<cfoutput><a href="##" class="btn btn-link" style="border:none;box-shadow:none;background:none;" onclick="$fc.closeBootstrapModal(); return false;">Close</a></cfoutput>
 				<ft:button value="Add" selectedObjectID="#stObj.objectid#" />
+				<cfoutput><a href="##" class="btn" onclick="$fc.closeBootstrapModal(); return false;">Close</a></cfoutput>
 			</ft:buttonPanel>
 		</ft:form>	
 	</admin:tabItem>      
 	
 	<cfif qFUCurrent.recordCount>
-		<admin:tabItem id="current" title="Current">
+		<admin:tabItem id="current" title="Default URL">
 			<ft:form>
 				<cfoutput><table class="table table-striped"></cfoutput>
 				
@@ -122,21 +134,21 @@ manage friendly urls for a particular object id
 					<thead>
 						<tr>
 							<td colspan="5" style="border-top:0 none transparent;">
-								<h3>
+								<h3 style="margin-bottom:0">
 									<cfif qFUCurrent.fuStatus EQ 1>
-										System Generated
+										System Generated URL
 									<cfelseif qFUCurrent.fuStatus EQ 2>
-										Alternative
+										Alternative URLs
 									</cfif>
 								</h3>
 							</td>
 						</tr>
 						<tr>
-							<th>&nbsp;</th>
-							<th>Friendly URL</th>
-							<th>Redirection</th>
-							<th>Redirect To</th>
-							<th>Default</th>
+							<th style="border-top:0 none transparent;">&nbsp;</th>
+							<th style="border-top:0 none transparent;">Friendly URL</th>
+							<th style="border-top:0 none transparent;">Redirection</th>
+							<th style="border-top:0 none transparent;">Redirect To</th>
+							<th style="border-top:0 none transparent;">Default</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -176,7 +188,7 @@ manage friendly urls for a particular object id
 								<cfif qFUCurrent.bDefault>
 									<td>>>>DEFAULT<<<</td>
 								<cfelse>
-									<td><ft:button value="Make Default" selectedObjectID="#qFUCurrent.objectid#" size="small" /></td>
+									<td><ft:button value="Make Default" selectedObjectID="#qFUCurrent.objectid#" /></td>
 								</cfif>
 								
 							</tr>
@@ -188,9 +200,9 @@ manage friendly urls for a particular object id
 				<cfoutput></table></cfoutput>
 				
 				<ft:buttonPanel indentForLabel="false">
-					<cfoutput><a href="##" class="btn btn-link" style="border:none;box-shadow:none;background:none;" onclick="$fc.closeBootstrapModal(); return false;">Close</a></cfoutput>
-					<ft:button value="Archive Selected" />
-					<ft:button value="Save Changes" />
+					<ft:button class="btn-primary" value="Save Changes" />
+					<ft:button class="btn-primary" value="Archive Selected" />
+					<cfoutput><a href="##" class="btn" onclick="$fc.closeBootstrapModal(); return false;">Close</a></cfoutput>
 				</ft:buttonPanel>
 			
 			</ft:form>
@@ -198,16 +210,18 @@ manage friendly urls for a particular object id
 	</cfif>
 	
 	<cfif qFUArchived.recordCount>
-		<admin:tabItem id="archived" title="Archived">
+		<admin:tabItem id="archived" title="Archived URLs">
 			<ft:form>
 				<cfoutput query="qFUArchived" group="fuStatus">
 					<h3>Archived</h3>
-					<table class="table-2" cellspacing="0" id="table_friendlyurl">
+					<table class="table table-striped" cellspacing="0" id="table_friendlyurl">
+					<thead>
 					<tr>
 						<th style="width:20px;">&nbsp;</th>
 						<th>Friendly URL</th>
 					</tr>
-					
+					</head>
+
 					<cfoutput>
 					<tr class="alt">
 						<td><input type="checkbox" name="lDeleteObjectID" value="#qFUArchived.objectid#"></td>
@@ -215,13 +229,12 @@ manage friendly urls for a particular object id
 					</tr>
 					</cfoutput>
 					
-					
 					</table>
 				</cfoutput>
 				
 				<ft:buttonPanel indentForLabel="false">
-					<cfoutput><a href="##" class="btn btn-link" style="border:none;box-shadow:none;background:none;" onclick="$fc.closeBootstrapModal(); return false;">Close</a></cfoutput>
 					<ft:button value="Delete Selected Archives" />
+					<cfoutput><a href="##" class="btn" onclick="$fc.closeBootstrapModal(); return false;">Close</a></cfoutput>
 				</ft:buttonPanel>
 			</ft:form>
 		</admin:tabItem>     

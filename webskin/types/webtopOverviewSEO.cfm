@@ -45,17 +45,21 @@ START WEBSKIN
 		</ft:fieldsetHelp>
 		
 	<cfelse>
-	
+
+		<ft:buttonPanel style="text-align:left;padding-top:0;padding-left:0;margin-top:0;border-top:0;border-bottom:1px solid ##e3e3e3;">
+			<cfoutput>
+			<a class="btn btn-primary" href="#application.url.webtop#/index.cfm?typename=#stObj.typename#&objectid=#stobj.objectid#&view=webtopPageModal&bodyView=webtopBodyManageFUs" onclick="$fc.openDialogIFrame('Friendly URLs for #JSStringFormat(stobj.label)#', this.href); return false;">Manage Friendly URLs</a>
+			</cfoutput>
+		</ft:buttonPanel>
+
 		<ft:fieldsetHelp>
 			<cfoutput>
 			A friendly URL is automatically generated to improve your search engine ranking and make it easy for humans to read. 
-			You can  
-			<a href="#application.url.webtop#/index.cfm?typename=#stObj.typename#&objectid=#stobj.objectid#&view=webtopPageModal&bodyView=webtopBodyManageFUs" onclick="$fc.openDialogIFrame('Friendly URLs for #JSStringFormat(stobj.label)# (#stobj.typename#)', this.href); return false;">change the default or add custom friendly URLs</a>
-			to meet your requirements.
+			You can change the default or add custom friendly URLs to meet your requirements.
 			</cfoutput>
 		</ft:fieldsetHelp>
-	
-		<ft:field label="Default" bMultiField="false">
+
+		<ft:field label="Default URL" bMultiField="false">
 			
 			<cfset bHasDefault = false />
 			<cfloop query="qFUCurrent">
@@ -84,7 +88,7 @@ START WEBSKIN
 			</ft:fieldHint>
 		</ft:field>
 		
-		<ft:field label="Alternative" bMultiField="true">
+		<ft:field label="Alternative URLs" bMultiField="true">
 		
 			<cfset bHasOthers = false />
 			<cfloop query="qFUCurrent">
@@ -100,13 +104,8 @@ START WEBSKIN
 				<cfoutput>-- No alternative friendly URLs ---</cfoutput>
 			</cfif>
 			
-			<ft:fieldHint>
-				<cfoutput>
-				You can <a href="#application.url.webtop#/index.cfm?typename=#stObj.typename#&objectid=#stobj.objectid#&view=webtopPageModal&bodyView=webtopBodyManageFUs" onclick="$fc.openDialogIFrame('Friendly URLs for #JSStringFormat(stobj.label)# (#stobj.typename#)', this.href); return false;">add additional friendly URLs</a> 
-				to promote this content item.
-				</cfoutput>
-			</ft:fieldHint>
 		</ft:field>
+
 	</cfif>
 </ft:fieldset>
 
