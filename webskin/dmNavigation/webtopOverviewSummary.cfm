@@ -147,39 +147,18 @@
 					<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
 					<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
 					<cfif ArrayLen(aTypesUseInTree)>
-				
-						<skin:loadJS id="fc-jquery" />
-						<skin:loadJS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/js/uncompressed.jquery.dd.js" />
-						<skin:loadCSS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/dd.css" />
-						
-						<skin:onReady>
-							<cfoutput>
-								$j("##createContent").msDropDown();
-							</cfoutput>
-						</skin:onReady>
-						
-								<select id="createContent" name="createContent" style="width:100%;" onChange="location = '#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=' + $j('##createContent').val() + '&ref=#url.ref#';">
-									<cfif arrayLen(stobj.aObjectIDs)>
-										<option value="">-- Attach More Content --</option>
-									<cfelse>
-										<option value="">-- Attach Content --</option>
-									</cfif>
-									
-									<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
-										<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
-											<cfif len(application.stCOAPI[aTypesUseInTree[i].typename].icon)>
-												<cfset iconClass = "#application.stCOAPI[aTypesUseInTree[i].typename].icon#" />
-											<cfelse>
-												<cfset iconClass = "file" />
-											</cfif>
-											
-											<option value="#aTypesUseInTree[i].typename#" title="<i class='#iconClass#'></i>">#aTypesUseInTree[i].description#</option>
-										</cfif>
-									</cfloop>
-									
-								</select>
-						
-						
+						<select id="createContent" name="createContent" style="width:100%;" onChange="location = '#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=' + $j('##createContent').val() + '&ref=#url.ref#';">
+							<cfif arrayLen(stobj.aObjectIDs)>
+								<option value="">-- Attach More Content --</option>
+							<cfelse>
+								<option value="">-- Attach Content --</option>
+							</cfif>
+							<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
+								<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
+									<option value="#aTypesUseInTree[i].typename#">#aTypesUseInTree[i].description#</option>
+								</cfif>
+							</cfloop>
+						</select>
 					</cfif>
 				</cfif>
 				
