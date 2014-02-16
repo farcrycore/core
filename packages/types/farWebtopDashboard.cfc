@@ -1,22 +1,55 @@
 <cfcomponent extends="farcry.core.packages.types.types" displayname="Webtop Dashboard Configuration">
 
-	<cfproperty name="title" type="string" required="no" default="" 
-		ftSeq="1" ftFieldset="General Details" 
-		ftLabel="Title" />
+	<cfproperty name="title" type="string" required="false"
+		ftSeq="1" ftFieldset="General Details" ftLabel="Title">
 
-	<cfproperty name="aRoles" type="array" required="No" default=""
-		ftSeq="2" ftFieldset="General Details" 
-		ftLabel="Roles"
-		ftHint="Select the security roles that will be permitted to see this webtop dashboard"
-		ftJoin="farRole" />
+	<cfproperty name="aRoles" type="array" required="false"
+		ftSeq="2" ftFieldset="General Details" ftLabel="Roles"
+		ftType="array" ftJoin="farRole" ftAllowCreate="false"
+		ftHint="Select the security roles that will be permitted to see this webtop dashboard">
 
-	<cfproperty name="lCards" type="longchar" required="no" default="" 
-		ftSeq="3" ftFieldset="General Details" 
-		ftLabel="Cards" ftValidation="required"
-		ftHint="The cards that will be displayed on this webtop dashboard" />
+	<cfproperty name="lCards" type="longchar" required="false"
+		ftSeq="3" ftFieldset="General Details" ftLabel="Cards" 
+		ftType="list" ftListData="getCards" ftRenderType="checkbox"
+		ftHint="Check the boxes to show or hide a card, and drag and drop the list to change the display order">
 
 	<cfproperty name="lRoles" type="longchar" default="" hint="The roles this dashbaord is secured by (list generated automatically)" 
-		ftLabel="Roles" ftType="arrayList" ftArrayField="aRoles" ftJoin="farRole" />
+		ftLabel="Roles" ftType="arrayList" ftArrayField="aRoles" ftJoin="farRole">
+
+
+	<cffunction name="getCards" returntype="query">
+
+		<cfset var qCards = queryNew("value,name")>
+		<cfset var iTypename = "">
+		<cfset var iWebskin = "">
+		<cfset var qWebskins = "">
+		<cfset var qDashboardCardWebskins = queryNew("")>
+		<cfset var cardDisplayname = "">
+
+		<cfloop collection="#application.stCoapi#" item="iTypename">
+			<cfset qWebskins = application.stcoapi[iTypename].qWebskins />
+
+			<cfquery dbtype="query" name="qDashboardCardWebskins">
+			SELECT displayname, methodname
+			FROM qWebskins
+			WHERE lower(qWebskins.name) LIKE 'webtopdashboard%'
+			ORDER BY displayname ASC, methodname ASC
+			</cfquery>
+
+			<cfloop query="qDashboardCardWebskins">
+				<cfset cardDisplayname = qDashboardCardWebskins.methodName>
+				<cfif len(qDashboardCardWebskins.displayname)>
+					<cfset cardDisplayname = qDashboardCardWebskins.displayname>					
+				</cfif>
+				<cfset queryAddRow(qCards)>
+				<cfset querySetCell(qCards, "value", "#iTypename#:#qDashboardCardWebskins.methodName#")>
+				<cfset querySetCell(qCards, "name", cardDisplayname & " (#iTypename#)")>
+			</cfloop>
+
+		</cfloop>
+
+		<cfreturn qCards>
+	</cffunction>
 
 
 	<cffunction name="ftEditLCards">
@@ -26,38 +59,104 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var resultHTML = "">
-		<cfset var lWebskins = "">
-		<cfset var iTypename = "">
-		<cfset var iWebskin = "">
-		<cfset var qWebskins = "">
-		<cfset var qDashboardCardWebskins = "">
+		<cfset var qCards = getCards()>
+		<cfset var qCard = queryNew("")>
+		<cfset var lAllCards = valueList(qCards.value)>
+		<cfset var lSelectedCards = arguments.stObject.lCards>
+		<cfset var item = "">
 
-		<cfloop collection="#application.stCoapi#" item="iTypename">
-			<cfset qWebskins = application.stcoapi[iTypename].qWebskins />
 
-			<cfquery dbtype="query" name="qDashboardCardWebskins">
-			SELECT * FROM qWebskins
-			WHERE lower(qWebskins.name) LIKE 'webtopdashboard%'
-			</cfquery>
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+		
+		<skin:loadJS id="fc-jquery" />
+		<skin:loadJS id="fc-jquery-ui" />
+		<skin:loadCSS id="jquery-ui" />
+		
+		<cfsavecontent variable="returnHTML">	
+			<cfoutput>
+				<div id="#arguments.fieldname#-library-wrapper">
+					<ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;">
+						<!--- render selected cards --->
+						<cfloop list="#lSelectedCards#" index="item">
+							<cfquery name="qCard" dbtype="query">
+								SELECT *
+								FROM qCards
+								WHERE [value] = <cfqueryparam cfsqltype="cf_sql_varchar" value="#item#">
+							</cfquery>
+							<cfif qCard.recordCount>
+								<li class="sort" style="border:1px solid ##ebebeb;padding:5px;zoom:1;">
+									<table style="width:100%;">
+										<tr>
+											<td class="" style="cursor:move;padding:3px;"><i class="fa fa-sort"></i></td>
+											<td class="" style="cursor:move;padding:3px;">
+												<input id="check-#qCard.value#" type="checkbox" value="#qCard.value#" checked="checked">
+											</td>
+											<td class="" style="cursor:move;width:100%;padding:3px;">
+												<label for="check-#qCard.value#" style="display:inline">
+												#qCard.name#
+												</label>
+											</td>
+										</tr>
+									</table>
+								</li>								
+							</cfif>
+						</cfloop>
+						<!--- render all remaining cards --->
+						<cfloop query="qCards">
+							<cfif NOT listFindNoCase(lSelectedCards, qCards.value)>
+								<li class="sort" style="border:1px solid ##ebebeb;padding:5px;zoom:1;">
+									<table style="width:100%;">
+										<tr>
+											<td class="" style="cursor:move;padding:3px;"><i class="fa fa-sort"></i></td>
+											<td class="" style="cursor:move;padding:3px;">
+												<input id="check-#qCards.value#" type="checkbox" value="#qCards.value#">
+											</td>
+											<td class="" style="cursor:move;width:100%;padding:3px;">
+												<label for="check-#qCards.value#" style="display:inline">
+												#qCards.name#
+												</label>
+											</td>
+										</tr>
+									</table>
+								</li>
+							</cfif>
+						</cfloop>
+					</ul>
+				</div>
 
-			<cfoutput query="qDashboardCardWebskins">
-				<cfset lWebskins = listAppend(lWebskins, "#iTypename#:#qDashboardCardWebskins.methodName#")>
+				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lSelectedCards#">
+
+				<script type="text/javascript">
+				$j(function() {
+
+					$j('###arguments.fieldname#-library-wrapper').sortable({
+						items: 'li.sort',
+						axis: 'y',
+						update: function(event,ui){
+							updateSelectedCards();
+						}
+					});
+
+					$j('###arguments.fieldname#-library-wrapper input').on("change", function(){
+						updateSelectedCards();
+					})
+
+					function updateSelectedCards() {
+							var selectedCards = [];
+							$j('###arguments.fieldname#-library-wrapper input:checked').each(function(){
+								selectedCards.push($j(this).val());
+							});
+							$j('###arguments.fieldname#').val(selectedCards.join(","));
+					}
+
+				});
+				</script>
 			</cfoutput>
-		</cfloop>
 
-		<cfsavecontent variable="resultHTML">		
-			<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" multiple="multiple"></cfoutput>
-
-			<cfloop list="#lWebskins#" index="iWebskin">
-
-				<cfoutput><option value="#iWebskin#"<cfif listFindNoCase(arguments.stMetadata.value, iWebskin)> selected="selected"</cfif>>#iWebskin#</option></cfoutput>
-
-			</cfloop>
-
-			<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=""></cfoutput>
 		</cfsavecontent>
 
-		<cfreturn resultHTML />
+		<cfreturn "<div class=""multiField"">#returnHTML#</div>">
 	</cffunction>
 
 
