@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-<!--- @@displayname: Dashboard Logo --->
+<!--- @@displayname: Dashboard Links --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
 <!--- @@cardClass: fc-dashboard-card-small --->
