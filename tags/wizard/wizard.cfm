@@ -167,8 +167,6 @@
 
 <cfif thistag.executionMode eq "End">
 
-	<skin:loadCSS id="fc-fontawesome" />
-	
 	<cfset innerHTML = "" />
 	<cfif len(thisTag.generatedContent)>
 		<cfset innerHTML = thisTag.generatedContent />

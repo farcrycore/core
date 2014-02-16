@@ -966,8 +966,6 @@ default handlers
 			</ft:processForm>
 			
 			
-			<skin:loadCSS id="fc-fontawesome" />
-			
 			<ft:form bFocusFirstField="true">
 				
 					
@@ -1056,8 +1054,6 @@ default handlers
 			</cfif>
 			<ft:processForm action="Cancel" Exit="true" />
 			
-			
-			<skin:loadCSS id="fc-fontawesome" />
 			
 			<cfquery dbtype="query" name="qAllRelated">select * from qAllRelated order by typenamelabel,objectlabel</cfquery>
 			
