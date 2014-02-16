@@ -168,6 +168,24 @@ It just ignores the inner ones.
 		<!--- If we are validating this form, load and initialise the validation engine.  --->
 		<cfif attributes.validation>
 			<skin:loadJS id="fc-jquery-validate" />
+
+			<!--- set up validation selectors and classes based on the form theme --->
+			<cfset stValConfig = structNew()>
+			<cfif formtheme eq "bootstrap">
+				<cfset stValConfig.wrapper = "">
+				<cfset stValConfig.errorElement = "p">
+				<cfset stValConfig.errorElementClass = "text-error">
+				<cfset stValConfig.errorPlacementSelector = "div.control-group">
+				<cfset stValConfig.fieldContainerSelector = "div.control-group">
+				<cfset stValConfig.fieldContainerClass = "error">
+			<cfelse>
+				<cfset stValConfig.wrapper = "">
+				<cfset stValConfig.errorElement = "p">
+				<cfset stValConfig.errorElementClass = "errorField">
+				<cfset stValConfig.errorPlacementSelector = "div.ctrlHolder">
+				<cfset stValConfig.fieldContainerSelector = "div.ctrlHolder">
+				<cfset stValConfig.fieldContainerClass = "error">
+			</cfif>
 			
 			<!--- Setup farcry form validation (fv) --->
 			<skin:onReady>
@@ -175,17 +193,19 @@ It just ignores the inner ones.
 				if(typeof $j('###attributes.Name#').validate != "undefined") {
 					$fc.fv#attributes.Name# = $j("###attributes.Name#").validate({
 						onsubmit: false, // let the onsubmit function handle the validation
-						errorElement: "p",
-						errorClass: "errorField",					   
-						//wrapper: "div",  // a wrapper around the error message					   
+						errorElement: "#stValConfig.errorElement#",
+						errorClass: "#stValConfig.errorElementClass#",
+						<cfif len(stValConfig.wrapper)>
+							wrapper: "#stValConfig.wrapper#",  // a wrapper around the error message					   
+						</cfif>					   
 						errorPlacement: function(error, element) {
-					  		error.prependTo( element.closest("div.ctrlHolder") );
+					  		error.prependTo( element.closest("#stValConfig.errorPlacementSelector#") );
 				        },
 						highlight: function(element, errorClass) {
-						   $j(element).closest("div.ctrlHolder").addClass('error');
+						   $j(element).closest("#stValConfig.fieldContainerSelector#").addClass('#stValConfig.fieldContainerClass#');
 						},
 						unhighlight: function(element, errorClass) {
-						   $j(element).closest("div.ctrlHolder").removeClass('error');
+						   $j(element).closest("#stValConfig.fieldContainerSelector#").removeClass('#stValConfig.fieldContainerClass#');
 						}
 					});
 				}
