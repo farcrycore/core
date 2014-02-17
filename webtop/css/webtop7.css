@@ -43,8 +43,8 @@ body {
 }
 body.webtop {
 	padding-top: 128px;
-	background: #fff url(images/pw_maze_white.png) repeat 0 95px;
 	background: #eee;
+	min-width: 768px;
 }
 
 body.webtop-modal {
@@ -85,6 +85,7 @@ a:hover {
 
 .farcry-header {
 	background: #fff;
+	min-width: 768px;
 	font-family: Arial, Helvetica, sans-serif;
 	z-index: 99;
 
@@ -92,20 +93,18 @@ a:hover {
 }
 
 .farcry-header-top {
-	display: table;
 }
 .farcry-header-top img {
 	max-width: none; /* remove bootstrap "fix" on images in tables */
 }
 .farcry-header-top-row {
-	display: table-row;
 }
 
 .farcry-header-brand {
-	display: table-cell;
+	float: left;
 	vertical-align: middle;
-	padding: 0 25px 0 0;
-	height: 70px; /* acts as min-height on a table cell */
+	padding: 18px 25px 0 0;
+	height: 52px; /* acts as min-height on a table cell */
 }
 .farcry-header-brand a {
 	white-space: nowrap;
@@ -117,47 +116,99 @@ a:hover {
 	/* fit inside 150x60 */
 }
 
-.farcry-header-tabs {
-	display: table-cell;
-	vertical-align: bottom;
-	width: 90%;
 
-	font-weight: bold;
+.farcry-header-utility {
+	float: right;
+	padding-top: 12px;
+
+	vertical-align: middle;
+	white-space: nowrap;
 }
 
-.farcry-header-environment {
+.farcry-header-logo {
+	display: inline-block;
+	padding: 10px 15px;
+	border-right: 1px solid #eee;
+}
+
+.farcry-header-user {
+	display: inline-block;
+	margin-left: 5px;
+	cursor: pointer;
+}
+.farcry-header-user .fa-user {
+	display: inline-block;
+	margin-top: 5px;	
+}
+.farcry-header-user.open,
+.farcry-header-user:hover {
+	background: #f2f2f2;
+}
+.farcry-header-user.open .farcry-profile-avatar,
+.farcry-header-user:hover .farcry-profile-avatar {
+	display: none;
+}
+.farcry-header-user.open .farcry-profile-cog,
+.farcry-header-user:hover .farcry-profile-cog {
+	display: inline-block;
+}
+
+.farcry-header-profile {
+	padding: 10px;
+}
+
+.farcry-header-profile .farcry-profile-avatar {
+	position: relative;
+	display: inline-block;
+	margin-right: 7px;
+	background: #3e84b5;
+	color: #fff;
+	width: 24px;
+	height: 25px;
+	font-size: 14px;
+	line-height: 25px;
+	text-align: center;
+	vertical-align: middle;
+}
+.farcry-header-profile .farcry-profile-avatar img {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100%;
-	text-align:center;
-	line-height: 1;
-}
-.farcry-header-environment-label {
-	display:inline-block;
-	overflow: hidden;
-	max-height: 2px;
-	font-size: 13px;
-	font-weight: bold;
-	vertical-align: top;
-	padding: 2px 12px;
-	background: #aaaaaa;
-	color: white;
-	text-shadow: 0 1px 0 rgba(0,0,0,0.1);
-	line-height: 2;
-}
-.farcry-header-environment-label:hover {
-	max-height: none;
-	padding: 7px 12px;
-	line-height: 1;
+	background: #fff;
+	width: 24px;
+	height: 25px;
 }
 
+.farcry-header-profile .farcry-profile-cog {
+	display: none;
+	margin-right: 7px;
+	background: #555;
+	color: #fff;
+	width: 24px;
+	height: 24px;
+	padding-top: 1px;
+	font-size: 14px;
+	line-height: 25px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+
+.farcry-header-tabs {
+	padding-top: 30px;
+	height: 40px;
+	vertical-align: bottom;
+	overflow: hidden;
+
+	font-weight: bold;
+}
 
 /* customise bootstrap tabs for the main farcry tabbed nav */
-
 .navbar .farcry-header-tabs .nav-tabs {
 	border-bottom: none;
 	margin-left: 1px;
+	position: relative;
+	overflow: hidden;
 }
 .navbar .farcry-header-tabs .nav-tabs > li {
 	margin-bottom: 0;
@@ -166,6 +217,7 @@ a:hover {
 .navbar .farcry-header-tabs .nav a {
 	color: #333;
 	background: #f1f1f1;
+	white-space: nowrap;
 	box-shadow: none;
 	border: none;
 	border-radius: 0;
@@ -356,78 +408,31 @@ a:hover {
 }
 
 
-.farcry-header-utility {
-	display: table-cell;
-	vertical-align: middle;
-	white-space: nowrap;
-}
-
-.farcry-header-logo {
-	display: inline-block;
-	padding: 10px 15px;
-	border-right: 1px solid #eee;
-}
-
-.farcry-header-user {
-	display: inline-block;
-	margin-left: 5px;
-	cursor: pointer;
-}
-.farcry-header-user .fa-user {
-	display: inline-block;
-	margin-top: 5px;	
-}
-.farcry-header-user.open,
-.farcry-header-user:hover {
-	background: #f2f2f2;
-}
-.farcry-header-user.open .avatar,
-.farcry-header-user:hover .avatar {
-	display: none;
-}
-.farcry-header-user.open .cog,
-.farcry-header-user:hover .cog {
-	display: inline-block;
-}
-
-.farcry-header-profile {
-	padding: 10px;
-}
-
-.farcry-header-profile .avatar {
-	position: relative;
-	display: inline-block;
-	margin-right: 7px;
-	background: #3e84b5;
-	color: #fff;
-	width: 24px;
-	height: 25px;
-	font-size: 14px;
-	line-height: 25px;
-	text-align: center;
-	vertical-align: middle;
-}
-.farcry-header-profile .avatar img {
+.farcry-header-environment {
 	position: absolute;
 	top: 0;
 	left: 0;
-	background: #fff;
-	width: 24px;
-	height: 25px;
+	width: 100%;
+	text-align:center;
+	line-height: 1;
 }
-
-.farcry-header-profile .cog {
-	display: none;
-	margin-right: 7px;
-	background: #555;
-	color: #fff;
-	width: 24px;
-	height: 24px;
-	padding-top: 1px;
-	font-size: 14px;
-	line-height: 25px;
-	text-align: center;
-	vertical-align: middle;
+.farcry-header-environment-label {
+	display:inline-block;
+	overflow: hidden;
+	max-height: 2px;
+	font-size: 13px;
+	font-weight: bold;
+	vertical-align: top;
+	padding: 2px 12px;
+	background: #aaaaaa;
+	color: white;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+	line-height: 2;
+}
+.farcry-header-environment-label:hover {
+	max-height: none;
+	padding: 7px 12px;
+	line-height: 1;
 }
 
 
@@ -455,6 +460,7 @@ a:hover {
 #favourites .dropdown-menu a { 
 	display:block;
 }
+
 
 
 .farcry-main {
@@ -1261,6 +1267,11 @@ br[style*="clear:both"] {
 }
 
 
+/* undo bootstrap responsive nav padding changes */
+.navbar-fixed-top .navbar-inner {
+	padding: 0;
+}
+
 /* MEDIA QUERIES AND RESPONSIVE RELATED STYLES */
 
 /* match bootstrap media query and change header to absolute instead of fixed */
@@ -1269,14 +1280,23 @@ br[style*="clear:both"] {
 		position: absolute;
 	}
 }
+@media only screen and (max-width: 960px) {
+	body.webtop {
+	}
+	.navbar .farcry-header-tabs .nav-tabs {
+		clear: both;
+	}
+	.farcry-profile-username {
+		display: none;
+	}
+	.farcry-nav-help {
+		display: none;
+	}
+}
 @media only screen and (max-height: 700px) {
 	.navbar-fixed-top {
 		position: absolute;
 	}
-}
-/* undo bootstrap responsive nav padding changes */
-.navbar-fixed-top .navbar-inner {
-	padding: 0;
 }
 
 /* print styles */

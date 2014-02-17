@@ -71,22 +71,13 @@
 						</cfif>
 					</a>
 				</div>
-				<div class="farcry-header-tabs">
-					<ul class="nav nav-tabs">
-
-						<admin:loopwebtop parent="#stWebtop#" item="section" class="class">
-							<li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="?id=#lcase(section.id)#"><cfif isdefined("section.icon")><i class="#section.icon#"></i> </cfif>#trim(section.label)#</a></li>
-						</admin:loopwebtop>
-
-					</ul>
-				</div>
 				<div class="farcry-header-utility">
 					<div class="farcry-header-logo">
 						<img src="images/farcry.png">
 					</div>
 					<div class="farcry-header-user dropdown">
 						<div class="farcry-header-profile dropdown-toggle" data-toggle="dropdown">
-							<span class="avatar" data-intro="Your user profile menu" data-position="left">
+							<span class="farcry-profile-avatar" data-intro="Your user profile menu" data-position="left">
 								<cfif len(webtopAvatar)>
 									<img src="#webtopAvatar#" width="24" height="25" onerror="this.style.visibility='hidden';">
 								<cfelseif webtopGravatarHash neq "">
@@ -94,9 +85,9 @@
 								</cfif>
 								<i class="fa fa-user"></i>
 							</span>
-							<span class="cog"><i class="fa fa-cog"></i></span>
-
-							<span>#webtopUsername# &nbsp;<b class="fa fa-caret-down"></b></span>
+							<span class="farcry-profile-cog"><i class="fa fa-cog"></i></span>
+							<span class="farcry-profile-username">#webtopUsername#&nbsp;</span>
+							<b class="fa fa-caret-down"></b>
 						</div>
 						<ul class="dropdown-menu pull-right">
 							<li><a href="#application.url.webtop#?id=dashboard&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
@@ -113,6 +104,15 @@
 							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 						</ul>
 					</div>
+				</div>
+				<div class="farcry-header-tabs">
+					<ul class="nav nav-tabs">
+
+						<admin:loopwebtop parent="#stWebtop#" item="section" class="class">
+							<li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="?id=#lcase(section.id)#"><cfif isdefined("section.icon")><i class="#section.icon#"></i> </cfif>#trim(section.label)#</a></li>
+						</admin:loopwebtop>
+
+					</ul>
 				</div>
 			</div>
 		</div>
@@ -180,7 +180,7 @@
 								<li class="none" <cfif arraylen(aFavourites)>style="display:none;"</cfif>><admin:resource key="webtop.utilities.favourites.none@text">No favourites</admin:resource></li>
 							</ul>
 						</li>
-						<li><a href="javascript:void(0);" onclick="$j('body').chardinJs('start')"><i class="fa fa-question-circle"></i> Help</a></li>
+						<li class="farcry-nav-help"><a href="javascript:void(0);" onclick="$j('body').chardinJs('start')"><i class="fa fa-question-circle"></i> Help</a></li>
 					</ul>
 				</div>
 			</div>
