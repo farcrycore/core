@@ -53,11 +53,7 @@
 			
 				<!--- no status so just show object --->
 				<!--- set the navigation point for the child obj --->
-				<cfif isDefined("URL.navid")>
-					<cfset request.navid = URL.navid>
-				<cfelse>
-					<cfset request.navid = stObj.objectID>		
-				</cfif>
+				<cfset request.navid = stObj.objectID>		
 				
 				<!--- reset stObj to appropriate object to be displayed --->
 				<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />

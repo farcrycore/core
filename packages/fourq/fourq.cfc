@@ -577,17 +577,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<!--- <cfif NOT len(arguments.typename)><cfthrow /></cfif> --->
 		</cfif>
 	
-		<!--- URL: check the URL for navigation context --->
-		<cfif structkeyexists(url, "navid")>		
-			<!--- ie. this is a dynamic object looking for context, passing nav on the URL --->
-			<cfset navID = url.navid />
-		
-		<cfelseif structkeyexists(url, "navAlias") AND structKeyExists(application.navid, "#url.navAlias#")>		
-			<!--- ie. this is a dynamic object looking for context, passing nav on the URL --->
-			<cfset navID = listFirst(application.navid["#url.navAlias#"]) />
-		
-		</cfif>
-		
 		<!--- OBJECT: check the content item for a natural navigation context ie. it sits in the site tree --->
 		<cfif NOT len(navID)>
 			<!--- NEED TO CHECK VERSION ID FIRST INCASE DEVELOPER HAS ADDED VERSION ID TO dmNavigation --->

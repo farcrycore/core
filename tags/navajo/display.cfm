@@ -188,9 +188,7 @@
 		
 		<cfif qHasDraft.recordcount gt 0>
 			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
-			<cfif structKeyExists(url, "navid")>
-				<cfset request.navid = url.navID>
-			<cfelseif NOT structKeyExists(request, "navid")>		
+			<cfif NOT structKeyExists(request, "navid")>
 				<cfset request.navid = stobj.objectID>
 			</cfif>
 			
