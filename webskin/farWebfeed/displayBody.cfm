@@ -63,13 +63,11 @@
 		<ul class="feedlist">
 			<li>
 				<a href="#rsspath#">
-					<skin:icon icon="rss.gif" size="16" />
 					RSS Feed
 				</a>
 			</li>
 			<li>
 				<a href="#atompath#">
-					<skin:icon icon="atom.gif" size="16" />
 					Atom Feed
 				</a>
 			</li>
@@ -79,7 +77,6 @@
 	<cfoutput>
 		<li>
 			<a href="#itunespath#">
-				<skin:icon icon="podcast.gif" size="16" />
 				Subscribe in iTunes
 			</a>
 		</li>

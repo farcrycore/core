@@ -2401,82 +2401,20 @@
 	</cffunction>
 	
 	<!--- @@examples:
-		<p>Searches project, plugins and core and returns the url for the best matching icon.</p>
+		<p>DEPRECATED: Searches project, plugins and core and returns the url for the best matching icon.</p>
 		<code>
 			#application.fapi.getIconURL(icon='dmHTML', size=16)# 
 		</code>
 	 --->	
-	<cffunction name="getIconURL" access="public" output="false" returntype="string" hint="Returns the path for the specified icon.">
+	<cffunction name="getIconURL" access="public" output="false" returntype="string" hint="Returns the path for the specified icon." bDeprecated="true">
 		<cfargument name="icon" type="string" required="true" hint="The name of the icon to retrieve" />
 		<cfargument name="size" type="string" required="true" default="48" hint="The size of the icon required" />
 		<cfargument name="default" type="string" required="false" default="blank.png" hint="The fallback icon to use" />
 		<cfargument name="bPhysicalPath" type="boolean" required="false" default="false" hint="Use of this argument is usually only for the system to stream the file if outside of the webroot." />
-	
-		<cfset var thisplugin = "" />
-		<cfset var iconURL = "" />		
-		<cfset var iconHashID = hash("#arguments.icon#-#arguments.size#-#arguments.default#-#arguments.bPhysicalPath#") />
-		
-		<cfparam name="variables.stIconCache" default="#structNew()#" />
-		
-		<cfif structKeyExists(variables.stIconCache, iconHashID)>
-			<cfreturn variables.stIconCache[iconHashID] />
-		</cfif>
-				
-		<cfset arguments.icon = lcase(arguments.icon) />
-		
-		<cfif not find(".",arguments.icon)>
-			<cfset arguments.icon = "#arguments.icon#.png" />
-		</cfif>
-	
-		<cfif fileexists(expandPath("#application.url.webroot#/wsimages/icons/#arguments.size#/#arguments.icon#"))>
-			<cfset iconURL = "#application.url.webroot#/wsimages/icons/#arguments.size#/#arguments.icon#" />
-		<cfelseif fileexists(expandPath("#application.url.webroot#/images/icons/#arguments.size#/#arguments.icon#"))>
-			<cfset iconURL = "#application.url.webroot#/images/icons/#arguments.size#/#arguments.icon#" />
-		<cfelse>
-		
-			<cfloop list="#application.factory.oUtils.listReverse(application.plugins)#" index="thisplugin">
-				<cfif fileexists(expandPath("#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.icon#"))>
-					<cfset iconURL = "#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.icon#" />
-					<cfbreak />
-				<cfelseif fileexists("#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#arguments.icon#")>
-					<cfif arguments.bPhysicalPath>
-						<cfset iconURL = "#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#arguments.icon#" />
-						<cfset arguments.bPhysicalPath = false /><!--- Turn off physical path because we already have it here. --->
-					<cfelse>
-						<cfset iconURL = "#application.url.webtop#/facade/icon.cfm?icon=#arguments.icon#&default=#arguments.default#&size=#arguments.size#" />
-					</cfif>
-					
-					<cfbreak />
-				</cfif>
-			</cfloop>
-		</cfif>
-		
-		<cfif not len(iconURL)>
-			<cfif fileexists(expandPath("#application.url.webtop#/icons/#arguments.size#/#arguments.icon#"))>
-				<cfset iconURL = "#application.url.webtop#/icons/#arguments.size#/#arguments.icon#" />
-			<cfelse>
-				<!--- If all else fails, check to see if the icon is located under the image root --->
-				<cfif fileexists(expandPath("#application.url.imageRoot#/#arguments.icon#"))>
-					<cfset iconURL = "#application.url.imageRoot#/#arguments.icon#" />
-				</cfif>
-			</cfif>
-		</cfif>
-		
-		<cfif not len(iconURL)>
-			<cfif not find(".",arguments.default)>
-				<cfset arguments.default = "#arguments.default#.png" />
-			</cfif>
-			<cfset iconURL = "#application.url.webtop#/icons/#arguments.size#/#arguments.default#" />
-		</cfif>		
-		
-		<cfif arguments.bPhysicalPath>
-			<cfset iconURL = expandPath(iconURL) />
-		</cfif>
-				
-		<cfset variables.stIconCache[iconHashID] = iconURL />
-		
-		
-		<cfreturn iconURL />
+
+		<cfset deprecated("This function [application.fapi.getIconURL] has been deprecated because icon images are no longer used from FarCry 7.0 onwards") />
+
+		<cfreturn "" />
 	</cffunction>	
 	
 	<!--- @@examples:
