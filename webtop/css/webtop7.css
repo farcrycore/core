@@ -1254,11 +1254,69 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 }
 
 
-
 #tooltip h3 {
 	font-size: 15px;
 	line-height: 18px;
 }
+
+
+/* dashboards */
+
+.dashboard-card {
+	position:relative;
+	padding:0px;
+	overflow:hidden;
+	height: auto;
+	min-height: 200px;
+	border: 1px solid #e3e3e3;
+	background: white;
+	margin-bottom: 8px;
+	box-shadow: 0 0 2px rgba(0,0,0,0.05);
+	transition: height 1s;
+	-webkit-transition: height 1s;
+	-moz-transition: height 1s;
+	-o-transition: height 1s;
+}
+.dashboard-card-inner {
+	padding: 10px;
+}
+.dashboard-card-toggle {
+	position:absolute;
+	bottom:0px;
+	display:none;
+	width:100%;
+	text-align:center;
+	height: 16px;
+	background: #fff;
+	line-height: 1;
+	font-size: 18px;
+}
+.dashboard-card-toggle a {
+	display: inline-block;
+	margin: -2px -10px;
+	padding: 2px 10px;
+	opacity:0.4;
+	filter:alpha(opacity=40);
+	color:#000;
+}
+.dashboard-card-toggle a:hover {
+	opacity:1;
+	filter:alpha(opacity=100);
+}
+
+.fc-dashboard-card-small {
+	width: 230px;
+}
+.fc-dashboard-card-medium {
+	width: 470px;
+}
+.fc-dashboard-card-large {
+	width: 710px;
+}
+.fc-dashboard-card-xlarge {
+	width: 950px;
+}
+
 
 
 /* fix br clear */

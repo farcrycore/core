@@ -64,53 +64,6 @@ function lessDashboardCard(cardID) {
 	margin-left: auto;
 	margin-right: auto;
 }
-
-.dashboard-card {
-	min-height: 200px;
-	border: 1px solid ##e3e3e3;
-	background: white;
-	margin-bottom: 8px;
-	box-shadow: 0 0 2px rgba(0,0,0,0.05);
-}
-
-.dashboard-card-inner {
-	padding: 10px;
-}
-
-.dashboard-card-toggle a {
-	opacity:0.2;
-	filter:alpha(opacity=20);
-	color:##0E65A2;
-}
-.dashboard-card-toggle a:hover {
-	opacity:1;
-	filter:alpha(opacity=100);
-}
-
-.fc-dashboard-card-small {
-	width: 230px;
-}
-.fc-dashboard-card-medium {
-	width: 470px;
-}
-.fc-dashboard-card-large {
-	width: 710px;
-}
-.fc-dashboard-card-xlarge {
-	width: 950px;
-}
-
-@media (max-width: 767px) {
-	.fc-dashboard-card-small,
-	.fc-dashboard-card-medium,
-	.fc-dashboard-card-large,
-	.fc-dashboard-card-xlarge {
-		width: 100%;
-	}
-
-}
-
-
 </cfoutput>
 </skin:loadCSS>
 
@@ -214,14 +167,14 @@ function lessDashboardCard(cardID) {
 	<grid:div id="card-container">
 		<cfloop from="1" to="#arrayLen(aDashboardCardWebskins)#" index="i">
 
-			<grid:div id="card-#i#" class="dashboard-card #aDashboardCardWebskins[i].cardClass#" style="position:relative;padding:0px;height:#aDashboardCardWebskins[i].cardHeight#;overflow:hidden;"><!---  --->
+			<grid:div id="card-#i#" class="dashboard-card #aDashboardCardWebskins[i].cardClass#" style="height:#aDashboardCardWebskins[i].cardHeight#;min-height:#aDashboardCardWebskins[i].cardHeight#;">
 				<grid:div id="card-#i#-inner" class="dashboard-card-inner clearfix">
 					<skin:view typename="#aDashboardCardWebskins[i].typename#" webskin="#aDashboardCardWebskins[i].webskin#"  bAjax="#aDashboardCardWebskins[i].bAjax#" ajaxShowloadIndicator="true" ajaxindicatorText="Loading #aDashboardCardWebskins[i].displayName#...">
 				</grid:div>
 				<cfoutput>
-					<div id="card-#i#-toggle" class="dashboard-card-toggle" style="position:absolute;bottom:0px;display:none;width:100%;text-align:center;">
-						<a id="card-#i#-show-more" href="##" class="card-show-more" onclick="return moreDashboardCard('card-#i#');"><i class="fa fa-caret-square-o-down fa-2x"></i></a>
-						<a id="card-#i#-show-less" href="##" class="card-show-less" style="display:none;" onclick="return lessDashboardCard('card-#i#');"><i class="fa fa-caret-square-o-up fa-2x"></i></a>
+					<div id="card-#i#-toggle" class="dashboard-card-toggle">
+						<a id="card-#i#-show-more" href="##" class="card-show-more" onclick="return moreDashboardCard('card-#i#');"><i class="fa fa-caret-down"></i></a>
+						<a id="card-#i#-show-less" href="##" class="card-show-less" style="display:none;" onclick="return lessDashboardCard('card-#i#');"><i class="fa fa-caret-up"></i></a>
 					</div>
 				</cfoutput>
 			</grid:div>
@@ -243,7 +196,5 @@ function lessDashboardCard(cardID) {
 	  "itemSelector": '.dashboard-card'
 	});
 
-
 </cfoutput>
 </skin:onReady>
-
