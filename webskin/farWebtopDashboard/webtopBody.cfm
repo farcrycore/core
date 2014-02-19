@@ -60,7 +60,7 @@ function lessDashboardCard(cardID) {
 	padding: 12px;
 }
 ##card-container {
-	max-width: 980px;
+	max-width: 954px;
 	margin-left: auto;
 	margin-right: auto;
 }
