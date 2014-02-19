@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="Yes">
+<cfsetting enablecfoutputonly="true">
 
 <cfif not isDefined("URL.objectID")>
 	<cfthrow detail="URL.objectID not passed">
@@ -7,20 +7,14 @@
 <cfparam name="url.returnto" default="#application.url.farcry#/inc/content_overview.html?sec=site" />
 <cfparam name="url.ref" default="overview" />
 
+
 <cfif not isDefined("url.typename")>
 	<cfset url.typename = createObject("component", "farcry.core.packages.fourq.fourq").findType(objectid=url.objectid) />
 </cfif>
 
 <cfset oType = createObject("component", application.stcoapi[url.typename].packagepath) />
-
 <cfset stResult = oType.delete(objectid="#url.objectID#") />
 
-
-
-<!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-
-<admin:header>
 
 <cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
 
@@ -30,25 +24,23 @@
 	
 	<cfswitch expression="#url.ref#">
 		<cfcase value="iframe">
-			
 			<cfoutput>
 				<script type="text/javascript">
-				if (parent.$fc === undefined || parent.$fc.objectAdminActionDiv === undefined) {
+				if (parent.$fc === undefined || parent.$fc.closeBootstrapModal === undefined) {
 					location = "#url.returnto#";
 				} else {
-					parent.$fc.objectAdminActionDiv.dialog('close');
+					parent.$fc.closeBootstrapModal();
 				}
 				</script>		
 			</cfoutput>
 		</cfcase>
-		
 		<cfdefaultcase>
 			<cfoutput>
 				<script type="text/javascript">
-				if (parent.$fc === undefined || parent.$fc.objectAdminActionDiv === undefined) {
+				if (parent.$fc === undefined || parent.$fc.closeBootstrapModal === undefined) {
 					location = "#url.returnto#";
 				} else {
-					parent.$fc.objectAdminActionDiv.dialog('close');
+					parent.$fc.closeBootstrapModal();
 				}
 				</script>		
 			</cfoutput>
@@ -57,6 +49,4 @@
 
 </cfif>
 
-<admin:footer>
-
-<cfsetting enablecfoutputonly="No">
+<cfsetting enablecfoutputonly="false">
