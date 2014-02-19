@@ -205,10 +205,11 @@ a:hover {
 
 /* customise bootstrap tabs for the main farcry tabbed nav */
 .navbar .farcry-header-tabs .nav-tabs {
+	height: 40px;
 	border-bottom: none;
 	margin-left: 1px;
+	margin-right: 0;
 	position: relative;
-	overflow: hidden;
 }
 .navbar .farcry-header-tabs .nav-tabs > li {
 	margin-bottom: 0;
@@ -235,6 +236,44 @@ a:hover {
 	color: #fff;
 	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
+
+/* customize bootstrap dropdown for header tabs overflow */
+
+.navbar .farcry-header-tabs .dropdown-menu {
+	z-index: 110;
+	border-radius: 0;
+	margin-top: -1px;
+	padding-top: 5px;
+}
+.navbar .farcry-header-tabs .nav-more:hover .dropdown-menu {
+	display:block;
+}
+
+.navbar .farcry-header-tabs .dropdown-menu li > a {
+	color: #333 !important;
+	background: #fff !important;
+	padding: 3px 14px;
+	text-shadow: none !important;
+	cursor: pointer;
+	filter: none;
+}
+.navbar .farcry-header-tabs .dropdown-menu li:hover > a,
+.navbar .farcry-header-tabs .dropdown-menu li > a:focus {
+	color: #fff !important;
+	background: #166ca8 !important;
+	text-shadow: none !important;
+	text-decoration: none;
+}
+.navbar .farcry-header-tabs .dropdown-menu > .active > a,
+.navbar .farcry-header-tabs .dropdown-menu > .active:hover > a,
+.navbar .farcry-header-tabs .dropdown-menu > .active > a:focus {
+	color: #fff !important;
+	background: #0e65a2 !important;
+	padding: 3px 14px;
+	text-shadow: none !important;
+}
+
+
 
 /* customise bootstrap nav for the secondary farcry nav bar */
 .navbar .farcry-secondary-nav .navbar-inner {
@@ -1340,9 +1379,6 @@ br[style*="clear:both"] {
 }
 @media only screen and (max-width: 960px) {
 	body.webtop {
-	}
-	.navbar .farcry-header-tabs .nav-tabs {
-		clear: both;
 	}
 	.farcry-profile-username {
 		display: none;

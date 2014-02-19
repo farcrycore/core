@@ -77,6 +77,90 @@
 				window.history.replaceState("", window.document.title, newURL);
 			}
 
+			/* navigation tabs overflow */
+			var headerContainer = $j(".farcry-header-top");
+			var brandContainer = $j(".farcry-header-brand");
+			var utilityContainer = $j(".farcry-header-utility");
+			var tabContainer = $j(".farcry-header-tabs ul");
+			var tabItems = tabContainer.find("> li");
+
+			function renderTabOverflow() {
+
+				var tabContainerWidth = headerContainer.width() - brandContainer.width() - utilityContainer.width() - 40;
+				var tabTotalWidth = 0;
+				var aHiddenTabs = [];
+				var previousTab = null;
+				var previousWidth = 0;
+				var overflowActive = false;
+
+				// set width again
+				tabContainer.width(tabContainerWidth);
+
+				// calculate widths and position of overflow dropdown
+				tabItems.each(function(){
+					var currentTab = this;
+					var $el = $j(this);
+
+					tabTotalWidth += $el.width();
+					if ($el.hasClass("last")) {
+						tabTotalWidth -= 40;
+					}
+
+					if (tabTotalWidth > (tabContainerWidth-previousWidth+40)) {
+						if ($el.hasClass("nav-more")) {
+							aHiddenTabs.push(previousTab);
+							$el.remove();
+						}
+						else {
+							aHiddenTabs.push(currentTab);
+							$el.css("display", "none");
+							if ($el.hasClass("active")) {
+								overflowActive = true;
+							}
+						} 
+					}
+					else {
+						if ($el.hasClass("nav-more")) {
+							aHiddenTabs.push(previousTab);
+							$el.remove();
+						}
+						else {
+							$el.css("display", "block");
+						}
+					}
+
+					previousTab = currentTab;
+					previousWidth = $el.width();
+
+				});
+
+				// render overflow dropdown
+				if (aHiddenTabs.length) {
+					var dropdownHTML = "";
+					tabContainer.find(".nav-more").remove();
+					for (var i=0; i<aHiddenTabs.length;i++) {
+						var $el = $j(aHiddenTabs[i]);
+						dropdownHTML += "<li id='"+$el.attr("id")+"' class='"+$el.attr("class")+"'>" + $el.html() + "</li>";
+					}
+					$j("<li class='dropdown dropdown-toggle nav-more "+ ((overflowActive)?"active":"") +"'><a href='##'><i class='fa fa-caret-down'></i></a><ul class='dropdown-menu pull-right'>" + dropdownHTML + "</ul></li>").insertBefore(aHiddenTabs[0]);
+				}
+				else {
+					tabContainer.find(".nav-more").remove();
+				}
+
+				$j(".farcry-header-tabs").css("overflow", "visible");
+				$j(".farcry-header-tabs ul").css("overflow", "visible");
+
+			}
+			$j(window).resize(function(){
+				renderTabOverflow();				
+			});
+
+			setTimeout(function(){
+				renderTabOverflow();
+			}, 300);
+
+
 			
 			<skin:pop>$j("##bubbles").append("<div class='alert<cfif listfindnocase(message.tags,'info')> alert-info<cfelseif listfindnocase(message.tags,'error')> alert-error<cfelseif listfindnocase(message.tags,'success')> alert-success</cfif>'><button type='button' class='close' data-dismiss='alert'>&times;</button><cfif len(trim(message.title))><strong>#message.title#</strong></cfif> <cfif len(trim(message.message))>#message.message#</cfif></div>");</skin:pop>
 		});
