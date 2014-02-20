@@ -365,7 +365,10 @@ object methods
 	<cffunction name="reloadConfig" access="public" output="false" hint="Reloads all configuration data and re-applies the values for any read-only config properties">
 
 		<cfset var configkey = "">
-		<cfset var stReadOnly = duplicate(application.config._readonly)>
+		<cfset var stReadOnly = structNew()>
+
+		<cfparam name="application.config._readonly" default="#structNew()#">
+		<cfset stReadOnly = duplicate(application.config._readonly)>
 
 		<cfset structclear(application.config) />
 		<cfset application.config._readonly = stReadOnly>
