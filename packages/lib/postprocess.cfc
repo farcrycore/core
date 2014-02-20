@@ -1,5 +1,8 @@
 <cfcomponent hint="Post processing functionality" output="false">
-	
+
+	<cfset variables.regexLineStart = "(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?">
+	<cfset variables.regexLineEnd = "(?:</a>)?\s*(</p>|<br ?/?>|$|\n)">
+
 	<cffunction name="init" access="public" output="false" returntype="any">
 	
 		<cfset this.regexpatterns = structnew() />
@@ -64,7 +67,8 @@
 		
 		<cfreturn output />
 	</cffunction>
-	
+
+
 	<cffunction name="regexMatch" access="public" output="false" returntype="array" hint="Creates a Java regular expression match object">
 		<cfargument name="input" type="string" required="true" />
 		<cfargument name="search" type="string" required="true" />
@@ -107,6 +111,14 @@
 		<cfreturn aResult />
 	</cffunction>
 	
+	<cffunction name="regexLineMatch" access="public" output="false" returntype="array" hint="Creates a Java regular expression match object">
+		<cfargument name="input" type="string" required="true" />
+		<cfargument name="search" type="string" required="true" />
+		
+		<cfreturn regexMatch(arguments.input, variables.regexLineStart & arguments.search & variables.regexLineEnd) />
+	</cffunction>
+
+
 	<cffunction name="regexReplace" access="public" output="false" returntype="string" hint="Uses Java regular expressions to replace">
 		<cfargument name="input" type="string" required="true" />
 		<cfargument name="search" type="string" required="true" />
@@ -121,38 +133,46 @@
 		
 		<cfreturn this.regexpatterns[patternhash].matcher( javaCast( "string", arguments.input ) ).replaceAll( javaCast( "string", arguments.replace ) ) />
 	</cffunction>
-	
-	
-	
+
+	<cffunction name="regexLineReplace" access="public" output="false" returntype="string" hint="Uses Java regular expressions to replace">
+		<cfargument name="input" type="string" required="true" />
+		<cfargument name="search" type="string" required="true" />
+		<cfargument name="replace" type="string" required="true" />
+			
+		<cfreturn regexReplace(arguments.input, variables.regexLineStart & arguments.search & variables.regexLineEnd, arguments.replace) />
+	</cffunction>	
+
+
 	<cffunction name="youtube" access="public" output="false" returntype="string" hint="Parses out youtube links and replaces them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		<cfargument name="width" type="numeric" required="false" default="560" />
 		<cfargument name="height" type="numeric" required="false" default="315" />
 		
 		<cfset var replacement = '<iframe width="#arguments.width#" height="#arguments.height#" src="$2://www.youtube.com/embed/$4?wmode=transparent" frameborder="0" allowfullscreen></iframe>' />
+
+		<!---  http://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
+		<!---  https://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
+		<!---  http://www.youtube.com/watch?v=x-rG8p7-A74  --->
+		<!---  https://www.youtube.com/watch?v=x-rG8p7-A74  --->
+		<!---  http://www.youtube.com/watch?v=_SkcrPsLc1M --->
+		<!---  https://www.youtube.com/watch?v=_SkcrPsLc1M --->
+		<cfset var match1 = "(http|https):\/\/(?:www\.)?(youtube\.com\/watch\?v=)([-\w_]+)[^\s]*?">
+
+		<!---  http://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!---  https://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!---  http://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!---  https://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<cfset var match2 = "(http|https):\/\/(?:www\.)?(youtube\.com\/v\/|youtu\.be\/)\s*([-\w_]+)[^\s]*">
 		
-		<!--- HTTP --->
-		<!---  1. http://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
-		<!---  2. http://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
-		<!---  3. http://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
-		<!---  4. http://www.youtube.com/watch?v=x-rG8p7-A74  --->
-		<!---  5. http://www.youtube.com/watch?v=_SkcrPsLc1M --->
-		<!--- HTTPS --->
-		<!---  6. https://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
-		<!---  7. https://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
-		<!---  8. https://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
-		<!---  9. https://www.youtube.com/watch?v=x-rG8p7-A74  --->
-		<!--- 10. https://www.youtube.com/watch?v=_SkcrPsLc1M --->
-		
-		<!--- This regex matches URLs similar to test case 1,4,5,6,9,10 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?(http|https):\/\/(?:www\.)?(youtube\.com\/watch\?v=)([\w-_]+)[^\s]*?(?:</a>)?\s*(</p>|<br ?/?>|$|\n)",replacement) />
-		
-		<!--- This regex matches URLs similar to test cases 2,3,7,8 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?(http|https):\/\/(?:www\.)?(youtube\.com\/v\/|youtu\.be\/)\s*([\w-_]+)[^\s]*(</p>|<br ?/?>|$|\n)",replacement) />
+		<!--- match1 --->
+		<cfset arguments.input = regexLineReplace(arguments.input, match1, replacement) />
+		<!--- match2 --->
+		<cfset arguments.input = regexLineReplace(arguments.input, match2, replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
-	
+
+
 	<cffunction name="vimeo" access="public" output="false" returntype="string" hint="Parses out vimeo links and replaces them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		<cfargument name="width" type="numeric" required="false" default="500" />
@@ -160,15 +180,16 @@
 		
 		<cfset var replacement = '<iframe src="$2://player.vimeo.com/video/$3" width="#arguments.width#" height="#arguments.height#" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>' />
 		
-		<!--- 1. http://vimeo.com/50351080 --->
-		<!--- 2. https://vimeo.com/50351080 --->
+		<!--- http://vimeo.com/50351080 --->
+		<!--- https://vimeo.com/50351080 --->
+		<cfset var match1 = "(http|https):\/\/vimeo\.com\/(\w+)[^\s]*?">
 		
-		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?(http|https):\/\/vimeo\.com\/(\w+)[^\s]*?(?:</a>)?\s*(</p>|<br ?/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexLineReplace(arguments.input, match1, replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
-	
+
+
 	<cffunction name="twitter" access="public" output="false" returntype="string" hint="Parses out twitter status links and uses the twitter api to replace them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		
@@ -176,15 +197,14 @@
 		<cfset var i = 0 />
 		<cfset var offset = 0 />
 		<cfset var stResult = "" />
+
+		<!--- https://twitter.com/twitterapi/statuses/133640144317198338 --->
+		<!--- https://twitter.com/twitterapi/status/133640144317198338 --->
+		<cfset var match1 = "https?:\/\/twitter\.com\/(\w+)/status(?:es)?/(\w+)">
+
+		<cfset aMatches = regexLineMatch(arguments.input, match1) />
 		
 		<cfparam name="this.twitterstatus" default="#structnew()#" />
-		
-		<!--- 1. https://twitter.com/twitterapi/statuses/133640144317198338 --->
-		<!--- 2. https://twitter.com/twitterapi/status/133640144317198338 --->
-		
-		<!--- This regex matches URLs similar to test cases 1 and 2 --->
-		<cfset aMatches = regexMatch(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?https?:\/\/twitter\.com\/(\w+)/status(?:es)?/(\w+)(?:</a>)?\s*(</p>|<br ?/?>|$|\n)") />
-		
 		<cfloop from="1" to="#arraylen(aMatches)#" index="i">
 			<cfif not structkeyexists(this.twitterstatus,hash(aMatches[i][4].value))>
 				<cfhttp url="https://api.twitter.com/1/statuses/oembed.json?id=#aMatches[i][4].value#&align=center" result="stResult" />
@@ -201,28 +221,29 @@
 		
 		<cfreturn arguments.input />
 	</cffunction>
-	
+
+
 	<cffunction name="gist" access="public" output="false" returntype="string" hint="Parses out gist links and replaces them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		
 		<cfset var replacement = '<script src="$2.js"> </script>' />
-		
-		<!--- 1. https://gist.github.com/1018281 --->
-		
-		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?(https:\/\/gist\.github\.com(\/\w+)+)(?:</a>)?\s*(</p>|<br ?/?>|$|\n)",replacement) />
+
+		<!--- https://gist.github.com/1018281 --->
+		<cfset var match1 = "(https:\/\/gist\.github\.com(\/\w+)+)" />
+
+		<cfset arguments.input = regexLineReplace(arguments.input, match1, replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
-	
+
+
+
 	<cffunction name="removewhitespace" access="public" output="false" returntype="string" hint="Replace all consecutive spaces with one space">
 		<cfargument name="input" type="string" required="true" />
 		
 		<cfreturn rereplace(arguments.input,"(\s)\s+","\1","ALL") />
 	</cffunction>
-	
-	
-	
+
 	<cffunction name="unescapeUnicode" access="public" output="false" returntype="string" hint="Replaces unicode escape sequences with actual characters">
 		<cfargument name="input" type="string" required="true" />
 		
@@ -237,7 +258,7 @@
 		
 		<cfreturn arguments.input />
 	</cffunction>
-	
+
 	<cffunction name="rewriteImages" access="public" output="false" returntype="string" hint="Updates /images src and links to point to the CDN URLs">
 		<cfargument name="input" type="string" required="true" />
 		
@@ -253,5 +274,5 @@
 		
 		<cfreturn arguments.input />
 	</cffunction>
-	
+
 </cfcomponent>
