@@ -83,6 +83,7 @@
 			var utilityContainer = $j(".farcry-header-utility");
 			var tabContainer = $j(".farcry-header-tabs ul");
 			var tabItems = tabContainer.find("> li");
+			var tabOverflowTimer = null;
 
 			function renderTabOverflow() {
 
@@ -153,9 +154,13 @@
 
 			}
 			$j(window).resize(function(){
-				renderTabOverflow();				
+				clearTimeout(tabOverflowTimer);
+				$j(".farcry-header-tabs").css("overflow", "hidden");
+				$j(".farcry-header-tabs ul").css("overflow", "hidden");
+				tabOverflowTimer = setTimeout(function(){
+					renderTabOverflow();
+				}, 150);
 			});
-
 			setTimeout(function(){
 				renderTabOverflow();
 			}, 300);
