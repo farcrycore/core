@@ -5,7 +5,7 @@
 
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-moment" />
-<skin:loadJS id="masonry" core="true" lFiles="#application.url.webtop#/thirdparty/masonry/masonry.pkgd.min.js" />
+<skin:loadJS id="masonry" core="true" bCombine="false" baseHREF="#application.url.webtop#" lFiles="thirdparty/masonry/masonry.pkgd.min.js" />
 
 <skin:loadJS>
 <cfoutput>
@@ -190,10 +190,10 @@ function lessDashboardCard(cardID) {
 	initDashboardCardToggle();
 	
  	$container = $j('##card-container');
-	// initialize
 	$container.masonry({
-	  "gutter": 8,
-	  "itemSelector": '.dashboard-card'
+		columnWidth: 232,
+		gutter: 8,
+		itemSelector: ".dashboard-card"
 	});
 
 </cfoutput>

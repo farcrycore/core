@@ -87,7 +87,7 @@
 
 			function renderTabOverflow() {
 
-				var tabContainerWidth = headerContainer.width() - brandContainer.width() - utilityContainer.width() - 40;
+				var tabContainerWidth = headerContainer.width() - brandContainer.width() - utilityContainer.width() - 42;
 				var tabTotalWidth = 0;
 				var aHiddenTabs = [];
 				var previousTab = null;
