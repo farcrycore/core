@@ -167,13 +167,18 @@
 		<cftry>
 			<cfif len(lCurrentRoles)>
 				<cfquery datasource="#application.dsn#" name="qWebtopDashboards">
-				SELECT *
-				FROM farWebtopDashboard
-				WHERE objectid IN (
-					SELECT parentID
-					FROM farWebtopDashboard_aRoles
-					WHERE data IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lCurrentRoles#">)
-				)
+					SELECT *
+					FROM farWebtopDashboard
+					WHERE 
+						objectid IN (
+							SELECT parentID
+							FROM farWebtopDashboard_aRoles
+							WHERE data IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lCurrentRoles#">)
+						)
+						OR objectid NOT IN (
+							SELECT parentID
+							FROM farWebtopDashboard_aRoles
+						)
 				</cfquery>
 			</cfif>
 			<cfcatch type="any">
