@@ -10,12 +10,7 @@
 ACTION
 ------------------------------------------------------------->
 <ft:processform action="Reload configuration">
-	<cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
-	<cfset structclear(application.config) />
-	<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
-		<cfset application.config[configkey] = oConfig.getConfig(configkey) />
-	</cfloop>
-	
+	<cfset reloadConfig()>	
 	<skin:bubble title="Configuration has been reloaded" tags="farConfig,info" />
 </ft:processform>
 
@@ -28,6 +23,7 @@ ACTION
 			
 			<cfif len(stConfig.configtypename) AND structkeyexists(application.stCOAPI, stConfig.configtypename)>
 				<cfset application.config[stConfig.configkey] = oConfig.getConfig(key=stConfig.configkey) />
+				<cfset applyReadOnlyConfig(stConfig.configkey)>
 				<cfif structkeyexists(application.stCOAPI[stConfig.configtypename],"displayname")>
 					<cfset stConfig.configkey = application.stCOAPI[stConfig.configtypename].displayname />
 				</cfif>

@@ -63,10 +63,7 @@
 		<cfset var configkey = "" />
 		
 		<cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
-		<cfset structclear(application.config) />
-		<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
-			<cfset application.config[configkey] = oConfig.getConfig(configkey) />
-		</cfloop>
+		<cfset oConfig.reloadConfig()>
 		
 		<cfreturn true />
 	</cffunction>

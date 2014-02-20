@@ -361,7 +361,32 @@ object methods
 		
 		<cfreturn result />
 	</cffunction>
-	
+
+	<cffunction name="reloadConfig" access="public" output="false" hint="Reloads all configuration data and re-applies the values for any read-only config properties">
+
+		<cfset var configkey = "">
+		<cfset var stReadOnly = duplicate(application.config._readonly)>
+
+		<cfset structclear(application.config) />
+		<cfset application.config._readonly = stReadOnly>
+		<cfloop list="#getConfigKeys()#" index="configkey">
+			<cfset application.config[configkey] = getConfig(configkey) />
+			<cfset applyReadOnlyConfig(configkey)>
+		</cfloop>
+
+	</cffunction>
+
+	<cffunction name="applyReadOnlyConfig" access="public" output="false" hint="Reloads all configuration data and re-applies the values for any read-only config properties">
+		<cfargument name="configkey" required="true">
+
+		<cfparam name="application.config._readonly" default="#structNew()#">
+
+		<!--- re-apply read only properties --->
+		<cfif isDefined("application.config._readonly.#arguments.configkey#")>
+			<cfset structAppend(application.config[arguments.configkey], application.config._readonly[arguments.configkey], true)>
+		</cfif>
+	</cffunction>
+
 	<cffunction name="afterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
 		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
 		
@@ -371,9 +396,7 @@ object methods
 		<cfset config = deserializeJSON(arguments.stProperties.configdata)>
 
 		<!--- re-apply read only properties --->
-		<cfif isDefined("application.config._readonly.#arguments.stProperties.configkey#")>
-			<cfset structAppend(config, application.config._readonly[arguments.stProperties.configkey], true)>
-		</cfif>
+		<cfset applyReadOnlyConfig(arguments.stProperties.configkey)>
 		
 		<!--- run the config object's process method --->
 		<cfif structKeyExists(stProperties, "configtypename") AND len(stProperties.configtypename) and structkeyexists(application.stCOAPI,stProperties.configtypename)>
