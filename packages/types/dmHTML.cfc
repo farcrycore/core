@@ -31,7 +31,7 @@ type properties
 
 <cfproperty 
 	name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="displayPageStandard" 
-	ftSeq="4" ftwizardStep="Web Page" ftFieldset="General Details" ftLabel="Page Layout" 
+	ftSeq="5" ftwizardStep="Web Page" ftFieldset="General Details" ftLabel="Page Layout" 
 	ftHint="This selection will determine the overall layout of the page."
 	ftType="webskin" ftPrefix="displayPage" >
 
@@ -43,11 +43,11 @@ type properties
 <cfproperty 
 	name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default=""
 	ftSeq="11" ftwizardStep="Web Page" ftFieldset="Teaser" ftLabel="Teaser Image"
-	ftJoin="dmImage">
+	ftJoin="dmImage" ftAllowEdit="true">
 
 <cfproperty 
 	name="Body" type="longchar" hint="Main body of content." required="no" default="" 
-	ftSeq="12" ftwizardStep="Web Page" ftFieldset="Body" ftLabel="Body" ftLabelAlignment="block"
+	ftSeq="20" ftwizardStep="Web Page" ftFieldset="Body" ftLabel="Body" ftLabelAlignment="block"
 	ftType="richtext" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
@@ -56,7 +56,7 @@ type properties
 
 <cfproperty 
 	name="aObjectIDs" type="array" hint="Related media items for this content item." required="no" default=""
-	ftSeq="13" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Associated Media" 
+	ftSeq="21" ftwizardStep="Web Page" ftFieldset="Body" ftLabel="Attached Images/Files" 
 	ftType="array" ftJoin="dmImage,dmFile" 
 	ftShowLibraryLink="false" ftAllowAttach="true" ftAllowAdd="true" ftAllowEdit="true" ftRemoveType="detach"
 	ftallowbulkupload="true"
@@ -64,7 +64,7 @@ type properties
 
 <cfproperty 
 	name="aRelatedIDs" type="array" ftType="array" hint="Holds object pointers to related objects. Can be of mixed types." required="no" default="" 
-	ftSeq="14" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Associated Content"
+	ftSeq="25" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Related Content"
 	ftJoin="dmNavigation,dmHTML" ftAllowCreate="false">
 
 <!--- 
