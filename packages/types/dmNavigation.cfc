@@ -416,25 +416,29 @@
 			<cfsavecontent variable="html">
 				<cfoutput>
 					<div class="multiField">
-					<table class="layout" style="border-collapse:collapse;">
+					<table style="border-collapse:collapse;" border="0">
 				</cfoutput>
 				
 				<cfloop query="qTypes">
 					<cfoutput>
 					<tr>
-						<td style="padding:5px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 1px;">
-							<input type="radio" name="#arguments.fieldname#typename" id="#arguments.fieldname#typename" value="#qTypes.typename#" />
+						<td style="padding:5px;vertical-align:top;">
+							<input type="radio" name="#arguments.fieldname#typename" id="#arguments.fieldname##qTypes.typename#" value="#qTypes.typename#" />
 						</td>
-						<td style="padding:8px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 0px;">
+						<td style="padding:8px;vertical-align:top;">
+							<label for="#arguments.fieldname##qTypes.typename#" style="display:block;">
 							<cfif len(application.stCOAPI[qTypes.typename].icon)>
 								<i class="fa #application.stCOAPI[qTypes.typename].icon# fa-2x"></i>
 							<cfelse>
 								<i class="fa fa-file fa-2x"></i>
 							</cfif>
+							</label>
 						</td>
-						<td style="vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 1px 1px 0px;">
+						<td style="vertical-align:top;">
+							<label for="#arguments.fieldname##qTypes.typename#" style="display:block;">
 							<b>#qTypes.displayname#</b><br>
 							#qTypes.hint#
+							</label>
 						</td>
 					</tr>
 					</cfoutput>				
