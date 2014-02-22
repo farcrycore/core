@@ -1,6 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<!--- @@displayname: Image Description Cell --->
 
 <cfoutput>
     #stObj.title#
