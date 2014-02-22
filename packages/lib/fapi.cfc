@@ -103,7 +103,7 @@
 	<cffunction name="getContentObjects" access="public" output="false" returntype="query" hint="Returns a query of objects matching the specified parameters">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="lProperties" type="string" required="false" default="objectid" hint="The properties to return" />
-		<cfargument name="status" type="string" required="false" default="#request.mode.lValidStatus#" hint="Filter by object status. Only used for content types that support it." />
+		<cfargument name="status" type="string" required="false" default="" hint="Filter by object status. Only used for content types that support it." />
 		<!--- Optional filter arguments --->
 		<cfargument name="orderBy" type="string" required="false" default="" hint="Order by clause" />
 		<cfargument name="maxRows" type="numeric" required="false" default="-1" hint="Number of records to return" />
@@ -117,6 +117,11 @@
 		<cfset var i = 0 />
 		<cfset var f = "" />
 		
+		<!--- set requestmode here; allows getContentObjects() to run when request scope is blank eg. during init --->
+		<cfif NOT len(arguments.status) AND structKeyExists(request, "mode") AND structKeyExists(request.mode, "lValidStatus")>
+			<cfset arguments.status = request.mode.lValidStatus>
+		</cfif>
+
 		<cfset propertytypemap["string"] = "cf_sql_varchar" />
 		<cfset propertytypemap["varchar"] = "cf_sql_varchar" />
 		<cfset propertytypemap["longchar"] = "cf_sql_varchar" />
