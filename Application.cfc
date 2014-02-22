@@ -285,6 +285,20 @@
 		</cfloop>
 
 
+		<!-------------------------------------------------------
+		Scheduled Tasks
+			- add missing tasks to the app server cron jobs table
+			- only picks up tasks that are set to auto-start
+		-------------------------------------------------------->
+		<cftry>
+			<cfset application.fapi.getContentType(typename="dmcron").addMissingJobs()>
+			<cfcatch>
+			<!--- fails if bAutoStart property has not been deployed; remove legacy entries --->
+			<cfset application.fapi.getContentType(typename="dmcron").removeLegacyJobs()>			
+			</cfcatch>
+		</cftry>
+
+
 		<!----------------------------------- 
 		CALL THE PLUGINS AFTER INIT VARIABLES
 		 ----------------------------------->

@@ -169,8 +169,8 @@ type properties
 	<cfreturn qJobs>
 </cffunction>
 
-<cffunction name="addMissingJobs" returntype="boolean" output="false" hint="Add any missing tasks to the app server jobs list.">
-	<cfset var qTasks = application.fapi.getcontentobjects(typename="dmCron", lproperties="objectid, title", bAutoStart_eq="true")>
+<cffunction name="addMissingJobs" returntype="boolean" output="true" hint="Add any missing tasks to the app server jobs list.">
+	<cfset var qTasks = application.fapi.getcontentobjects(typename="dmCron", lproperties="objectid, title", bAutoStart_eq="1")>
 	<cfset var qJobs = listJobs()>
 
 	<cfloop query="qTasks">
