@@ -267,7 +267,7 @@ $out:$
 				<cfset stMetaData = getMetaData(o) />
 				
 				<cfcatch>
-					<cfthrow message="Error instantiating #stResult.packagepath#: #cfcatch.message#" />
+					<cfthrow message="Error instantiating #stResult.packagepath#: #cfcatch.message# #cfcatch.detail#" />
 				</cfcatch>
 			</cftry>
 			
