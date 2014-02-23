@@ -43,7 +43,7 @@ type properties
 
 	<cfproperty name="parameters" type="string" required="no" default="" 
 		ftSeq="4" ftFieldset="Task to Perform" ftLabel="URL Parameters"
-		fthint="Optional. Any URL parameters that should be appended to the task URL.">
+		fthint="Optional. Any URL parameters that should be appended to the task URL; for example, myvar1=value&amp;myvar2=value">
 
 	<cfproperty name="bAutoStart" type="string" required="true" default="true" 
 		ftSeq="5" ftFieldset="Task to Perform" ftLabel="Auto Start Job"

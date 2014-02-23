@@ -11,7 +11,15 @@
  // process custom actions 
 --------------------------------------------------------------------------------->
 <ft:processform action="Run Task">
-	<cfset stCron = createobject("component",application.stCOAPI.dmCron.packagepath).display(objectid=form.selectedobjectid) />
+	<cfset stTask = getData(objectid=form.selectedobjectid)>
+	<cftry>
+		<cfschedule action="run" task="#application.applicationname#: #sttask.title#">
+		<skin:bubble title="#stTask.title# Run" message="The task has been run from the app server schedule." tags="success" />
+		<cfcatch>
+			<skin:bubble title="#stTask.title# Failed" message="#cfcatch.message#" tags="error" />
+		</cfcatch>
+	</cftry>
+	<!--- <cfset stCron = createobject("component",application.stCOAPI.dmCron.packagepath).display(objectid=form.selectedobjectid) /> --->
 </ft:processform>
 
 <ft:processform action="Disable Task">
