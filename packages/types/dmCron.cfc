@@ -30,8 +30,6 @@ TODO
 	bsystem="true" bojectbroker="true"
 	icon="fa-tasks">
 
-	<!--- import tag libraries --->
-	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <!------------------------------------------------------------------------
 type properties
@@ -170,9 +168,14 @@ type properties
 </cffunction>
 
 <cffunction name="listJobs" returntype="query" output="false" hint="Return a query of tasks on the job list.">
-	<cfset var qJobs = "">
+	<cfset var qJobs = queryNew("task,path,file,startdate,starttime,enddate,endtime,url,port,interval,timeout,username,password,proxyserver,proxyport,proxyuser,proxypassword,resolveurl,publish,valid,paused,autoDelete")>
+	<cfset var stAttributes = structNew()>
+
+	<cfset stAttributes.action = "list">
+	<cfset stAttributes.returnvariable = "qJobs">
+
 	<cftry>
-		<cfschedule action="list" returnvariable="qJobs">
+		<cfschedule action="#stAttributes.action#" attributeCollection="#stAttributes#">
 		<cfcatch>
 			<!--- 
 			TODO: CF8/9 compatibility
@@ -180,7 +183,7 @@ type properties
 				- <cfset aTasks = createobject("java","coldfusion.server.ServiceFactory").getCronService().listall()>
 				- can only rely on the following columns: task, path, file, startdate, starttime, enddate, endtime, url, port, interval, timeout, username, password, proxyserver, proxyport, proxyuser, proxypassword, resolveurl, publish, valid, paused, autoDelete
 			--->
-			<cfthrow type="Application" message='CF8 and CF9 not supported' detail='Submit a pull request that integrates createobject("java","coldfusion.server.ServiceFactory").getCronService().listall() instead.'>
+			<!--- <cfthrow type="Application" message='CF8 and CF9 not supported' detail='Submit a pull request that integrates createobject("java","coldfusion.server.ServiceFactory").getCronService().listall() instead.'> --->
 		</cfcatch>
 	</cftry>
 	<cfreturn qJobs>
@@ -204,6 +207,8 @@ type properties
 
 <cffunction name="removeLegacyJobs" returntype="boolean" output="false" hint="Removes any tasks using the old naming format from app server jobs list.">
 	<cfset var qJobs = listJobs()>
+
+	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 	<cfquery dbtype="query" name="qJobs">
 		SELECT * FROM qJobs WHERE task LIKE '#application.applicationname#\_%'
