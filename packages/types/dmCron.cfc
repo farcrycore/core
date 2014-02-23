@@ -15,10 +15,19 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
+<!---
+TODO
+	[ ] deal with tasks that change titles; ie can't be found as jobs
+		- maybe change job name to APPNAME: UUID
+		- maybe deal with it on set data
+	[ ] clean up jobs on task deletion
+	[ ] activate job on create and edit; afterSave()?
+--->
+
 <cfcomponent 
 	extends="types" displayname="Scheduled Tasks" 
 	hint="Scheduled tasks can be created to run periodic maintenance tasks unattended. Select from a list of available tasks and schedule when they should run." 
-	bsystem="true"
+	bsystem="true" bojectbroker="true"
 	icon="fa-tasks">
 
 	<!--- import tag libraries --->
@@ -45,7 +54,7 @@ type properties
 		ftSeq="4" ftFieldset="Task to Perform" ftLabel="URL Parameters"
 		fthint="Optional. Any URL parameters that should be appended to the task URL; for example, myvar1=value&amp;myvar2=value">
 
-	<cfproperty name="bAutoStart" type="string" required="true" default="true" 
+	<cfproperty name="bAutoStart" type="boolean" required="true" default="true" 
 		ftSeq="5" ftFieldset="Task to Perform" ftLabel="Auto Start Job"
 		fttype="boolean"
 		fthint="Task will be automatically rescheduled if it is missing when the application restarts.">
@@ -112,8 +121,16 @@ type properties
  // scheduling cron jobs
 --------------------------------------------------------------------------------->
 <cffunction name="addJob" returntype="boolean" output="false" hint="Schedules a task on app server jobs list.">
-	<cfargument name="objectid" type="uuid" required="true">
-	<cfset var stobject = getData(objectid=arguments.objectid)>
+	<cfargument name="objectid" type="uuid" required="false">
+	<cfargument name="stobject" type="struct" required="false">
+
+	<cfif structKeyExists(arguments, "objectid")>
+		<cfset arguments.stobject = getData(objectid=arguments.objectid)>	
+	</cfif>
+	
+	<cfif structIsEmpty(stobject)>
+		<cfthrow type="Application" message="Argument *stobject* is empty.">
+	</cfif>
 
 	<cfschedule 
 		action="UPDATE" 
@@ -228,16 +245,7 @@ type properties
 		</cfif>
 		
 		<!--- add/update task --->
-		<cfschedule 
-			action="UPDATE" 
-			task = "#application.applicationName#: #arguments.stProperties.title#"
-			operation = "HTTPRequest"
-			url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#arguments.stProperties.objectid#&#arguments.stProperties.parameters#"
-			interval = "#arguments.stProperties.frequency#"
-			startdate = "#dateFormat(arguments.stProperties.startDate,'dd/mmm/yyyy')#"
-			starttime = "#timeFormat(arguments.stProperties.startDate,'hh:mm tt')#"
-			enddate = "#dateFormat(arguments.stProperties.endDate,'dd/mmm/yyyy')#"
-			requesttimeout = "#arguments.stProperties.timeout#">
+		<cfset addJob(stobject=arguments.stProperties)>
 	</cfif>	
 	
 	<!--- update object --->
