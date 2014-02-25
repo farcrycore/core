@@ -144,25 +144,27 @@
 
 			<!--- get the object FU --->
 			<nj:getNavigation objectId="#arguments.objectid#" r_stobject="stNav" />
-			<cfif isStruct(stNav) and structKeyExists(stNav, "objectid") AND len(stNav.objectid)>
-				<!--- if the object is in the tree look up the nav node --->
+
+			<cfif isStruct(stNav) and structKeyExists(stNav, "aObjectIDs") AND stNav.aObjectIDs[1] eq arguments.objectid>
+				<!--- if the object is the first child in the tree look up the nav node --->
 				<cfset objectFU = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectID)>
 			<cfelse>
 				<!--- otherwise look up the object itself --->
 				<cfset objectFU = application.fapi.getLink(typename=arguments.typename, objectid=arguments.objectid)>
-			</cfif>
 
-			<!--- match the current friendly URL if this is the request object --->
-			<cfif structKeyExists(request, "stObj") AND arguments.objectid eq request.stObj.objectid AND structKeyExists(url, "furl") AND len(url.furl)>
-				<cfset currentFU = application.fapi.fixURL(url.furl)>
-				<!--- use the current FU if the object FU is just an objectid --->
-				<cfif len(objectFU) gt 1 AND isValid("uuid", right(objectFU, len(objectFU)-1))>
-					<cfset objectFU = currentFU>
+				<!--- match the current friendly URL if this is the request object --->
+				<cfif structKeyExists(request, "stObj") AND arguments.objectid eq request.stObj.objectid AND structKeyExists(url, "furl") AND len(url.furl)>
+					<cfset currentFU = application.fapi.fixURL(url.furl)>
+					<!--- use the current FU if the object FU is just an objectid --->
+					<cfif len(objectFU) gt 1 AND isValid("uuid", right(objectFU, len(objectFU)-1))>
+						<cfset objectFU = currentFU>
+					</cfif>
+					<!--- use current FU if stems match (i.e. currentFU is found in objectFU or vice versa) --->
+					<cfif len(currentFU) AND (findNoCase(currentFU, objectFU) OR findNoCase(objectFU, currentFU))>
+						<cfset objectFU = currentFU>
+					</cfif>
 				</cfif>
-				<!--- use current FU if stems match (i.e. currentFU is found in objectFU or vice versa) --->
-				<cfif len(currentFU) AND (findNoCase(currentFU, objectFU) OR findNoCase(objectFU, currentFU))>
-					<cfset objectFU = currentFU>
-				</cfif>
+
 			</cfif>
 
 		</cfif>
