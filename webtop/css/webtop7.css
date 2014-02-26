@@ -101,19 +101,25 @@ a:hover {
 }
 
 .farcry-header-brand {
+	display: table;
 	float: left;
-	vertical-align: middle;
-	padding: 18px 25px 0 0;
-	height: 52px; /* acts as min-height on a table cell */
+	padding: 5px 25px 5px 0;
+	height: 60px;
 }
 .farcry-header-brand a {
 	white-space: nowrap;
 	color: #000;
 	font-weight: normal;
 	font-size: 20px;
+	display: table-cell;
+	height: 100%;
+	vertical-align: middle;
 }
 .farcry-header-brand img {
 	/* fit inside 150x60 */
+	max-width: 150px;
+	max-height: 60px;
+	margin: auto;
 }
 
 
