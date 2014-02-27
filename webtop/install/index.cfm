@@ -4,7 +4,6 @@
 <cfparam name="form.farcryUserPassword" default="farcry">
 
 
-
 <!---
 
 	TODO
@@ -337,36 +336,48 @@ During installation the contents of the project "www" folder will be moved into:
 
 			<cfif form.installAction eq "install">
 
-				<p class="alert alert-success">
-					<strong>Congratulations.</strong> Your FarCry installation is complete!
-				</p>
+				<cfif stInstallResult.bSuccess>
+					<p class="alert alert-success">
+						<strong>Congratulations.</strong> Your FarCry installation is complete!
+					</p>
 
-				<div class="well">
-					<pre style="font-weight: bold">Administrator Account</pre>
+					<div class="well">
+						<pre style="font-weight: bold">Administrator Account</pre>
 <pre style="margin:0;">
             Username:  farcry
             Password:  #form.farcryUserPassword#
 </pre>
-				</div>
-
-				<div class="control-group">
-					<div class="controls">
-						<a href="#stConstructor.webtopURL#" style="width: 255px;" class="btn btn-primary btn-large">Login</a>
-						<br>
-						<br>
-						<br>
-						<a href="/" style="width: 270px;" class="btn">View Site &rarr;</a>
-						<br>
-						<br>
 					</div>
-				</div>
+
+					<div class="control-group">
+						<div class="controls">
+							<div id="loading">
+								<a style="width: 270px;" class="btn">Starting application, please wait...</a>
+								<br>
+								<br>
+							</div>
+							<div id="finished" style="display:none">
+								<a href="#stConstructor.webtopURL#" style="width: 255px;" class="btn btn-primary btn-large">Login</a>
+								<br>
+								<br>
+								<br>
+								<a href="/" style="width: 270px;" class="btn">View Site &rarr;</a>
+								<br>
+								<br>
+							</div>
+						</div>
+					</div>
+					<iframe id="iframe" src="/?updateall=#stConstructor.updateappKey#" height="0" width="0" border="0" style="display:none"></iframe>
+				<cfelse>
+					<p class="alert alert-error">
+						There were some errors during installation. Please review the debugging information below...
+					</p>
+				</cfif>
 
 				<a id="showdebug" class="muted" href="javascript:void(0)">Debugging information</a>
-				<div id="debugoutput" style="display:none">
+				<div id="debugoutput" <cfif stInstallResult.bSuccess>style="display:none"</cfif>>
 					#stInstallResult.output#
 				</div>
-
-				<iframe src="/?updateall=#stConstructor.updateappKey#" height="0" width="0" border="0" style="display:none"></iframe>
 
 			</cfif>
 
@@ -405,14 +416,18 @@ $(function(){
 	$("#dbType").on("change", function(){
 		toggleDBOwner();
 	});
-
 	toggleDBOwner();
 
 	$("#showdebug").on("click", function(){
 		$("#debugoutput").show();
 	});
 
-})
+	document.getElementById("iframe").onload = function() {
+		$("#loading").hide();
+		$("#finished").show();
+	};
+
+});
 </script>
 
 </body>
