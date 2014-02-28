@@ -99,7 +99,7 @@
 		
 	
 			<cfoutput>	
-			<ft:fieldset legend="OPTION 1: Content View">
+			<ft:fieldset legend="Content Type View">
 				<ft:field label="#stFields.webskinTypename.label#">
 					
 					
@@ -134,7 +134,7 @@
 	
 			<cfoutput>
 			<fieldset class="formSection">
-				<legend class="">OPTION 1 (NOT AVAILABLE): Content View</legend>
+				<legend class="">Content Type View (Not Available)</legend>
 				<input type="hidden" name="#stFields.webskin.FORMFIELDNAME#webskin" id="#stFields.webskin.FORMFIELDNAME#webskin" value="" />
 				<label>No Type Webskins Available</label>
 			</fieldset>
@@ -144,7 +144,7 @@
 	<cfelse>
 		<cfoutput>
 			<fieldset class="formSection">
-				<legend class="">OPTION 1 (NOT AVAILABLE): Content View</legend>	
+				<legend class="">Content Type View (Not Available)</legend>	
 				<p>This is option has not been deployed. Please contact your administrator.</p>
 			</fieldset>
 		</cfoutput>
@@ -153,13 +153,13 @@
 
 	<cfset stPropMetadata = structnew() />
 	<cfset stPropMetadata.include.ftLabel = "Include File" />
-	<cfset stPropMetadata.include.ftHint = "Select the 'Include' file you wish this page to display.." />
-	<ft:object stObject="#stObj#" lFields="include" legend="OPTION 2: Standard Include" stPropMetadata="#stPropMetadata#" bShowLibraryLink="false" />
-	
-		
+	<cfset stPropMetadata.include.ftHint = "Select the include file to display" />
+
+	<ft:object stObject="#stObj#" lFields="include" legend="(Deprecated Option: Include File)" stPropMetadata="#stPropMetadata#" bShowLibraryLink="false" />
+
 
 	<ft:object objectid="#stObj.objectid#" lFields="catInclude" legend="Categorisation" />
-			
+
 	
 	<ft:buttonPanel>
 		<ft:button value="Save" color="orange" /> 
