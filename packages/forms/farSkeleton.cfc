@@ -98,12 +98,13 @@
 	</cffunction>
 
 	<cffunction name="getExcludeString" hint="Returns a pipe separated list of directories to exclude in an export">
+		<cfargument name="webrootName" type="string" default="www">
 		<cfargument name="excludeMedia" type="boolean" default="false">
 
-		<cfset var excludeDir = ".git|.svn|www/cache|#application.projectDirectoryName#/cache">
+		<cfset var excludeDir = ".git|.svn|WEB-INF|www/cache|#arguments.webrootName#/cache">
 
 		<cfif arguments.excludeMedia>
-			<cfset excludeDir = excludeDir & "|mediaArchive|www/images|www/files|#application.projectDirectoryName#/images|#application.projectDirectoryName#/files">
+			<cfset excludeDir = excludeDir & "|mediaArchive|www/images|www/files|#arguments.webrootName#/images|#arguments.webrootName#/files">
 		</cfif>
 
 		<cfreturn excludeDir>
@@ -171,14 +172,18 @@
 	<cffunction name="zipInstaller" hint="Package code into a ZIP for the installer; excludes media.">
 		<cfargument name="excludeMedia" type="boolean" default="false">
 
+		<cfset var webroot = expandPath("/")>
+		<cfset var webrootName = listLast(webroot, "\/")>
 		<cfset var zipFile = "#getZipStagingPath()#/#application.applicationname#-project.zip">
-		<cfset var excludeDir = getExcludeString(excludeMedia=arguments.excludeMedia)>
+		<cfset var excludeDir = getExcludeString(webrootName=webrootName, excludeMedia=arguments.excludeMedia)>
 		<cfset var sqlDirectory = getSQLStagingPath()>
 
 		<cfset var qProject = getDirContents(
 							directory=application.path.project, 
 							ignoreDirectories=excludeDir, 
 							ignoreFiles="project.zip")>
+
+		<cfset var qProjectWWW = queryNew("")>
 
 		<cfset var qCore = getDirContents(
 							directory=expandpath("/farcry/core"), 
@@ -195,16 +200,31 @@
 							ignoreDirectories=excludeDir, 
 							ignoreFiles="project.zip")>
 
+		<!--- for standalone installs use the webroot as the projects www folder --->
+		<cfif NOT directoryExists(application.path.project & "/www")>
+			<cfset qProjectWWW = getDirContents(
+								directory=expandpath("/"), 
+								ignoreDirectories=excludeDir & "|#webrootName#/farcry/")>
+			<!--- remove trailing slash on webroot path --->
+			<cfif listFind("\,/", right(webroot, 1))>
+				<cfset webroot = left(webroot, len(webroot)-1)>
+			</cfif>
+		</cfif>
+
 
 		<!--- create ZIP for entire project, core and plugins --->
 		<cfzip action="zip" file="#zipFile#" overwrite="true">
-
-<!--- TODO: project "www" folder should come from the webroot for standalone installs --->
 
 			<cfloop query="qProject">
 				<cfif qproject.type neq "Dir">
 					<cfset filepath = "farcry/projects/" & application.projectDirectoryName & replace(replacenocase(qProject.directory, application.path.project, ""), "\", "/", "all") & "/" & qproject.name>
 					<cfzipparam source="#qProject.directory#/#qproject.name#" entrypath="#filepath#">
+				</cfif>
+			</cfloop>
+			<cfloop query="qProjectWWW">
+				<cfif qProjectWWW.type neq "Dir">
+					<cfset filepath = "farcry/projects/" & application.projectDirectoryName & "/www" & replace(replacenocase(qProjectWWW.directory, webroot, ""), "\", "/", "all") & "/" & qProjectWWW.name>
+					<cfzipparam source="#qProjectWWW.directory#/#qProjectWWW.name#" entrypath="#filepath#">
 				</cfif>
 			</cfloop>
 
