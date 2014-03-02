@@ -53,7 +53,7 @@
 			<ft:object typename="container" stObject="#stObj#" lFields="label" stPropMetadata="#stMeta#" />
 			<ft:buttonPanel>
 				<ft:button value="Save" />
-				<ft:button value="Cancel" />
+				<ft:button value="Cancel" validate="false" />
 			</ft:buttonPanel>
 		</ft:form>
 
