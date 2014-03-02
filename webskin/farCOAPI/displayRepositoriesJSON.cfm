@@ -1,6 +1,7 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Repositories JSON API Method --->
-<!--- @@viewstack: page --->
+<!--- @@viewstack: data --->
+<!--- @@mimetype: application/json --->
 
 <cfparam name="url.nested" type="boolean" default="false">
 
@@ -15,7 +16,6 @@
 
 <!--- output json response --->
 <cfset request.mode.ajax = 1>
-<cfcontent type="application/json" reset="true">
 <cfoutput>#serializeJSON(stRepoData)#</cfoutput>
 
 <cfsetting enablecfoutputonly="false">
