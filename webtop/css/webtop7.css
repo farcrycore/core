@@ -172,7 +172,7 @@ a:hover {
 	width: 24px;
 	height: 25px;
 	font-size: 14px;
-	line-height: 25px;
+	line-height: 25px !important;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -191,10 +191,9 @@ a:hover {
 	background: #555;
 	color: #fff;
 	width: 24px;
-	height: 24px;
-	padding-top: 1px;
+	height: 25px;
 	font-size: 14px;
-	line-height: 25px;
+	line-height: 25px !important;
 	text-align: center;
 	vertical-align: middle;
 }
