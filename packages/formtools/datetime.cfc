@@ -53,7 +53,7 @@
 <cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types"> 
 
 	<!--- edit handler options --->
-	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery)" />
+	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, input)" />
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
 	<cfproperty name="ftDateFormatMask" default="d mmm yyyy" hint="Coldfusion mask for date for edit handler" />
 	<cfproperty name="ftStartYearShift" default="0" hint="Used when ftRenderType is set to dropDown, sets start of year range in select list." />
@@ -130,6 +130,7 @@
 		<cfset var localeMonths = "">
 		<cfset var i = "">
 		<cfset var step=1>
+		<cfset var jsDateFormatMask = "">
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch) and isDate(arguments.stObject[arguments.stMetadata.ftWatch])>
 			<cfif DateCompare(arguments.stObject[arguments.stMetadata.ftWatch], arguments.stMetadata.value) eq 1>
@@ -246,12 +247,14 @@
 			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
 			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
 			
-			<!--- load jquery-ui before bootstrap-datepicker so that bootstrap-datepicker overwrites it --->
-			<skin:loadJS id="fc-jquery" />
-			<skin:loadJS id="fc-jquery-ui" />
-			<skin:loadJS id="fc-bootstrap" />
-			<skin:loadJS id="bootstrap-datepicker" />
-			<skin:loadCSS id="bootstrap-datepicker" />
+			<cfif arguments.stMetadata.ftRenderType neq "input">
+				<!--- load jquery-ui before bootstrap-datepicker so that bootstrap-datepicker overwrites it --->
+				<skin:loadJS id="fc-jquery" />
+				<skin:loadJS id="fc-jquery-ui" />
+				<skin:loadJS id="fc-bootstrap" />
+				<skin:loadJS id="bootstrap-datepicker" />
+				<skin:loadCSS id="bootstrap-datepicker" />
+			</cfif>
 			
 			
 			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
@@ -291,21 +294,23 @@
 
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 
-						<!--- convert CF date masks into masks that will work with bootstrap-datepicker --->
-						<cfset jsDateFormatMask = arguments.stMetadata.ftDateFormatMask>
-						<cfset jsDateFormatMask = replace(jsDateFormatMask, "dddd", "DD")>
-						<cfset jsDateFormatMask = replace(jsDateFormatMask, "ddd", "D")>
-						<cfset jsDateFormatMask = replace(jsDateFormatMask, "mmmm", "MM")>
-						<cfset jsDateFormatMask = replace(jsDateFormatMask, "mmm", "M")>
+						<cfif arguments.stMetadata.ftRenderType neq "input">
+							<!--- convert CF date masks into masks that will work with bootstrap-datepicker --->
+							<cfset jsDateFormatMask = arguments.stMetadata.ftDateFormatMask>
+							<cfset jsDateFormatMask = replace(jsDateFormatMask, "dddd", "DD")>
+							<cfset jsDateFormatMask = replace(jsDateFormatMask, "ddd", "D")>
+							<cfset jsDateFormatMask = replace(jsDateFormatMask, "mmmm", "MM")>
+							<cfset jsDateFormatMask = replace(jsDateFormatMask, "mmm", "M")>
 
-						<skin:onReady>
-							<cfoutput>
-								$j('###arguments.fieldname#').datepicker({
-								    format: '#jsDateFormatMask#',
-								    autoclose: true
-								});
-							</cfoutput>
-						</skin:onReady>
+							<skin:onReady>
+								<cfoutput>
+									$j('###arguments.fieldname#').datepicker({
+									    format: '#jsDateFormatMask#',
+									    autoclose: true
+									});
+								</cfoutput>
+							</skin:onReady>
+						</cfif>
 
 						<cfif arguments.stMetadata.ftShowTime>
 							<select class="fc-time" name="#arguments.fieldname#Hour">
