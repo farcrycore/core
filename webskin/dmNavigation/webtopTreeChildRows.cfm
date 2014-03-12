@@ -315,7 +315,11 @@
 		
 			<!--- vary the status labels, icon, and edit URL by the object status --->
 			<cfset thisStatusLabel = "">
-			<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa fa-file-o fa-stack-1x'></i></span>">
+			<cfset thisLeafTypenameIcon = "fa-file-o">
+			<cfif len(stLeafNode.typename) AND isDefined("application.stCOAPI.#stLeafNode.typename#.icon") AND len(application.stCOAPI[stLeafNode.typename].icon)>
+				<cfset thisLeafTypenameIcon = application.stCOAPI[stLeafNode.typename].icon>
+			</cfif>
+			<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa #thisLeafTypenameIcon# fa-stack-1x'></i></span>">
 			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#">
 			<cfif stLeafNode.bHasVersion>
 				<!--- versioned object with multiple records --->
