@@ -470,7 +470,7 @@ jQuery.fn.unblock = function(){
 			});
 		}
 		if (options.allowEdit) {
-			$this.delegate(".fa-pencil", "click", function(event){
+			$this.on("click", ".fa-pencil",  function(event){
 				options.onEditNode.call($this.get(0),$(this).parents("li").first().data("node"));
 			});
 		}
