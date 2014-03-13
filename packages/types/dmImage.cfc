@@ -123,29 +123,31 @@ type properties
 	<cfset stLocal.relatedQty = 0 />
 	
 	<cfloop collection="#application.stcoapi#" item="type">
-		<cfloop collection="#application.stcoapi[type].stProps#" item="prop">
-			<cfif application.stcoapi[type].stProps[prop].metadata.type EQ "array" AND structKeyExists(application.stcoapi[type].stProps[prop].metadata,"ftJoin") and listFindNoCase(application.stcoapi[type].stProps[prop].metadata.ftJoin, "dmimage")>
-				<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
-				SELECT	parentId
-				FROM	#type#_#prop#
-				WHERE	data = '#arguments.objectid#'
-				</cfquery>
-				
-				<cfif stLocal.qCheck.recordCount>
-					<cfset stLocal.relatedQty = stLocal.relatedQty + stLocal.qCheck.recordCount />
+		<cfif NOT reFindNoCase("^config", type)>
+			<cfloop collection="#application.stcoapi[type].stProps#" item="prop">
+				<cfif application.stcoapi[type].stProps[prop].metadata.type EQ "array" AND structKeyExists(application.stcoapi[type].stProps[prop].metadata,"ftJoin") and listFindNoCase(application.stcoapi[type].stProps[prop].metadata.ftJoin, "dmimage")>
+					<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
+					SELECT	parentId
+					FROM	#type#_#prop#
+					WHERE	data = '#arguments.objectid#'
+					</cfquery>
+					
+					<cfif stLocal.qCheck.recordCount>
+						<cfset stLocal.relatedQty = stLocal.relatedQty + stLocal.qCheck.recordCount />
+					</cfif>
+				<cfelseif application.stcoapi[type].stProps[prop].metadata.type EQ "uuid" AND structKeyExists(application.stcoapi[type].stProps[prop].metadata,"ftJoin") and listFindNoCase(application.stcoapi[type].stProps[prop].metadata.ftJoin, "dmimage")>
+					<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
+					SELECT	objectid
+					FROM	#type#
+					WHERE	#prop# = '#arguments.objectid#'
+					</cfquery>
+					
+					<cfif stLocal.qCheck.recordCount>
+						<cfset stLocal.relatedQty = stLocal.relatedQty + stLocal.qCheck.recordCount />
+					</cfif>			
 				</cfif>
-			<cfelseif application.stcoapi[type].stProps[prop].metadata.type EQ "uuid" AND structKeyExists(application.stcoapi[type].stProps[prop].metadata,"ftJoin") and listFindNoCase(application.stcoapi[type].stProps[prop].metadata.ftJoin, "dmimage")>
-				<cfquery name="stLocal.qCheck" datasource="#application.dsn#">
-				SELECT	objectid
-				FROM	#type#
-				WHERE	#prop# = '#arguments.objectid#'
-				</cfquery>
-				
-				<cfif stLocal.qCheck.recordCount>
-					<cfset stLocal.relatedQty = stLocal.relatedQty + stLocal.qCheck.recordCount />
-				</cfif>			
-			</cfif>
-		</cfloop>
+			</cfloop>
+		</cfif>
 	</cfloop>
 
 	<cfif stLocal.relatedQty GTE 1>
