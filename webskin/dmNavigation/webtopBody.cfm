@@ -459,6 +459,7 @@ alert(response.message);
 					"dblclick .fc-tree-title" : "clickTitle",
 					"click .fc-btn-overview" : "clickOverview",
 					"click .fc-btn-edit" : "clickEdit",
+					"click .fc-add" : "clickAdd",
 					"click .fc-zoom" : "clickZoom",
 					"click .fc-changestatus" : "clickStatus",
 					"click .fc-sort" : "clickSort",
@@ -582,6 +583,23 @@ alert(response.message);
 					return false;
 				},
 
+
+				clickAdd: function SiteTreeView_clickAdd(evt){
+
+					var self = this;
+					var clickedRow = Backbone.$(evt.currentTarget).closest("tr");
+
+					var objectid = clickedRow.data("objectid");
+					var createURL = clickedRow.data("createurl");
+
+					$fc.objectAdminAction('Add Page', createURL, { 
+						onHidden: function(){ 
+							self.reloadTreeBranch(objectid);
+						} 
+					});
+
+					return false;
+				},
 
 				clickZoom: function SiteTreeView_clickZoom(evt){
 					var objectid = Backbone.$(evt.currentTarget).closest("tr").data("objectid");
@@ -1309,7 +1327,7 @@ alert(response.message);
 					var dropdown = "";
 					if (row["nodetype"] == "folder") {
 						dropdown = 
-								'<li><a class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ this.reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="fa fa-plus fa-fw"></i> Add Page</a></li> '
+								'<li><a class="fc-add"><i class="fa fa-plus fa-fw"></i> Add Page</a></li> '
 							+	'<li><a class="fc-zoom"><i class="fa fa-search-plus fa-fw"></i> Zoom</a></li> '
 							+	'<li class="dropdown-submenu"><a class=""><i class="fa fa-fw"></i> Status</a><ul class="dropdown-menu"> '
 							+		'<li><a class="fc-changestatus" data-status="approve">Approve</a></li> '
@@ -1396,7 +1414,7 @@ alert(response.message);
 					var spacer = '<i class="fc-icon-spacer-' + row["spacers"] + '"></i>';
 
 					var html = 
-						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '" data-versionobjectid="' + versionObjectID + '" data-editurl="' + row["editURL"] + '"> '
+						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '" data-versionobjectid="' + versionObjectID + '" data-createurl="' + createURL + '" data-editurl="' + row["editURL"] + '"> '
 						+	colCheckbox
 						+	colActions
 						+	'<td class="fc-tree-title fc-nowrap">' + spacer + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
