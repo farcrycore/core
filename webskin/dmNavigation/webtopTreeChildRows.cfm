@@ -183,11 +183,11 @@
 		<!--- if this node is expanded, or the parent nav node is expanded then this nav node will be visible --->
 		<cfif bRenderRoot AND qTree.objectid eq rootObjectID>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
+		<cfelseif url.bLoadCollapsed AND NOT bRootNode>
+			<cfset thisClass = thisClass & " fc-treestate-hidden">
 		<cfelseif qTree.parentid eq rootObjectID AND NOT url.bIgnoreExpandedNodes>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
 		<cfelseif bUnexpandedAncestor>
-			<cfset thisClass = thisClass & " fc-treestate-hidden">
-		<cfelseif url.bLoadCollapsed AND NOT bRootNode>
 			<cfset thisClass = thisClass & " fc-treestate-hidden">
 		<cfelseif qTree.parentid eq rootObjectID>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
