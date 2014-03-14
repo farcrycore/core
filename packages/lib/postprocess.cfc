@@ -237,6 +237,31 @@
 	</cffunction>
 
 
+	<cffunction name="vine" access="public" output="false" returntype="string" hint="Parses out vine links and replaces them with embeds">
+		<cfargument name="input" type="string" required="true" />
+		<cfargument name="width" type="numeric" required="false" default="500" />
+		<!--- <cfargument name="height" type="numeric" required="false" default="500" /> --->
+		<cfargument name="type" type="string" required="false" default="simple" hint="The embed style: simple, postcard" />
+
+		<cfset var match1 = '' />
+		<cfset var replacement = '' />
+
+		<cfset var height = width>
+		<cfif arguments.type eq "postcard">
+			<cfset height = height + 89>
+		</cfif>
+
+		<cfset replacement = '<iframe class="vine-embed" src="$2/embed/#arguments.type#" width="#arguments.width#" height="#height#" frameborder="0"></iframe>' />
+
+		<!--- https://vine.co/v/hBFxTlV36Tg --->
+		<cfset match1 = "(https:\/\/vine\.co\/v\/\w+)" />
+
+		<cfset arguments.input = regexLineReplace(arguments.input, match1, replacement) />
+		
+		<cfreturn arguments.input />
+	</cffunction>
+
+
 
 	<cffunction name="removewhitespace" access="public" output="false" returntype="string" hint="Replace all consecutive spaces with one space">
 		<cfargument name="input" type="string" required="true" />
