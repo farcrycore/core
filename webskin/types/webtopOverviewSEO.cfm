@@ -48,7 +48,7 @@ START WEBSKIN
 
 		<ft:buttonPanel style="text-align:left;padding-top:0;padding-left:0;margin-top:0;border-top:0;border-bottom:1px solid ##e3e3e3;">
 			<cfoutput>
-			<a class="btn btn-primary" href="#application.url.webtop#/index.cfm?typename=#stObj.typename#&objectid=#stobj.objectid#&view=webtopPageModal&bodyView=webtopBodyManageFUs" onclick="$fc.openDialogIFrame('Friendly URLs for #JSStringFormat(stobj.label)#', this.href); return false;">Manage Friendly URLs</a>
+			<a class="btn btn-primary" href="#application.url.webtop#/index.cfm?typename=#stObj.typename#&objectid=#stobj.objectid#&view=webtopPageModal&bodyView=webtopBodyManageFUs" onclick="$fc.openDialogIFrame('Friendly URLs', this.href); return false;">Manage Friendly URLs</a>
 			</cfoutput>
 		</ft:buttonPanel>
 
