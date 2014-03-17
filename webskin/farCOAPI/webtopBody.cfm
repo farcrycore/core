@@ -413,7 +413,7 @@
 		</ft:buttonPanel>
 	</ft:form>
 <cfelse>
-	<cfoutput><div class="alert alert-success">No schema conflicts</div></cfoutput>
+	<cfoutput><div class="alert alert-success">Schema is up to date</div></cfoutput>
 </cfif>
 
 <cfloop list="project,#application.fapi.listReverse(application.plugins)#,core" index="thislocation">
