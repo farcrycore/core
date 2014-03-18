@@ -285,7 +285,7 @@
 		<!--- check if webskin(s) exist --->
 		<cfif NOT application.fapi.hasWebskin(typename=url.type, webskin=url.view)>
 			<cfset bView = false>
-		<cfelseif url.view neq "trayContainer" AND len(url.bodyview) AND NOT application.fapi.hasWebskin(typename=url.type, webskin=url.bodyview)>
+		<cfelseif url.view eq stWebskins.page AND len(url.bodyview) AND NOT application.fapi.hasWebskin(typename=url.type, webskin=url.bodyview)>
 			<cfset bView = false>
 		</cfif>
 
