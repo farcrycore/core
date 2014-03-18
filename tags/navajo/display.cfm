@@ -281,9 +281,15 @@
 				</cfif>
 			</cfif>
 		</cfif>
-		
-		
-		<cfif application.fapi.hasWebskin(typename="#url.type#" , webskin="#url.view#")>
+
+		<!--- check if webskin(s) exist --->
+		<cfif NOT application.fapi.hasWebskin(typename=url.type, webskin=url.view)>
+			<cfset bView = false>
+		<cfelseif url.view neq "trayContainer" AND len(url.bodyview) AND NOT application.fapi.hasWebskin(typename=url.type, webskin=url.bodyview)>
+			<cfset bView = false>
+		</cfif>
+
+		<cfif bView>
 
 			<!--- Call the view on the types coapi object --->
 			<skin:view typename="#url.type#" webskin="#url.view#" r_html="result" />
@@ -302,7 +308,7 @@
 			
 		<cfelse>
 			
-			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #url.type# and couldn't find a #stWebskins.page#.")) />
+			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #url.type# and couldn't find both #url.view# and #url.bodyview#.")) />
 			
 		</cfif>	
 		
