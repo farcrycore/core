@@ -340,7 +340,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfelseif structKeyExists(arguments, "alternateHTML")>
 						<cfset stWebskin.webskinHTML = arguments.alternateHTML />
 					<cfelse>
-						<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("No objectid or type specified")) />
+						<cfthrow type="Application" message="Error: Webskin not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided."
+								detail="Error: Webskin not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided. typename: #stobj.typename#. objectid: #stobj.objectid#." />
 					</cfif>	
 				</cfif>		
 			<cfelse>
