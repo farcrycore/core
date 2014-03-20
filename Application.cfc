@@ -677,10 +677,10 @@
 		</cfif>
 
 		<cfif not len(loc) and arguments.fileExtension eq "cfm">				
-			<cfif fileExists(expandPath("#cgi.context_path#/webtop/install/noProject.cfm"))>
-				<cfset installLink = "#cgi.context_path#/webtop/install/noProject.cfm" />
+			<cfif fileExists(expandPath("#cgi.context_path#/webtop/install/index.cfm"))>
+				<cfset installLink = "#cgi.context_path#/webtop/install/index.cfm" />
 			<cfelse>
-				<cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/noProject.cfm" />
+				<cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/index.cfm" />
 			</cfif>
 
 			<cflocation url="#installLink#" addtoken="false">
