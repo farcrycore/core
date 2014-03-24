@@ -344,7 +344,7 @@ object methods
 		<cfset var qConfig = "" />
 		
 		<cfquery datasource="#application.dsn#" name="qConfig">
-			select	*
+			select	*, 'farConfig' AS typename
 			from	#application.dbowner#farConfig
 			<cfif len(result)>
 				where	configkey not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="result" />)
