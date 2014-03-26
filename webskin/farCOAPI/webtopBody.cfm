@@ -362,7 +362,7 @@
 	</cfif>
 </cfloop>
 
-<cfoutput><h1>COAPI Overview</h1></cfoutput>
+<cfoutput><h1><i class="fa fa-cog"></i> COAPI Overview</h1></cfoutput>
 
 <cfif conflictCount>
 	<ft:form>
@@ -413,7 +413,7 @@
 		</ft:buttonPanel>
 	</ft:form>
 <cfelse>
-	<cfoutput><div class="alert alert-success">Schema is up to date</div></cfoutput>
+	<cfoutput><div class="alert alert-success"><i class="fa fa-info-circle"></i> Schema is up to date</div></cfoutput>
 </cfif>
 
 <cfloop list="project,#application.fapi.listReverse(application.plugins)#,core" index="thislocation">
