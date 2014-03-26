@@ -71,6 +71,7 @@
 			<a title="Delete"
 				class="con-refresh con-delete-rule" 
 				href="#actionURL#" 
+				onclick="return confirm('Are you sure you want to DELETE this rule?');"
 				con:id="#containerID#">
 				<span class="ui-icon ui-icon-circle-close" style="float:left;">&nbsp;</span>
 			</a>
