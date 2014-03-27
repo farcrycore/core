@@ -142,8 +142,11 @@
 
 		<cfif isValid("uuid", arguments.objectid) AND len(arguments.typename)>
 
-			<!--- get the object FU --->
-			<nj:getNavigation objectId="#arguments.objectid#" r_stobject="stNav" />
+			<!--- check for bUseInTree types --->
+			<cfif application.fapi.getContentTypeMetadata(typename=arguments.typename, md="bUseInTree", default=false)>
+				<!--- look up the parent nav node --->
+				<nj:getNavigation objectId="#arguments.objectid#" r_stobject="stNav" />
+			</cfif>
 
 			<cfif isStruct(stNav) and structKeyExists(stNav, "aObjectIDs") AND stNav.aObjectIDs[1] eq arguments.objectid>
 				<!--- if the object is the first child in the tree look up the nav node --->
