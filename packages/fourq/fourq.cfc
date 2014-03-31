@@ -1039,30 +1039,32 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<!--- Loop through related content, and update the status where the relationship is 1-many or 1-1 (NOT many-many or many-1) --->
 				<cfloop from="1" to="#arraylen(aRelated)#" index="i">
 					<cfset foundOtherJoin = false />
-					
+
 					<!--- Loop through the joins for the related object - is there any other content that ALSO joins to it? --->
 					<cfloop from="1" to="#arraylen(application.stCOAPI[aRelated[i].typename].aJoins)#" index="j">
-						<cfswitch expression="#application.stCOAPI[aRelated[i].typename].aJoins[j].direction#_#application.stCOAPI[aRelated[i].typename].aJoins[j].type#">
-							<cfcase value="from_array">
-								<cfquery datasource="#application.dsn#" name="qRelated">
-									SELECT		parentID
-									FROM		#application.stCOAPI[aRelated[i].typename].aJoins[j].coapitype#_#application.stCOAPI[aRelated[i].typename].aJoins[j].property#
-									WHERE		data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aRelated[i].objectid#" />
-												AND parentID <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#stObject.objectid#" />
-								</cfquery>
-							</cfcase>
+						<cfif NOT reFindNoCase("^config", application.stCOAPI[aRelated[i].typename].aJoins[j].coapiType)>
+							<cfswitch expression="#application.stCOAPI[aRelated[i].typename].aJoins[j].direction#_#application.stCOAPI[aRelated[i].typename].aJoins[j].type#">
+								<cfcase value="from_array">
+									<cfquery datasource="#application.dsn#" name="qRelated">
+										SELECT		parentID
+										FROM		#application.stCOAPI[aRelated[i].typename].aJoins[j].coapitype#_#application.stCOAPI[aRelated[i].typename].aJoins[j].property#
+										WHERE		data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aRelated[i].objectid#" />
+													AND parentID <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#stObject.objectid#" />
+									</cfquery>
+								</cfcase>
+								
+								<cfcase value="from_uuid">
+									<cfquery datasource="#application.dsn#" name="qRelated">
+										SELECT		objectid
+										FROM		#application.stCOAPI[aRelated[i].typename].aJoins[j].coapitype#
+										WHERE		#application.stCOAPI[aRelated[i].typename].aJoins[j].property# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aRelated[i].objectid#" />
+													AND objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#stObject.objectid#" />
+									</cfquery>
+								</cfcase>
+							</cfswitch>
 							
-							<cfcase value="from_uuid">
-								<cfquery datasource="#application.dsn#" name="qRelated">
-									SELECT		objectid
-									FROM		#application.stCOAPI[aRelated[i].typename].aJoins[j].coapitype#
-									WHERE		#application.stCOAPI[aRelated[i].typename].aJoins[j].property# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aRelated[i].objectid#" />
-												AND objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#stObject.objectid#" />
-								</cfquery>
-							</cfcase>
-						</cfswitch>
-						
-						<cfset foundOtherJoin = foundOtherJoin and qRelated.recordcount />
+							<cfset foundOtherJoin = foundOtherJoin and qRelated.recordcount />
+						</cfif>
 					</cfloop>
 					
 					<cfif not foundOtherJoin>
