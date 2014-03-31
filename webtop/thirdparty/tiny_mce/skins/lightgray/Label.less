@@ -1,0 +1,27 @@
+// Label
+
+.@{prefix}-label {
+	.inline-block();
+	text-shadow: @text-shadow;
+	border: 0;
+	overflow: hidden;
+}
+
+.@{prefix}-label.@{prefix}-autoscroll {
+	overflow: auto;
+}
+
+.@{prefix}-label.@{prefix}-disabled {
+	color: @text-disabled;
+}
+
+.@{prefix}-label.@{prefix}-multiline {
+	white-space: pre-wrap;
+}
+
+// RTL
+
+.@{prefix}-rtl .@{prefix}-label {
+	text-align: right;
+	direction: rtl;
+}

@@ -11,10 +11,15 @@
 /*global tinymce:true */
 
 tinymce.PluginManager.add('contextmenu', function(editor) {
-	var menu;
+	var menu, contextmenuNeverUseNative = editor.settings.contextmenu_never_use_native;
 
 	editor.on('contextmenu', function(e) {
 		var contextmenu;
+
+		// Block TinyMCE menu on ctrlKey
+		if (e.ctrlKey && !contextmenuNeverUseNative) {
+			return;
+		}
 
 		e.preventDefault();
 
@@ -48,9 +53,12 @@ tinymce.PluginManager.add('contextmenu', function(editor) {
 			menu = new tinymce.ui.Menu({
 				items: items,
 				context: 'contextmenu'
-			});
+			}).addClass('contextmenu').renderTo();
 
-			menu.renderTo(document.body);
+			editor.on('remove', function() {
+				menu.remove();
+				menu = null;
+			});
 		} else {
 			menu.show();
 		}
@@ -65,10 +73,5 @@ tinymce.PluginManager.add('contextmenu', function(editor) {
 		}
 
 		menu.moveTo(pos.x, pos.y);
-
-		editor.on('remove', function() {
-			menu.remove();
-			menu = null;
-		});
 	});
 });

@@ -11,33 +11,48 @@
 /*global tinymce:true */
 
 tinymce.PluginManager.add('importcss', function(editor) {
-	var each = tinymce.each;
+	var self = this, each = tinymce.each;
+
+	function compileFilter(filter) {
+		if (typeof(filter) == "string") {
+			return function(value) {
+				return value.indexOf(filter) !== -1;
+			};
+		} else if (filter instanceof RegExp) {
+			return function(value) {
+				return filter.test(value);
+			};
+		}
+
+		return filter;
+	}
 
 	function getSelectors(doc, fileFilter) {
 		var selectors = [], contentCSSUrls = {};
 
 		function append(styleSheet, imported) {
-			var href = styleSheet.href;
+			var href = styleSheet.href, rules;
 
 			if (!imported && !contentCSSUrls[href]) {
 				return;
 			}
 
-			if (fileFilter) {
-				if (fileFilter instanceof RegExp && !fileFilter.test(href)) {
-					return;
-				}
-
-				if (typeof(fileFilter) == "string" && href.indexOf(fileFilter) === -1) {
-					return;
-				}
+			if (fileFilter && !fileFilter(href)) {
+				return;
 			}
 
 			each(styleSheet.imports, function(styleSheet) {
 				append(styleSheet, true);
 			});
 
-			each(styleSheet.cssRules || styleSheet.rules, function(cssRule) {
+			try {
+				rules = styleSheet.cssRules || styleSheet.rules;
+			} catch (e) {
+				// Firefox fails on rules to remote domain for example: 
+				// @import url(//fonts.googleapis.com/css?family=Pathway+Gothic+One);
+			}
+
+			each(rules, function(cssRule) {
 				if (cssRule.styleSheet) {
 					append(cssRule.styleSheet, true);
 				} else if (cssRule.selectorText) {
@@ -53,7 +68,9 @@ tinymce.PluginManager.add('importcss', function(editor) {
 		});
 
 		try {
-			each(doc.styleSheets, append);
+			each(doc.styleSheets, function(styleSheet) {
+				append(styleSheet);
+			});
 		} catch (e) {}
 
 		return selectors;
@@ -70,6 +87,7 @@ tinymce.PluginManager.add('importcss', function(editor) {
 
 		var elementName = selector[1];
 		var classes = selector[2].substr(1).split('.').join(' ');
+		var inlineSelectorElements = tinymce.makeMap('a,img');
 
 		// element.class - Produce block formats
 		if (selector[1]) {
@@ -80,8 +98,8 @@ tinymce.PluginManager.add('importcss', function(editor) {
 			if (editor.schema.getTextBlockElements()[elementName]) {
 				// Text block format ex: h1.class1
 				format.block = elementName;
-			} else if (editor.schema.getBlockElements()[elementName]) {
-				// Non text block format ex: tr.row
+			} else if (editor.schema.getBlockElements()[elementName] || inlineSelectorElements[elementName.toLowerCase()]) {
+				// Block elements such as table.class and special inline elements such as a.class or img.class
 				format.selector = elementName;
 			} else {
 				// Inline format strong.class1
@@ -106,38 +124,70 @@ tinymce.PluginManager.add('importcss', function(editor) {
 		return format;
 	}
 
-	if (!editor.settings.style_formats) {
-		editor.on('renderFormatsMenu', function(e) {
-			var selectorConverter = editor.settings.importcss_selector_converter || convertSelectorToFormat;
-			var selectors = {};
-			var fileFilter = editor.settings.importcss_file_filter;
+	editor.on('renderFormatsMenu', function(e) {
+		var settings = editor.settings, selectors = {};
+		var selectorConverter = settings.importcss_selector_converter || convertSelectorToFormat;
+		var selectorFilter = compileFilter(settings.importcss_selector_filter);
 
-			if (!editor.settings.importcss_append) {
-				e.control.items().remove();
-			}
+		if (!editor.settings.importcss_append) {
+			e.control.items().remove();
+		}
 
-			each(getSelectors(editor.getDoc(), fileFilter), function(selector) {
-				if (selector.indexOf('.mce-') === -1) {
-					if (!selectors[selector]) {
-						var format = selectorConverter(selector);
+		// Setup new groups collection by cloning the configured one
+		var groups = [];
+		tinymce.each(settings.importcss_groups, function(group) {
+			group = tinymce.extend({}, group);
+			group.filter = compileFilter(group.filter);
+			groups.push(group);
+		});
 
-						if (format) {
-							var formatName = format.name || tinymce.DOM.uniqueId();
+		each(getSelectors(editor.getDoc(), compileFilter(settings.importcss_file_filter)), function(selector) {
+			if (selector.indexOf('.mce-') === -1) {
+				if (!selectors[selector] && (!selectorFilter || selectorFilter(selector))) {
+					var format = selectorConverter.call(self, selector), menu;
 
-							editor.formatter.register(formatName, format);
+					if (format) {
+						var formatName = format.name || tinymce.DOM.uniqueId();
 
-							e.control.add(tinymce.extend({}, e.control.settings.itemDefaults, {
-								text: format.title,
-								format: formatName
-							}));
+						if (groups) {
+							for (var i = 0; i < groups.length; i++) {
+								if (!groups[i].filter || groups[i].filter(selector)) {
+									if (!groups[i].item) {
+										groups[i].item = {text: groups[i].title, menu: []};
+									}
+
+									menu = groups[i].item.menu;
+									break;
+								}
+							}
 						}
 
-						selectors[selector] = true;
-					}
-				}
-			});
+						editor.formatter.register(formatName, format);
 
-			e.control.renderNew();
+						var menuItem = tinymce.extend({}, e.control.settings.itemDefaults, {
+							text: format.title,
+							format: formatName
+						});
+
+						if (menu) {
+							menu.push(menuItem);
+						} else {
+							e.control.add(menuItem);
+						}
+					}
+
+					selectors[selector] = true;
+				}
+			}
 		});
-	}
+
+		each(groups, function(group) {
+			e.control.add(group.item);
+		});
+
+		e.control.renderNew();
+	});
+
+	// Expose default convertSelectorToFormat implementation
+	self.convertSelectorToFormat = convertSelectorToFormat;
 });

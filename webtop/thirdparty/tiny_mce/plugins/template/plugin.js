@@ -13,15 +13,32 @@
 tinymce.PluginManager.add('template', function(editor) {
 	var each = tinymce.each;
 
-	function showDialog() {
+	function createTemplateList(callback) {
+		return function() {
+			var templateList = editor.settings.templates;
+
+			if (typeof(templateList) == "string") {
+				tinymce.util.XHR.send({
+					url: templateList,
+					success: function(text) {
+						callback(tinymce.util.JSON.parse(text));
+					}
+				});
+			} else {
+				callback(templateList);
+			}
+		};
+	}
+
+	function showDialog(templateList) {
 		var win, values = [], templateHtml;
 
-		if (!editor.settings.templates) {
+		if (!templateList || templateList.length === 0) {
 			editor.windowManager.alert('No templates defined');
 			return;
 		}
 
-		tinymce.each(editor.settings.templates, function(template) {
+		tinymce.each(templateList, function(template) {
 			values.push({
 				selected: !values.length,
 				text: template.title,
@@ -83,18 +100,28 @@ tinymce.PluginManager.add('template', function(editor) {
 
 		win = editor.windowManager.open({
 			title: 'Insert template',
+			layout: 'flex',
+			direction: 'column',
+			align: 'stretch',
+			padding: 15,
+			spacing: 10,
 
-			body: [
-				{type: 'container', label: 'Templates', items: {
-					type: 'listbox', name: 'template', values: values, onselect: onSelectTemplate
-				}},
+			items: [
+				{type: 'form', flex: 0, padding: 0, items: [
+					{type: 'container', label: 'Templates', items: {
+						type: 'listbox', label: 'Templates', name: 'template', values: values, onselect: onSelectTemplate
+					}}
+				]},
 				{type: 'label', name: 'description', label: 'Description', text: '\u00a0'},
-				{type: 'iframe', minWidth: 600, minHeight: 400, border: 1}
+				{type: 'iframe', flex: 1, border: 1}
 			],
 
 			onsubmit: function() {
 				insertTemplate(false, templateHtml);
-			}
+			},
+
+			width: editor.getParam('template_popup_width', 600),
+			height: editor.getParam('template_popup_height', 500)
 		});
 
 		win.find('listbox')[0].fire('select');
@@ -208,12 +235,12 @@ tinymce.PluginManager.add('template', function(editor) {
 
 	editor.addButton('template', {
 		title: 'Insert template',
-		onclick: showDialog
+		onclick: createTemplateList(showDialog)
 	});
 
 	editor.addMenuItem('template', {
 		text: 'Insert template',
-		onclick: showDialog,
+		onclick: createTemplateList(showDialog),
 		context: 'insert'
 	});
 
