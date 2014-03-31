@@ -5,8 +5,8 @@
 
 <ft:objectAdmin
 	typename="#stObj.name#"
-	columnList="label,datetimecreated,datetimelastupdated"
-	sortableColumns="label,datetimecreated,datetimelastupdated"
+	columnList="label,status,datetimecreated,datetimelastupdated"
+	sortableColumns="label,status,datetimecreated,datetimelastupdated"
 	lFilterFields="label"
 	sqlOrderBy="datetimelastupdated DESC" />
 
