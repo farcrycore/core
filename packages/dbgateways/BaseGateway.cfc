@@ -349,7 +349,7 @@
 				<cfquery datasource="#this.dsn#" name="qSetData" result="queryresult">
 					UPDATE	#this.dbowner##arguments.schema.tablename#
 					SET		<cfloop collection="#arguments.stProperties#" item="thisfield">
-								<cfif structkeyexists(arguments.schema.fields,thisfield) and not arguments.schema.fields[thisfield].type eq "array" and not listcontains(arraytolist(arguments.schema.indexes.primary.fields),thisfield) and arguments.schema.fields[thisfield].savable>
+								<cfif structkeyexists(arguments.schema.fields,thisfield) and not arguments.schema.fields[thisfield].type eq "array" and not arrayFindNoCase(arguments.schema.indexes.primary.fields, thisfield) and arguments.schema.fields[thisfield].savable>
 									<cfif NOT bFirst>,</cfif><cfset bFirst = false />
 									
 									<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
