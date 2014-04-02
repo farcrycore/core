@@ -1,13 +1,13 @@
 <cfcomponent output="false">
 
-	<cfset bInclude = false>
+	<cfset bHasBuiltinFunctions = false>
 	<cfset bHasESAPI = false>
 
 	<!--- test server verions --->
-	<cfif isDefined("server.railo") AND listFirst(server.railo.version, ".") lt 4>
-		<cfset bInclude = true>
-	<cfelseif listFirst(server.coldfusion.productVersion) lt 10>
-		<cfset bInclude = true>
+	<cfif isDefined("server.railo") AND listFirst(server.railo.version, ".") gte 4>
+		<cfset bHasBuiltinFunctions = true>
+	<cfelseif listFirst(server.coldfusion.productVersion) gte 10>
+		<cfset bHasBuiltinFunctions = true>
 	</cfif>
 
 	<!--- test for esapi class --->
@@ -20,8 +20,13 @@
 	</cftry>
 
 	<!--- include esapi compatibility methods --->
-	<cfif bHasESAPI AND bInclude>
+	<cfif bHasESAPI AND NOT bHasBuiltinFunctions>
 		<cfinclude template="esapi/esapi.cfm">
+	</cfif>
+
+	<!--- test for cf10 workarounds --->
+	<cfif listFirst(server.coldfusion.productVersion) eq "10">
+		<cfinclude template="esapi/esapiCF10.cfm">
 	</cfif>
 
 
@@ -48,20 +53,23 @@
 			<cfthrow message="Unavailable ESAPI method '#missingMethodName#'">
 		</cfif>
 
-		<cfif bHasESAPI AND NOT bInclude>
-			<!--- call native function --->
-			<cfswitch expression="#countArgs#">
-				<cfcase value="1">
-					<cfset result = evaluate("#missingMethodName#(arg1)")>
-				</cfcase>
-				<cfcase value="2">
-					<cfset result = evaluate("#missingMethodName#(arg1,arg2)")>
-				</cfcase>
-				<cfdefaultcase>
-					<cfthrow message="Unsupported number of arguments passed to ESAPI method '#missingMethodName#'">
-				</cfdefaultcase>
-			</cfswitch>
-
+		<cfif bHasESAPI AND bHasBuiltinFunctions>
+			<cfif listFindNoCase("encodeForHTML,encodeForHTMLAttribute", missingMethodName) AND listFirst(server.coldfusion.productVersion) eq 10>
+				<cfset result = evaluate("#missingMethodName#CF10(arg1)")>
+			<cfelse>
+				<!--- call native function --->
+				<cfswitch expression="#countArgs#">
+					<cfcase value="1">
+						<cfset result = evaluate("#missingMethodName#(arg1)")>
+					</cfcase>
+					<cfcase value="2">
+						<cfset result = evaluate("#missingMethodName#(arg1,arg2)")>
+					</cfcase>
+					<cfdefaultcase>
+						<cfthrow message="Unsupported number of arguments passed to ESAPI method '#missingMethodName#'">
+					</cfdefaultcase>
+				</cfswitch>
+			</cfif>
 		<cfelse>
 			<!--- fall back to older supported methods --->
 			<cfswitch expression="#missingMethodName#">
