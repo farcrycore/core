@@ -12,7 +12,7 @@
 	<cfproperty 
 		name="tinyMCE4_config" type="longchar" hint="The config" 
 		ftSeq="2" ftFieldset="Rich Text Editor Configuration" ftLabel="TinyMCE 4.x Config" 
-		fthint="The configuration should be written in the JavaScript notation for TinyMCE outlined at http://wiki.moxiecode.com/index.php/TinyMCE:Configuration For example: theme : ""advanced"" There is no need to nominate the tinyMCE.init function, just its contents. Please note that the config item MODE is always set to exact and cannot be changed. All other configuration items are available."
+		fthint="The configuration should be written in the JavaScript notation for TinyMCE outlined at http://www.tinymce.com/wiki.php/Configuration There is no need to nominate the tinyMCE.init function, just its contents."
 		ftStyle="max-width: 600px; height: 200px" />
 
 </cfcomponent>
