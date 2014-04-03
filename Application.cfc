@@ -580,6 +580,10 @@
 
 
 	<cffunction name="farcryRequestInit" access="private" output="false" hint="Initialise farcry Application." returntype="void">
+
+		<!--- set the default request.mode struct --->
+		<cfset application.security.defaultRequestMode() />
+
 		<!---------------------------------------- 
 		GENERAL APPLICATION REQUEST PROCESSING
 		- formally /farcry/core/tags/farcry/_farcryApplication.cfm

@@ -747,18 +747,9 @@
 		
 		<cfreturn result />
 	</cffunction>
-	
-	<cffunction name="initRequestMode" access="public" output="false" returntype="struct" hint="Sets up the request.mode struct and other request settings based on the current users security permissions">
-		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
-		
-		<cfset var thisvar = "" />
-		<cfset var urlvar = "" />
-		<cfset var sessionmodes = "designmode:design,flushcache,showdraft,debug,livecombine" />
-		<cfset var requestmodes = "profile,tracewebskins,bShowTray" />
-		
-		<cfset request.fc.bShowTray = true />
-		<cfset request.fc.okToCache = true />
-		
+
+	<cffunction name="defaultRequestMode" access="public" output="false" hint="Default the request.mode struct">
+
 		<!--- init request.mode with defaults --->
 		<cfset request.mode = {
 			debug			= 0,
@@ -778,6 +769,19 @@
 			bAdmin 			= 0,
 			lValidStatus	= "approved"
 		} />
+
+	</cffunction>
+
+	<cffunction name="initRequestMode" access="public" output="false" returntype="struct" hint="Sets up the request.mode struct and other request settings based on the current users security permissions">
+		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
+		
+		<cfset var thisvar = "" />
+		<cfset var urlvar = "" />
+		<cfset var sessionmodes = "designmode:design,flushcache,showdraft,debug,livecombine" />
+		<cfset var requestmodes = "profile,tracewebskins,bShowTray" />
+		
+		<cfset request.fc.bShowTray = true />
+		<cfset request.fc.okToCache = true />
 		
 		<!--- init session.fc.mode with defaults --->
 		<cfparam name="session.fc" default="#structnew()#" />
