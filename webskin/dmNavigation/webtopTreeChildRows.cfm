@@ -324,13 +324,13 @@
 			<cfif stLeafNode.bHasVersion>
 				<!--- versioned object with multiple records --->
 				<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.versionStatus#@label",stLeafNode.versionStatus)#</span> + <span class='label label-info'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
-				<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa fa-file-o fa-stack-1x'></i><i class='fa fa-pencil fa-stack-1x'></i></span>">
+				<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa #thisLeafTypenameIcon# fa-stack-1x'></i><i class='fa fa-pencil fa-stack-1x'></i></span>">
 				<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.versionObjectid#">
 
 			<cfelseif stLeafNode.status eq "draft">
 				<!--- types object with draft status --->
 				<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
-				<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa fa-file-o fa-stack-1x'></i><i class='fa fa-pencil fa-stack-1x'></i></span>">
+				<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa #thisLeafTypenameIcon# fa-stack-1x'></i><i class='fa fa-pencil fa-stack-1x'></i></span>">
 
 			<cfelseif stLeafNode.status eq "approved">
 				<!--- types object with approved status --->
