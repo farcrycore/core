@@ -39,10 +39,6 @@ FileCollection = Backbone.Collection.extend({
 			this.options[k] = options[k];
 	},
 	
-	getFileIDs : function FileCollection_getFileIDs(){
-		return this.pluck("fileID");
-	},
-	
 	checkStatus : function FileCollection_checkStatus(){
 		Backbone.$.getJSON(this.options.statusURL + (this.options.statusURL.indexOf("?")>-1 ? "&" : "?") + "&uploader=" + this.options.uploaderID, this.updateStatus);
 	},
@@ -70,7 +66,7 @@ FileCollection = Backbone.Collection.extend({
 			
 			// update the queue with the edit forms
 			for (var i = 0, ii = result.files.length; i < ii; i++) {
-				var file = this.get(result.files[i].result.objectID);
+				var file = this.get(result.files[i].taskID);
 				
 				if (file && result.files[i].error) {
 					file.set({
@@ -221,7 +217,9 @@ FileCollectionView = Backbone.View.extend({
 FileUploadView = Backbone.View.extend({
 	initialize : function FileUploadView_initialize(options){
 		this.template = Handlebars.compile(Backbone.$("#upload-area-template").html());
-		
+
+		this.indexFileID = 1;
+
 		if (options.uploadURL === undefined)
 			throw "uploadURL must be defined in FileUploadView options";
 		
@@ -304,7 +302,7 @@ FileUploadView = Backbone.View.extend({
 		if (file){
 			data.formData = serializeFormByPrefix("default",this.options.defaultProperties);
 			data.formData.uploaderID = this.options.uploaderID;
-			data.formData.fileID = this.options.fileIDs.pop();
+			data.formData.fileID = this.indexFileID++;
 			
 			file.set("fileID",data.formData.fileID);
 		}
@@ -340,7 +338,7 @@ FileUploadView = Backbone.View.extend({
 		var file = this.collection.findWhere({
 			fileID : data.formData.fileID
 		});
-		
+
 		if (file && data.result.error){
 			file.set({
 				status : "failed",
@@ -355,15 +353,14 @@ FileUploadView = Backbone.View.extend({
 			});
 		}
 		else if (file){
-			for (var i=0, ii=data.result.fileIDs.length; i<ii; i++)
-				this.options.fileIDs.unshift(data.result.fileIDs[i]);
-			
 			file.set({
 				jqXHR : undefined,
+				fileID: data.result.files[0].taskID,
 				status : "uploaddone",
 				uploadProgress : undefined
 			});
 		}
+
 	},
 	uploadFail : function FileUploadView_uploadFail(e,data){
 		var file = this.collection.findWhere({

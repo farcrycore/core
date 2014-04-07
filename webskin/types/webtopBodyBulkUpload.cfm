@@ -78,39 +78,30 @@
 		</cfloop>
 		
 		<cfset stTask = {
-			objectid = form.fileID,
+			objectid = application.fapi.getUUID(),
 			tempfile = filename,
 			typename = stObj.name,
 			targetfield = uploadTarget,
 			defaults = stDefaults
 		} />
-		<cfset application.fc.lib.tasks.addTask(taskID=form.fileID,jobID=form.uploaderID,action="bulkupload.upload",details=stTask) />
+		<cfset application.fc.lib.tasks.addTask(taskID=stTask.objectid,jobID=form.uploaderID,action="bulkupload.upload",details=stTask) />
 		
 		<!--- session only object for webskins --->
-		<cfset application.fapi.setData(typename=stObj.name,objectid=form.fileID,bSessionOnly="true") />
+		<cfset fileObjectID = application.fapi.getUUID()>
+		<cfset application.fapi.setData(typename=stObj.name,objectid=fileObjectID,bSessionOnly="true") />
 		
 		<cfset stResult = structnew() />
 		<cfset stResult["files"] = arraynew(1) />
 		<cfset stResult["files"][1] = structnew() />
 		<cfset stResult["files"][1]["name"] = listlast(filename,"/") />
 		<cfset stResult["files"][1]["size"] = application.fc.lib.cdn.ioGetFileSize(location="temp",file=filename) />
-		<cfset stResult["files"][1]["url"] = application.fapi.fixURL(removevalues="upload",addvalues="action=view&uploader=#form.uploaderID#&file=#form.fileID#") />
+		<cfset stResult["files"][1]["url"] = application.fapi.fixURL(removevalues="upload",addvalues="action=view&uploader=#form.uploaderID#&file=#fileObjectID#") />
 		<cfset stResult["files"][1]["thumbnail_url"] = "" />
 		<cfset stResult["files"][1]["delete_url"] = "" />
 		<cfset stResult["files"][1]["delete_type"] = "DELETE" />
 		<cfset stResult["files"][1]["fileID"] = form.fileID />
-		<cfset stResult["fileIDs"] = [
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID(),
-			application.fapi.getUUID()
-		] />
+		<cfset stResult["files"][1]["taskID"] = stTask.objectid />
+		<cfset stResult["files"][1]["objectid"] = fileObjectID />
 		
 		<cfcatch>
 			<cfset stResult = structnew() />
@@ -369,18 +360,6 @@
 		generalErrors : Window.app.errorCollection,
 		
 		uploaderID : Window.app.uploaderID,
-		fileIDs : [
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#",
-			"#application.fapi.getUUID()#"
-		],
 		defaultProperties : #serializeJSON(listtoarray(lDefaultFields))#,
 		
 		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftSizeLimit") 
