@@ -52,21 +52,6 @@ function lessDashboardCard(cardID) {
 </cfoutput>
 </skin:loadJS>
 
-<skin:loadCSS>
-<cfoutput>
-.farcry-main {
-	border: none;
-	background: none;
-	padding: 12px;
-}
-##card-container {
-	max-width: 954px;
-	margin-left: auto;
-	margin-right: auto;
-}
-</cfoutput>
-</skin:loadCSS>
-
 
 <cfparam name="url.id" default="dashboard.overview" />
 <cfset currentWebtopDashboardID = listLast(url.id,".")>
@@ -163,6 +148,22 @@ function lessDashboardCard(cardID) {
 <!--- output dashboard cards --->
 
 <cfif arrayLen(aDashboardCardWebskins)>
+
+	<skin:loadCSS>
+	<cfoutput>
+	.farcry-main {
+		border: none;
+		background: none;
+		padding: 12px;
+	}
+	##card-container {
+		max-width: 954px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	</cfoutput>
+	</skin:loadCSS>
+
 	<grid:div id="card-container">
 		<cfloop from="1" to="#arrayLen(aDashboardCardWebskins)#" index="i">
 
@@ -180,20 +181,22 @@ function lessDashboardCard(cardID) {
 
 		</cfloop>
 	</grid:div>
+
+	<skin:onReady>
+	<cfoutput>
+		initDashboardCardToggle();
+		
+	 	$container = $j('##card-container');
+		$container.masonry({
+			columnWidth: 232,
+			gutter: 8,
+			itemSelector: ".dashboard-card"
+		});
+
+	</cfoutput>
+	</skin:onReady>
+
 <cfelse>
-	<cfoutput><h1>Welcome to FarCry</h1></cfoutput>
+	<cfoutput><h1><i class="fa fa-exclamation-circle"></i> Dashboard not found</h1></cfoutput>
 </cfif>
 
-<skin:onReady>
-<cfoutput>
-	initDashboardCardToggle();
-	
- 	$container = $j('##card-container');
-	$container.masonry({
-		columnWidth: 232,
-		gutter: 8,
-		itemSelector: ".dashboard-card"
-	});
-
-</cfoutput>
-</skin:onReady>
