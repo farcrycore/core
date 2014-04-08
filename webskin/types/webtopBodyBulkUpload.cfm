@@ -94,7 +94,6 @@
 		<cfset stResult["files"] = arraynew(1) />
 		<cfset stResult["files"][1] = structnew() />
 		<cfset stResult["files"][1]["name"] = listlast(filename,"/") />
-		<cfset stResult["files"][1]["size"] = application.fc.lib.cdn.ioGetFileSize(location="temp",file=filename) />
 		<cfset stResult["files"][1]["url"] = application.fapi.fixURL(removevalues="upload",addvalues="action=view&uploader=#form.uploaderID#&file=#fileObjectID#") />
 		<cfset stResult["files"][1]["thumbnail_url"] = "" />
 		<cfset stResult["files"][1]["delete_url"] = "" />
