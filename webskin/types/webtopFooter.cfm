@@ -87,7 +87,7 @@
 
 			function renderTabOverflow() {
 
-				var tabContainerWidth = headerContainer.width() - brandContainer.width() - utilityContainer.width() - 42;
+				var tabContainerWidth = headerContainer.width() - brandContainer.width() - utilityContainer.width() - 52;
 				var tabTotalWidth = 0;
 				var aHiddenTabs = [];
 				var previousTab = null;
@@ -104,10 +104,10 @@
 
 					tabTotalWidth += $el.width();
 					if ($el.hasClass("last")) {
-						tabTotalWidth -= 40;
+						tabTotalWidth -= 50;
 					}
 
-					if (tabTotalWidth > (tabContainerWidth-previousWidth+40)) {
+					if (tabTotalWidth > (tabContainerWidth-previousWidth+50)) {
 						if ($el.hasClass("nav-more")) {
 							aHiddenTabs.push(previousTab);
 							$el.remove();
