@@ -75,7 +75,6 @@ function lessDashboardCard(cardID) {
 <cfset aDashboardCardWebskins = arrayNew(1)>
 
 
-
 <cfif isValid("uuid", currentWebtopDashboardID) AND listFindNoCase(valueList(qPermittedWebtopDashboards.objectid),currentWebtopDashboardID)>
 
 	<cfset stCurrentDashboard = application.fapi.getContentObject(typename="farWebtopDashboard", objectid="#currentWebtopDashboardID#")>
@@ -102,7 +101,7 @@ function lessDashboardCard(cardID) {
 
 	</cfloop>
 		
-<cfelseif NOT application.fapi.getContentType("farWebtopDashboard").hasDashboards()>
+<cfelseif currentWebtopDashboardID eq "overview" OR NOT application.fapi.getContentType("farWebtopDashboard").hasDashboards()>
 
 	<cfset qWebskins = application.stcoapi["farCOAPI"].qWebskins />
 	<cfquery dbtype="query" name="qCards">
