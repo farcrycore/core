@@ -22,9 +22,9 @@
 	bDocument="true" scopelocation="application.factory.oCategory"
 	icon="fa-tags">
 	
-	<cfproperty name="categoryLabel" type="string" required="true" default="(incomplete)" 
+	<cfproperty name="categoryLabel" type="string" required="true" default="" 
 		ftSeq="1" ftFieldset="General Details" ftLabel="Label" 
-		bLabel="true"
+		ftValidation="required" bLabel="true"
 		hint="Label used in nested tree table.">
 
 	<cfproperty name="alias" type="string" 
