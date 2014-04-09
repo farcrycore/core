@@ -85,57 +85,57 @@
 		<cfset var bAddedOne = false />
 		<cfset var stVal = structNew()>
 		
+		<cfprocessingdirective suppressWhitespace="true">
 		<cfsavecontent variable="resultSQL">
-			<cfoutput>
-			CREATE TABLE #this.dbowner##arguments.schema.tablename#(
+			<cfoutput>CREATE TABLE #this.dbowner##arguments.schema.tablename#(#chr(13)##chr(10)#</cfoutput>
 			
 			<cfloop collection="#arguments.schema.fields#" item="thisfield">
 				<cfif arguments.schema.fields[thisfield].type neq "array">
-					<cfif bAddedOne>,</cfif>
+					<cfif bAddedOne><cfoutput>,#chr(13)##chr(10)#</cfoutput></cfif>
 					<cfset bAddedOne = true />
 					
 					<cfset stProp = arguments.schema.fields[thisfield] />
 					
-					#stProp.name# 
+					<cfoutput>#stProp.name# </cfoutput>
 					<cfswitch expression="#stProp.type#">
 						<cfcase value="numeric">
 							<cfif stProp.precision eq "1,0">
-								bit
+								<cfoutput>bit </cfoutput>
 							<cfelse>
-								decimal(#stProp.precision#)
+								<cfoutput>decimal(#stProp.precision#) </cfoutput>
 							</cfif>
 						</cfcase>
 						<cfcase value="string">
 							<cfif stProp.precision eq "MAX">
-								nvarchar(4000)
+								<cfoutput>nvarchar(4000) </cfoutput>
 							<cfelse>
-								nvarchar(#stProp.precision#)
+								<cfoutput>nvarchar(#stProp.precision#) </cfoutput>
 							</cfif>
 						</cfcase>
-						<cfcase value="longchar">ntext</cfcase>
-						<cfcase value="datetime">datetime</cfcase>
+						<cfcase value="longchar"><cfoutput>ntext </cfoutput></cfcase>
+						<cfcase value="datetime"><cfoutput>datetime </cfoutput></cfcase>
 					</cfswitch>
 					
-					<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
+					<cfif stProp.nullable><cfoutput>NULL </cfoutput><cfelse><cfoutput>NOT NULL </cfoutput></cfif>
 					
 					<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 						<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 						<cfif stVal.null>
-							DEFAULT NULL
+							<cfoutput>DEFAULT NULL </cfoutput>
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
-							DEFAULT '#stVal.value#'
+							<cfoutput>DEFAULT '#stVal.value#' </cfoutput>
 						<cfelseif stVal.cfsqltype eq "cf_sql_date">
-							DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#'
+							<cfoutput>DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#' </cfoutput>
 						<cfelseif isNumeric(stVal.value)>
-							DEFAULT #stVal.value#
+							<cfoutput>DEFAULT #stVal.value# </cfoutput>
 						</cfif>
 					</cfif>
 				</cfif>
 			</cfloop>
 			
-			); 
-		</cfoutput>
+			<cfoutput>#chr(13)##chr(10)#);</cfoutput>
 		</cfsavecontent>
+		</cfprocessingdirective>
 		
 		<cfreturn resultSQL>
 	</cffunction>
