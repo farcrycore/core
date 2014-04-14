@@ -20,7 +20,7 @@
 	<cfproperty name="ftWidth" required="false" default="100%" hint="Width required for the rich text editor." />
 	<cfproperty name="ftHeight" required="false" default="380px" hint="Height required for the rich text editor." />
 	<cfproperty name="ftContentCSS" required="false" default="" hint="This option enables you to specify a custom CSS file that extends the theme content CSS. This CSS file is the one used within the editor (the editable area). This option can also be a comma separated list of URLs." />
-	<cfproperty name="ftRichtextConfig" required="false" default="" hint="A custom method to use to load the richtext config." />
+	<cfproperty name="ftRichtextConfig" required="false" default="" hint="A custom method to use to return the richtext config, or the richtext config as a string (useful when overriding property metadata)" />
 	
 	<cfproperty name="ftImageListFilterTypename" required="false" default="dmImage" hint="The related image typename to show in the image list from the advimage plugin." />
 	<cfproperty name="ftImageListFilterProperty" required="false" default="standardImage" hint="The related image typename property that contains the image we want to insert from the advimage plugin" />
@@ -57,8 +57,12 @@
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 				
 
-		<cfif structKeyExists(arguments.stMetadata,'ftRichtextConfig') and len(trim(arguments.stMetadata.ftRichtextConfig)) and structKeyExists(oType,arguments.stMetadata.ftRichtextConfig)>
-			<cfinvoke component="#oType#" method="#arguments.stMetadata.ftRichtextConfig#" returnvariable="configJS" />
+		<cfif structKeyExists(arguments.stMetadata,'ftRichtextConfig') and len(trim(arguments.stMetadata.ftRichtextConfig))>
+			<cfif isValid("variableName", arguments.stMetadata.ftRichtextConfig) AND structKeyExists(oType,arguments.stMetadata.ftRichtextConfig)>
+				<cfinvoke component="#oType#" method="#arguments.stMetadata.ftRichtextConfig#" returnvariable="configJS" />
+			<cfelse>
+				<cfset configJS = arguments.stMetadata.ftRichtextConfig>
+			</cfif>
 		<cfelseif isdefined("application.config.tinyMCE.tinyMCE4_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE4_config))>
 			<cfset configJS = application.config.tinyMCE.tinyMCE4_config />
 		<cfelse>
