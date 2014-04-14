@@ -37,19 +37,6 @@
 
 
 <!--- 
- // show alerts 
---------------------------------------------------------------------------------->
-<skin:pop>
-	<cfoutput>
-		<div class="alert <cfif listfindnocase(message.tags,'info')> alert-info<cfelseif listfindnocase(message.tags,'error')> alert-error<cfelseif listfindnocase(message.tags,'success')> alert-success</cfif>">
-			<button type='button' class='close' data-dismiss='alert'>&times;</button>
-			<h4>#message.title#</h4>
-			<cfif len(trim(message.message))>#message.message#</cfif>
-		</div>
-	</cfoutput>
-</skin:pop>
-
-<!--- 
  // view: show grid 
 --------------------------------------------------------------------------------->
 <ft:objectadmin 
