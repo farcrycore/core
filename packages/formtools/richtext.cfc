@@ -135,9 +135,8 @@
 				.richtext .formHint {float:left;}
 				</style>
 
-				<br style="clear:both;">
 				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftClass#" style="width: 100%; #arguments.stMetadata.ftStyle#">#arguments.stMetadata.value#</textarea>
-				<br style="clear:both;">
+
 			</cfoutput>
 		</cfsavecontent>
 		
