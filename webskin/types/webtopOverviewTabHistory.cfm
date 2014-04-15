@@ -24,17 +24,19 @@
 <cfif qLog.recordcount>
 	<cfoutput>
 		<div id="OKMsg">
-			<i class="fa fa-info" style="float: left; margin-right: .3em;"></i>
-			
+			<i class="fa fa-comments" style="float: left; margin-right: .3em;"></i>			
 			<div class="comment">
-				<cfset stProfile = oProfile.getProfile(username=qLog.userid[1]) />
-				<span title="#dateformat(qLog.datetimecreated[1], 'dd/mm/yyyy hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated[1])#</span> - #events[qLog.event[1]]#
-				<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
-					by #stProfile.firstname# #stProfile.lastname#
-				<cfelse>
-					by #listfirst(qLog.userid[1],'_')#
-				</cfif>
-				<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back"><br>#qLog.notes#</cfif>
+				<blockquote>
+					<strong>#events[qLog.event[1]]#</strong>: 
+					<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back">#qLog.notes#<cfelse><em>No comment.</em></cfif>	
+					<cfset stProfile = oProfile.getProfile(username=qLog.userid[1]) />
+					<small><span title="#dateformat(qLog.datetimecreated[1], 'dd/mm/yyyy hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated[1])#</span>
+					<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
+						| #stProfile.firstname# #stProfile.lastname#
+					<cfelse>
+						| #listfirst(qLog.userid[1],'_')#
+					</cfif></small>
+				</blockquote>
 				<a href="##" onclick="$j(this).hide();$j('##comment-log').show();return false;">View All</a>
 			</div>
 			
@@ -42,14 +44,17 @@
 				<cfloop query="qLog">
 					<cfif qLog.currentRow neq 1>
 						<div class="comment">
-							<cfset stProfile = oProfile.getProfile(username=qLog.userid) />
-							<span title="#dateformat(qLog.datetimecreated, 'dd/mm/yyyy hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated)#</span> - #events[qLog.event]#
-							<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
-								by #stProfile.firstname# #stProfile.lastname#
-							<cfelse>
-								by #listfirst(qLog.userid,'_')#
-							</cfif>
-							<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back"><br>#qLog.notes#</cfif>
+							<blockquote>
+								<strong>#events[qLog.event[1]]#</strong>: 
+								<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back">#qLog.notes#<cfelse><em>No comment.</em></cfif>	
+								<cfset stProfile = oProfile.getProfile(username=qLog.userid[1]) />
+								<small><span title="#dateformat(qLog.datetimecreated[1], 'dd/mm/yyyy hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated[1])#</span>
+								<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
+									| #stProfile.firstname# #stProfile.lastname#
+								<cfelse>
+									| #listfirst(qLog.userid[1],'_')#
+								</cfif></small>
+							</blockquote>
 						</div>
 					</cfif>
 				</cfloop>
