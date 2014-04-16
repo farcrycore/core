@@ -821,20 +821,14 @@
 				<cfif FindNoCase("char", arguments.aTableColMD[j].TypeName)
 			    OR FindNoCase("unique", arguments.aTableColMD[j].TypeName)
 			    OR FindNoCase("xml", arguments.aTableColMD[j].TypeName)
-			     >
-					
+			    >
 					'|---|' , COALESCE(#arguments.aTableColMD[j].Name#,'') , '|---|'
-					<!--- '|---|' + isNull(#arguments.aTableColMD[j].Name#,'') + '|---|' --->
 				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>
-						'|---|' , COALESCE( CAST( #arguments.aTableColMD[j].Name# as VARCHAR),'') , '|---|'
-						<!--- '|---|' + isNull(CONVERT ( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|' --->
+					'|---|' , COALESCE( CAST( #arguments.aTableColMD[j].Name# as VARCHAR),'') , '|---|'
 					<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
 					'|---|' , COALESCE(#arguments.aTableColMD[j].Name#,'NULL') , '|---|'
-					<!--- '|---|' + isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21),'NULL') + '|---|' --->
 				<cfelse>
-					<!--- <cfset temp = temp & qryTemp[#arguments.aTableColMD[j].Name#][i] > --->
 					COALESCE( CAST( #arguments.aTableColMD[j].Name# as VARCHAR),'=???=')
-					<!--- isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#),'=???=') --->
 				</cfif>
 				
 				<cfif j NEQ ArrayLen(arguments.aTableColMD) >
@@ -846,11 +840,6 @@
 		FROM #arguments.table#
 		ORDER BY #arguments.orderBy# desc
 		LIMIT #arguments.from-1#, #arguments.to-arguments.from+1#
-		<!--- FROM (
-		    SELECT *, ROW_NUMBER() OVER (ORDER BY #sortProperty# desc) AS RowNum
-		    FROM #arguments.table#
-		) AS MyDerivedTable
-		WHERE MyDerivedTable.RowNum BETWEEN #arguments.from# AND #arguments.to# --->
 		</cfoutput>
 		
 		</cfsavecontent>
