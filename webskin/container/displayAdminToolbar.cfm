@@ -133,6 +133,18 @@ $j('a.con-refresh').live(
 		return false;
 	}
 );	
+$j('a.con-delete').live(
+	"click",
+	function( event ){
+		if (confirm('Are you sure you want to DELETE this rule?')) {
+			$fc.reloadContainer(
+				$j(this).attr('con:id'), 
+				$j(this).attr('href')
+			);
+		}
+		return false;
+	}
+);
 $j('a.con-admin').live(
 	"click",
 	function( event ){
