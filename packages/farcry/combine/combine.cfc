@@ -118,7 +118,8 @@
 		var sType = '';
 		var lastModified = 0;
 		var sFilePath = '';
-		var sCorrectedFilePaths = '';
+		var sCorrectedFiles = '';
+		var sExpandedFilePath = '';
 		var i = 0;
 		var sDelimiter = arguments.delimiter;
 		
@@ -126,6 +127,7 @@
 		var sCacheFile = '';
 		var sCacheFileName = '';
 		var sOutput = '';
+		var fileDir = '';
 		var sFileContent = '';
 		
 		var filePaths = convertToAbsolutePaths(files, delimiter);
