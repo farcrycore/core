@@ -69,9 +69,8 @@
 			<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=delete&originalID=#stParam.originalID#") />
 			
 			<a title="Delete"
-				class="con-refresh con-delete-rule" 
+				class="con-delete con-delete-rule" 
 				href="#actionURL#" 
-				onclick="return confirm('Are you sure you want to DELETE this rule?');"
 				con:id="#containerID#">
 				<span class="ui-icon ui-icon-circle-close" style="float:left;">&nbsp;</span>
 			</a>

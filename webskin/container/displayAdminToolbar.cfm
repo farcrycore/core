@@ -110,6 +110,18 @@ $j('a.con-refresh').on(
 		return false;
 	}
 );	
+$j('a.con-delete').on(
+	"click",
+	function( event ){
+		if (confirm('Are you sure you want to DELETE this rule?')) {
+			$fc.reloadContainer(
+				$j(this).attr('con:id'), 
+				$j(this).attr('href')
+			);
+		}
+		return false;
+	}
+);
 $j('a.con-admin').on(
 	"click",
 	function( event ){
