@@ -3,7 +3,7 @@
 	<cffunction name="init" returntype="any">
 		<cfargument name="engine" type="string" required="true" />
 
-		<cfset var qLeftovers = queryNew()>
+		<cfset var qLeftovers = queryNew("")>
 
 		<cfset this.engine = arguments.engine />
 		<cfset this.cacheMap = structnew() />
