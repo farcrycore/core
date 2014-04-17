@@ -639,6 +639,7 @@
 		<cfset var connectionname = "" />
 		<cfset var cfftp = structnew() />
 		<cfset var tmpfile = "" />
+		<cfset var cachePath = "" />
 		
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		

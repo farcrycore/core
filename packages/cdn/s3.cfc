@@ -2,9 +2,10 @@
 	
 	<cffunction name="init" returntype="any">
 		<cfargument name="engine" type="string" required="true" />
-		
+
+		<cfset var qLeftovers = queryNew()>
+
 		<cfset this.engine = arguments.engine />
-		
 		<cfset this.cacheMap = structnew() />
 		
 		<cfif directoryExists(getTempDirectory() & application.applicationname)>
@@ -466,6 +467,7 @@
 		<cfset var acl = "" />
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
+		<cfset var cachePath = "" />
 		
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 			
@@ -553,6 +555,7 @@
 		<cfset var acl = "" />
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
+		<cfset var cachePath = "" />
 		
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
