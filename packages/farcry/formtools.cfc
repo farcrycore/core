@@ -23,18 +23,13 @@
 		<cfif not structKeyExists(session.ftPagination, arguments.paginationID)>
 			<cfset session.ftPagination[arguments.paginationID] = 1 />
 		</cfif>
-		
 
 		<cfif arguments.currentPage GT 0 and isNumeric(arguments.CurrentPage)>
 			<cfset session.ftPagination[paginationID] = arguments.currentPage />
-			
-			
 		<cfelseif session.ftPagination[paginationID] GT 1><!--- use the last url page after leaving master page --->
 			<cfset arguments.CurrentPage = session.ftPagination[paginationID]>
 		</cfif>		
-		
-		
-			
+
 	</cfif>	
 
 	<cfif arguments.CurrentPage eq 0 or not isNumeric(arguments.currentPage)>
@@ -53,7 +48,6 @@
 	<cfargument name="sqlWhere" required="No" type="string" default="" />
 	<cfargument name="sqlOrderBy" required="No" type="string" default="label" />
 	<cfargument name="lCategories" required="No" type="string" default="" />
-	<!--- <cfargument name="lCategoriesMust" required="No" type="string" default="" /> --->
 	
 	<cfargument name="bCheckVersions" required="No" type="boolean" default="false" hint="should be true when called from objectadmin or any use for admin purpose" />	
 	<cfargument name="paginationID" required="No" type="string" default="" />	
@@ -64,23 +58,32 @@
 	
 	<cfargument name="aCategoryFilters" required="No" type="array" default="#arrayNew(1)#" />
 
-		
+
 	<cfset var PrimaryPackage = "" />
 	<cfset var PrimaryPackagePath = "" />
-		
-	
+
 	<cfset var stReturn = structNew() />
 	<cfset var qFormToolRecordset = '' />
 	<cfset var recordcount = '' />
+
+	<cfset var i = "">
+	<cfset var l_sqlCatIds = "">
+
+	<cfset var qCountName = "">
+	<cfset var qName = "">
+	<cfset var bQueryCached = "">
+	<cfset var qrecordcount = "">
+	<cfset var theSQLTop = "">
+	<cfset var toprow = "">
+	<cfset var getRecords = "">
+
 	
 	<cfset var bHasStatus = false />	
 	<cfset var bHasVersionID = false />
 	
 	<cfset var thisDiff = 0 /><!--- var used if recordcount/RecordsPerPage remainder is not 0, occurs at the end of pagination --->
-	
-	
-	<cfset var l_sqlCatIds = "">
-	
+
+
 	<cfif arguments.sqlColumns eq "objectid">
 		<cfset arguments.sqlColumns = "tbl.objectid">
 	</cfif>
@@ -149,14 +152,6 @@
 	<cfelse>
 		<cfset arguments.sqlColumns="tbl.*">
 	</cfif>
-
-	<!---<cfset arguments.lCategories = listQualify(arguments.lCategories,"'")> --->
-	<!--- <cfset SQLCategoryMust = "">
-	<cfif arguments.lCategoriesMust neq "">
-		<cfloop list="#arguments.lCategoriesMust#" index="catID">
-			<cfset SQLCategoryMust = SQLCategoryMust & " AND categoryID='" & catID & "'">
-		</cfloop>	
-	</cfif> --->
 
 	<cfif RecordsPerPage GT 0><!--- Start if pagination  --->
 
@@ -610,11 +605,13 @@
 
 	<cfset var arResult = arrayNew(1) />
 	<cfset var stPropsQueries = structNew()>
-	<cfset var qArrayData=queryNew("parentID, data") />
-	<cfset var lObjectIDs="" />
-	
+	<cfset var qArrayData = queryNew("parentID, data") />
+	<cfset var lObjectIDs = "" />
+	<cfset var tmpSt = structNew()>
+	<cfset var i = "">
+	<cfset var arPropName = "">
 
-	
+
 	<cfif structKeyExists(application.types, arguments.typename)>
 		<cfset PrimaryPackage = application.types[arguments.typename] />
 		<cfset PrimaryPackagePath = application.types[arguments.typename].typepath />
@@ -622,17 +619,14 @@
 		<cfset PrimaryPackage = application.rules[arguments.typename] />
 		<cfset PrimaryPackagePath = application.rules[arguments.typename].rulepath />
 	</cfif>
-	
-	
-	<cfset stResult.typename = arguments.typename />
-	
+
+
 	<!--- get array property if requested --->
 	<cfif lArrayProps neq "">
 		
 		<!--- DO WE ONLY WANT ONE ROW? or ALL OF THEM --->
 		<cfset lObjectIDs = valueList(arguments.recordset.objectId)>	
-	
-		
+
 		<cfloop list="#lArrayProps#" index="arPropName">
 			<!--- get all relational items id of all instances and store in a struct with the property name as a the key  --->
 			<cfif len(lObjectIDs)>
@@ -663,9 +657,7 @@
 		</cfloop>
 	
 	</cfif>
-	
 
-	
 	<cfloop query="arguments.recordset">
 	
 		<cfset tmpSt = structNew()>
@@ -683,6 +675,7 @@
 		</cfif>
 		<cfset arrayAppend(arResult,tmpSt) />
 	</cfloop>
+
 	<cfreturn arResult />
 </cffunction>
 
@@ -781,13 +774,17 @@
 	<cfargument name="listType" required="false" type="string" default="none" />
 	<cfargument name="Webskin" required="false" type="string" default="" />
 	<cfargument name="bIncludeLink" required="false" type="boolean" default="false" />
-	
-		
+
 	<cfset var oData = "" />
 	<cfset var stData = structNew() />
 	<cfset var result = "" />
-	
-	
+
+	<cfset var pos = "">
+	<cfset var item = "">
+	<cfset var itemTypename = "">
+	<cfset var itemData = "">
+	<cfset var q4 = "">
+
 	<cfif arrayLen(aField)>
 		
 		<cfloop from="1" to="#arrayLen(aField)#" index="pos" >
