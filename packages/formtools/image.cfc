@@ -1062,6 +1062,7 @@
 		<cfset var b = "" />
 		<cfset var newFileName = "" />
 		<cfset var lFormField = "" /> 
+		<cfset var stFixed = structNew() />
 		
 		
 		<cfset stResult = handleFilePost(
@@ -1175,12 +1176,21 @@
 		<cfset var YCoordinate = 0 />
 		<cfset var stBeveledImage = structNew() />
 		<cfset var widthPercent = 0 />
-		<cfset var heigthPercent = 0 />
+		<cfset var heightPercent = 0 />
 		<cfset var usePercent = 0 />
 		<cfset var pixels = 0 />
 		<cfset var bModified = false />
 		<cfset var oImageEffects = "" />
 		<cfset var aMethods = "" />
+		<cfset var i = "" />
+		<cfset var lArgs = "" />
+		<cfset var find = "" />
+		<cfset var methodName = "" />
+		<cfset var stArgCollection = structNew() />
+		<cfset var argName = "" />
+		<cfset var argValue = "" />
+		<cfset var objWatermark = "" />
+		<cfset var argsIndex = "" />
 		
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />

@@ -86,7 +86,6 @@
 					<cfoutput>
 						<div class="fieldsection optional">
 							<div class="fieldwrap">
-								<cfset tmpCount=0>
 								<cfloop query="qLibraryList">
 									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(qLibraryList.recordcount eq currentrow ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />										
 									#label#
@@ -133,6 +132,7 @@
 		<cfset var i = "" />
 		<cfset var html = "" />
 		<cfset var oList = "" />
+		<cfset var qObjects = "" />
 		
 		<cfparam name="arguments.stMetadata.ftJoin" />
 		<cfparam name="arguments.stMetadata.ftJoinProperty" />

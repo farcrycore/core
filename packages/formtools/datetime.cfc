@@ -134,7 +134,6 @@
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch) and isDate(arguments.stObject[arguments.stMetadata.ftWatch]) and isDate(arguments.stMetadata.value)>
 			<cfif DateCompare(arguments.stObject[arguments.stMetadata.ftWatch], arguments.stMetadata.value) eq 1>
-				<cfset wDate = arguments.stObject[arguments.stMetadata.ftWatch] />
 				<cfset arguments.stMetadata.value = arguments.stObject[arguments.stMetadata.ftWatch]>
 			</cfif>
 		</cfif>

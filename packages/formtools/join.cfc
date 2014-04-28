@@ -44,11 +44,15 @@
 				
 		<cfset var htmlLabel = "" />
 		<cfset var joinItems = "" />
+		<cfset var oPrimary = "" />
 		<cfset var i = "" />
 		<cfset var counter = "" />
 		<cfset var returnHTML = "" />
 		<cfset var qArrayField = "" />
 		<cfset var stActions = structNew() /><!--- Need to allow for earlier versions of farcry which had different naming conventions --->
+		<cfset var libraryData = "" />
+		<cfset var qLibraryList = "" />
+		<cfset var lBulkUploadable = "" />
 
 		<cfset arguments.stMetadata = prepMetadata(stObject = arguments.stObject, stMetadata = arguments.stMetadata) />
 
@@ -656,6 +660,7 @@
 		<cfset var dataID = "" />
 		<cfset var dataLabel = "" />
 		<cfset var dataSEQ = "" />
+		<cfset var dataTypename = "" />
 		<cfset var oData = "" />
 		<cfset var stO = structNew() />
 		<cfset var libraryData = "" />

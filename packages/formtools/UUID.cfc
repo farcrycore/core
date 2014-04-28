@@ -86,6 +86,7 @@
 		<cfset var stobj = structnew() />
 		<cfset var stJoinObjects = structNew() /> <!--- This will contain a structure of object components that match the ftJoin list from the metadata --->
 
+		<cfset var uuidTypename = "" />
 		<cfset var oData = "" />
 		<cfset var q4 = "" />
 		<cfset var joinTypename = "" />

@@ -246,7 +246,8 @@
 
 		<cfset var stNew = duplicate(arguments.stObject) />
 		<cfset var stWizard = structnew() />
-		<cfset var stFormFieldName = "" />
+		<cfset var fcFormFieldName = "" />
+		<cfset var fieldname = "" />
 		<cfset var stProps = application.stCOAPI[stNew.typename].stProps />
 
 		<cfset structappend(stNew,application.fapi.getContentObject(typename=stNew.typename,objectid=stNew.objectid),false) />

@@ -93,29 +93,16 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-		
+
 		<cfset var html = "" />
 		<cfset var catid = "" />
-		
-	
+
 		<cfif listLen(stObject[stMetadata.name])>
 			<cfloop list="#stObject[stMetadata.name]#" index="catid">		
 					<cfset html = listAppend(html,application.factory.oCategory.getCategoryNameByID(catid)) />
 			</cfloop>
 		</cfif>
-		
-		<!---
-		
-		<cfinvoke component="#application.packagepath#.farcry.category" method="getCategories" returnvariable="lSelectedCategoryID">
-			<cfinvokeargument name="objectID" value="#stObject.ObjectID#"/>
-			<cfinvokeargument name="bReturnCategoryIDs" value="false"/>
-			<cfinvokeargument name="alias" value="#arguments.stMetadata.ftAlias#"/>
-		</cfinvoke>
-		
-		<cfsavecontent variable="html">
-			<cfoutput>#lSelectedCategoryID#</cfoutput>
-		</cfsavecontent> --->
-		
+
 		<cfreturn html>
 	</cffunction>
 
@@ -270,7 +257,10 @@
 		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
 		<cfset var stResult = structnew() />
 		<cfset var stCat = structnew() />
-		
+		<cfset var stSource = structnew() />
+		<cfset var thisfield = "" />
+		<cfset var html = "" />
+
 		<cfif arguments.stMetadata.ftRenderType neq "jquery">
 			<cfreturn super.ajax(argumentCollection=arguments) />
 		</cfif>

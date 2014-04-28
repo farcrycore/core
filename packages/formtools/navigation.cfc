@@ -70,8 +70,6 @@
 			<cfset lSelectedNaviIDs = arguments.stObject['#arguments.stMetadata.name#'] />
 		</cfif>
 		
-		<cfset rootNodeText = stNav.label />
-		
 		<cfreturn editDropdownTree(typename,stObject,stMetadata,fieldname,lSelectedNaviIDs,rootID) />
 	</cffunction>
 	

@@ -38,6 +38,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var html = "" />
+		<cfset var thistype = "" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		

@@ -1,5 +1,3 @@
-
-
 <cfcomponent name="field" displayname="field" hint="Field component to liase with all string types"> 
 		
 	<cfproperty name="ftSeq" required="false" hint="Used if you are relying on the framework to render your form. Used to sort the fields on the form." />
@@ -146,6 +144,7 @@
 		
 		<cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 		<cfset var result = "" />
+		<cfset var thisprop = "" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		

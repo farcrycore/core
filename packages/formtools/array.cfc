@@ -224,6 +224,7 @@
 		<cfset var dataID = "" />
 		<cfset var dataLabel = "" />
 		<cfset var dataSEQ = "" />
+		<cfset var dataTypename = "" />
 		<cfset var oData = "" />
 		<cfset var stO = structNew() />
 		<cfset var libraryData = "" />

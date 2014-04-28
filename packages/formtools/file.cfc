@@ -548,7 +548,8 @@
 		<cfset var stResult = structNew()>
 		<cfset var filepermission = 0 />
 		<cfset var archivedFile = "" />
-			
+		<cfset var errormessage = "" />
+		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = arguments.existingFile>
 		<cfset stResult.stError = StructNew()>

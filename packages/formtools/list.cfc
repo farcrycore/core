@@ -162,6 +162,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var html = "" />
+		<cfset var tmpCount = "" />
 		<cfset var optionValue = "" />
 		<cfset var rListData = "" />
 		<cfset var i = "" />
@@ -346,6 +347,7 @@
 		<cfset var resultHTML = "" />
 		<cfset var stPropMetadata = application.fapi.getPropertyMetadata(	typename="#arguments.filterTypename#",
 																			property="#arguments.filterProperty#" ) />
+		<cfset var i = "" />
 		<cfset var optionValue = "" />
 		<cfset var lData = getListData(	typename="#filterTypename#",
 										property="#filterProperty#") /> 
@@ -387,6 +389,7 @@
 		
 		<cfset var resultHTML = "" />
 		<cfset var html = "" />														
+		<cfset var i = "" />
 		<cfset var lData = getListData(	typename="#arguments.filterTypename#",
 										property="#arguments.filterProperty#") /> 
 										

@@ -91,6 +91,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		<cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
 				
+		<cfset var stActions = structNew() />
 		<cfset var htmlLabel = "" />
 		<cfset var joinItems = "" />
 		<cfset var i = "" />
@@ -737,6 +738,7 @@
 		<cfset var stImage = structnew() />
 		<cfset var resizeinfo = "" />
 		<cfset var source = "" />
+		<cfset var i = 0 />
 		<cfset var html = "" />
 		<cfset var json = "" />
 		<cfset var stJSON = structnew() />
@@ -1069,6 +1071,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfset var html = "" />
+		<cfset var i = 0 />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
