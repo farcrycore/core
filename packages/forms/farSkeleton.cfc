@@ -414,7 +414,6 @@
 		<cfset var iFrom = 0>
 		<cfset var iTo = 0>
 		<cfset var qSelectFields = queryNew("")>
-		<cfset var stTable = structNew()>
 
 		<cfset var i = 1>
 		<cfset var j = 1>
