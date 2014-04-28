@@ -96,7 +96,8 @@
 		<cfset var failedLogins = arraynew(1) />
 		<cfset var i = 0 />
 		<cfset var failureCount = 0 />
-		
+		<cfset var dateTolerance = 0 />
+
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		
@@ -737,8 +738,6 @@
 				<!--- Add data --->
 				<cfoutput query="qBarnacles" group="PolicyGroupId">
 					<cfif structkeyexists(arguments.roles,PolicyGroupId)>
-						<cfparam name="stRole.aPermissions" default="#arraynew(1)#" />
-						
 						<cfoutput>
 							<cfif structkeyexists(arguments.permissions,permissionid)>
 								<cfif len(reference1) and isvalid("uuid",reference1)>

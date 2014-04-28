@@ -29,7 +29,10 @@
 	<cffunction name="getTypesToFix" hint="A query of types/rules to process.">
 		<cfargument name="bRefObjects" type="boolean" required="false">
 
-		<cfset var qResult=queryNew("typename, displayname, icon, bSystem, bRefObjects, class, rowCount, refCount")>
+		<cfset var qResult = queryNew("typename, displayname, icon, bSystem, bRefObjects, class, rowCount, refCount")>
+		<cfset var rowCount = queryNew("")>
+		<cfset var refCount = queryNew("")>
+		<cfset var typename = "">
 
 		<cfloop list="#structkeylist(application.stcoapi)#" index="typename">
 			<cfif application.fapi.getContentTypeMetadata(typename=typename, md="class") neq "form">
@@ -76,6 +79,7 @@
 		<cfset var stResult = structNew()>
 		<cfset var qGetOrphanedItems = "">
 		<cfset var lOrphanedNavs = "">
+		<cfset var qDeleteNav = queryNew("")>
 
 		<cfquery name="qGetOrphanedItems" datasource="#application.dsn#">
 			SELECT data
@@ -102,6 +106,8 @@
 	<cffunction name="fixReferences" hint="Rebuild refObjects table.">
 		<cfset var qTypes = getTypesToFix(bRefObjects=true)>
 		<cfset var stResult = structNew()>
+		<cfset var qInsert = queryNew("")>
+
 		<cfset stResult.message = "Processed #qTypes.recordCount# types and rules tables.<br>">
 
 		<!--- only process types where component metadata bRefObjects is true --->
@@ -133,6 +139,8 @@
 	<cffunction name="purgeMissingReferences" hint="Remove references from refObjects table where the content object no longer exists.">
 		<cfset var qTypes = getTypesToFix()>
 		<cfset var stResult = structNew()>
+		<cfset var qPurge = queryNew("")>
+
 		<cfset stResult.message = "Purged #qTypes.recordCount# types and rules tables.<br>">
 
 		<cfloop query="qTypes">
@@ -159,6 +167,8 @@
 	<cffunction name="purgeReferences" hint="Remove references from refObjects table.">
 		<cfset var qTypes = getTypesToFix(bRefObjects=false)>
 		<cfset var stResult = structNew()>
+		<cfset var qPurge = queryNew("")>
+
 		<cfset stResult.message = "Purged #qTypes.recordCount# types and rules tables.<br>">
 
 		<cfloop query="qTypes">

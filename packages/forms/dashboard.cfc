@@ -22,6 +22,8 @@
 
   <cfset var qDraft = queryNew("objectid, label, typename, datetimelastupdated", "VARCHAR, VARCHAR, VARCHAR, DATE") />
   <cfset var qResult = queryNew("objectid, label, typename, datetimelastupdated", "VARCHAR, VARCHAR, VARCHAR, DATE") />
+  <cfset var stTypeMetadata = structNew() />
+  <cfset var i = "" />
 
   <cfloop list="#arguments.lTypes#" index="i">
     <cftry>
@@ -65,6 +67,8 @@
 
   <cfset var qReview = queryNew("objectid, label, typename, datetimelastupdated, reviewdate", "VARCHAR, VARCHAR, VARCHAR, DATE, DATE") />
   <cfset var qResult = queryNew("objectid, label, typename, datetimelastupdated, reviewdate", "VARCHAR, VARCHAR, VARCHAR, DATE, DATE") />
+  <cfset var stTypeMetadata = structNew() />
+  <cfset var i = "" />
 
   <cfloop list="#arguments.lTypes#" index="i">
     <cftry>
@@ -108,6 +112,8 @@
 
   <cfset var qPending = queryNew("objectid, label, typename, datetimelastupdated", "VARCHAR, VARCHAR, VARCHAR, DATE") />
   <cfset var qResult = queryNew("objectid, label, typename, datetimelastupdated", "VARCHAR, VARCHAR, VARCHAR, DATE") />
+  <cfset var stTypeMetadata = structNew() />
+  <cfset var i = "" />
 
   <cfloop list="#arguments.ltypes#" index="i">
     <cftry>

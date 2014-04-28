@@ -155,6 +155,7 @@ type properties
 	<cfargument name="objectid" type="uuid" required="true">
 	<cfset var qJobs = listJobs()>
 	<cfset var stobject = getdata(objectid=arguments.objectid)>
+	<cfset var qJobStatus = queryNew("")>
 
 	<cfquery dbtype="query" name="qJobStatus">
 		SELECT task FROM qJobs WHERE task = '#application.applicationname#: #stobject.title#'
@@ -192,6 +193,7 @@ type properties
 <cffunction name="addMissingJobs" returntype="boolean" output="true" hint="Add any missing tasks to the app server jobs list.">
 	<cfset var qTasks = application.fapi.getcontentobjects(typename="dmCron", lproperties="objectid, title", bAutoStart_eq="1")>
 	<cfset var qJobs = listJobs()>
+	<cfset var qJobCheck = queryNew("")>
 
 	<cfloop query="qTasks">
 		<cfquery dbtype="query" name="qJobCheck">

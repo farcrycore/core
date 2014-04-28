@@ -7,6 +7,8 @@
 		<cfset var theSystem = "" />
 		<cfset var jvmVersion = "" /> 
 		<cfset var aMajorMinor = "" />
+		<cfset var arrlen = "" />
+		<cfset var a = "" />
 		
 		<!--- This points to the jar we want to load. Could also load a directory of .class files --->
 		<cfset paths[1] = expandPath("/farcry/core/packages/farcry/uuid/uuid-3.2.jar") />
@@ -140,6 +142,7 @@
 		<cfargument name="delimiters" type="string" required="false" default="," />
 		
 		<cfset var result = "" />
+		<cfset var item = "" />
 		<cfset var delimiter = left(arguments.delimiters,1) />
 		
 		<cfloop list="#arguments.list2#" index="item" delimiters="#arguments.delimiters#">
@@ -157,6 +160,7 @@
 		<cfargument name="delimiters" type="string" required="false" default="," />
 		
 		<cfset var result = "" />
+		<cfset var item = "" />
 		<cfset var delimiter = left(arguments.delimiters,1) />
 		
 		<cfloop list="#arguments.list2#" index="item" delimiters="#arguments.delimiters#">
@@ -609,6 +613,7 @@
 
 		<cfset var lCharsNotAllowedInFUs = ".,"",',&,@,%,=,/,\" />
 		<cfset var bAllowFriendlyUrls = true />
+		<cfset var i = "" />
 
 		<!--- In case the url value was urlencoded, application.fc.lib.esapi.DecodeFromURL it --->
 		<cfset arguments.value = urlDecode(arguments.value, arguments.charset) />

@@ -322,7 +322,9 @@
 	
 	<cffunction name="resetTasks" output="false" access="public" returntype="void" description="Remotes all tasks and results for a job, and stops any thread running one of it's tasks">
 		<cfargument name="jobID" type="uuid" required="true" />
-		
+
+		<cfset var key = "">
+
 		<!--- stop threads processing this job --->
 		<cfloop collection="#this.threads#" item="key">
 			<cfif structkeyexists(this.threads[key],"task") and this.threads[key].task.jobID eq arguments.jobID>
@@ -340,7 +342,9 @@
 	
 	<cffunction name="endJob" output="false" access="public" returntype="void" description="Remotes all tasks and results for a job, and stops any thread running one of it's tasks">
 		<cfargument name="jobID" type="uuid" required="true" />
-		
+
+		<cfset var key = "">
+
 		<!--- stop threads processing this job --->
 		<cfloop collection="#this.threads#" item="key">
 			<cfif structkeyexists(this.threads[key],"task") and this.threads[key].task.jobID eq arguments.jobID>

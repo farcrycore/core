@@ -510,8 +510,10 @@ $out:$
 	<cfargument name="typename" required="yes" type="string" default="dmNavigation">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
-	<cfset var qRootNode = queryNew("blah")>
+
+	<cfset var qRootNode = queryNew("")>
 	<cfset var nNodes = 1>
+	<cfset var qUpdateChild = queryNew("")>
 	
 	<cfquery name="qRootNode" datasource="#application.dsn#">
 		select objectid

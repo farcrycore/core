@@ -42,6 +42,7 @@
 
 	<cffunction name="initCache" access="public" output="false" returntype="void" hint="Initialises the security cache">
 		<cfset var comp = "" />
+		<cfset var ud = "" />
 		
 		<!--- Cache --->
 		<cfset this.stPermissions = structNew() />

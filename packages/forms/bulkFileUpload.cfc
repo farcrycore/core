@@ -17,6 +17,7 @@
 		<cfset var folderName = "" />
 		<cfset var q = "" /><!--- Used to store  --->
 		<cfset var stProps = structnew() />
+		<cfset var stNewObj = structnew() />
 		<cfset var oNav = createobject("component", application.stCOAPI.dmNavigation.packagepath) />
 		<cfset var oTree = createObject("component", "#application.packagepath#.farcry.tree") />
 		<cfset var sFileName = "" />

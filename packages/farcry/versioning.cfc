@@ -330,17 +330,18 @@ $out:$
 		<cfset var stObj = application.fapi.getContentObject(objectid=arguments.objectid) />
 		<cfset var stProfile = application.fapi.getContentType("dmProfile").getProfile(userName=stObj.lastupdatedby)>
 		<cfset var stEmail = structnew() />
+		<cfset var returnstruct = structnew() />
 		
 		<!--- send email to lastupdater to let them know object is approved --->
 		<cfif stProfile.emailAddress neq "" AND stProfile.bReceiveEmail>
+
 		    <cfif session.dmProfile.emailAddress neq "">
-		        <cfset fromEmail = session.dmProfile.emailAddress>
+		        <cfset stEmail.from = session.dmProfile.emailAddress>
 		    <cfelse>
-		        <cfset fromEmail = stProfile.emailAddress>
+		        <cfset stEmail.from = stProfile.emailAddress>
 		    </cfif>
 			
 			<cfset stEmail.to = stProfile.emailAddress>
-			<cfset stEmail.from = fromEmail>
 			<cfset stEmail.subject = "{1} - Page Approved">
 			
 			<cfset stEmail.rbkey = "workflow.email.approved" />
@@ -386,8 +387,10 @@ Your page "{3}" has been approved.
 		<cfset var qHasDraft = "" />
 		<cfset var child = "" />
 		<cfset var parentID = "" />
+		<cfset var item = "" />
 		<cfset var stApprovers = structnew() />
 		<cfset var stEmail = structnew() />
+		<cfset var returnstruct = structnew() />
 		
 		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 		
@@ -415,7 +418,6 @@ Your page "{3}" has been approved.
 		<cfloop collection="#stApprovers#" item="item">
 			<!--- check user had email profile and is in list of approvers --->
 			<cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq application.security.getCurrentUserID() AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[item].userName))>
-				<cfset stEmail = structnew() />
 				
 			    <cfif session.dmProfile.emailAddress neq "">
 			        <cfset stEmail.from = session.dmProfile.emailAddress>
@@ -474,6 +476,7 @@ You may approve/decline this page by browsing to the following location:
 		<cfset var parentID = "" />
 		<cfset var stProfile = structnew() />
 		<cfset var stEmail = structnew() />
+		<cfset var returnstruct = structnew() />
 		
 		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 		

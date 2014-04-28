@@ -34,6 +34,8 @@
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var HTML = "" />
 		<cfset var qMetadata = queryNew("objectID") />
+		<cfset var qFieldSets = queryNew("") />
+		<cfset var qFieldset = queryNew("") />
 
 		<cfset qMetadata = application.types[stobj.typename].qMetadata >
 		
@@ -216,6 +218,12 @@
 		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var qMetadata = application.stCOAPI[stobj.typename].qMetadata />
+
+		<cfset var qwizardSteps = queryNew("") />
+		<cfset var qwizardStep = queryNew("") />
+		<cfset var qFieldSets = queryNew("") />
+		<cfset var qFieldset = queryNew("") />
+
 		
 		<!-------------------------------------------------- 
 		WIZARD:

@@ -175,6 +175,7 @@
 		<cfset var webroot = expandPath("/")>
 		<cfset var webrootName = listLast(webroot, "\/")>
 		<cfset var zipFile = "#getZipStagingPath()#/#application.applicationname#-project.zip">
+		<cfset var filepath = "">
 		<cfset var excludeDir = getExcludeString(webrootName=webrootName, excludeMedia=arguments.excludeMedia)>
 		<cfset var sqlDirectory = getSQLStagingPath()>
 
@@ -264,8 +265,10 @@
 		<cfargument name="ignoreFiles" type="string" default="">
 		<cfargument name="ignoreDirectories" type="string" default=".git|.svn">
 		<cfargument name="showHidden" type="boolean" default="false">
+
 		<cfset var qDir = "">
 		<cfset var aDir = listtoarray(arguments.ignoreDirectories, "|")>
+		<cfset var i = "">
 
 		<cfdirectory action="list" directory="#arguments.directory#" name="qDir" recurse="true" />
 		
@@ -293,10 +296,14 @@
 		<cfset var stSkeleton = getData(arguments.objectid) />
 		<cfset var stResult = application.fapi.fail("SQL Not Created") />
 		<cfset var lTableNamesToExport = "" />
+		<cfset var idbType = "" />
+		<cfset var iTable = "" />
 		<cfset var stCoapiExportTable = "" />
 		<cfset var oGateway = "" />
 		<cfset var deploymentSQL = "" />
-		<cfset var oGateway = "" />
+		<cfset var stDeploymentSQL = structNew() />
+		<cfset var iField = "" />
+		<cfset var stArrayExportTable = structNew() />
 		<cfset var oGateway = "" />
 
 		<!--- build export metadata --->
@@ -399,6 +406,15 @@
 		<cfargument name="stTable" type="struct" required="true">
 		<cfargument name="perPage" type="numeric" default="1000">
 		<cfargument name="maxPages" type="numeric" default="100">
+
+		<cfset var selectFields = "">
+		<cfset var iProp = "">
+		<cfset var orderBy = "">
+		<cfset var pages = 0>
+		<cfset var iFrom = 0>
+		<cfset var iTo = 0>
+		<cfset var qSelectFields = queryNew("")>
+		<cfset var stTable = structNew()>
 
 		<cfset var i = 1>
 		<cfset var j = 1>

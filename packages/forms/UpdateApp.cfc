@@ -114,6 +114,7 @@
 	</cffunction>
 
 	<cffunction name="processWizards" access="public" returntype="boolean" description="Resets Wizard Table" output="false">
+		<cfset var qDeleteWizards = queryNew("")>
 		<!--- Wizards --->
 		<cfquery datasource="#application.dsn#" name="qDeleteWizards">
 			delete from dmWizard

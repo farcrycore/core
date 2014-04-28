@@ -62,6 +62,7 @@
 	<cfset var returnBuild = "SVN" /><!--- Return --->
 	<cfset var buildInfo = "" />
 	<cfset var pos = 0 />
+	<cfset var count = 0 />
 	
 	<cfif fileExists("#application.path.core#/build.info")>
 		<cffile action="read" file="#application.path.core#/build.info" variable="buildInfo">

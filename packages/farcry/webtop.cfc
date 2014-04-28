@@ -37,6 +37,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var plugin = "" /><!--- Used in the loop of plugins --->
 		<cfset var dirlist = "" /><!--- List of directories to check --->
 		<cfset var thisdir = "" /><!--- Used in loop of directories --->
+		<cfset var qCustomAdmin = queryNew("") />
 		
 		<!--- Put together a list of customadmin directories --->
 		<cfset dirlist = listappend(dirlist,"#application.path.core#/config") />
@@ -68,6 +69,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfargument name="file" type="string" required="true" hint="The file to load" />
 		
 		<cfset var xmlResult = xmlnew() />
+		<cfset var xslt = "" />
 		
 		<!--- Load the file --->
 		<cffile action="read" file="#arguments.file#" variable="xmlResult" charset="utf-8" />
@@ -329,7 +331,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 	</cffunction>
 
 	
-<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
+	<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
 		<cfargument name="parent" type="any" required="false" default="#this.stWebtop#" hint="The parent item to retrieve" />
 		<cfargument name="honoursecurity" type="boolean" required="false" default="true" hint="Set to false to ignore security" />
 		<cfargument name="duplicated" type="boolean" required="false" default="false" hint="Used to ensure the struct is only duplicated once" />
@@ -342,6 +344,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var stTempResult = structnew() />
 		<cfset var iRole = "">
 		<cfset var bPermitted = "">
+		<cfset var hashKey = "">
 		<cfset var bRight = "">
 		<cfset var barnacleID = "">
 		<cfset var webtopAccessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
@@ -355,7 +358,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 			<cfset arguments.currentRoles = application.security.getCurrentRoles()>
 		</cfif>
 		<cfif NOT isObject(arguments.oBarnacle)>
-			<cfset oBarnacle = application.fapi.getContentType("farBarnacle")>
+			<cfset arguments.oBarnacle = application.fapi.getContentType("farBarnacle")>
 		</cfif>
 		
 		<cfif isstruct(arguments.parent)>
@@ -411,7 +414,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 					<cfset stCurrentRole = application.fapi.getContentObject(typename="farRole", objectid="#iRole#")>
 					
 					<cfif application.fapi.arrayFind(stCurrentRole.aPermissions, webtopAccessPermissionID)>
-						<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
+						<cfset bRight = arguments.oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
 						
 						<cfif bRight GTE 0>
 							<cfset bPermitted = 1>

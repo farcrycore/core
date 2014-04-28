@@ -78,6 +78,7 @@
 
 		<cfset var env = "">
 		<cfset var domain = "">
+		<cfset var lDomains = "">
 
 		<cfset var lEnvironments = "production,staging,development">
 		<cfloop list="#lEnvironments#" index="env">

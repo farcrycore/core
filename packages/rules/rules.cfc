@@ -121,7 +121,12 @@
 		<cfset var lFieldSets = "" />
 		<cfset var iFieldSet = "" />
 		<cfset var containerID = "" />
-		
+
+		<cfset var qwizardSteps = queryNew("") />
+		<cfset var qwizardStep = queryNew("") />
+		<cfset var qFieldSets = queryNew("") />
+		<cfset var qFieldset = queryNew("") />
+
 		<cfif structKeyExists(url, "originalID")>
 			<cfset containerID = url.originalID />
 		<cfelse>
@@ -426,16 +431,16 @@
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
-		
-		
+
+
 		<cfset var stReturn=structNew()>
 		<cfset var qHostContent = "" />
-					    
+		<cfset var stAfterSave = structNew()>
+
 		<cfif NOT structKeyExists(arguments.stProperties, "datetimelastupdated")>
 			<cfset arguments.stProperties.datetimelastupdated = createODBCDateTime(now()) />
 		</cfif>
-				
-									    
+
 		<cfset stReturn=super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
@@ -480,8 +485,9 @@
 			Otherwise it will look for title, then name and then anything with the substring Name.
 		 --->
 		<cfset var NewLabel = "" />
-		
-		<cfparam name="stProperties.label" default="">
+		<cfset var field = "" />
+
+		<cfparam name="arguments.stProperties.label" default="">
 		
 		
 		<cfloop list="#StructKeyList(arguments.stFields)#" index="field">
@@ -505,17 +511,17 @@
 		</cfif>
 		
 		<cfif len(trim(NewLabel))>
-			<cfset stProperties.label = trim(NewLabel) />
+			<cfset arguments.stProperties.label = trim(NewLabel) />
 		<cfelse>
-			<cfset stProperties.label = stProperties.label />
+			<cfset arguments.stProperties.label = arguments.stProperties.label />
 		</cfif>
 		
 		
-		<cfset stProperties.datetimelastupdated = now() />
+		<cfset arguments.stProperties.datetimelastupdated = now() />
 		
-		<cfreturn stProperties>
+		<cfreturn arguments.stProperties>
 	</cffunction>
-	
+
 
 	<cffunction name="getArrayFieldAsQuery" access="public" output="true" returntype="query">
 		

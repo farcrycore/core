@@ -131,6 +131,7 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
   <cfset var params = GetToken(arguments.address, 2, "?")>
   <cfset var paramName = "">
   <cfset var paramValue = "">
+  <cfset var param = "">
   
   <cfif len(arguments.address) and (not len(params)) and Left(arguments.address, 1) is "?">
     <cfif (Len(arguments.address) - 1) gt 0>
