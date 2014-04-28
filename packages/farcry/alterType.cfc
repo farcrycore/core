@@ -223,18 +223,17 @@ $out:$
 			<cfelse>
 				<cfset helpSection = "" />
 			</cfif>
-			
-		   <cfset temp = QueryAddRow(qMetadataSetup)>
-		   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
-		   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
-		   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", val(Seq)) />
-		   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", Fieldset) />
-		   <cfset Temp = QuerySetCell(qMetadataSetup,"ftwizardStep", wizardStep) />
-		   <cfset Temp = QuerySetCell(qMetadataSetup,"ftType", Type) />
-		   <cfset querySetCell(qMetadataSetup,"ftHelpTitle", helpTitle) />
-		   <cfset querySetCell(qMetadataSetup,"ftHelpSection", helpSection) />
-						
-			
+
+			<cfset queryAddRow(qMetadataSetup)>
+			<cfset querySetCell(qMetadataSetup,"typename", typename) />
+			<cfset querySetCell(qMetadataSetup,"propertyname", i) />
+			<cfset querySetCell(qMetadataSetup,"ftSeq", val(Seq)) />
+			<cfset querySetCell(qMetadataSetup,"ftFieldset", Fieldset) />
+			<cfset querySetCell(qMetadataSetup,"ftwizardStep", wizardStep) />
+			<cfset querySetCell(qMetadataSetup,"ftType", Type) />
+			<cfset querySetCell(qMetadataSetup,"ftHelpTitle", helpTitle) />
+			<cfset querySetCell(qMetadataSetup,"ftHelpSection", helpSection) />
+
 		</cfloop>
 		
 		<!--- Now we have all the metadata in qMetadataSetup, we sort and send into the qMetadata key. --->
@@ -420,9 +419,10 @@ $out:$
 		<cfset var stMetadata = structnew() />
 		<cfset var i = structnew() />
 		<cfset var qTypeWatcherWebskins = "" />
-		
+		<cfset var item = "">
+
 		<cfset application.stCOAPI = structnew() />
-				
+
 		<cfloop list="formtools,types,rules,forms,schema" index="thispackage">
 			<cfset application[thispackage] = structnew() />
 			
