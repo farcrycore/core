@@ -59,6 +59,8 @@
 		<cfset var resultSQL = "">
 		<cfset var bAddedOne = false />
 		<cfset var stVal = structNew()>
+		<cfset var stProp = "">
+		<cfset var thisfield = "">
 		
 		<cfprocessingdirective suppressWhitespace="true">
 		<cfsavecontent variable="resultSQL">

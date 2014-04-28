@@ -1,6 +1,5 @@
 <cfcomponent extends="MSSQLGateway" dbType="mssql2005:Microsoft SQL 2005" usesDBOwner="true">
 	
-	
 	<!--- DEPLOYMENT --->
 	
 	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into a MySQL database.">
@@ -9,6 +8,8 @@
 		<cfset var resultSQL = "">
 		<cfset var bAddedOne = false />
 		<cfset var stVal = structNew()>
+		<cfset var stProp = "">
+		<cfset var thisfield = "">
 		
 		<cfprocessingdirective suppressWhitespace="true">
 		<cfsavecontent variable="resultSQL">
