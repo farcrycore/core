@@ -5,7 +5,7 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 
-<cfparam name="url.linkuser" default="true">
+<cfparam name="url.linkuser" default="false">
 	
 <cfquery name="qAudit" datasource="#application.dsn#" >
 	SELECT * FROM farLog
