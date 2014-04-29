@@ -26,7 +26,7 @@
 	title="Security log"
 	columnList="userid,event,notes,datetimecreated" 
 	sortableColumns="userid,event,notes,datetimecreated"
-	lFilterFields="userid,event,notes,datetimecreated"
+	lFilterFields="userid,event,notes"
 	stFilterMetaData="#stFilterMetaData#"
 	bPreviewCol="false"
 	sqlorderby="datetimecreated desc"
