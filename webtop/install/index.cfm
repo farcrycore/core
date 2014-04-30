@@ -193,10 +193,24 @@ code { color: #000; }
 				</p>
 			</cfif>
 			<cfif listFindNoCase(stState.lChecked, "bEmptyDatabaseFound") AND NOT stState.bEmptyDatabaseFound>
-				<p class="alert alert-error">
-					<strong>#stDatabase.stDBEmpty.errorTitle#</strong><br>
-					#stDatabase.stDBEmpty.errorDescription#
-				</p>
+
+				<cfif stInstaller.installFrom eq "projects">
+					<cfset stConstructor = structNew()>
+
+					<p class="alert alert-error">
+						<strong>FarCry Application Already Installed</strong><br>
+						Your database contains an existing FarCry application, and there is an active project
+						in your webroot folder. FarCry Core must be installed into a clean webroot with
+						a blank database.
+					</p>
+
+				<cfelse>
+					<p class="alert alert-error">
+						<strong>#stDatabase.stDBEmpty.errorTitle#</strong><br>
+						#stDatabase.stDBEmpty.errorDescription#
+					</p>
+				</cfif>
+
 			</cfif>
 			<cfif listFindNoCase(stState.lChecked, "bDatabaseTypeFound") AND NOT stState.bDatabaseTypeFound>
 				<p class="alert alert-error">
@@ -245,15 +259,6 @@ code { color: #000; }
 					<strong>No project skeletons found</strong><br>
 					We were unable to find any skeletons in the /farcry/skeletons folder, and there
 					are multiple projects in the /farcry/projects folder. Currently the installer
-					supports a "Database Install" when only a single project is present in the webroot.
-				</p>				
-
-			<cfelseif form.installAction eq "setup" AND listLen(structKeyList(stInstaller.projects)) eq 1 AND structIsEmpty(stConstructor)>
-
-				<p class="alert alert-error">
-					<strong>No project skeletons found or existing projects found</strong><br>
-					We were unable to find any skeletons in the /farcry/skeletons folder or
-					any presence of a project within your webroot. Currently the installer
 					supports a "Database Install" when only a single project is present in the webroot.
 				</p>				
 
