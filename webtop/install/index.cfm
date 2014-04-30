@@ -1,6 +1,7 @@
 <cfsetting requesttimeout="10000">
 
 <cfparam name="form.installAction" default="setup">
+<cfparam name="form.selectedSkeleton" default="">
 <cfparam name="form.farcryUserPassword" default="farcry">
 
 
@@ -22,16 +23,26 @@
 <!--- get installer settings --->
 <cfset stInstaller = getInstallerSettings()>
 
-<!--- process form submissions --->
-<cfif form.installAction eq "install">
-	<cfset updateConstructor(stInstaller)>
-	<cfset stConstructor = getConstructorSettings(stInstaller)>
-	<cfset stInstallResult = install(stInstaller, stConstructor)>
-	<cfset stInstaller = getInstallerSettings()>
+<!--- set the selected skeleton in the installer settings --->
+<cfif len(form.selectedSkeleton)>
+	<cfset stInstaller.selectedSkeleton = form.selectedSkeleton>
 </cfif>
 
-<!--- get constructor and database settings --->
-<cfset stConstructor = getConstructorSettings(stInstaller)>
+<!--- process installation --->
+<cfif form.installAction eq "install">
+	<cfset stConstructor = getConstructorSettings(stInstaller)>
+	<cfset stInstallResult = install(stInstaller, stConstructor)>
+	<cfif structKeyExists(stInstallResult, "stInstaller")>
+		<cfset stInstaller = stInstallResult.stInstaller>
+	</cfif>
+	<cfif structKeyExists(stInstallResult, "stConstructor")>
+		<cfset stConstructor = stInstallResult.stConstructor>
+	</cfif>
+<cfelse>
+	<cfset stConstructor = getConstructorSettings(stInstaller)>
+</cfif>
+
+<!--- get database settings --->
 <cfset stDatabase = getDatabaseSettings(stConstructor)>
 
 <!--- get the current installer state and flight check --->
@@ -138,9 +149,15 @@ code { color: #000; }
 		</div>
 
  		<cfif form.installAction eq "setup">
-			<p class="alert alert-info">
-				<strong>Welcome!</strong> Complete the information below to install your FarCry application...
-			</p>
+			<cfif stState.bSkeletonSelected>
+				<p class="alert alert-info">
+					<strong>Welcome!</strong> Complete the information below to install your FarCry application...
+				</p>
+			<cfelse>
+				<p class="alert alert-info">
+					<strong>Welcome!</strong> Choose a skeleton to use as a starting point for your application...
+				</p>				
+ 			</cfif>
  		</cfif>
 
 
@@ -159,6 +176,14 @@ code { color: #000; }
 				<p class="alert alert-error">
 					<strong>#stDatabase.stDSN.errorTitle#</strong><br>
 					#stDatabase.stDSN.errorDescription#
+				</p>
+			</cfif>
+			<cfif listFindNoCase(stState.lChecked, "bProjectDirectoryNameOK") AND NOT stState.bProjectDirectoryNameOK>
+				<p class="alert alert-error">
+					<strong>Project folder name / webroot conflict</strong><br>
+					Either there was an existing project folder found with this name, or your webroot currently
+					contains a farcryConstructory.cfm. Please choose a new folder name for your project or ensure
+					that your webroot does not contain an existing project.
 				</p>
 			</cfif>
 			<cfif listFindNoCase(stState.lChecked, "bDSNFound") AND NOT stState.bDSNFound>
@@ -185,109 +210,179 @@ code { color: #000; }
 
 		<form class="form-horizontal" action="" method="post">
 
-			<div class="form-settings" <cfif stState.bSuccess AND form.installAction neq "setup">style="display:none;"</cfif>>
-
+			<cfif form.installAction eq "setup" AND NOT stState.bSkeletonSelected AND listLen(structKeyList(stInstaller.skeletons))>
 				<fieldset>
-					<legend>Application / Project</legend>
+					<legend>FarCry Application Skeleton</legend>
 
-					<div class="control-group">
-						<label class="control-label" for="displayName">Project Title</label>
-						<div class="controls">
-							<input type="text" id="displayName" name="displayName" placeholder="Project Title" value="#stConstructor.displayname#">
-							<p class="help-block">The display name of your project, e.g. <code>My Project</code></p>
-						</div>
-					</div>
-
-					<div class="control-group">
-						<label class="control-label" for="name">Application Name</label>
-						<div class="controls">
-							<input type="text" id="name" name="name" placeholder="Application Name" value="#stConstructor.name#">
-							<p class="help-block">The application name used in the Application.cfc, e.g. <code>myproject</code></p>
-						</div>
-					</div>
-<!---
-					<div class="control-group">
-						<label class="control-label" for="projectDirectoryName">Project Folder Name</label>
-						<div class="controls">
-							<input type="text" id="projectDirectoryName" name="projectDirectoryName" placeholder="Project Folder Name" value="#stConstructor.projectDirectoryName#">
-							<p class="help-block">The project folder name, e.g. <code>myproject</code></p>
-						</div>
-					</div>
---->
-					<div class="control-group">
-						<label class="control-label" for="updateappKey">Update App Key</label>
-						<div class="controls">
-							<input type="text" id="updateappKey" name="updateappKey" placeholder="Update App Key" value="#stConstructor.updateappKey#">
-							<p class="help-block">The key used on the URL to restart the app, e.g. <code>mysecretkey</code></p>
-						</div>
-					</div>
+					<table class="table table-striped">
+					<cfloop list="#listSort(structKeyList(stInstaller.skeletons), "textNoCase")#" index="item">
+						<tr>
+							<td style="width:16px;padding-top:14px;">
+								<input type="radio" name="selectedSkeleton" id="#item#" value="#item#">
+							</td>
+							<td>
+								<label for="#item#">
+									<h5>#stInstaller.skeletons[item].name#</h5>
+									<p>#stInstaller.skeletons[item].description#</p>
+								</label>
+							</td>
+						</tr>
+					</cfloop>
+					</table>
 
 				</fieldset>
-
-				<fieldset>
-					<legend>Database</legend>
-
-					<div class="control-group <cfif NOT stDatabase.stDSN.bSuccess>error</cfif>">
-						<label class="control-label" for="dsn">DSN</label>
-						<div class="controls">
-							<input type="text" id="dsn" name="dsn" placeholder="DSN" value="#stConstructor.dsn#">
-							<p class="help-block">The DSN used to connect to your FarCry database</p>
-						</div>
-					</div>
-
-					<div class="control-group <cfif NOT stDatabase.stDBType.bSuccess>error</cfif>">
-						<label class="control-label" for="dbType">Database Server</label>
-						<div class="controls">
-							<select id="dbType" name="dbType" class="span3">
-								<option value="h2" <cfif stConstructor.dbType EQ "h2">selected</cfif>>H2</option>
-								<option value="mssql2005" <cfif stConstructor.dbType EQ "mssql2005">selected</cfif>>Microsoft SQL 2005 or newer</option>
-								<option value="mssql" <cfif stConstructor.dbType EQ "mssql">selected</cfif>>Microsoft SQL 2000</option>
-								<option value="mysql" <cfif stConstructor.dbType EQ "mysql">selected</cfif>>MySQL</option>
-							</select>
-							<p class="help-block">The type of Database Server to use for your application</p>
-						</div>
-					</div>
-
-					<div class="control-group" id="dbOwner_row">
-						<label class="control-label" for="dbOwner">DB Owner</label>
-						<div class="controls">
-							<input type="text" id="dbOwner" name="dbOwner" placeholder="" value="#stConstructor.dbOwner#">
-							<p class="help-block">*** Required for Microsoft SQL Server, e.g. <code>dbo.</code></p>
-						</div>
-					</div>
-
-				</fieldset>
-
-
-				<fieldset>
-					<legend>Administrator Account</legend>
-
-					<div class="control-group">
-						<label class="control-label">Username</label>
-						<div class="controls">
-							<input class="uneditable-input" type="text" disabled="disabled" placeholder="" value="farcry">
-						</div>
-					</div>
-
-					<div class="control-group">
-						<label class="control-label" for="farcryUserPassword">Password</label>
-						<div class="controls">
-							<input type="text" id="farcryUserPassword" name="farcryUserPassword" placeholder="" value="#form.farcryUserPassword#">
-						</div>
-					</div>
-
-				</fieldset>
-
 
 				<div class="control-group">
 					<div class="controls">
 						<br>
-						<button style="width: 270px;" type="submit" class="btn btn-primary btn-large" name="installAction" value="savesettings">Save Settings &rarr;</button>
+						<button style="width: 270px;" type="submit" class="btn btn-primary btn-large" name="installAction" value="setup">Next &rarr;</button>
 					</div>
 				</div>
 
-			</div>
+			<cfelseif form.installAction eq "setup" AND NOT stState.bSkeletonSelected AND listLen(structKeyList(stInstaller.projects)) gt 1>
 
+				<p class="alert alert-error">
+					<strong>No project skeletons found</strong><br>
+					We were unable to find any skeletons in the /farcry/skeletons folder, and there
+					are multiple projects in the /farcry/projects folder. Currently the installer
+					supports a "Database Install" when only a single project is present in the webroot.
+				</p>				
+
+			<cfelseif form.installAction eq "setup" AND listLen(structKeyList(stInstaller.projects)) eq 1 AND structIsEmpty(stConstructor)>
+
+				<p class="alert alert-error">
+					<strong>No project skeletons found or existing projects found</strong><br>
+					We were unable to find any skeletons in the /farcry/skeletons folder or
+					any presence of a project within your webroot. Currently the installer
+					supports a "Database Install" when only a single project is present in the webroot.
+				</p>				
+
+			<cfelseif form.installAction eq "setup" AND structIsEmpty(stInstaller.skeletons) AND structIsEmpty(stInstaller.projects) AND structIsEmpty(stConstructor)>
+
+				<p class="alert alert-error">
+					<strong>No projects or project skeletons found</strong><br>
+					We were unable to find any skeletons in the /farcry/skeletons folder or
+					any any projects in the /farcry/projects folder. FarCry Core requires
+					at least one skeleton or one project to install.
+				</p>	
+
+			<cfelse>
+
+				<input type="hidden" name="selectedSkeleton" value="#stInstaller.selectedSkeleton#">
+
+			</cfif>
+
+			<!--- 
+				this form is ALWAYS outputted when a constructor config is available,
+				however it is hidden from view using display:none for non-"setup" steps
+			--->
+
+			<cfif NOT structIsEmpty(stConstructor)>
+
+				<div class="form-settings" <cfif (stState.bSuccess AND form.installAction neq "setup") OR (NOT stState.bSkeletonSelected AND listLen(structKeyList(stInstaller.skeletons)))>style="display:none;"</cfif>>
+
+					<fieldset>
+						<legend>Application / Project</legend>
+
+						<div class="control-group">
+							<label class="control-label" for="displayName">Project Title</label>
+							<div class="controls">
+								<input type="text" id="displayName" name="displayName" placeholder="Project Title" value="#stConstructor.displayname#">
+								<p class="help-block">The display name of your project, e.g. <code>My Project</code></p>
+							</div>
+						</div>
+
+						<div class="control-group <cfif NOT stState.bProjectDirectoryNameOK>error</cfif>">
+							<label class="control-label" for="projectDirectoryName">Project Folder Name</label>
+							<div class="controls">
+								<input type="text" id="projectDirectoryName" name="projectDirectoryName" placeholder="Project Folder Name" value="#stConstructor.projectDirectoryName#">
+								<p class="help-block">The project folder name on disk, e.g. <code>myproject</code></p>
+							</div>
+						</div>
+
+						<div class="control-group">
+							<label class="control-label" for="name">Application Name</label>
+							<div class="controls">
+								<input type="text" id="name" name="name" placeholder="Application Name" value="#stConstructor.name#">
+								<p class="help-block">The application name used in the Application.cfc, e.g. <code>myproject</code></p>
+							</div>
+						</div>
+
+						<div class="control-group">
+							<label class="control-label" for="updateappKey">Update App Key</label>
+							<div class="controls">
+								<input type="text" id="updateappKey" name="updateappKey" placeholder="Update App Key" value="#stConstructor.updateappKey#">
+								<p class="help-block">The key used on the URL to restart the app, e.g. <code>mysecretkey</code></p>
+							</div>
+						</div>
+
+					</fieldset>
+
+					<fieldset>
+						<legend>Database</legend>
+
+						<div class="control-group <cfif NOT stDatabase.stDSN.bSuccess>error</cfif>">
+							<label class="control-label" for="dsn">DSN</label>
+							<div class="controls">
+								<input type="text" id="dsn" name="dsn" placeholder="DSN" value="#stConstructor.dsn#">
+								<p class="help-block">The DSN used to connect to your FarCry database</p>
+							</div>
+						</div>
+
+						<div class="control-group <cfif NOT stDatabase.stDBType.bSuccess>error</cfif>">
+							<label class="control-label" for="dbType">Database Server</label>
+							<div class="controls">
+								<select id="dbType" name="dbType" class="span3">
+									<option value="h2" <cfif stConstructor.dbType EQ "h2">selected</cfif>>H2</option>
+									<option value="mssql2005" <cfif stConstructor.dbType EQ "mssql2005">selected</cfif>>Microsoft SQL 2005 or newer</option>
+									<option value="mssql" <cfif stConstructor.dbType EQ "mssql">selected</cfif>>Microsoft SQL 2000</option>
+									<option value="mysql" <cfif stConstructor.dbType EQ "mysql">selected</cfif>>MySQL</option>
+								</select>
+								<p class="help-block">The type of Database Server to use for your application</p>
+							</div>
+						</div>
+
+						<div class="control-group" id="dbOwner_row">
+							<label class="control-label" for="dbOwner">DB Owner</label>
+							<div class="controls">
+								<input type="text" id="dbOwner" name="dbOwner" placeholder="" value="#stConstructor.dbOwner#">
+								<p class="help-block">*** Required for Microsoft SQL Server, e.g. <code>dbo.</code></p>
+							</div>
+						</div>
+
+					</fieldset>
+
+
+					<fieldset>
+						<legend>Administrator Account</legend>
+
+						<div class="control-group">
+							<label class="control-label">Username</label>
+							<div class="controls">
+								<input class="uneditable-input" type="text" disabled="disabled" placeholder="" value="farcry">
+							</div>
+						</div>
+
+						<div class="control-group">
+							<label class="control-label" for="farcryUserPassword">Password</label>
+							<div class="controls">
+								<input type="text" id="farcryUserPassword" name="farcryUserPassword" placeholder="" value="#form.farcryUserPassword#">
+							</div>
+						</div>
+
+					</fieldset>
+
+
+					<div class="control-group">
+						<div class="controls">
+							<br>
+							<button style="width: 270px;" type="submit" class="btn btn-primary btn-large" name="installAction" value="savesettings">Save Settings &rarr;</button>
+						</div>
+					</div>
+
+				</div>
+
+			</cfif>
 
 			<cfif stState.bSuccess AND form.installAction eq "savesettings">
 
@@ -299,12 +394,13 @@ code { color: #000; }
 					<pre style="font-weight: bold">Installation Settings</pre>
 <pre style="margin:0;">
        Project Title:  #stConstructor.displayname#
+ Project Folder Name:  #stConstructor.projectDirectoryName#
     Application Name:  #stConstructor.name#
       Update App Key:  #stConstructor.updateappKey#
 
                  DSN:  #stConstructor.dsn#
      Database Server:  #stConstructor.dbType#
-<cfif left(stConstructor.dbType, 5) eq "mssql">DB Owner: #stConstructor.dbOwner#
+<cfif left(stConstructor.dbType, 5) eq "mssql">            DB Owner: #stConstructor.dbOwner#
 </cfif>
             Username:  farcry
             Password:  #form.farcryUserPassword#
@@ -335,6 +431,7 @@ During installation the contents of the project "www" folder will be moved into:
 
 
 			<cfif form.installAction eq "install">
+
 
 				<cfif stInstallResult.bSuccess>
 					<p class="alert alert-success">
@@ -403,13 +500,15 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
 $(function(){
 
 	function toggleDBOwner() {
-		if ($("#dbType").val().match(/^mssql/gi)) {
-			$("#dbOwner_row").show();
-			$("#dbOwner").val("dbo.");
-		}
-		else {
-			$("#dbOwner_row").hide();
-			$("#dbOwner").val("");
+		if ($("#dbType").length) {
+			if ($("#dbType").val().match(/^mssql/gi)) {
+				$("#dbOwner_row").show();
+				$("#dbOwner").val("dbo.");
+			}
+			else {
+				$("#dbOwner_row").hide();
+				$("#dbOwner").val("");
+			}
 		}
 	};
 
@@ -422,10 +521,12 @@ $(function(){
 		$("#debugoutput").show();
 	});
 
-	document.getElementById("iframe").onload = function() {
-		$("#loading").hide();
-		$("#finished").show();
-	};
+	if (document.getElementById("iframe")) {
+		document.getElementById("iframe").onload = function() {
+			$("#loading").hide();
+			$("#finished").show();
+		};
+	}
 
 });
 </script>
@@ -434,6 +535,119 @@ $(function(){
 </html>
 
 
+
+<cffunction name="getInstallerSettings" returntype="struct">
+
+	<cfset var stResult = structNew()>
+
+	<cfset var qSkeletons = queryNew("")>
+	<cfset var qProjects = queryNew("")>
+
+	<cfset stResult.installPath = normalisePath(expandPath("."))>
+	<cfset stResult.webrootPath = normalisePath(expandPath("/"))>
+
+	<cfset stResult.bHasFarCryFolder = false>
+	<cfset stResult.farcryPath = normalisePath(expandPath("/farcry"))>
+	<cfset stResult.farcrySkeletonsPath = normalisePath(expandPath("/farcry/skeletons"))>
+	<cfset stResult.farcryProjectsPath = normalisePath(expandPath("/farcry/projects"))>
+	<cfset stResult.farcryWebtopPath = normalisePath(expandPath("/webtop"))>
+	<cfset stResult.farcryWebtopURL = "/webtop">
+
+	<cfset stResult.skeletons = structNew()>
+	<cfset stResult.projects = structNew()>
+
+	<cfset stResult.selectedSkeleton = "">
+	<cfset stResult.selectedProject = "">
+
+	<cfset stResult.installType = "webroot">
+	<cfset stResult.installFrom = "skeletons">
+	<cfset stResult.installDBOnly = false>
+
+
+	<!--- get farcry folder info --->
+	<cfif directoryExists(stResult.farcryPath)>
+		<cfset stResult.bHasFarCryFolder = true>
+	</cfif>
+
+	<!--- get skeleton folder info --->
+	<cfif directoryExists(stResult.farcrySkeletonsPath)>
+
+		<cfdirectory name="qSkeletons" action="list" directory="#stResult.farcrySkeletonsPath#" type="dir">
+
+		<!--- find skeletons --->
+		<cfloop query="qSkeletons">
+			<cfset stResult.skeletons[qSkeletons.name] = structNew()>
+			<cfset stResult.skeletons[qSkeletons.name].name = qSkeletons.name>
+			<cfset stResult.skeletons[qSkeletons.name].description = "">
+			<cfset stResult.skeletons[qSkeletons.name].path = normalisePath(qSkeletons.directory & "/" & qSkeletons.name)>
+
+			<!--- get skeleton info from manifest --->
+
+				<cfset oInstallManifest = createObject("component", "farcry.skeletons.#qSkeletons.name#.install.manifest")>
+				<cfset stResult.skeletons[qSkeletons.name].name = oInstallManifest.name>
+				<cfset stResult.skeletons[qSkeletons.name].description = oInstallManifest.description>
+
+
+			<cfif fileExists(stResult.skeletons[qSkeletons.name].path & "/www/farcryConstructor.cfm")>
+				<cfset stResult.skeletons[qSkeletons.name].constructorPath = stResult.skeletons[qSkeletons.name].path & "/www/farcryConstructor.cfm">
+			<cfelse>
+				<cfset structDelete(stResult.skeletons, qSkeletons.name)>
+			</cfif>
+		</cfloop>
+		<cfif listLen(structKeyList(stResult.skeletons)) eq 1>
+			<cfset stResult.selectedSkeleton = structKeyList(stResult.skeletons)>
+		</cfif>
+	</cfif>
+
+	<!--- get project folder info --->
+	<cfif directoryExists(stResult.farcryProjectsPath)>
+
+		<cfdirectory name="qProjects" action="list" directory="#stResult.farcryProjectsPath#" type="dir">
+
+		<!--- find projects --->
+		<cfloop query="qProjects">
+			<cfset stResult.projects[qProjects.name] = structNew()>
+			<cfset stResult.projects[qProjects.name].name = qProjects.name>
+			<cfset stResult.projects[qProjects.name].description = "">
+			<cfset stResult.projects[qProjects.name].path = normalisePath(qProjects.directory & "/" & qProjects.name)>
+
+			<!--- get project info from manifest --->
+			<cftry>
+				<cfset oInstallManifest = createObject("component", "farcry.projects.#qProjects.name#.install.manifest")>
+				<cfset stResult.projects[qProjects.name].name = oInstallManifest.name>
+				<cfset stResult.projects[qProjects.name].description = oInstallManifest.description>
+
+				<cfcatch></cfcatch>
+			</cftry>
+
+			<cfif fileExists(stResult.webrootPath & "/farcryConstructor.cfm") AND qProjects.recordCount eq 1>
+				<cfset stResult.projects[qProjects.name].constructorPath = stResult.webrootPath & "/farcryConstructor.cfm">
+			<cfelseif fileExists(stResult.projects[qProjects.name].path & "/www/farcryConstructor.cfm")>
+				<cfset stResult.projects[qProjects.name].constructorPath = stResult.projects[qProjects.name].path & "/www/farcryConstructor.cfm">
+			</cfif>
+		</cfloop>
+		<cfif fileExists(stResult.webrootPath & "/farcryConstructor.cfm") AND listLen(structKeyList(stResult.projects)) eq 1>
+			<cfset stResult.installFrom = "projects">
+			<cfset stResult.installDBOnly = true>
+			<cfset stResult.selectedProject = qProjects.name>
+		</cfif>
+	</cfif>
+
+	<!--- get webtop path --->
+	<cfif NOT directoryExists(stResult.farcryWebtopPath)>
+		<cfset stResult.farcryWebtopPath = normalisePath(expandPath("/farcry/core/webtop"))>
+		<cfset stResult.farcryWebtopURL = "/farcry/core/webtop">
+	</cfif>
+
+
+	<!--- determine install type --->
+	<cfif findNoCase(stResult.farcryPath, stResult.webrootPath)>
+		<cfset stResult.installType = "advanced">
+	</cfif>
+
+
+	<cfreturn stResult>
+</cffunction>
 
 
 <cffunction name="getInstallerState" returntype="struct">
@@ -446,17 +660,31 @@ $(function(){
 	<cfset stResult.bSuccess = true>
 
 	<cfset stResult.bFarCryFound = false>
-	<cfset stResult.bProjectFound = false>
+	<cfset stResult.bSkeletonSelected = false>
+	<cfset stResult.bProjectDirectoryNameOK = false>
 	<cfset stResult.bDSNFound = false>
 	<cfset stResult.bEmptyDatabaseFound = false>
 	<cfset stResult.bDatabaseTypeFound = false>
 
 	<cfset stResult = updateInstallerState(stResult, "bFarCryFound", stInstaller.bHasFarCryFolder)>
-	<cfset stResult = updateInstallerState(stResult, "bProjectFound", stInstaller.bHasProjectFolder)>
-	<cfset stResult = updateInstallerState(stResult, "bDSNFound", stDatabase.stDSN.bSuccess)>
-	<cfset stResult = updateInstallerState(stResult, "bEmptyDatabaseFound", stDatabase.stDBEmpty.bSuccess)>
-	<cfset stResult = updateInstallerState(stResult, "bDatabaseTypeFound", stDatabase.stDBType.bSuccess)>
 
+	<cfif len(getSelectedConstructorPath(stInstaller))>
+
+		<!--- check project folder name / destination for skeleton installs --->
+		<cfif stInstaller.installFrom eq "skeletons">
+			<cfif NOT fileExists("#stInstaller.farcryProjectsPath#/#stConstructor.projectDirectoryName#/www/farcryConstructor.cfm")
+				AND NOT fileExists("#stInstaller.webrootPath#/farcryConstructor.cfm")>
+				<cfset stResult.bProjectDirectoryNameOK = true>
+			</cfif>
+		<cfelse>
+			<cfset stResult.bProjectDirectoryNameOK = true>
+		</cfif>
+
+		<cfset stResult = updateInstallerState(stResult, "bSkeletonSelected", true)>
+		<cfset stResult = updateInstallerState(stResult, "bDSNFound", stDatabase.stDSN.bSuccess)>
+		<cfset stResult = updateInstallerState(stResult, "bEmptyDatabaseFound", stDatabase.stDBEmpty.bSuccess)>
+		<cfset stResult = updateInstallerState(stResult, "bDatabaseTypeFound", stDatabase.stDBType.bSuccess)>
+	</cfif>
 
 	<cfset stFlightCheck = getFlightCheckOutput(stResult, arguments.stInstaller, arguments.stConstructor, arguments.stDatabase)>
 
@@ -497,7 +725,8 @@ $(function(){
 	<cfset stResult.out = "">
 
 	<cfset stResult = updateFlightCheckOutput(stResult, "bFarCryFound", stState.bFarCryFound, "/farcry folder found", "/farcry folder not found")>
-	<cfset stResult = updateFlightCheckOutput(stResult, "bProjectFound", stState.bProjectFound, "FarCry application found", "FarCry application not found")>
+	<cfset stResult = updateFlightCheckOutput(stResult, "bSkeletonSelected", stState.bSkeletonSelected, "FarCry application found", "FarCry application not found")>
+	<cfset stResult = updateFlightCheckOutput(stResult, "bProjectDirectoryNameOK", stState.bProjectDirectoryNameOK, "Project folder name OK", "Existing project folder name conflict")>
 	<cfset stResult = updateFlightCheckOutput(stResult, "bDSNFound", stState.bDSNFound, "DSN found", "DSN not found")>
 	<cfset stResult = updateFlightCheckOutput(stResult, "bEmptyDatabaseFound", stState.bEmptyDatabaseFound, "Empty database found", "Empty database not found")>
 	<cfset stResult = updateFlightCheckOutput(stResult, "bDatabaseTypeFound", stState.bDatabaseTypeFound, "Database server type match", "Database server type does not match")>
@@ -534,66 +763,18 @@ $(function(){
 </cffunction>
 
 
+<cffunction name="getSelectedConstructorPath" returntype="string">
+	<cfargument name="stInstaller">
 
-<cffunction name="getInstallerSettings" returntype="struct">
+	<cfset var constructorPath = "">
 
-	<cfset var stResult = structNew()>
-	<cfset var qProjects = queryNew("")>
-
-
-	<cfset stResult.installPath = normalisePath(expandPath("."))>
-	<cfset stResult.webrootPath = normalisePath(expandPath("/"))>
-
-	<cfset stResult.bHasFarCryFolder = false>
-	<cfset stResult.farcryPath = normalisePath(expandPath("/farcry"))>
-	<cfset stResult.farcryProjectsPath = normalisePath(expandPath("/farcry/projects"))>
-	<cfset stResult.farcryWebtopPath = normalisePath(expandPath("/webtop"))>
-	<cfset stResult.farcryWebtopURL = "/webtop">
-
-	<cfset stResult.bHasProjectFolder = false>
-	<cfset stResult.projectPath = "">
-	<cfset stResult.projectConstructorPath = "">
-
-	<cfset stResult.installType = "webroot">
-
-	<!--- get farcry folder info --->
-	<cfif directoryExists(stResult.farcryPath)>
-			<cfset stResult.bHasFarCryFolder = true>
+	<cfif len(stInstaller.selectedProject) AND stInstaller.installFrom eq "projects" AND structKeyExists(stInstaller["projects"], stInstaller.selectedProject)>
+		<cfset constructorPath = stInstaller["projects"][stInstaller.selectedProject].constructorPath>
+	<cfelseif len(stInstaller.selectedSkeleton) AND stInstaller.installFrom eq "skeletons" AND structKeyExists(stInstaller["skeletons"], stInstaller.selectedSkeleton)>
+		<cfset constructorPath = stInstaller["skeletons"][stInstaller.selectedSkeleton].constructorPath>
 	</cfif>
 
-	<!--- get project folder info --->
-	<cfif directoryExists(stResult.farcryProjectsPath)>
-
-		<cfdirectory name="qProjects" action="list" directory="#stResult.farcryProjectsPath#" type="dir">
-
-		<cfif qProjects.recordCount>
-			<cfset stResult.bHasProjectFolder = true>
-			<cfset stResult.projectPath = normalisePath(qProjects.directory & "/" & qProjects.name)>
-
-			<cfif fileExists(stResult.webrootPath & "/farcryConstructor.cfm")>
-				<cfset stResult.projectConstructorPath = stResult.webrootPath & "/farcryConstructor.cfm">
-			<cfelseif fileExists(stResult.projectPath & "/www/farcryConstructor.cfm")>
-				<cfset stResult.projectConstructorPath = stResult.projectPath & "/www/farcryConstructor.cfm">
-			<cfelse>	
-				<cfset stResult.bHasProjectFolder = true>
-			</cfif>
-		</cfif>
-	</cfif>
-
-	<!--- get webtop path --->
-	<cfif NOT directoryExists(stResult.farcryWebtopPath)>
-		<cfset stResult.farcryWebtopPath = normalisePath(expandPath("/farcry/core/webtop"))>
-		<cfset stResult.farcryWebtopURL = "/farcry/core/webtop">
-	</cfif>
-
-
-	<!--- determine install type --->
-	<cfif findNoCase(stResult.farcryPath, stResult.webrootPath)>
-		<cfset stResult.installType = "advanced">
-	</cfif>
-
-
-	<cfreturn stResult>
+	<cfreturn constructorPath>
 </cffunction>
 
 
@@ -602,36 +783,41 @@ $(function(){
 
 	<cfset var stResult = structNew()>
 	<cfset var farcryConstructor = "">
+	<cfset var constructorPath = getSelectedConstructorPath(stInstaller)>
 
-	<cffile action="read" file="#stInstaller.projectConstructorPath#" variable="farcryConstructor" charset="utf-8">
+	<cfif len(constructorPath)>
 
-	<!--- read from the constructor --->
-	<cfset stResult.name = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.name\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
-	<cfset stResult.displayname = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.displayname\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
-	<cfset stResult.dsn = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dsn\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
-	<cfset stResult.dbtype = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dbtype\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
-	<cfset stResult.dbowner = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dbowner\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
-	<cfset stResult.webtopURL = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.webtopURL\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
-	<cfset stResult.updateappKey = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.updateappKey\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
-	<cfset stResult.projectDirectoryName = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cffile action="read" file="#constructorPath#" variable="farcryConstructor" charset="utf-8">
 
-	<!--- set defaults in the form if they aren't already set--->
-	<cfparam name="form.name" default="#stResult.name#">
-	<cfparam name="form.displayName" default="#stResult.displayName#">
-	<cfparam name="form.dsn" default="#stResult.dsn#">
-	<cfparam name="form.dbType" default="#stResult.dbType#">
-	<cfparam name="form.dbOwner" default="#stResult.dbOwner#">
-	<cfparam name="form.updateappKey" default="#stResult.updateappKey#">
-	<cfparam name="form.projectDirectoryName" default="#stResult.projectDirectoryName#">
+		<!--- read from the constructor --->
+		<cfset stResult.name = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.name\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cfset stResult.displayname = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.displayname\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cfset stResult.dsn = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dsn\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cfset stResult.dbtype = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dbtype\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cfset stResult.dbowner = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.dbowner\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cfset stResult.webtopURL = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.webtopURL\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cfset stResult.updateappKey = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.updateappKey\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
+		<cfset stResult.projectDirectoryName = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
 
-	<!--- use the values from the form --->
-	<cfset stResult.name = form.name>
-	<cfset stResult.displayName = form.displayName>
-	<cfset stResult.dsn = form.dsn>
-	<cfset stResult.dbType = form.dbType>
-	<cfset stResult.dbOwner = form.dbOwner>
-	<cfset stResult.updateappKey = form.updateappKey>
-	<cfset stResult.projectDirectoryName = form.projectDirectoryName>
+		<!--- set defaults in the form if they aren't already set--->
+		<cfparam name="form.name" default="#stResult.name#">
+		<cfparam name="form.displayName" default="#stResult.displayName#">
+		<cfparam name="form.dsn" default="#stResult.dsn#">
+		<cfparam name="form.dbType" default="#stResult.dbType#">
+		<cfparam name="form.dbOwner" default="#stResult.dbOwner#">
+		<cfparam name="form.updateappKey" default="#stResult.updateappKey#">
+		<cfparam name="form.projectDirectoryName" default="#stResult.projectDirectoryName#">
+
+		<!--- use the values from the form --->
+		<cfset stResult.name = trim(form.name)>
+		<cfset stResult.displayName = trim(form.displayName)>
+		<cfset stResult.dsn = trim(form.dsn)>
+		<cfset stResult.dbType = form.dbType>
+		<cfset stResult.dbOwner = trim(form.dbOwner)>
+		<cfset stResult.updateappKey = trim(form.updateappKey)>
+		<cfset stResult.projectDirectoryName = trim(form.projectDirectoryName)>
+
+	</cfif>
 
 	<cfreturn stResult>
 </cffunction>
@@ -641,8 +827,9 @@ $(function(){
 	<cfargument name="stInstaller">
 
 	<cfset var farcryConstructor = "">
+	<cfset var constructorPath = getSelectedConstructorPath(stInstaller)>
 
-	<cffile action="read" file="#arguments.stInstaller.projectConstructorPath#" variable="farcryConstructor" charset="utf-8">
+	<cffile action="read" file="#constructorPath#" variable="farcryConstructor" charset="utf-8">
 
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.Name\s*?=\s*?["'']).*?(["''].*)', '\1#form.name#\2', 'all')>
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.displayName\s*?=\s*?["'']).*?(["''].*)', '\1#form.displayName#\2', 'all')>
@@ -651,14 +838,13 @@ $(function(){
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.dbOwner\s*?=\s*?["'']).*?(["''].*)', '\1#form.dbOwner#\2', 'all')>
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.webtopURL\s*?=\s*?["'']).*?(["''].*)', '\1#stInstaller.farcryWebtopURL#\2', 'all')>
 	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.updateappKey\s*?=\s*?["'']).*?(["''].*)', '\1#form.updateappKey#\2', 'all')>
-
-	<!--- TODO: enable updating constructor folder when folder renaming issue is resolved --->
-<!---
  	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["'']).*?(["''].*)', '\1#form.projectDirectoryName#\2', 'all')>
 	<!--- uncomment projectDirectoryName --->
-	<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*)<!---\s*?(<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["''].*?["'']\s*?/?>)\s*?--->(.*)', '\1\2\3', 'all')>
- --->
-	<cffile action="write" file="#arguments.stInstaller.projectConstructorPath#" output="#farcryConstructor#" nameconflict="overwrite" charset="utf-8">
+	<cfif form.name neq form.projectDirectoryName>
+		<cfset farcryConstructor = reReplaceNoCase(farcryConstructor,'(.*)<!---\s*?(<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["''].*?["'']\s*?/?>)\s*?--->(.*)', '\1\2\3', 'all')>
+	</cfif>
+
+	<cffile action="write" file="#constructorPath#" output="#farcryConstructor#" nameconflict="overwrite" charset="utf-8">
 
 </cffunction>
 
@@ -668,10 +854,14 @@ $(function(){
 
 	<cfset var stResult = structNew()>
 
-	<cfset stResult.stDSN = checkDSN(dsn=arguments.stConstructor.dsn, dbOwner=arguments.stConstructor.dbOwner)>
-	<cfset stResult.stDBInfo = getDBInfo(arguments.stConstructor)>
-	<cfset stResult.stDBType = checkDBType(dsn=arguments.stConstructor.dsn, dbOwner=arguments.stConstructor.dbOwner, dbType=arguments.stConstructor.dbType)>
-	<cfset stResult.stDBEmpty = checkExistingDatabase(dsn=arguments.stConstructor.dsn, dbOwner=arguments.stConstructor.dbOwner)>
+	<cfif NOT structIsEmpty(stConstructor)>
+
+		<cfset stResult.stDSN = checkDSN(dsn=arguments.stConstructor.dsn, dbOwner=arguments.stConstructor.dbOwner)>
+		<cfset stResult.stDBInfo = getDBInfo(arguments.stConstructor)>
+		<cfset stResult.stDBType = checkDBType(dsn=arguments.stConstructor.dsn, dbOwner=arguments.stConstructor.dbOwner, dbType=arguments.stConstructor.dbType)>
+		<cfset stResult.stDBEmpty = checkExistingDatabase(dsn=arguments.stConstructor.dsn, dbOwner=arguments.stConstructor.dbOwner)>
+
+	</cfif>
 
 	<cfreturn stResult>
 </cffunction>
@@ -683,21 +873,23 @@ $(function(){
 	<cfset var stResult = structNew()>
 	<cfset var stInfo = structNew()>
 
-	<cftry>
-		<cfdbinfo name="stInfo" datasource="#stConstructor.dsn#" type="version">
-		<cfset stResult.DATABASE_PRODUCTNAME = stInfo.DATABASE_PRODUCTNAME>
-		<cfset stResult.DATABASE_VERSION = stInfo.DATABASE_VERSION>
-		<cfset stResult.DRIVER_NAME = stInfo.DRIVER_NAME>
-		<cfset stResult.DRIVER_VERSION = stInfo.DRIVER_VERSION>
-		<cfset stResult.JDBC_MAJOR_VERSION = stInfo.JDBC_MAJOR_VERSION>
-		<cfset stResult.JDBC_MINOR_VERSION = stInfo.JDBC_MINOR_VERSION>
-		<cfset stResult.bSuccess = true>
+	<cfif NOT structIsEmpty(stConstructor)>
+		<cftry>
+			<cfdbinfo name="stInfo" datasource="#stConstructor.dsn#" type="version">
+			<cfset stResult.DATABASE_PRODUCTNAME = stInfo.DATABASE_PRODUCTNAME>
+			<cfset stResult.DATABASE_VERSION = stInfo.DATABASE_VERSION>
+			<cfset stResult.DRIVER_NAME = stInfo.DRIVER_NAME>
+			<cfset stResult.DRIVER_VERSION = stInfo.DRIVER_VERSION>
+			<cfset stResult.JDBC_MAJOR_VERSION = stInfo.JDBC_MAJOR_VERSION>
+			<cfset stResult.JDBC_MINOR_VERSION = stInfo.JDBC_MINOR_VERSION>
+			<cfset stResult.bSuccess = true>
 
-		<cfcatch>
-			<cfset stResult = structNew()>
-			<cfset stResult.bSuccess = false>
-		</cfcatch>
-	</cftry>
+			<cfcatch>
+				<cfset stResult = structNew()>
+				<cfset stResult.bSuccess = false>
+			</cfcatch>
+		</cftry>
+	</cfif>
 
 	<cfreturn stResult>
 </cffunction>
@@ -711,11 +903,24 @@ $(function(){
 	<cfset var output = "">
 	<cfset var qSQLFiles = queryNew("")>
 	<cfset var sqlFilePrefix = "">
-<!--- TODO: move this into installer settings method --->
-	<cfset var sqlDirectory = "#stInstaller.projectPath#/install">
+	<cfset var selectedProject = arguments.stConstructor.projectDirectoryName>
+
+	<cfset var sourceDirectory = "">
+	<cfset var destinationDirectory = "">
+	<cfset var sqlDirectory = "">
+
+	<cfif arguments.stInstaller.installFrom eq "skeletons">
+		<cfset sourceDirectory = "#stInstaller.farcrySkeletonsPath#/#stInstaller.selectedSkeleton#">
+		<cfset destinationDirectory = "#stInstaller.farcryProjectsPath#/#stConstructor.projectDirectoryName#">
+	<cfelse>
+		<cfset sourceDirectory = "#stInstaller.farcryProjectsPath#/#stInstaller.selectedProject#">
+		<cfset destinationDirectory = "#stInstaller.farcryProjectsPath#/#stInstaller.selectedProject#">
+	</cfif>
+	<cfset sqlDirectory = "#sourceDirectory#/install">
 
 	<cfset stResult.output = "">
 	<cfset stResult.bSuccess = true>
+
 
 	<cfsavecontent variable="output">
 	<cfoutput>
@@ -783,30 +988,53 @@ $(function(){
 		</cfquery>
 
 
-		<!--- for webroot installs move the www folder contents into the webroot --->
-		<cfif arguments.stInstaller.installType eq "webroot">
-			<cfdirectory name="qWebroot" action="list" directory="#arguments.stInstaller.projectPath#/www">
-			<cfloop query="qWebroot">
-				<cfif qWebroot.type eq "file">
-					<cffile action="copy" source="#qWebroot.directory#/#qWebroot.name#" destination="#expandPath('/')#">
-				<cfelseif qWebroot.type eq "dir">
-					<cfset dCopy(source="#qWebroot.directory#/#qWebroot.name#", destination="#expandPath('/')#/#qWebroot.name#", ignore="") />
-				</cfif>
-			</cfloop>
-			
-			<cftry>
-				<cfdirectory name="qDelete" action="delete" directory="#arguments.stInstaller.projectPath#/www" recurse="true">
-				<cfcatch>
-				</cfcatch>
-			</cftry>
+		<!--- for skeleton installs, copy the project skeleton into the projects folder  --->
+		<cfif stResult.bSuccess AND arguments.stInstaller.installFrom eq "skeletons">
+
+			<cfif fileExists("#destinationDirectory#/www/farcryConstructor.cfm")
+				OR fileExists("#stInstaller.webrootPath#/farcryConstructor.cfm")>
+				<cfoutput><strong>ERROR: The project folder and/or webroot already contains a farcryConstructor.cfm</strong> Your project was not created from the skeleton. Please resolve the folder name conflict and re-run the installer<br></cfoutput>
+				<cfset stResult.bSuccess = false>
+			</cfif>
+
+			<cfset dCopy(source="#sourceDirectory#", destination="#destinationDirectory#", ignore="") />
+
+			<cfset arguments.stInstaller = getInstallerSettings()>
+			<cfset arguments.stInstaller.selectedProject = selectedProject>
+			<cfset arguments.stInstaller.installFrom = "projects">
+			<cfset arguments.stConstructor = getConstructorSettings(stInstaller)>
+
+			<cfset stResult.stInstaller = arguments.stInstaller>
+			<cfset stResult.stConstructor = arguments.stConstructor>
+
 		</cfif>
 
-		<!--- TODO: rename project, resolve renme permission issues (IIS and advanced install is problematic) --->
-<!---
- 		<cfif listLast(arguments.stInstaller.projectPath, "/") neq arguments.stConstructor.projectDirectoryName>
-			<cfdirectory action="rename" directory="#arguments.stInstaller.projectPath#" newDirectory="#stConstructor.projectDirectoryName#">
+
+		<cfif stResult.bSuccess>
+
+			<!--- update the constructor --->
+			<cfset updateConstructor(stInstaller)>
+
+			<!--- for webroot installs move the www folder contents into the webroot --->
+			<cfif arguments.stInstaller.installType eq "webroot">
+				<cfdirectory name="qWebroot" action="list" directory="#destinationDirectory#/www">
+				<cfloop query="qWebroot">
+					<cfif qWebroot.type eq "file">
+						<cffile action="copy" source="#qWebroot.directory#/#qWebroot.name#" destination="#expandPath('/')#">
+					<cfelseif qWebroot.type eq "dir">
+						<cfset dCopy(source="#qWebroot.directory#/#qWebroot.name#", destination="#expandPath('/')#/#qWebroot.name#", ignore="") />
+					</cfif>
+				</cfloop>
+
+				<cftry>
+					<cfdirectory name="qDelete" action="delete" directory="#destinationDirectory#/www" recurse="true">
+					<cfcatch>
+					</cfcatch>
+				</cftry>
+			</cfif>
+
 		</cfif>
- --->
+
 	</cfoutput>
 	</cfsavecontent>
 
