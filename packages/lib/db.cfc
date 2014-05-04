@@ -136,7 +136,7 @@
 			</cfif>
 		<cfelse>
 			<cfset this.tablemetadata[arguments.typename] = parseComponentMetadata(md=getMetadata(createobject("component",arguments.typename))) />
-			<cfset this.tablemetadata[listlast(arguments.typename,'.')] = parseComponentMetadata(md=getMetadata(createobject("component",arguments.typename))) />
+			<cfset this.tablemetadata[listlast(arguments.typename,'.')] = duplicate(this.tablemetadata[arguments.typename]) />
 		</cfif>
 		
 		<cfset variables.tables[this.tablemetadata[arguments.typename].tablename] = arguments.typename />
