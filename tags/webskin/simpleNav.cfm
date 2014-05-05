@@ -100,7 +100,9 @@
 
 		<!--- output closing nested tag for the last item --->
 		<cfif qNav.recordCount gt qNav.currentRow AND qNav.nlevel[qNav.currentRow+1] lt qNav.nlevel[qNav.currentRow]>
-			<cfoutput></#attributes.tag#></cfoutput>		
+			<cfloop from="1" to="#qNav.nlevel[qNav.currentRow] - qNav.nlevel[qNav.currentRow+1]#" index="nestedCount">
+				<cfoutput>#attributes.itemMarkupEnd#</#attributes.itemTag#></#attributes.tag#>#attributes.itemMarkupEnd#</#attributes.itemTag#></cfoutput>
+			</cfloop>
 		<!--- output opening nested tag for children items --->
 		<cfelseif hasChildren>
 			<cfoutput><#attributes.tag#></cfoutput>		
@@ -109,6 +111,11 @@
 			<cfoutput>#attributes.itemMarkupEnd#</#attributes.itemTag#></cfoutput>
 		</cfif>
 
+	</cfloop>
+
+	<!--- close nested containers --->
+	<cfloop from="1" to="#qNav.nlevel[qNav.recordCount] - qNav.nlevel[1]#" index="nestedCount">
+		<cfoutput></#attributes.tag#>#attributes.itemMarkupEnd#</#attributes.itemTag#></cfoutput>
 	</cfloop>
 
 	<!--- close nav container --->
