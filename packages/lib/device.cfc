@@ -109,8 +109,11 @@
 	 --->
 	<cffunction name="getDeviceType" access="public" output="false" returntype="string" hint="Returns the device type string" bDocument="true">
 
+		<cfset var stAttributes = structNew()>
+		<cfset stAttributes.httpOnly = false>
+
 		<cfif NOT structKeyExists(cookie, "FARCRYDEVICETYPE")>
-			<cfcookie name="FARCRYDEVICETYPE" value="#getUserAgentDeviceType()#" httpOnly="false">
+			<cfcookie name="FARCRYDEVICETYPE" value="#getUserAgentDeviceType()#" attributeCollection="#stAttributes#">
 		</cfif>
 
 		<cfreturn cookie.FARCRYDEVICETYPE>
@@ -161,7 +164,10 @@
 	<cffunction name="setDeviceType" access="public" output="false" hint="Sets the device type string" bDocument="true">
 		<cfargument name="deviceType" type="string" required="true">
 
-		<cfcookie name="FARCRYDEVICETYPE" value="#arguments.deviceType#" httpOnly="false">
+		<cfset var stAttributes = structNew()>
+		<cfset stAttributes.httpOnly = false>
+
+		<cfcookie name="FARCRYDEVICETYPE" value="#arguments.deviceType#" attributeCollection="#stAttributes#">
 
 	</cffunction>
 
