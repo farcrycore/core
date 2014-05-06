@@ -5,23 +5,20 @@ FarCry Core is a web application framework based on the ColdFusion language (sup
 
 It's the ideal platform for building bespoke or tailor made online publishing solutions.
 
-## Current Status
+## Installation
 
-**FarCry 6.3.x** (codename: Seedy Nelly) is the latest stable branch of FarCry. You can [download a distribution from the main website](http://farcrycore.org/download).
+Download the latest community build or get a "ready-to-go" express version for a demo:
 
-[Installation help](https://farcry.jira.com/wiki/display/FCDEV60/FarCry+6.x+Installation) available in the WIKI but the distro installer is pretty straight forward.
+<http://www.farcrycore.org/downloads>
 
-**FarCry 7.0.x** (codename: Shiny) is currently in development and due for release November 2013. You can get it by forking and checking out **trunk**.
-
-Maybe talk to us on [HipChat](https://www.hipchat.com/g2S67NG0h) or [farcry-dev](https://groups.google.com/forum/#!forum/farcry-dev) if you are getting going with bleeding edge for the first time.
+[FarCry 7 Installation Guide](http://discourse.farcrycore.org/t/farcry-7-installation-guide/119) is available on the forum, as is general [support for all manner of hosting and deployment](http://discourse.farcrycore.org/category/support) configurations.
 
 ## Places to go
 
 ### Community
 
 - [FarCry Core Website](http://www.farcrycore.org)
-- [farcry-dev Google Group](https://groups.google.com/forum/#!forum/farcry-dev)
-- [HipChat Room like IRC](https://www.hipchat.com/g2S67NG0h)
+- [FarCry Dev Support Forum](http://discourse.farcrycore.org/)
 - [Google+ Community](https://plus.google.com/communities/107650642291146266954)
 - [FarCry Documentation WIKI](https://farcry.jira.com/wiki/display/FCDEV60/Home)
 - [FarCry Committers Blog](http://blog.farcrycore.org)
@@ -30,7 +27,7 @@ Maybe talk to us on [HipChat](https://www.hipchat.com/g2S67NG0h) or [farcry-dev]
 ### Code
 - [farcrycore Github](https://github.com/farcrycore)
 - [FarCry Component/Tag Documentation](http://docs.farcrycore.org)
-- [FarCry Plugin Directory](http://plugins.farcrycore.org)
+- [FarCry Plugin Directory](http://discourse.farcrycore.org/category/plugins) (currently being migrated from [The Old Plugin Directory](http://plugins.farcrycore.org))
 - [FarCry Bug Database](https://farcry.jira.com)
 
 
