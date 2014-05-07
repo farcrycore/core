@@ -1,5 +1,5 @@
 <cfcomponent 
-	displayname="Farcry Workflow Instance" 
+	displayname="FarCry Workflow Instance" 
 	extends="types" output="false" 
 	hint="Workflow instance contains details of the work to be performed" 
 	fuAlias="fc-workflow" bSystem="true"

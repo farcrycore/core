@@ -1,5 +1,5 @@
 <cfcomponent 
-	displayname="Farcry Task Definition" 
+	displayname="FarCry Task Definition" 
 	extends="types" output="false"
 	hint="Task definitions are used as template to create task instances" 
 	fuAlias="fc-task-def" bSystem="true"

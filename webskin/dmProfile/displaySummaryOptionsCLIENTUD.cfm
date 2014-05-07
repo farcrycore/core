@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Summary options (CLIENTUD) --->
-<!--- @@description: Farcry UD specific options --->
+<!--- @@description: FarCry UD specific options --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />

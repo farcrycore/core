@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@displayname: Farcry UD login form --->
+<!--- @@displayname: FarCry UD login form --->
 <!--- @@description:   --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 

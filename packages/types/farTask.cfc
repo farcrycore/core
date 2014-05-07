@@ -1,5 +1,5 @@
 <cfcomponent 
-	displayname="Farcry Task Instance" 
+	displayname="FarCry Task Instance" 
 	extends="types" output="false" 
 	hint="Task instance used to keep track of work to be done in a workflow." 
 	fuAlias="fc-task" bSystem="true"

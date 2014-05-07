@@ -18,7 +18,7 @@
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
 <cfcomponent 
 	extends="types" displayname="FarCry User" 
-	hint="User model for the Farcry User Directory." output="false" 
+	hint="User model for the FarCry User Directory." output="false" 
 	fuAlias="user" bSystem="true" ud="CLIENTUD">
 
 	<cfproperty name="userid" type="string" default="" 

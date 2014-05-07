@@ -30,8 +30,8 @@
 	<cfoutput>
 		<h3>#application.rb.getResource("coapi.bulkFileUpload.labels.instructions@text","Instructions:")#</h3>
 		<admin:resource key="coapi.bulkFileUpload.messages.uploadfileblurb@text">
-			<p>This utility will quickly upload multiple files into Farcry</p>
-			<p>You will need to supply a .zip file that contains the files to be uploaded. Files and Directories contained in the .zip file will be recreated within Farcry under the selected node.</p>
+			<p>This utility will quickly upload multiple files into FarCry</p>
+			<p>You will need to supply a .zip file that contains the files to be uploaded. Files and Directories contained in the .zip file will be recreated within FarCry under the selected node.</p>
 		</admin:resource>
 	</cfoutput>
 	
