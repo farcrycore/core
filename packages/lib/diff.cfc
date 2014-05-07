@@ -274,11 +274,19 @@
 					<cfset stResult.leftHighlighted = "" />
 					<cfloop from="1" to="#arraylen(stResult.left)#" index="i">
 						<cfset stTemp = application.fapi.getContentObject(objectid=stResult.left[i]) />
+						<cfif structIsEmpty(stTemp)>
+							<cfset stTemp.label = "(Object No Longer Exists)">
+							<cfset stTemp.typename = "farCOAPI">
+						</cfif>
 						<cfset stResult.leftHighlighted = stResult.leftHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 					</cfloop>
 					<cfset stResult.rightHighlighted = "" />
 					<cfloop from="1" to="#arraylen(stResult.right)#" index="i">
 						<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right[i]) />
+						<cfif structIsEmpty(stTemp)>
+							<cfset stTemp.label = "(Object No Longer Exists)">
+							<cfset stTemp.typename = "farCOAPI">
+						</cfif>
 						<cfset stResult.rightHighlighted = stResult.rightHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 					</cfloop>
 					<cfset stResult.different = (stResult.leftHighlighted neq stResult.rightHighlighted) />
