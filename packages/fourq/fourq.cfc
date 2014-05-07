@@ -1010,9 +1010,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 							<cfset stRelated.objectid = stObject[thisfield][i] />
 							<cfset stRelated.typename = application.fapi.findType(stObject[thisfield][i]) />
 							
-							<!--- We're only interested in content with status --->
-							<cfif structkeyexists(application.stCOAPI[stRelated.typename].stProps,"status")>
-								<cfset arrayappend(aRelated,stRelated) />
+							<cfif len(stRelated.typename)>
+								<!--- We're only interested in content with status --->
+								<cfif structkeyexists(application.stCOAPI[stRelated.typename].stProps,"status")>
+									<cfset arrayappend(aRelated,stRelated) />
+								</cfif>
 							</cfif>
 						</cfloop>
 						
@@ -1026,9 +1028,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						<cfset stRelated.objectid = stObject[thisfield] />
 						<cfset stRelated.typename = application.fapi.findType(stObject[thisfield]) />
 						
-						<!--- We're only interested in content with status --->
-						<cfif structkeyexists(application.stCOAPI[stRelated.typename].stProps,"status")>
-							<cfset arrayappend(aRelated,stRelated) />
+						<cfif len(stRelated.typename)>
+							<!--- We're only interested in content with status --->
+							<cfif structkeyexists(application.stCOAPI[stRelated.typename].stProps,"status")>
+								<cfset arrayappend(aRelated,stRelated) />
+							</cfif>
 						</cfif>
 						
 					</cfif>
