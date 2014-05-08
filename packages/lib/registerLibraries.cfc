@@ -27,9 +27,9 @@
 							lFiles="jquery-1.9.1.min.js,noconflict.js" />
 		<skin:registerJS 	id="jquery" aliasof="fc-jquery" core="false" />
 			
-		<skin:registerJS 	id="fc-jquery-ui" core="true"
+		<skin:registerJS 	id="fc-jquery-ui" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-ui-1.10.3.custom.min.js" bCombine="false" />
+							lFiles="jquery-ui-1.10.3.custom.min.js" />
 		<skin:registerJS 	id="jquery-ui" aliasof="fc-jquery-ui" core="false" bCombine="false" />
 		
 		<skin:registerJS 	id="fc-underscore" core="true"
@@ -222,24 +222,21 @@
 							baseHREF="#application.url.webtop#/css"
 							lFiles="login7.css" />
 							
-		<skin:registerCSS	id="fc-bootstrap"
+		<skin:registerCSS	id="fc-bootstrap" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap"
-							lFiles="bootstrap.min.css"
-							bCombined="false" />
+							lFiles="bootstrap.min.css" />
 
-		<skin:registerCSS	id="fc-bootstrap-tray"
+		<skin:registerCSS	id="fc-bootstrap-tray" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap-tray"
-							lFiles="bootstrap.css"
-							bCombined="false" />
+							lFiles="bootstrap.css" />
 
 		<skin:registerCSS	id="bootstrap-datepicker"
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap-datepicker"
 							lFiles="bootstrap-datepicker.css" />
 		
-		<skin:registerCSS	id="fc-uniform"
+		<skin:registerCSS	id="fc-uniform" bCombine="false"
 							baseHREF="#application.url.webtop#"
-							lFiles="/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css"
-							bCombined="false" />
+							lFiles="/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css" />
 							
 		<skin:registerCSS	id="fc-fontawesome" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/font-awesome-4.0.0/css"
