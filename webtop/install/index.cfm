@@ -987,7 +987,7 @@ $(function(){
 		<cfquery datasource="#form.dsn#">
 			UPDATE #form.dbowner#farUser
 			SET
-				password = <cfqueryparam cfsqltype="cf_sql_varchar" value="farcry">
+				password = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.farcryUserPassword#">
 			WHERE
 				userid = <cfqueryparam cfsqltype="cf_sql_varchar" value="farcry">
 		</cfquery>
