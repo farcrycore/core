@@ -52,7 +52,7 @@
 
 <cfparam name="attributes.title" default="" type="string">
 <cfif not len(attributes.title)>
-	<cfset attributes.title = application.rb.getResource("coapi.#attributes.typename#.headings.typeadministration@text", "{1} Administration")>
+	<cfset attributes.title = application.rb.getResource("coapi.#attributes.typename#.headings.typeadministration@text", application.rb.getResource("objectadmin.general.headings.typeadministration@text", "{1} Administration"))>
 </cfif>
 
 <cfparam name="attributes.ColumnList" default="" type="string">
@@ -456,7 +456,7 @@
 	<ft:processForm action="add">
 		<skin:onReady>
 			<cfoutput>
-				$fc.objectAdminAction('Administration', '#addURL#');
+				$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#addURL#');
 			</cfoutput>
 		</skin:onReady>
 	</ft:processForm>
@@ -466,7 +466,7 @@
 		<skin:onReady>
 			<cfoutput>
 				<cfif structkeyexists(form,"objectid")>
-					$fc.objectAdminAction('Administration', '#copyURL#');
+					$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#copyURL#');
 				<cfelse>
 					<cfset message_error = "No Objects Selected">
 				</cfif>	
@@ -479,7 +479,7 @@
 		<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module##pluginURL#">
 		<skin:onReady>
 			<cfoutput>
-				$fc.objectAdminAction('Administration', '#overviewURL#');
+				$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#overviewURL#');
 			</cfoutput>
 		</skin:onReady>
 	</ft:processForm>
@@ -487,7 +487,7 @@
 	<ft:processForm action="edit">
 		<skin:onReady>
 			<cfoutput>
-				$fc.objectAdminAction('Administration', '#EditURL#');
+				$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#EditURL#');
 			</cfoutput>
 		</skin:onReady>
 	</ft:processForm>
@@ -526,7 +526,7 @@
 		<skin:onReady>
 			<cfoutput>
 				<cfif structkeyexists(form,"objectid")>
-					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');.
+					$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');.
 				<cfelse>
 					<cfset message_error = "No Objects Selected">	
 				</cfif>
@@ -539,7 +539,7 @@
 		<skin:onReady>
 			<cfoutput>
 				<cfif structkeyexists(form,"objectid")>
-					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved');
+					$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved');
 				<cfelse>
 					<cfset message_error = "No Objects Selected">	
 				</cfif>
@@ -557,7 +557,7 @@
 		<cfif structkeyexists(form,"objectid")>
 			<skin:onReady>
 				<cfoutput>
-					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft');
+					$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft');
 				</cfoutput>
 			</skin:onReady>
 		<cfelse>
@@ -719,7 +719,7 @@
 		<cfoutput>
 			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2"  data-intro="Perform complex searches with advanced filtering options" data-position="left">
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
-					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="fa fa-filter only-icon"></b></button>
+					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="#application.rb.getResource('objectadmin.filtering.heading@title','Advanced Filtering')#"><b class="fa fa-filter only-icon"></b></button>
 				</cfif>
 				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="#application.rb.getResource('objectadmin.filtering.search@placeholder','Search...')#" value="#form.q#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
 				<cfif len(form.q)>
@@ -1251,7 +1251,7 @@
 		
 		
 			<cfif attributes.bViewCol>	
-				<ft:button value="Overview" text="" title="Open up the overview screen for this object" icon="fa fa-th" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+				<ft:button value="Overview" text="" title="Open up the overview screen for this object" icon="fa fa-th" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#overviewURL#&objectid=#arguments.st.objectid#');" />
 			</cfif>
 			<cfif attributes.bEditCol>
 		
@@ -1263,21 +1263,21 @@
 						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 								
-									<ft:button value="Create Draft Object" text="Edit" title="Create a draft version of this object and begin editing" icon="fa fa-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Create Draft Object" text="Edit" title="Create a draft version of this object and begin editing" icon="fa fa-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 								
 							<cfelseif arguments.st.bHasMultipleVersion>
 								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
 								
-									<ft:button value="Edit Draft" text="Edit" title="Edit the draft version of this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit Draft" text="Edit" title="Edit the draft version of this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 											
 							<cfelse>
 								
-									<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
 									
 							</cfif>
 						<cfelse>
 							
-								<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+								<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
 							
 						</cfif>
 					</cfif>
