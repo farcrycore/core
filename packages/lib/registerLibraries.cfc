@@ -1,4 +1,4 @@
-<cfcomponent displayname="Third Parth Library Registration" 
+﻿<cfcomponent displayname="Third Parth Library Registration" 
 	hint="allows for the registration and loading of third party js and css libraries" output="No">
 
 
@@ -163,7 +163,7 @@
 
 		<skin:registerJS	id="fc-moment" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/moment-2.4.0" 
-							lFiles="moment.js" />
+							lFiles="moment-with-langs.js" />
 
 		<skin:registerJS	id="fc-chardin" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/chardin" 
