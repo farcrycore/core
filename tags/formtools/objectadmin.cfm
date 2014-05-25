@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="yes">
+﻿<cfsetting enablecfoutputonly="yes">
 <!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -698,7 +698,7 @@
 			<cfoutput>
 			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>clear:both;">
 				<grid:div class="fc-shadowbox" style="width:730px;">
-					<h3>Advanced Filtering</h3>
+					<h3>#application.rb.getResource('objectadmin.filtering.heading@title','Advanced Filtering')#</h3>
 					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
 					
 					<ft:buttonPanel style="margin-bottom:0px;">
@@ -721,7 +721,7 @@
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="fa fa-filter only-icon"></b></button>
 				</cfif>
-				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
+				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="#application.rb.getResource('objectadmin.filtering.search@placeholder','Search...')#" value="#form.q#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
 				<cfif len(form.q)>
 					<button type="button" class="btn" onclick="$j('##farcry-objectadmin-q').val(''); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
 				</cfif>
@@ -918,7 +918,7 @@
 									<th class="#sortableClass#" data-field="#i#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
 									<span>
 										<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-											#o.getI18Property(i,"label")#
+											#application.rb.getResource("objectadmin.columns.#rereplace(i,'[^\w\d]','','ALL')#@heading", o.getI18Property(i,"label"))#
 										<cfelse>
 											#i#
 										</cfif>
