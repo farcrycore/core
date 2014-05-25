@@ -57,6 +57,7 @@
 
 			/* live pretty dates */
 			if (typeof moment != "undefined") {
+				moment.lang(['#session.dmProfile.locale#', 'en']);
 				moment.langData("en")._relativeTime.s = "moments";
 				function livePrettyDate(){
 					$j(".fc-prettydate").each(function(){
