@@ -457,7 +457,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 			<!--- DON'T CACHE IN SITUATIONS WHERE THE CONTENT IS NOT FOR PUBLIC CONSUMPTION --->
-		<cfif structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
+		<cfif (isdefined("application.fc.lib.objectbroker.isCacheable") AND not application.fc.lib.objectbroker.isCacheable(arguments.stobj.typename,arguments.webskinTemplate,"write")) 
+			OR (not isdefined("application.fc.lib.objectbroker.isCacheable") AND structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)))>
 		<cfelse>
 			<cfif arrayLen(request.aAncestorWebskins)>
 				
