@@ -45,9 +45,9 @@
 <cfoutput><h1>Repair refObjects Table</h1></cfoutput>
 <ft:form>
 	<ft:object typename="fixRefObjects" />
-	<ft:buttonpanel>
+	<ft:buttonPanel>
 		<ft:button value="Repair Table" textOnSubmit="Fixing..." priority="primary" />
-	</ft:buttonpanel>
+	</ft:buttonPanel>
 </ft:form>
 
 
