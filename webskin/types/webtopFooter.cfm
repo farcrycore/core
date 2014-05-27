@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+﻿<cfsetting enablecfoutputonly="true">
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 

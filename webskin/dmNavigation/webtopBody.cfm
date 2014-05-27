@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+﻿<cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Site Tree Webtop Body --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
@@ -547,7 +547,7 @@ alert(response.message);
 					}
 
 
-					$fc.objectAdminAction('Overview', overviewURL, { 
+					$fc.objectAdminAction('#application.rb.getResource("webtop.home.overview@label", "Overview")#', overviewURL, { 
 						onHidden: function(){ 
 							self.reloadTreeBranch(reloadid);
 						} 
