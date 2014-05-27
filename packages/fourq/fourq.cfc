@@ -454,40 +454,42 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 			<!--- DON'T CACHE IN SITUATIONS WHERE THE CONTENT IS NOT FOR PUBLIC CONSUMPTION --->
-		<cfif structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
+		<cfif (isdefined("application.fc.lib.objectbroker.isCacheable") AND not application.fc.lib.objectbroker.isCacheable(arguments.stobj.typename,arguments.webskinTemplate,"write")) 
+			OR (not isdefined("application.fc.lib.objectbroker.isCacheable") AND structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)))>
+
 		<cfelse>
 			<cfif arrayLen(request.aAncestorWebskins)>
 				
 				<!--- ONLY KEEP TRACK OF THE ANCESTRY IF SET TO FLUSHONOBJECTCHANGE OR TYPEWATCH --->
 				<cfif stCurrentView.cacheFlushOnObjectChange or len(stCurrentView.cacheTypeWatch)>
 				
-				<!--- 
-				Loop through ancestors to determine whether to add to dmWebskinAncestor Table
-				Only webskins that are cached are added to the table.
-				 --->
-				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+					<!--- 
+					Loop through ancestors to determine whether to add to dmWebskinAncestor Table
+					Only webskins that are cached are added to the table.
+					 --->
+					<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 					
-					<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
-					<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
-						<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
+						<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
+						<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
+							<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
 								
-							<cfset stArgs = structnew() />
-						
-							<cfset stArgs.webskinObjectID = arguments.stobj.objectid />
+								<cfset stArgs = structnew() />
+							
+								<cfset stArgs.webskinObjectID = arguments.stobj.objectid />
 								<cfset stArgs.webskinTypename = arguments.webskinTypename />
 								<cfset stArgs.webskinRefTypename = arguments.stobj.typename />
 								<cfset stArgs.webskinTemplate = arguments.webskinTemplate />
 								<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
 								<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
 								<cfset stArgs.ancestorRefTypename = request.aAncestorWebskins[i].refTypename />
-							<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
+								<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
 						
 								<cfset application.fapi.getContentType("dmWebskinAncestor").checkAncestorExists(argumentCollection=stArgs) />
 							
 								</cfif>
 							</cfif>
 					</cfloop>
-						</cfif>
+				</cfif>
 					
 				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">	
 					<!--- If this webskin is to never cache, make sure all ancestors also never cache --->
