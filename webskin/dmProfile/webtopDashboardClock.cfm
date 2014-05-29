@@ -48,7 +48,12 @@
 		var updateClock = function() {
 			moment.lang(['#session.dmProfile.locale#', 'en']);
 			$j("##fc-clock-day").html(moment().format("dddd"));
-			$j("##fc-clock-time").html(moment().startOf("minute").format("h:mm"));
+			<cfif b12Hour>
+				$j("##fc-clock-time").html(moment().startOf("minute").format("h:mm"));
+			<cfelse>
+				$j("##fc-clock-time").html(moment().startOf("minute").format("HH:mm"));
+			</cfif>
+			
 			$j("##fc-clock-ampm").html(moment().format("A"));
 			$j("##fc-clock-date").html(moment().format("D MMMM YYYY"));
 			setTimeout(updateClock, nextMinute());
