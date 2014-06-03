@@ -143,7 +143,7 @@
 	</cffunction>	
 
 
-	<cffunction name="youtube" access="public" output="false" returntype="string" hint="Parses out youtube links and replaces them with embeds">
+	<cffunction name="youtube" access="public" output="false" returntype="string" postprocesser="true" hint="Parses out youtube links and replaces them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		<cfargument name="width" type="numeric" required="false" default="560" />
 		<cfargument name="height" type="numeric" required="false" default="315" />
@@ -173,7 +173,7 @@
 	</cffunction>
 
 
-	<cffunction name="vimeo" access="public" output="false" returntype="string" hint="Parses out vimeo links and replaces them with embeds">
+	<cffunction name="vimeo" access="public" output="false" returntype="string" postprocesser="true" hint="Parses out vimeo links and replaces them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		<cfargument name="width" type="numeric" required="false" default="500" />
 		<cfargument name="height" type="numeric" required="false" default="281" />
@@ -190,7 +190,7 @@
 	</cffunction>
 
 
-	<cffunction name="twitter" access="public" output="false" returntype="string" hint="Parses out twitter status links and uses the twitter api to replace them with embeds">
+	<cffunction name="twitter" access="public" output="false" returntype="string" postprocesser="true" hint="Parses out twitter status links and uses the twitter api to replace them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		
 		<cfset var aMatches = "" />
@@ -223,7 +223,7 @@
 	</cffunction>
 
 
-	<cffunction name="gist" access="public" output="false" returntype="string" hint="Parses out gist links and replaces them with embeds">
+	<cffunction name="gist" access="public" output="false" returntype="string" postprocesser="true" hint="Parses out gist links and replaces them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		
 		<cfset var replacement = '<script src="$2.js"> </script>' />
@@ -237,7 +237,7 @@
 	</cffunction>
 
 
-	<cffunction name="vine" access="public" output="false" returntype="string" hint="Parses out vine links and replaces them with embeds">
+	<cffunction name="vine" access="public" output="false" returntype="string" postprocesser="true" hint="Parses out vine links and replaces them with embeds">
 		<cfargument name="input" type="string" required="true" />
 		<cfargument name="width" type="numeric" required="false" default="500" />
 		<!--- <cfargument name="height" type="numeric" required="false" default="500" /> --->
@@ -262,6 +262,55 @@
 	</cffunction>
 
 
+	<cffunction name="polldaddy" access="public" output="false" returntype="string" postprocesser="true" hint="Inserts PollDaddy embed">
+		<cfargument name="input" type="string" required="true">
+
+		<!--- POLL: http://polldaddy.com/poll/8096287/ --->
+		<cfset var match1 = "http:\/\/polldaddy\.com\/poll\/(\d+)+\/" />
+		<cfset var replacement1 = '<script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/$2.js"></script><noscript><a href="http://polldaddy.com/poll/$2/">Take poll</a></noscript>' />
+
+		<!--- SURVEY: http://blairdaemon.polldaddy.com/s/flang --->
+		<!--- QUIZ: http://blairdaemon.polldaddy.com/s/guess --->
+		<cfset var match2 = "http:\/\/([^\/]+\.polldaddy\.com\/s\/)([^\/]+)" />
+		<cfset var replacement2 = "" />
+		<cfset var tmpid = "pd" />
+
+		<cfsavecontent variable="replacement2"><cfoutput>
+			<div class="pd-embed" id="#tmpid#_$3"></div>
+			<script type="text/javascript">
+			  var _polldaddy = [] || _polldaddy;
+
+			  _polldaddy.push( {
+			    type: "iframe",
+			    auto: "1",
+			    domain: "$2",
+			    id: "$3",
+			    placeholder: "#tmpid#_$3"
+			  } );
+
+			  (function(d,c,j){if(!document.getElementById(j)){var pd=d.createElement(c),s;pd.id=j;pd.src='http://i0.poll.fm/survey.js';s=document.getElementsByTagName(c)[0];s.parentNode.insertBefore(pd,s);}}(document,'script','pd-embed'));
+			</script>
+		</cfoutput></cfsavecontent>
+
+		<cfset arguments.input = regexLineReplace(arguments.input, match1, replacement1) />
+		<cfset arguments.input = regexLineReplace(arguments.input, match2, replacement2) />
+
+		<cfreturn arguments.input />
+	</cffunction>
+
+
+	<cffunction name="storify" access="public" output="false" returntype="string" postprocesser="true" hint="Embed Storify articles">
+		<cfargument name="input" type="string" required="true" />
+
+		<!--- https://storify.com/blair123/vermicious-knids --->
+		<cfset var match1 = "https?:(\/\/storify\.com\/[^\/]+\/[^\/]+)" />
+		<cfset var replacement1 = '<div class="storify"><iframe src="$2/embed?border=false" width="100%" height=750 frameborder=no allowtransparency=true></iframe><script src="$2.js?border=false"></script><noscript>[<a href="$2" target="_blank">View the story on Storify</a>]</noscript></div>' />
+
+		<cfset arguments.input = regexLineReplace(arguments.input, match1, replacement1) />
+
+		<cfreturn arguments.input />
+	</cffunction>
+
 
 	<cffunction name="removewhitespace" access="public" output="false" returntype="string" hint="Replace all consecutive spaces with one space">
 		<cfargument name="input" type="string" required="true" />
@@ -284,7 +333,7 @@
 		<cfreturn arguments.input />
 	</cffunction>
 
-	<cffunction name="rewriteImages" access="public" output="false" returntype="string" hint="Updates /images src and links to point to the CDN URLs">
+	<cffunction name="rewriteImages" access="public" output="false" returntype="string" postprocesser="true" hint="Updates /images src and links to point to the CDN URLs">
 		<cfargument name="input" type="string" required="true" />
 		
 		<cfset var st = structnew() />
