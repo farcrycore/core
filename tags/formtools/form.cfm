@@ -265,7 +265,7 @@ It just ignores the inner ones.
 			<cfif len(Request.farcryForm.defaultAction)>
 				$j('###attributes.Name# input,select').on("keypress",function(e){
 				if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-					$j('button[value=#replace(replacelist(Request.farcryForm.defaultAction,"\,!,"",##,$,%,&,',(,),*,+,.,/,:,;,<,=,>,?,@,[,],^,`,{,|,},~","\\\,\\!,\\"",\\##,\\$,\\%,\\&,\\',\\(,\\),\\*,\\+,\\.,\\/,\\:,\\;,\\<,\\=,\\>,\\?,\\@,\\[,\\],\\^,\\`,\\{,\\|,\\},\\~"), ",", "\\,", "ALL")#]').click();
+					$j('button[value="#replace(replacelist(Request.farcryForm.defaultAction,"\,!,"",##,$,%,&,',(,),*,+,.,/,:,;,<,=,>,?,@,[,],^,`,{,|,},~","\\\,\\!,\\"",\\##,\\$,\\%,\\&,\\',\\(,\\),\\*,\\+,\\.,\\/,\\:,\\;,\\<,\\=,\\>,\\?,\\@,\\[,\\],\\^,\\`,\\{,\\|,\\},\\~"), ",", "\\,", "ALL")#"]').click();
 					return false;
 				} else {
 					return true;
