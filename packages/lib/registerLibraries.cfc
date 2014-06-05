@@ -1,4 +1,4 @@
-﻿<cfcomponent displayname="Third Parth Library Registration" 
+﻿<cfcomponent displayname="Third Party Library Registration" 
 	hint="allows for the registration and loading of third party js and css libraries" output="No">
 
 
