@@ -86,10 +86,10 @@
 </cfif>
 
 <!--- navigation type --->
-<cfset navTitle = "Site Navigation">
+<cfset navTitle = application.rb.getResource("webtop.sitenavigation@label", "Site Navigation") />
 <!--- TODO: built-in "navigation types" with separate menu items? testing changing the page heading... --->
 <cfif listLast(url.id, ".") eq "utility">
-	<cfset navTitle = "Utility Navigation">
+	<cfset navTitle = application.rb.getResource("webtop.utilitynavigation@label", "Utility Navigation") />
 </cfif>
 
 
@@ -131,16 +131,16 @@
 	<h1><i class="fa fa-sitemap"></i> #navTitle#</h1>
 
 	<div class="farcry-button-bar btn-group pull-left" style="margin-bottom: 5px">
-		<button class="btn btn-primary fc-btn-addpage" type="button"><i class="fa fa-plus"></i> Add Page</button>
+		<button class="btn btn-primary fc-btn-addpage" type="button"><i class="fa fa-plus"></i> #application.rb.getResource('objectadmin.buttons.addpage@label', 'Add Page')#</button>
 		<!--- <button class="btn" type="button"><i class="fa fa-level-up"></i> Up a Level</button> --->
 		<!--- <button class="btn" type="button"><i class="fa fa-reorder"></i> Sort Order</button> --->
 
 		<!--- <ft:button text="Delete" value="delete" title="Delete" icon="fa fa-trash" rbkey="objectadmin.buttons.delete" confirmText="Are you sure you want to delete the selected content item(s)?" /> --->
 
 		<div class="btn-group">
-			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button">More &nbsp;<i class="fa fa-caret-down"></i></button>
+			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button">#application.rb.getResource("objectadmin.buttons.more@label", "More")# &nbsp;<i class="fa fa-caret-down"></i></button>
 			<ul class="dropdown-menu">
-				<li><a href="##" class="fc-btn-undelete" onclick="$fc.objectAdminAction('Undelete', '#application.url.webtop#/index.cfm?typename=dmArchive&view=webtopPageModal&bodyView=webtopBody&archivetype=dmNavigation'); return false;"><i class="fa fa-undo fa-fw"></i> Undelete</a></li>
+				<li><a href="##" class="fc-btn-undelete" onclick="$fc.objectAdminAction('Undelete', '#application.url.webtop#/index.cfm?typename=dmArchive&view=webtopPageModal&bodyView=webtopBody&archivetype=dmNavigation'); return false;"><i class="fa fa-undo fa-fw"></i> #application.rb.getResource("objectadmin.buttons.undelete@label", "Undelete")#</a></li>
 			</ul>
 		</div>
 
@@ -159,11 +159,11 @@
 	<thead>
 		<tr>
 			<th class="fc-col-min fc-hidden-compact"></th>
-			<th class="fc-col-actions">Actions</th>
-			<th>Title</th>
+			<th class="fc-col-actions">#application.rb.getResource("objectadmin.columns.action@label", "Actions")#</th>
+			<th>#application.rb.getResource("objectadmin.columns.label@heading", "Title")#</th>
 			<th class="fc-visible-compact">URL</th>
-			<th class="fc-col-status fc-hidden-compact">Status</th>
-			<th class="fc-col-date fc-hidden-compact">Last Updated</th>
+			<th class="fc-col-status fc-hidden-compact">#application.rb.getResource("objectadmin.columns.status@heading", "Status")#</th>
+			<th class="fc-col-date fc-hidden-compact">#application.rb.getResource("objectadmin.columns.datetimelastupdated@heading", "Last Updated")#</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -592,7 +592,7 @@ alert(response.message);
 					var objectid = clickedRow.data("objectid");
 					var createURL = clickedRow.data("createurl");
 
-					$fc.objectAdminAction('Add Page', createURL, { 
+					$fc.objectAdminAction('#application.rb.getResource('objectadmin.buttons.addpage@label', 'Add Page')#', createURL, { 
 						onHidden: function(){ 
 							self.reloadTreeBranch(objectid);
 						} 
@@ -1327,7 +1327,7 @@ alert(response.message);
 					var dropdown = "";
 					if (row["nodetype"] == "folder") {
 						dropdown = 
-								'<li><a class="fc-add"><i class="fa fa-plus fa-fw"></i> Add Page</a></li> '
+								'<li><a class="fc-add"><i class="fa fa-plus fa-fw"></i> #application.rb.getResource('objectadmin.buttons.addpage@label', 'Add Page')#</a></li> '
 							+	'<li><a class="fc-zoom"><i class="fa fa-search-plus fa-fw"></i> Zoom</a></li> '
 							+	'<li class="dropdown-submenu"><a class=""><i class="fa fa-fw"></i> Status</a><ul class="dropdown-menu"> '
 							+		'<li><a class="fc-changestatus" data-status="approve">Approve</a></li> '
@@ -1380,13 +1380,13 @@ alert(response.message);
 						colActions = ''
 							+	'<td class="objectadmin-actions"> '
 							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" title="" type="button" data-original-title="Object Overview"><i class="fa fa-th only-icon"></i></button> '
-							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button"><i class="fa fa-pencil"></i> Edit</button> '
+							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button"><i class="fa fa-pencil"></i> #application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#</button> '
 							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="Preview"><i class="fa fa-eye only-icon"></i></a> '
 							+		'<div class="btn-group"> '
 							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="fa fa-caret-down only-icon"></i></button> '
 							+			'<div class="dropdown-menu"> '
 							+				'<li class="fc-visible-compact"><a class="fc-btn-overview"><i class="fa fa-th fa-fw"></i> Overview</a></li> '
-							+				'<li class="fc-visible-compact"><a class="fc-btn-edit"><i class="fa fa-pencil fa-fw"></i> Edit</a></li> '
+							+				'<li class="fc-visible-compact"><a class="fc-btn-edit"><i class="fa fa-pencil fa-fw"></i> #application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#</a></li> '
 							+				'<li class="fc-visible-compact"><a class="fc-btn-preview"><i class="fa fa-eye fa-fw"></i> Preview</a></li> '
 							+				'<li class="divider fc-visible-compact"></li> '
 							+       		dropdown
@@ -1461,14 +1461,14 @@ alert(response.message);
 					addPageDialogView = new TreeDialogView({
 						action: function(sourceObjectID, targetObjectID){
 							var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + targetObjectID;
-							$fc.objectAdminAction('Add Page', createURL, { 
+							$fc.objectAdminAction('#application.rb.getResource('objectadmin.buttons.addpage@label', 'Add Page')#', createURL, { 
 								onHidden: function(){ 
 									App.siteTreeView.loadTree("#rootObjectID#"); 
 								}
 							});
 
 						},
-						title: "Add Page...",
+						title: "#application.rb.getResource('objectadmin.buttons.addpage@label', 'Add Page')#...",
 						submitLabel: "Create",
 						targetText: "Add a page in the selected folder..."
 
