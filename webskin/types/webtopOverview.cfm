@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+﻿<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -56,19 +56,20 @@ TO: A refactor is required of all this now that we have webskin goodness.
 
 	<cfoutput>
 	<table class="layout" style="width:100%;">
-	<tr>
-		<td id="webtopOverviewActions" style="vertical-align:top;width:190px;padding:5px;">
+		<tr>
+			<td id="webtopOverviewActions" style="vertical-align:top;width:190px;padding:5px;">
+				</cfoutput>
+				<skin:view stObject="#stObj#" webskin="webtopOverviewActionsPrimary" />	
+				<cfoutput>
+			</td>
+			<td style="vertical-align:top;padding:5px;">
+				</cfoutput>
+				<skin:view stObject="#stObj#" webskin="webtopOverviewTab" />
+				<cfoutput>
+			</td>
+		</tr>
+	</table>
 	</cfoutput>
-			<skin:view stObject="#stObj#" webskin="webtopOverviewActionsPrimary" />	
-	<cfoutput>
-		</td><td style="vertical-align:top;padding:5px;">		
-    </cfoutput>	
-			<skin:view stObject="#stObj#" webskin="webtopOverviewTab" />	
-	<cfoutput>
-
-	</tr>
-	</table>		
-    </cfoutput>
 
 </ft:form>
 

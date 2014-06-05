@@ -246,7 +246,7 @@
 			<cfset stResult.children[id].sequence = "0" />
 			<cfset stResult.children[id].containermanagement = "" />
 			<cfset stResult.children[id].icon = "" />
-			<cfset stResult.children[id].label = "Overview" />
+			<cfset stResult.children[id].label = application.rb.getResource("webtop.dashboard.webtopdashboard@label","Overview") />
 			<cfset stResult.children[id].rbkey = "dashboard.#id#" />
 			<cfset stResult.children[id].children = structnew() />
 			<cfset stResult.children[id].id = id />
