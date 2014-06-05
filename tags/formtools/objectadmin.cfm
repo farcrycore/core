@@ -1263,21 +1263,21 @@
 						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 								
-									<ft:button value="Create Draft Object" text="Edit" title="Create a draft version of this object and begin editing" icon="fa fa-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Create Draft Object" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Create a draft version of this object and begin editing" icon="fa fa-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 								
 							<cfelseif arguments.st.bHasMultipleVersion>
 								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
 								
-									<ft:button value="Edit Draft" text="Edit" title="Edit the draft version of this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit Draft" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit the draft version of this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 											
 							<cfelse>
 								
-									<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
 									
 							</cfif>
 						<cfelse>
 							
-								<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
+								<ft:button value="Edit" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
 							
 						</cfif>
 					</cfif>
