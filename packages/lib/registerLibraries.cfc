@@ -161,7 +161,7 @@
 							baseHREF="#application.url.webtop#/thirdparty/select2" 
 							lFiles="select2.js,typeahead.js" />
 
-		<skin:registerJS	id="fc-moment" core="true"
+		<skin:registerJS	id="fc-moment" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/moment-2.4.0" 
 							lFiles="moment-with-langs.js" />
 
