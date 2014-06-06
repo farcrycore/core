@@ -1,4 +1,4 @@
-﻿<cfsetting enablecfoutputonly="true" />
+﻿<cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Dashboard Clock --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
@@ -6,18 +6,18 @@
 <!--- @@cardHeight: 200px --->
 <!--- @@seq: 1 --->
 
-<cfset stJava = createObject("java", "java.lang.System").getProperties() />
-<cfset utcNow = dateConvert("local2UTC", now()) />
-<cfset utcDateTime = dateFormat(utcNow, "yyyy-mm-dd") & " " & timeFormat(utcNow, "hh:mm:ss") & " +0000" />
+<cfset stJava = createObject("java", "java.lang.System").getProperties()>
+<cfset utcNow = dateConvert("local2UTC", now())>
+<cfset utcDateTime = dateFormat(utcNow, "yyyy-mm-dd") & " " & timeFormat(utcNow, "hh:mm:ss") & " +0000">
 
 <!--- TODO: switch between server/user date time --->
 
 <!--- 24 or 12 hour clock --->
-<cfset b12Hour = false />
-<cfset shortTime = lsTimeFormat(now(), "short") />
+<cfset b12Hour = false>
+<cfset shortTime = lsTimeFormat(now(), "short")>
 <cfif reFind("(AM|PM)", shortTime)>
-	<cfset b12Hour = true />
-	<cfset shortTime = timeFormat(shortTime, "H:MM") />
+	<cfset b12Hour = true>
+	<cfset shortTime = timeFormat(now(), "h:mm")>
 </cfif>
 
 	
@@ -28,15 +28,9 @@
 	<span id="fc-clock-day">#dateFormat(now(), "dddd")#</span>,
 	<span id="fc-clock-date">#dateFormat(now(), "d mmmm yyyy")#</span>
 </div>
-<cfif b12Hour>
-	<div style="padding: 40px 4px 20px 4px; font-size: 56px; line-height: 1;">
-		<span id="fc-clock-time">#shortTime#</span><span id="fc-clock-ampm" style="font-size: 40%; padding-left:5px">#timeFormat(shortTime,'tt')#</span>
-	</div>
-<cfelse>
-	<div style="padding: 30px 4px 10px 4px; font-size: 74px; line-height: 1;">
-		<span id="fc-clock-time">#shortTime#</span>
-	</div>
-</cfif>
+<div style="padding: 40px 4px 20px 4px; font-size: 56px; line-height: 1;">
+	<span id="fc-clock-time">#shortTime#</span><cfif b12Hour><span id="fc-clock-ampm" style="font-size: 40%; padding-left:5px">#timeFormat(now(),'tt')#</span></cfif>
+</div>
 <div style="padding: 20px 6px 0 6px; color: ##999; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
 	<i class="fa fa-globe"></i> <span style="font-size:11px; text-transform:uppercase">#stJava["user.timezone"]#</span>
 </div>
@@ -64,4 +58,4 @@
 </script>
 </cfoutput>
 
-<cfsetting enablecfoutputonly="false" />
+<cfsetting enablecfoutputonly="false">
