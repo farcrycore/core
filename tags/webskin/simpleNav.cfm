@@ -7,7 +7,7 @@
 </cfif>
 
 <!--- params --->
-<cfparam name="attributes.navID" default="#request.navID#">
+<cfparam name="attributes.navID" default="#application.fapi.getNavID(alias="home")#">
 <cfparam name="attributes.depth" default="1">
 <cfparam name="attributes.currentNavID" default="#request.navID#">
 
