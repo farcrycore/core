@@ -60,7 +60,7 @@
 		<cfargument name="text1" type="string" required="true" />
 		<cfargument name="text2" type="string" required="true" />
 		
-		<cfreturn this.dmp.diff_main(arguments.text1,arguments.text2) />
+		<cfreturn this.dmp.diff_main(javacast("string",arguments.text1),javacast("string",arguments.text2)) />
 	</cffunction>
 	
 	<cffunction name="diff_cleanupSemantic" access="public" returntype="void" output="false">
