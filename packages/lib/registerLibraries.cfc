@@ -239,7 +239,7 @@
 							lFiles="/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css" />
 							
 		<skin:registerCSS	id="fc-fontawesome" bCombine="false"
-							baseHREF="#application.url.webtop#/thirdparty/font-awesome-4.0.0/css"
+							baseHREF="#application.url.webtop#/thirdparty/font-awesome-4.1.0/css"
 							lFiles="font-awesome.css" />
 							
 		<skin:registerCSS 	id="jquery-ui"
