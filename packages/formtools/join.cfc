@@ -81,8 +81,8 @@
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 		
 			<cfcase value="list">
-				<cfif arguments.stMetadata.type EQ "array">		
-					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
+				<cfif arguments.stMetadata.type EQ "array">
+					<cfset joinItems = getJoinList(arguments.stObject[arguments.stMetadata.name]) />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
 					<cfset arguments.stMetadata.ftSelectSize = 1 />
@@ -201,7 +201,7 @@
 										name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
 										<cfif isSimpleValue(arguments.stObject[arguments.stMetaData.Name]) and arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid> 
 										checked="checked"
-										<cfelseif isArray(arguments.stObject[arguments.stMetaData.Name]) and listFindNoCase(arrayToList(arguments.stObject[arguments.stMetaData.Name]),qLibraryList.objectid)>
+										<cfelseif isArray(arguments.stObject[arguments.stMetaData.Name]) and listFindNoCase(getJoinList(arguments.stObject[arguments.stMetaData.Name]),qLibraryList.objectid)>
 										checked="checked"
 										</cfif> 
 										value="#qLibraryList.objectid#" />
@@ -226,8 +226,8 @@
 			</cfcase>
 		
 			<cfdefaultcase>
-				<cfif arguments.stMetadata.type EQ "array">		
-					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
+				<cfif arguments.stMetadata.type EQ "array">
+					<cfset joinItems = getJoinList(arguments.stObject[arguments.stMetadata.name]) />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
 				</cfif>
@@ -905,5 +905,21 @@
 
 	</cffunction>
 
+	<cffunction name="getJoinList" access="public" output="false" returntype="string">
+		<cfargument name="values" type="array" required="true" />
+
+		<cfset var joinItems = "" />
+
+		<cfif arraylen(arguments.values) and issimplevalue(arguments.values[1])>
+			<cfset joinItems = arrayToList(arguments.values) />
+		<cfelseif arraylen(arguments.values)>
+			<cfset joinItems = "" />
+			<cfloop from="1" to="#arraylen(arguments.values)#" index="i">
+				<cfset joinItems = listappend(joinItems,arguments.values[i].data) />
+			</cfloop>
+		</cfif>
+
+		<cfreturn joinItems />
+	</cffunction>
 			
 </cfcomponent>
