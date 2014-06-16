@@ -776,7 +776,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="bShallow" type="boolean" required="false" default="false" hint="Setting to true filters all longchar property types from record.">
 		<cfargument name="bFullArrayProps" type="boolean" required="false" default="true" hint="Setting to true returns array properties as an array of structs instead of an array of strings IF IT IS AN EXTENDED ARRAY.">
 		<cfargument name="bUseInstanceCache" type="boolean" required="false" default="true" hint="setting to use instance cache if one exists">
-		<cfargument name="bArraysAsStructs" type="boolean" required="false" default="false" hint="Setting to true returns array properties as an array of structs instead of an array of strings.">
+		<cfargument name="bArraysAsStructs" type="boolean" required="false" hint="Setting to true returns array properties as an array of structs instead of an array of strings.">
 		
 		<cfset var stobj=structnew()>
 		<cfset var aprops="">
@@ -795,6 +795,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var oType = "" />
 		<cfset var addedtoBroker = "" />
 		<cfset var tempObjectStore = structNew() />
+		<cfset var typename = getTypeName() />
+		
+		<cfif structkeyexists(application.stCOAPI[typename], "bArraysAsStructs")>
+			<cfparam name="arguments.bArraysAsStructs" default="#application.stCOAPI[typename].bArraysAsStructs#" />
+		<cfelse>
+			<cfparam name="arguments.bArraysAsStructs" default="false" />
+		</cfif>
 		
 		<!---------------------------------------------------------------
 		Create a reference to the tempObjectStore in the session.
@@ -817,7 +824,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfelse>
 			<cfif isdefined("request.mode.rebuild") and request.mode.rebuild eq "page">
-				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,getTypeName()) />
+				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,typename) />
 			</cfif>
 			
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
