@@ -730,8 +730,10 @@
 		</cfif>
 		
 		<!--- add ACL --->
-		<cfset stAMZHeaders["x-amz-grant-full-control"] = "" />
 		<cfloop from="1" to="#arraylen(arguments.config.admins)#" index="i">
+			<cfif NOT structKeyExists(stAMZHeaders, "x-amz-grant-full-control")>
+				<cfset stAMZHeaders["x-amz-grant-full-control"] = "" />
+			</cfif>
 			<cfif isvalid("email",arguments.config.admins[i])>
 				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'emailAddress="#arguments.config.admins[i]#"',', ') />
 			<cfelse>
