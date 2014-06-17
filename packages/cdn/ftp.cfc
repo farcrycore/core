@@ -67,7 +67,7 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"localCacheSize")>
-			<cfset st["localCacheSize"] = 0 />
+			<cfset st["localCacheSize"] = 20 />
 		</cfif>
 		
 		<cfif structkeyexists(st,"ftpPathPrefix")>
