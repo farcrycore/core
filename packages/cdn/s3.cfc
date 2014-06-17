@@ -6,6 +6,7 @@
 		<cfset var qLeftovers = queryNew("")>
 
 		<cfset this.engine = arguments.engine />
+		
 		<cfset this.cacheMap = structnew() />
 		
 		<cfif directoryExists(getTempDirectory() & application.applicationname)>
@@ -82,7 +83,7 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"localCacheSize")>
-			<cfset st["localCacheSize"] = 2 />
+			<cfset st["localCacheSize"] = 50 />
 		</cfif>
 		
 		<cfif structkeyexists(st,"maxAge") and not refind("^\d+$",st.maxAge)>
