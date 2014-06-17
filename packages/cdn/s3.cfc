@@ -660,7 +660,7 @@
 		
 		<cfset var s3path = "" />
 		
-		<cfif this.engine eq "railo">
+		<cfif this.engine eq "railo" AND listFirst(server.railo.version, ".") lt 4>
 			<cfset s3path = getS3Path(config=arguments.config,file=arguments.dir) />
 			<cfdirectory action="create" directory="#s3path#" mode="777" />
 			<cfset storeSetACL(s3path, getACL(arguments.config)) />
