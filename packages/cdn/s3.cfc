@@ -3,6 +3,8 @@
 	<cffunction name="init" returntype="any">
 		<cfargument name="engine" type="string" required="true" />
 		
+		<cfset var qLeftovers = queryNew("")>
+
 		<cfset this.engine = arguments.engine />
 		
 		<cfset this.cacheMap = structnew() />
@@ -81,7 +83,7 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"localCacheSize")>
-			<cfset st["localCacheSize"] = 2 />
+			<cfset st["localCacheSize"] = 50 />
 		</cfif>
 		
 		<cfif structkeyexists(st,"maxAge") and not refind("^\d+$",st.maxAge)>
@@ -466,6 +468,7 @@
 		<cfset var acl = "" />
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
+		<cfset var cachePath = "" />
 		
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 			
@@ -553,6 +556,7 @@
 		<cfset var acl = "" />
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
+		<cfset var cachePath = "" />
 		
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
@@ -691,6 +695,7 @@
 		
 		<cfreturn qDir />
 	</cffunction>
+	
 	
 	
 	<cffunction name="putObject" access="public" output="false" returntype="string" hint="Uses the S3 rest API to upload data to S3">
