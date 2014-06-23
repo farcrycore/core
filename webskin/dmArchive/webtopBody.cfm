@@ -7,42 +7,46 @@
 
 <ft:processform action="undelete" url="refresh">
 	<cfset oArchive = application.fapi.getContentType("dmArchive") />
-	<cfloop list="#form.objectid#" index="thisobject">
-		<cftry>
-			<cfset aResult = oArchive.undeleteArchive(archiveID=thisobject) />
+    <cfif structKeyExists(form, "objectid")>
+    	<cfloop list="#form.objectid#" index="thisobject">
+    		<cftry>
+    			<cfset aResult = oArchive.undeleteArchive(archiveID=thisobject) />
 			
-			<cfif structkeyexists(aResult[1],"parent")>
-				<skin:bubble message="'#aResult[1].object.label#' has been restored into the tree under '#aResult[1].parent.title#'" tags="dmArchive,info" />
-			<cfelse>
-				<skin:bubble message="'#aResult[1].object.label#' has been restored" tags="dmArchive,info" />
-			</cfif>
+    			<cfif structkeyexists(aResult[1],"parent")>
+    				<skin:bubble message="'#aResult[1].object.label#' has been restored into the tree under '#aResult[1].parent.title#'" tags="dmArchive,info" />
+    			<cfelse>
+    				<skin:bubble message="'#aResult[1].object.label#' has been restored" tags="dmArchive,info" />
+    			</cfif>
 			
-			<cfcatch type="undelete">
-				<skin:bubble message="#cfcatch.message#" tags="dmArchive,error" />
-			</cfcatch>
-		</cftry>
-	</cfloop>
+    			<cfcatch type="undelete">
+    				<skin:bubble message="#cfcatch.message#" tags="dmArchive,error" />
+    			</cfcatch>
+    		</cftry>
+    	</cfloop>
+    </cfif>
 </ft:processform>
 
 <ft:processform action="cascadingundelete" url="refresh">
 	<cfset oArchive = application.fapi.getContentType("dmArchive") />
-	<cfloop list="#form.objectid#" index="thisobject">
-		<cftry>
-			<cfset aResult = oArchive.undeleteArchive(archiveID=thisobject,cascade=true) />
+    <cfif structKeyExists(form, "objectid")>
+    	<cfloop list="#form.objectid#" index="thisobject">
+    		<cftry>
+    			<cfset aResult = oArchive.undeleteArchive(archiveID=thisobject,cascade=true) />
 			
-			<cfloop from="1" to="#arraylen(aResult)#" index="i">
-				<cfif structkeyexists(aResult[i],"parent")>
-					<skin:bubble message="'#aResult[i].object.label#' has been restored into the tree under '#aResult[i].parent.title#'" tags="dmArchive,info" />
-				<cfelse>
-					<skin:bubble message="'#aResult[i].object.label#' has been restored" tags="dmArchive,info" />
-				</cfif>
-			</cfloop>
+    			<cfloop from="1" to="#arraylen(aResult)#" index="i">
+    				<cfif structkeyexists(aResult[i],"parent")>
+    					<skin:bubble message="'#aResult[i].object.label#' has been restored into the tree under '#aResult[i].parent.title#'" tags="dmArchive,info" />
+    				<cfelse>
+    					<skin:bubble message="'#aResult[i].object.label#' has been restored" tags="dmArchive,info" />
+    				</cfif>
+    			</cfloop>
 			
-			<cfcatch type="undelete">
-				<skin:bubble message="#cfcatch.message#" tags="dmArchive,error" />
-			</cfcatch>
-		</cftry>
-	</cfloop>
+    			<cfcatch type="undelete">
+    				<skin:bubble message="#cfcatch.message#" tags="dmArchive,error" />
+    			</cfcatch>
+    		</cftry>
+    	</cfloop>
+    </cfif>    
 </ft:processform>
 
 <ft:processform action="goback">
