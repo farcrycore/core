@@ -721,7 +721,7 @@
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="#application.rb.getResource('objectadmin.filtering.heading@title','Advanced Filtering')#"><b class="fa fa-filter only-icon"></b></button>
 				</cfif>
-				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="#application.rb.getResource('objectadmin.filtering.search@placeholder','Search...')#" value="#form.q#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
+				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="#application.rb.getResource('objectadmin.filtering.search@placeholder','Search...')#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(form.q)#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
 				<cfif len(form.q)>
 					<button type="button" class="btn" onclick="$j('##farcry-objectadmin-q').val(''); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
 				</cfif>
