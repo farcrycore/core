@@ -1119,55 +1119,57 @@ default handlers
 		<cfset var qRelated = "" />
 		<cfset var qAllRelated = querynew("objectid,typename,objectlabel,typenamelabel,typenametotal,jointypename,joinproperty") />
 
-		<cfparam name="application.stCOAPI.#stObj.typename#.aJoins" default="#arraynew(1)#" />
-		<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
-			<!--- Get related one-to-one content --->
-			<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" 
-					and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid" 
-					and (not structkeyexists(application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType],"bCopyable") or application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType].bCopyable)>
-				<cfset stSearch = structnew() />
-				<cfset stSearch.typename = application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType />
-				<cfset stSearch.lProperties = "objectid,label" />
-				<cfset stSearch["#application.stCOAPI[stObj.typename].aJoins[thisjoin].property#_eq"] = arguments.objectid />
-				<cfset qRelated = application.fapi.getContentObjects(argumentCollection=stSearch) />
-				<cfloop query="qRelated">
-					<cfset queryaddrow(qAllRelated) />
-					<cfset querysetcell(qAllRelated,"objectid",qRelated.objectid) />
-					<cfset querysetcell(qAllRelated,"objectlabel",qRelated.label) />
-					<cfset querysetcell(qAllRelated,"typename",qRelated.typename) />
-					<cfif structkeyexists(application.stCOAPI[qRelated.typename],"displayname")>
-						<cfset querysetcell(qAllRelated,"typenamelabel",application.stCOAPI[qRelated.typename].displayname) />
-					<cfelse>
-						<cfset querysetcell(qAllRelated,"typenamelabel",qRelated.typename) />
-					</cfif>
-					<cfset querysetcell(qAllRelated,"typenametotal",qRelated.recordcount) />
-					<cfset querysetcell(qAllRelated,"jointypename",stSearch.typename) />
-					<cfset querysetcell(qAllRelated,"joinproperty",application.stCOAPI[stObj.typename].aJoins[thisjoin].property) />
-				</cfloop>
-			</cfif>
+        <cfif structKeyExists(stObj, "typename")>
+    		<cfparam name="application.stCOAPI.#stObj.typename#.aJoins" default="#arraynew(1)#" />
+    		<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
+    			<!--- Get related one-to-one content --->
+    			<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" 
+    					and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid" 
+    					and (not structkeyexists(application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType],"bCopyable") or application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType].bCopyable)>
+    				<cfset stSearch = structnew() />
+    				<cfset stSearch.typename = application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType />
+    				<cfset stSearch.lProperties = "objectid,label" />
+    				<cfset stSearch["#application.stCOAPI[stObj.typename].aJoins[thisjoin].property#_eq"] = arguments.objectid />
+    				<cfset qRelated = application.fapi.getContentObjects(argumentCollection=stSearch) />
+    				<cfloop query="qRelated">
+    					<cfset queryaddrow(qAllRelated) />
+    					<cfset querysetcell(qAllRelated,"objectid",qRelated.objectid) />
+    					<cfset querysetcell(qAllRelated,"objectlabel",qRelated.label) />
+    					<cfset querysetcell(qAllRelated,"typename",qRelated.typename) />
+    					<cfif structkeyexists(application.stCOAPI[qRelated.typename],"displayname")>
+    						<cfset querysetcell(qAllRelated,"typenamelabel",application.stCOAPI[qRelated.typename].displayname) />
+    					<cfelse>
+    						<cfset querysetcell(qAllRelated,"typenamelabel",qRelated.typename) />
+    					</cfif>
+    					<cfset querysetcell(qAllRelated,"typenametotal",qRelated.recordcount) />
+    					<cfset querysetcell(qAllRelated,"jointypename",stSearch.typename) />
+    					<cfset querysetcell(qAllRelated,"joinproperty",application.stCOAPI[stObj.typename].aJoins[thisjoin].property) />
+    				</cfloop>
+    			</cfif>
 
-			<!--- Get attached leaf nodes for dmNavigation --->
-			<cfif stObj.typename eq "dmNavigation"
-					and application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "to" 
-					and application.stCOAPI[stObj.typename].aJoins[thisjoin].property eq "aObjectIDs">
-				<cfloop from="1" to="#arrayLen(stObj.aObjectIDs)#" index="i">
-					<cfset stLeaf = application.fapi.getContentObject(objectid=stObj.aObjectIDs[i])>
-					<cfset queryaddrow(qAllRelated) />
-					<cfset querysetcell(qAllRelated,"objectid",stLeaf.objectid) />
-					<cfset querysetcell(qAllRelated,"objectlabel",stLeaf.label) />
-					<cfset querysetcell(qAllRelated,"typename",stLeaf.typename) />
-					<cfif structkeyexists(application.stCOAPI[stLeaf.typename],"displayname")>
-						<cfset querysetcell(qAllRelated,"typenamelabel",application.stCOAPI[stLeaf.typename].displayname) />
-					<cfelse>
-						<cfset querysetcell(qAllRelated,"typenamelabel",stLeaf.typename) />
-					</cfif>
-					<cfset querysetcell(qAllRelated,"typenametotal",1) />
-					<cfset querysetcell(qAllRelated,"jointypename","dmNavigation") />
-					<cfset querysetcell(qAllRelated,"joinproperty","aObjectIDs") />
-				</cfloop>
-			</cfif>
+    			<!--- Get attached leaf nodes for dmNavigation --->
+    			<cfif stObj.typename eq "dmNavigation"
+    					and application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "to" 
+    					and application.stCOAPI[stObj.typename].aJoins[thisjoin].property eq "aObjectIDs">
+    				<cfloop from="1" to="#arrayLen(stObj.aObjectIDs)#" index="i">
+    					<cfset stLeaf = application.fapi.getContentObject(objectid=stObj.aObjectIDs[i])>
+    					<cfset queryaddrow(qAllRelated) />
+    					<cfset querysetcell(qAllRelated,"objectid",stLeaf.objectid) />
+    					<cfset querysetcell(qAllRelated,"objectlabel",stLeaf.label) />
+    					<cfset querysetcell(qAllRelated,"typename",stLeaf.typename) />
+    					<cfif structkeyexists(application.stCOAPI[stLeaf.typename],"displayname")>
+    						<cfset querysetcell(qAllRelated,"typenamelabel",application.stCOAPI[stLeaf.typename].displayname) />
+    					<cfelse>
+    						<cfset querysetcell(qAllRelated,"typenamelabel",stLeaf.typename) />
+    					</cfif>
+    					<cfset querysetcell(qAllRelated,"typenametotal",1) />
+    					<cfset querysetcell(qAllRelated,"jointypename","dmNavigation") />
+    					<cfset querysetcell(qAllRelated,"joinproperty","aObjectIDs") />
+    				</cfloop>
+    			</cfif>
 
-		</cfloop>
+    		</cfloop>
+        </cfif>
 
 		<cfreturn qAllRelated>
 	</cffunction>
