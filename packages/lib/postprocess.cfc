@@ -312,6 +312,26 @@
 	</cffunction>
 
 
+	<cffunction name="googlecalendar" access="public" output="false" returntype="string" postprocesser="true" hint="Parses out google calendar links and replaces them with embeds">
+		<cfargument name="input" type="string" required="true" />
+		<cfargument name="width" type="numeric" required="false" default="600" />
+		<cfargument name="height" type="numeric" required="false" default="400" />
+		<cfargument name="firstDayOfWeek" type="numeric" required="false" default="2" hint="1:sundag,2:monday,7:saturday" />
+		
+		<!--- https://www.google.com/calendar/embed?src=no.norwegian%23holiday%40group.v.calendar.google.com&ctz=Europe/Oslo --->
+		<!--- https://www.google.com/calendar/ical/no.norwegian%23holiday%40group.v.calendar.google.com/public/basic.ics --->
+		<!--- https://www.google.com/calendar/feeds/no.norwegian%23holiday%40group.v.calendar.google.com/public/basic --->
+		<!--- https://www.google.com/calendar/embed?src=kristiansund.com_g2ovp94q7bmqutlfh2f1m5auk4%40group.calendar.google.com&ctz=Europe/Oslo --->
+		
+		<cfset var replacement = '<iframe src="https://www.google.com/calendar/embed?height=#arguments.height#&amp;wkst=#arguments.firstDayOfWeek#&amp;src=$5" width="#arguments.width#" height="#arguments.height#" frameborder="0" scrolling="no"></iframe>' />
+		
+		<cfset var match1 = "(http|https)?:\/\/?(?:www\.)?(google\.com\/calendar\/(feeds\/|ical\/|embed\?src\=|htmlembed\?src\=))?([-_a-zA-Z0-9\.\%]+%40(group\.calendar\.google\.com|group\.v\.calendar\.google\.com))[^\s]*">
+		<cfset arguments.input = regexLineReplace(arguments.input, match1, replacement) />
+		
+		<cfreturn arguments.input />
+	</cffunction>
+
+
 	<cffunction name="removewhitespace" access="public" output="false" returntype="string" hint="Replace all consecutive spaces with one space">
 		<cfargument name="input" type="string" required="true" />
 		
