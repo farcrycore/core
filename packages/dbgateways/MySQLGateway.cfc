@@ -340,17 +340,19 @@
 		</cfif>
 		
 		<cfloop query="qIndexes">
-			<cfparam name="stResult.#qIndexes.index_name#" default="#structnew()#" />
-			<cfset stResult[qIndexes.index_name].name = qIndexes.index_name />
-			<cfif qIndexes.index_name eq "primary">
-				<cfset stResult[qIndexes.index_name].type = "primary" />
-			<cfelse>
-				<cfset stResult[qIndexes.index_name].type = "unclustered" />
+			<cfif len(qIndexes.index_name)>
+				<cfparam name="stResult.#qIndexes.index_name#" default="#structnew()#" />
+				<cfset stResult[qIndexes.index_name].name = qIndexes.index_name />
+				<cfif qIndexes.index_name eq "primary">
+					<cfset stResult[qIndexes.index_name].type = "primary" />
+				<cfelse>
+					<cfset stResult[qIndexes.index_name].type = "unclustered" />
+				</cfif>
+				<cfparam name="stResult.#qIndexes.index_name#.fields" default="#arraynew(1)#" />
+				<cfloop list="#qIndexes.column_name#" index="thiscolumn">
+					<cfset arrayappend(stResult[qIndexes.index_name].fields,trim(thiscolumn)) />
+				</cfloop>
 			</cfif>
-			<cfparam name="stResult.#qIndexes.index_name#.fields" default="#arraynew(1)#" />
-			<cfloop list="#qIndexes.column_name#" index="thiscolumn">
-				<cfset arrayappend(stResult[qIndexes.index_name].fields,trim(thiscolumn)) />
-			</cfloop>
 		</cfloop>
 		
 		<cfreturn stResult />
