@@ -34,7 +34,13 @@
 	
 	<cfparam name="attributes.name" type="string" /><!---  your local machine name  --->
 	
-	<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+	<cftry>	
+		<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		
+		<cfcatch>
+			<cfset machineName = "localhost" />
+		</cfcatch>
+	</cftry>
 	
 	<cfif not listFindNoCase(attributes.name, machineName)>
 		<cfsetting enablecfoutputonly="false">
