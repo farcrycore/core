@@ -20,7 +20,12 @@
 </cffunction>
 
 <cffunction name="getMachineName" returntype="string" output="false" access="public" hint="Returns the active machine name.">
-	<cfset var machineName=createObject("java", "java.net.InetAddress").localhost.getHostName()>
+	<cfset var machineName="localhost"/>
+	<cftry>
+		<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName()>
+		
+		<cfcatch></cfcatch>
+	</cftry>
 	<cfreturn machinename>
 </cffunction>
 

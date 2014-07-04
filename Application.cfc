@@ -180,9 +180,15 @@
 
 		<cfset var qServerSpecific = queryNew("blah") />
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
-		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		<cfset var machineName = "localhost" />
 		<cfset var tickBegin = getTickCount() />
 		
+		<cftry>
+			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+			
+			<cfcatch></cfcatch>
+		</cftry>
+
 		<!--- intialise application scope --->
 		<cfset initApplicationScope() />
 		
