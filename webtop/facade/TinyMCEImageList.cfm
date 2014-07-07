@@ -18,11 +18,13 @@
 	</cfquery>
 </cfif>
 
+<cfset oType = createObject("component", application.types[url.ftImageListFilterTypename].packagePath) />
+
 <cfoutput>
 var tinyMCEImageList = new Array(
 	// Name, URL	
 	<cfloop query="qImages">
-		["<cfif len(qImages.label)>#qImages.label#<cfelse>#qImages.image#</cfif>", "#application.fapi.getImageWebRoot()##qImages.image#"]<cfif qImages.currentRow LT qImages.RecordCount>,</cfif>
+		["<cfif len(qImages.label)>#qImages.label#<cfelse>#qImages.image#</cfif>", "#oType.getFileLocation(objectid=qImages.objectid, fieldname=url.ftImageListFilterProperty).path#"]<cfif qImages.currentRow LT qImages.RecordCount>,</cfif>
 	</cfloop>
 );
 </cfoutput>
