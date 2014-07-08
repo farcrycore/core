@@ -48,7 +48,7 @@ VIEW
 
 <ft:form>
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
-		lfields="firstname,lastname,avatar,emailaddress,breceiveemail,locale,overviewHome"
+		lfields="firstname,lastname,avatar,emailaddress,breceiveemail"
 		lhiddenFields="username,userdirectory"
 		legend="Profile Details" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 

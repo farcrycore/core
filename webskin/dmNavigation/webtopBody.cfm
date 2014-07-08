@@ -66,12 +66,11 @@
 
 
 <!--- set the default "home" root node --->
-<cfset userOverviewHome = "home">
-<cfif isDefined("session.dmProfile.overviewHome") AND len(session.dmProfile.overviewHome)>
-	<cfset userOverviewHome = session.dmProfile.overviewHome>
+<cfif isDefined("session.dmProfile.overviewHome") AND isValid("uuid", session.dmProfile.overviewHome)>
+	<cfparam name="url.rootobjectid" default="#session.dmProfile.overviewHome#">
 </cfif>
 
-<cfparam name="url.alias" default="#userOverviewHome#">
+<cfparam name="url.alias" default="home">
 <cfparam name="url.rootobjectid" default="#application.fapi.getNavId(url.alias)#">
 
 
