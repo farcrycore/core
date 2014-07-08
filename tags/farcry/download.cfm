@@ -141,7 +141,7 @@ accommodate legacy implementations
 			<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
 		</cftry>
 	<cfelseif stLocation.method eq "redirect">
-		<cflocation url="#stLocation.path#" addtoken="false" />
+		<cflocation url="#urldecode(stLocation.path)#" addtoken="false" />
 	</cfif>
 	
 </cfif>
