@@ -562,11 +562,11 @@
 		</cfif>
 		<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
 		
-		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
+		<cfif isdefined("application.url.webtop") and reFindNoCase("^#application.url.webtop#", cgi.script_name)>
 			<cfinclude template="/farcry/core/webtop/errors/#statuscode#.cfm" />
-		<cfelseif fileexists("#application.path.project#/errors/#statuscode#.cfm")>
+		<cfelseif isdefined("application.path.project") and fileexists("#application.path.project#/errors/#statuscode#.cfm")>
 			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/#statuscode#.cfm" />
-		<cfelseif fileexists("#application.path.webroot#/errors/#statuscode#.cfm")>
+		<cfelseif isdefined("application.path.webroot") and fileexists("#application.path.webroot#/errors/#statuscode#.cfm")>
 			<cfinclude template="#application.url.webroot#/errors/#statuscode#.cfm" />
 		<cfelse>
 			<cfinclude template="/farcry/core/webtop/errors/#statuscode#.cfm" />
