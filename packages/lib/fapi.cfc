@@ -2593,6 +2593,12 @@
 		<cfreturn html />
 	</cffunction>
 	
+	<!--- @@examples:
+		<p>Adds "hello world" to the log displayed when profile=[updateappkey]:</p>
+		<code>
+			<cfset application.fapi.addRequestLog('hello world') /> 
+		</code>
+	 --->
 	<cffunction name="addRequestLog" access="public" output="false" returnType="numeric" hint="Adds an item to the request log">
 		<cfargument name="text" type="string" required="true" hint="The text of the log line" />
 		
