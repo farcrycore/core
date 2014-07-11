@@ -337,13 +337,13 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					}
 					if (imageformtool.inline){
 						imageformtool.inlineview
-							.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='width:"+imageMaxWidth+"px; max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").end()
+							.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='"+(imageMaxWidth?"width:"+imageMaxWidth+"px":"")+"; max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").end()
 							.find("span.action-preview").show().end()
 							.find("span.dependant-options").show().end();
 						imageformtool.multiview.selectView("cancel");
 					}
 					else{
-						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='width:"+imageMaxWidth+"px; max-width:400px; max-height:400px;'>");
+						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='width:"+(imageMaxWidth?"width:"+imageMaxWidth+"px":"")+"px; max-width:400px; max-height:400px;'>");
 						imageformtool.multiview.selectView("complete");
 					}
 				}
