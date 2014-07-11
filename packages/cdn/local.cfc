@@ -63,7 +63,7 @@
 		</cfif>
 		
 		<!--- URL encode the filename --->
-		<cfset urlpath = rereplace(urlpath,"[^/]+\.\w+$",urlencodedformat(listlast(urlpath,"/")))>
+		<cfset urlpath = rereplace(urlpath,"[^/]+\.\w+$",urlencodedformat(listfirst(listlast(urlpath,"/"),".")) & "." & listlast(urlpath,"."))>
 		
 		<cfreturn urlpath />
 	</cffunction>
