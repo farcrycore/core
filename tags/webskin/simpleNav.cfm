@@ -30,7 +30,7 @@
 <cfparam name="attributes.functionMethod" default="getDescendants">
 <cfparam name="attributes.functionArgs" default="depth=attributes.depth">
 
-<cfparam name="attributes.lColumns" default="externallink,lNavIDAlias">
+<cfparam name="attributes.lColumns" default="externallink,lNavIDAlias,target">
 <cfparam name="attributes.aFilter" default="#arrayNew(1)#">
 
 <!--- create tree object --->
@@ -96,7 +96,7 @@
 
 		<!--- output opening item --->
 		<cfoutput><#attributes.itemTag#<cfif len(thisClass)> class="#thisClass#"</cfif>>#attributes.itemMarkupStart#</cfoutput>
-		<cfoutput><a href="#href#">#qNav.objectname#</a></cfoutput>
+		<cfoutput><a href="#href#" target="#qNav.target#">#qNav.objectname#</a></cfoutput>
 
 		<!--- output closing nested tag for the last item --->
 		<cfif qNav.recordCount gt qNav.currentRow AND qNav.nlevel[qNav.currentRow+1] lt qNav.nlevel[qNav.currentRow]>
