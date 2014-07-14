@@ -96,7 +96,7 @@
 
 		<!--- output opening item --->
 		<cfoutput><#attributes.itemTag#<cfif len(thisClass)> class="#thisClass#"</cfif>>#attributes.itemMarkupStart#</cfoutput>
-		<cfoutput><a href="#href#" target="#qNav.target#">#qNav.objectname#</a></cfoutput>
+		<cfoutput><a href="#href#" <cfif qNav.target eq "_blank">target="#qNav.target#"</cfif>>#qNav.objectname#</a></cfoutput>
 
 		<!--- output closing nested tag for the last item --->
 		<cfif qNav.recordCount gt qNav.currentRow AND qNav.nlevel[qNav.currentRow+1] lt qNav.nlevel[qNav.currentRow]>
