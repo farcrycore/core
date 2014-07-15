@@ -192,7 +192,8 @@
 		<cfset var html = "" />
 		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
 		<cfset var stBranch = structnew() />
-		
+		<cfset var lCatIDs = "">
+
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 		
@@ -210,7 +211,14 @@
 			<cfset stBranch = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid[arguments.stMetadata.ftAlias]) />
 		</cfif>
 		<cfset stBranch["roothash"] = stTree.hash />
-		
+
+		<cfloop list="#arguments.stMetadata.value#" index="catID">
+			<cfset qParent = application.factory.oTree.getParentID(objectid=catID)>
+			<cfif NOT listFindNoCase(lCatIDs, qParent.parentID)>
+				<cfset lCatIDs = listAppend(lCatIDs, qParent.parentID)>
+			</cfif>
+		</cfloop>
+
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
 				<div id="#arguments.fieldname#-tree"></div>
@@ -230,7 +238,8 @@
 						allowSelect : #serializeJSON(arguments.stMetadata.ftJQueryAllowEdit)#,
 						quickEdit : #serializeJSON(arguments.stMetadata.ftJQueryQuickEdit)#,
 						selectMultiple : #serializeJSON(arguments.stMetadata.ftSelectMultiple)#,
-						visibleInputs : #serializeJSON(arguments.stMetadata.ftJQueryVisibleInputs)#
+						visibleInputs : #serializeJSON(arguments.stMetadata.ftJQueryVisibleInputs)#,
+						openNodes:#serializeJSON(listtoarray(lCatIDs))#
 						
 						<cfif len(arguments.stMetadata.ftJQueryOnEdit)>,onEditNode:function onEdit#arguments.fieldname#(node){ #arguments.stMetadata.ftJQueryOnEdit# }</cfif>
 						<cfif len(arguments.stMetadata.ftJQueryOnAdd)>,onAddNode:function onAdd#arguments.fieldname#(node,newid){ #arguments.stMetadata.ftJQueryOnAdd# }</cfif>

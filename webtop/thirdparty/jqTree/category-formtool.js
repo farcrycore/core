@@ -316,6 +316,7 @@ jQuery.fn.unblock = function(){
 			selectMultiple : false,
 			visibleInputs : false,
 			selected : [],
+			openNodes : [],
 			quickEdit : false,
 			
 			onEditNode : function onEditNode(node){
@@ -402,8 +403,8 @@ jQuery.fn.unblock = function(){
 		$this.on("treeupdate-finish",options.onUpdateFinish);
 		$this.on("treeupdate-error",options.onUpdateError);
 		
-		for (var i=0; i<options.selected.length; i++)
-			$this.tree("openNode",$this.tree("getNodeById",options.selected[i]));
+		for (var i=0; i<options.openNodes.length; i++)
+			$this.tree("openNode",$this.tree("getNodeById",options.openNodes[i]));
 		
 		// data
 		$this.data("url",options.dataUrl);
