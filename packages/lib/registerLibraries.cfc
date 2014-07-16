@@ -209,6 +209,10 @@
 			}
 		</cfoutput></skin:registerJS>
 
+		<skin:registerJS	id="jquery-ajaxq" core="true" bCombine="true"
+							baseHREF="#application.url.webtop#/thirdparty/jquery.ajaxq" 
+							lFiles="jquery.ajaxq-0.0.1.js" />
+
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"

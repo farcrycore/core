@@ -62,7 +62,7 @@
 
 
 <skin:loadJS id="fc-jquery" />
-<skin:loadJS id="jquery.ajaxq" core="true" lFiles="#application.url.webtop#/thirdparty/jquery.ajaxq/jquery.ajaxq-0.0.1.js" />
+<skin:loadJS id="jquery-ajaxq" />
 
 
 <cfoutput>
