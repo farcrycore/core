@@ -39,6 +39,7 @@
 	<cfproperty name="ftSelectMultiple" default="true" hint="Allow selection of multiple items in category tree. (true, false)" />
 	<cfproperty name="ftSelectSize" default="5" hint="Used when ftRenderType is set to dropDown, specifies the size of the select field." />
 	<cfproperty name="ftDropdownFirstItem" default="" hint="Used when ftRenderType is set to dropDown, prepends an option to select list with null value." />	
+	<cfproperty name="ftHideRootNode" default="false" hint="Set to true to hide the root node from being rendered in the category tree." />	
 	
 	<cfproperty name="ftJQueryAllowEdit" default="true" />
 	<cfproperty name="ftJQueryAllowAdd" default="true" />
@@ -155,11 +156,11 @@
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset rootID = application.catid[arguments.stMetadata.ftAlias] >
 		</cfif>
-		
+
 		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=arguments.stMetadata.ftAlias) />
 		<cfset rootNodeText = oCategory.getCategoryNamebyID(categoryid=rootID) />
 		<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=rootID) />
-					
+		
 		<cfsavecontent variable="html">
 			<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif> class="selectInput #arguments.stMetadata.ftSelectSize# #arguments.stMetadata.ftClass#"></cfoutput>
 			<cfloop list="#lCategoryBranch#" index="i">
@@ -167,7 +168,9 @@
 				<cfif i EQ rootID>
 					<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
 						<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
-					<cfelse>
+					<cfelseif len(arguments.stMetadata.ftHideRootNode) AND arguments.stMetadata.ftHideRootNode>
+							<!--- Do not display root node if this option is on. --->
+					<cfelse>	
 						<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
 						<cfoutput><option value="">#CategoryName#</option></cfoutput>
 					</cfif>
@@ -222,6 +225,11 @@
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
 				<div id="#arguments.fieldname#-tree"></div>
+				<cfif arguments.stMetadata.ftHideRootNode>
+					<style>
+						###arguments.fieldname#-tree > ul > li > div:first-child{ display:none; }
+					</style>
+				</cfif>	
 				<input type="hidden" name="#arguments.fieldname#" value="">
 				<script type="text/javascript">
 					$j("###arguments.fieldname#-tree").farcryTree({
@@ -239,8 +247,8 @@
 						quickEdit : #serializeJSON(arguments.stMetadata.ftJQueryQuickEdit)#,
 						selectMultiple : #serializeJSON(arguments.stMetadata.ftSelectMultiple)#,
 						visibleInputs : #serializeJSON(arguments.stMetadata.ftJQueryVisibleInputs)#,
-						openNodes:#serializeJSON(listtoarray(lCatIDs))#
-						
+						openNodes : #serializeJSON(listtoarray(lCatIDs))#
+
 						<cfif len(arguments.stMetadata.ftJQueryOnEdit)>,onEditNode:function onEdit#arguments.fieldname#(node){ #arguments.stMetadata.ftJQueryOnEdit# }</cfif>
 						<cfif len(arguments.stMetadata.ftJQueryOnAdd)>,onAddNode:function onAdd#arguments.fieldname#(node,newid){ #arguments.stMetadata.ftJQueryOnAdd# }</cfif>
 						<cfif len(arguments.stMetadata.ftJQueryOnRemove)>,onRemoveNode:function onRemove#arguments.fieldname#(node){ #arguments.stMetadata.ftJQueryOnRemove# }</cfif>
