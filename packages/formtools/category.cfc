@@ -208,7 +208,7 @@
 		<skin:loadCSS id="jquery-modal" />
 		<skin:loadCSS id="fc-icons" />
 		
-		<cfif len(arguments.stMetadata.ftAlias) or arguments.stMetadata.ftAlias eq "root" or not structkeyexists(application.catid,arguments.stMetadata.ftAlias)>
+		<cfif (len(arguments.stMetadata.ftAlias) AND arguments.stMetadata.ftAlias eq "root") or not structkeyexists(application.catid,arguments.stMetadata.ftAlias)>
 			<cfset stBranch = stTree />
 		<cfelse>
 			<cfset stBranch = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid[arguments.stMetadata.ftAlias]) />
