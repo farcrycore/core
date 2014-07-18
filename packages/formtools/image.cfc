@@ -435,7 +435,7 @@
 					(
 						<span class="not-cancel">
 							<span class="action-preview action"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-								<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank" title="#preview#">Preview</a> | 
+								<a class="image-preview" href="#getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path#" target="_blank" title="#preview#">Preview</a> | 
 							</span>
 							<span class="action-crop action"<cfif not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
 								<a class="image-crop-select-button" href="##">Custom crop</a><cfif arguments.stMetadata.ftAllowUpload> | </cfif>

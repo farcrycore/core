@@ -4,6 +4,6 @@
 
 <cfparam name="stObj.title" default="" type="string" />
 
-<cfoutput><img src="#application.fapi.getImageWebRoot()##stobj.sourceImage#" alt="#HTMLEditFormat(stObj.alt)#" /></cfoutput>
+<cfoutput><img src="#getFileLocation(stObject=stObj,fieldname='sourceImage').path#" alt="#HTMLEditFormat(stObj.alt)#" /></cfoutput>
 
 <cfsetting enablecfoutputonly="false">

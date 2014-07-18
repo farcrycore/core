@@ -78,10 +78,10 @@
 	</cfcase>
 	<cfcase value="no">
 		<!--- if no onclick event, just display image --->
-		<cfoutput><img src="#application.fapi.getImageWebRoot()##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#HTMLEditFormat(arguments.stParam.alt)#" /></cfoutput>
+		<cfoutput><img src="#getFileLocation(stObject=stObj,fieldname=arguments.stParam.ImageSize).path#" class="#arguments.stParam.class#" alt="#HTMLEditFormat(arguments.stParam.alt)#" /></cfoutput>
 	</cfcase>
 	<cfdefaultcase>
-		<cfoutput><img src="#application.fapi.getImageWebRoot()##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#HTMLEditFormat(arguments.stParam.alt)#" /></cfoutput>
+		<cfoutput><img src="#getFileLocation(stObject=stObj,fieldname=arguments.stParam.ImageSize).path#" class="#arguments.stParam.class#" alt="#HTMLEditFormat(arguments.stParam.alt)#" /></cfoutput>
 		<cftrace text="onClick attribute is not valid which will cause incorrect behaviour when clicking on image">
 	</cfdefaultcase>
 </cfswitch>
