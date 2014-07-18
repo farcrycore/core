@@ -1036,8 +1036,8 @@
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value)>
-				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
-				
+				<cfset stLoc = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true) />
+
 				<cfoutput><img src="#stLoc.path#" border="0"</cfoutput>
 				<cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
 					<cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0><cfoutput> width="#arguments.stMetadata.ftImageWidth#"</cfoutput></cfif>
