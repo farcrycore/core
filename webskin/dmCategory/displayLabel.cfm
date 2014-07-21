@@ -20,16 +20,6 @@
 <!--- @@description: Displays the label of the object and is available to all content types  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<!--- @@cacheStatus:1 --->
-<!------------------ 
-FARCRY IMPORT FILES
- ------------------>
-<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-
-<!------------------ 
-START WEBSKIN
- ------------------>
 <cfoutput>#stobj.categoryLabel#</cfoutput>
 
 <cfsetting enablecfoutputonly="false">
