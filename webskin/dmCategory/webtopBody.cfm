@@ -15,6 +15,7 @@
 <cfset stArgs.stMetadata.value = "" />
 <cfset stArgs.stMetadata.ftAlias = "root" />
 <cfset stArgs.stMetadata.ftRenderType = "jquery" />
+<cfset stArgs.stMetadata.ftHideRootNode = "false" />
 <cfset stArgs.stMetadata.ftSelectMultiple = false />
 <cfset stArgs.stMetadata.ftJQueryAllowEdit = true />
 <cfset stArgs.stMetadata.ftJQueryAllowAdd = true />
