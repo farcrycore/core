@@ -727,6 +727,11 @@
 		</cfif>
 		<cfset stGeneratedImageArgs.interpolation = arguments.stMetadata.ftInterpolation />
 		<cfset stGeneratedImageArgs.quality = arguments.stMetadata.ftQuality />
+
+		<cfif structKeyExists(stImage, "interpolation") AND stImage.interpolation eq "highQuality">
+			<cfset stGeneratedImageArgs.interpolation = stImage.interpolation />
+		</cfif>
+	
 		<cfset stGeneratedImageArgs.bUploadOnly = false />
 		<cfset stGeneratedImageArgs.PadColor = arguments.stMetadata.ftPadColor />
 		<cfset stGeneratedImageArgs.ResizeMethod = arguments.resizeMethod />
@@ -1127,13 +1132,17 @@
 		
 		<cfif application.fc.lib.cdn.ioFileExists(location="images",file=arguments.file)>
 			
-			<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.file,datatype='image')#" structName="stImage" />
-			
-			<cfset stResult["width"] = stImage.width />
-			<cfset stResult["height"] = stImage.height />
-			<cfset stResult["size"] = application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.file) />
-			<cfset stResult["path"] = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.file,admin=true).path />
-			
+				<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.file,datatype='image')#" structName="stImage" />
+				
+				<cfset stResult["width"] = stImage.width />
+				<cfset stResult["height"] = stImage.height />
+				<cfset stResult["size"] = application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.file) />
+				<cfset stResult["path"] = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.file,admin=true).path />
+				
+	 			<cfif findNoCase("GRAY", stImage.colormodel.colorspace)>
+					<cfset stResult["interpolation"] = "highQuality" />
+				</cfif>
+
 		<cfelse>
 			
 			<cfset stResult["width"] = 0 />
@@ -1191,7 +1200,8 @@
 		<cfset var argValue = "" />
 		<cfset var objWatermark = "" />
 		<cfset var argsIndex = "" />
-		
+		<cfset var stImage = "" />
+
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
@@ -1202,6 +1212,13 @@
 			<cfset stResult.bSuccess = False />
 			<cfset stResult.message = "File doesn't exist" />
 			<cfreturn stResult />
+		</cfif>
+
+		<cfif stResult.bSuccess>
+			<cfset stImage = getImageInfo(file=arguments.source,admin=true) />
+			<cfif structKeyExists(stImage, "interpolation") AND stImage.interpolation eq "highQuality">
+				<cfset arguments.interpolation = stImage.interpolation />
+			</cfif>
 		</cfif>
 		
 		<!---
