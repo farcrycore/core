@@ -91,11 +91,9 @@
 						</div>
 						<ul class="dropdown-menu pull-right">
 							<li><a href="#application.url.webtop#?id=dashboard&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
-							<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />
-							<!--- <li class="divider"></li>
-							<li class="nav-header">Developer Tools</li>
-							<li><a href="#application.fapi.fixURL(addvalues='tracewebskins=1')#">Webskin Tracer</a></li>
-							<li><a href="#application.fapi.fixURL(addvalues='profile=1')#">Profiler</a></li> --->
+							</cfoutput>
+								<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />
+							<cfoutput>
 							<cfif application.security.checkPermission(permission="developer")>
 								<li class="divider"></li>
 								<li><a href="#application.fapi.fixURL(addvalues='updateapp=1')#">Update Application</a></li>
@@ -107,11 +105,11 @@
 				</div>
 				<div class="farcry-header-tabs">
 					<ul class="nav nav-tabs">
-
+						</cfoutput>
 						<admin:loopwebtop parent="#stWebtop#" item="section" class="class">
-							<li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="?id=#lcase(section.id)#"><cfif isdefined("section.icon")><i class="#section.icon#"></i> </cfif>#trim(section.label)#</a></li>
+							<cfoutput><li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="?id=#lcase(section.id)#"><cfif isdefined("section.icon")><i class="#section.icon#"></i> </cfif>#trim(section.label)#</a></li></cfoutput>
 						</admin:loopwebtop>
-
+						<cfoutput>
 					</ul>
 				</div>
 			</div>
@@ -121,43 +119,43 @@
 			<div class="navbar-inner">
 				<div class="container-fluid">
 					<ul class="nav">
-
+						</cfoutput>
 						<admin:loopwebtop parent="#stWebtop.children[url.sec]#" item="subsection" class="class">
 							<cfif structIsEmpty(subsection.children)>
-								<li class="#class#<cfif url.sub eq subsection.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)#</a></li>
+								<cfoutput><li class="#class#<cfif url.sub eq subsection.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)#</a></li></cfoutput>
 							<cfelse>
+								<cfoutput>
 								<li id="nav-#subsection.id#" class="dropdown #class#<cfif url.sub eq subsection.id> active</cfif>">
 									<a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)# <i class="fa fa-caret-down" style="opacity:0.5"></i></a>
-
+									</cfoutput>
 									<cfset menuitemCount = 0>
 									<cfset columnCount = 1>
 									<cfsavecontent variable="megamenu">
 										<admin:loopwebtop parent="#stWebtop.children[url.sec].children[subsection.id]#" item="menu" class="menuclass">
 											<cfif menuitemCount gte 10>
-												</ul>
-												<ul>
+												<cfoutput></ul><ul></cfoutput>
 												<cfset menuitemCount = 0>
 												<cfset columnCount = columnCount + 1>
 											</cfif>
-											<li class="nav-header"><cfif isdefined("menu.icon")><i class="#menu.icon#"></i> </cfif>#trim(menu.label)#</li>
+											<cfoutput><li class="nav-header"><cfif isdefined("menu.icon")><i class="#menu.icon#"></i> </cfif>#trim(menu.label)#</li></cfoutput>
 											<cfset menuitemCount = menuitemCount + 1>
 											<admin:loopwebtop parent="#stWebtop.children[url.sec].children[subsection.id].children[menu.id]#" item="menuitem" class="menuitemclass">
-												<li class="#menuitemclass#<cfif url.menuitem eq menuitem.id AND url.menu eq menu.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#.#lcase(menu.id)#.#lcase(menuitem.id)#<cfif isdefined("menuitem.urlparameters")>&#menuitem.urlparameters#</cfif>"><cfif isdefined("menuitem.icon")><i class="#menuitem.id#"></i> </cfif>#trim(menuitem.label)#</a></li>
+												<cfoutput><li class="#menuitemclass#<cfif url.menuitem eq menuitem.id AND url.menu eq menu.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#.#lcase(menu.id)#.#lcase(menuitem.id)#<cfif isdefined("menuitem.urlparameters")>&#menuitem.urlparameters#</cfif>"><cfif isdefined("menuitem.icon")><i class="#menuitem.id#"></i> </cfif>#trim(menuitem.label)#</a></li></cfoutput>
 												<cfset menuitemCount = menuitemCount + 1>
 											</admin:loopwebtop>
 										</admin:loopwebtop>											
 									</cfsavecontent>
-
+									<cfoutput>
 									<div class="dropdown-menu dropdown-mega-menu mega-#columnCount#">
 										<ul>
 											#megamenu#
 										</ul>
 									</div>
 									</li>
-						
+								</cfoutput>
 							</cfif>
 						</admin:loopwebtop>
-
+						<cfoutput>
 					</ul>
 					<ul class="nav pull-right" data-intro="Star your favourite pages" data-position="left">
 						<li id="favourites" class="dropdown">
