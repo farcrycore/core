@@ -5,7 +5,7 @@
 	<cfproperty name="ftAllowSelect" required="false" default="true" options="true,false" hint="Allows user to select existing records within the library picker"/>
 	<cfproperty name="ftAllowCreate" required="false" default="true" options="true,false" hint="Allows user create new record within the library picker"/>
 	<cfproperty name="ftAllowEdit" required="false" default="false" options="true,false" hint="Allows user edit new record within the library picker"/>
-	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,detach" hint="detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
+	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,remove" hint="remove will only remove from the join, delete will remove from the database. detach is a deprecated alias for remove."/>
 	<cfproperty name="ftAllowRemoveAll" required="false" default="false" options="true,false" hint="Allows user to remove all items at once"/>
 	
 	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
