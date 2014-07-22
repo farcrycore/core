@@ -1,4 +1,4 @@
-﻿<cfsetting enablecfoutputonly="yes">
+﻿<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -41,142 +41,138 @@
 	<cfparam name="attributes.typename" default="" />
 	<cfparam name="attributes.columnlist" default="label,datetimelastupdated" />
 
-<cfparam name="form.q" default="">
+	<cfparam name="form.q" default="">
+	<cfparam name="form.Criteria" default="" />
 
-<cfparam name="form.Criteria" default="" />
-<cfparam name="pluginURL" default="" /><!--- used in case we are in a plugin object admin --->
+	<cfparam name="pluginURL" default="" /><!--- used in case we are in a plugin object admin --->
 
+	<cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
-<cfparam name="session.objectadmin" default="#structnew()#" type="struct">
+	<cfparam name="attributes.title" default="" type="string">
+	<cfif not len(attributes.title)>
+		<cfset attributes.title = application.rb.getResource("coapi.#attributes.typename#.headings.typeadministration@text", application.rb.getResource("objectadmin.general.headings.typeadministration@text", "{1} Administration"))>
+	</cfif>
 
+	<cfparam name="attributes.ColumnList" default="" type="string">
+	<cfparam name="attributes.SortableColumns" default="" type="string">
+	<cfparam name="attributes.lFilterFields" default="" type="string">
+	<cfparam name="attributes.bFilterValidation" default="0" type="boolean">
+	<cfparam name="attributes.description" default="" type="string">
+	<cfparam name="attributes.datasource" default="#application.dsn#" type="string">
+	<cfparam name="attributes.aColumns" default="#arrayNew(1)#" type="array">
+	<cfparam name="attributes.aCustomColumns" default="#arrayNew(1)#" type="array">
+	<cfparam name="attributes.lCustomColumns" default="" type="string"><!--- A list of column label:webskin values --->
+	<cfparam name="attributes.aButtons" default="#arrayNew(1)#" type="array">
+	<cfparam name="attributes.bdebug" default="false" type="boolean">
+	<cfparam name="attributes.bFilterCategories" default="true" type="boolean">
+	<cfparam name="attributes.bFilterDateRange" default="true" type="boolean">
+	<cfparam name="attributes.bFilterProperties" default="true" type="boolean">
+	<cfparam name="attributes.permissionset" default="#attributes.typename#" type="string">
+	<!--- attributes.query type="query" CF7 specific --->
+	<cfparam name="attributes.defaultorderby" default="datetimelastupdated" type="string">
+	<cfparam name="attributes.defaultorder" default="desc" type="string">
+	<cfparam name="attributes.id" default="#attributes.typename#" type="string">
+	<cfparam name="attributes.sqlorderby" default="datetimelastupdated desc" type="string" />
+	<cfparam name="attributes.sqlWhere" default="" />
+	<cfparam name="attributes.lCategories" default="" />
+	<cfparam name="attributes.name" default="objectadmin" />
 
-<cfparam name="attributes.title" default="" type="string">
-<cfif not len(attributes.title)>
-	<cfset attributes.title = application.rb.getResource("coapi.#attributes.typename#.headings.typeadministration@text", application.rb.getResource("objectadmin.general.headings.typeadministration@text", "{1} Administration"))>
-</cfif>
+	<!--- admin configuration options --->
+	<cfparam name="attributes.numitems" default="#application.config.general.GENERICADMINNUMITEMS#" type="numeric">
+	<cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
-<cfparam name="attributes.ColumnList" default="" type="string">
-<cfparam name="attributes.SortableColumns" default="" type="string">
-<cfparam name="attributes.lFilterFields" default="" type="string">
-<cfparam name="attributes.bFilterValidation" default="0" type="boolean">
-<cfparam name="attributes.description" default="" type="string">
-<cfparam name="attributes.datasource" default="#application.dsn#" type="string">
-<cfparam name="attributes.aColumns" default="#arrayNew(1)#" type="array">
-<cfparam name="attributes.aCustomColumns" default="#arrayNew(1)#" type="array">
-<cfparam name="attributes.lCustomColumns" default="" type="string"><!--- A list of column label:webskin values --->
-<cfparam name="attributes.aButtons" default="#arrayNew(1)#" type="array">
-<cfparam name="attributes.bdebug" default="false" type="boolean">
-<cfparam name="attributes.bFilterCategories" default="true" type="boolean">
-<cfparam name="attributes.bFilterDateRange" default="true" type="boolean">
-<cfparam name="attributes.bFilterProperties" default="true" type="boolean">
-<cfparam name="attributes.permissionset" default="#attributes.typename#" type="string">
-<!--- attributes.query type="query" CF7 specific --->
-<cfparam name="attributes.defaultorderby" default="datetimelastupdated" type="string">
-<cfparam name="attributes.defaultorder" default="desc" type="string">
-<cfparam name="attributes.id" default="#attributes.typename#" type="string">
-<cfparam name="attributes.sqlorderby" default="datetimelastupdated desc" type="string" />
-<cfparam name="attributes.sqlWhere" default="" />
-<cfparam name="attributes.lCategories" default="" />
-<cfparam name="attributes.name" default="objectadmin" />
+	<cfparam name="attributes.lButtons" default="*" type="string">
+	<cfparam name="attributes.lButtonsEmpty" default="add,bulk upload,undelete" type="string">
+	<cfparam name="attributes.bPaginateTop" default="false" type="boolean">
+	<cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
+	<cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
 
-<!--- admin configuration options --->
-<cfparam name="attributes.numitems" default="#application.config.general.GENERICADMINNUMITEMS#" type="numeric">
-<cfparam name="attributes.numPageDisplay" default="5" type="numeric">
-
-<cfparam name="attributes.lButtons" default="*" type="string">
-<cfparam name="attributes.lButtonsEmpty" default="add,bulk upload,undelete" type="string">
-<cfparam name="attributes.bPaginateTop" default="false" type="boolean">
-<cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
-<cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
-
-<cfparam name="attributes.bCheckAll" default="true" type="boolean" />
-<cfparam name="attributes.bSelectCol" default="true" type="boolean">
-<cfparam name="attributes.bEditCol" default="true" type="boolean">
-<cfparam name="attributes.bViewCol" default="true" type="boolean">
-<cfparam name="attributes.bFlowCol" default="true" type="boolean">
-<cfparam name="attributes.bPreviewCol" default="true" type="boolean">
+	<cfparam name="attributes.bCheckAll" default="true" type="boolean" />
+	<cfparam name="attributes.bSelectCol" default="true" type="boolean">
+	<cfparam name="attributes.bEditCol" default="true" type="boolean">
+	<cfparam name="attributes.bViewCol" default="true" type="boolean">
+	<cfparam name="attributes.bFlowCol" default="true" type="boolean">
+	<cfparam name="attributes.bPreviewCol" default="true" type="boolean">
 
 
-<cfparam name="attributes.editMethod" default="edit" type="string">
-<cfparam name="attributes.copyMethod" default="copy" type="string">
+	<cfparam name="attributes.editMethod" default="edit" type="string">
+	<cfparam name="attributes.copyMethod" default="copy" type="string">
 
-<cfparam name="attributes.PackageType" default="types" type="string">
+	<cfparam name="attributes.PackageType" default="types" type="string">
 
-<cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
-<cfparam name="attributes.plugin" default="" />
-<cfparam name="attributes.lCustomActions" default="" />
-<cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
-<cfparam name="attributes.bShowActionList" default="true" />
-<cfparam name="attributes.qRecordSet" default=""><!--- Used if the developer wants to pass in their own recordset --->
+	<cfparam name="attributes.module" default="customlists/#attributes.typename#.cfm">
+	<cfparam name="attributes.plugin" default="" />
+	<cfparam name="attributes.lCustomActions" default="" />
+	<cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
+	<cfparam name="attributes.bShowActionList" default="true" />
+	<cfparam name="attributes.qRecordSet" default=""><!--- Used if the developer wants to pass in their own recordset --->
 
-<cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
-<cfparam name="attributes.addUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the add screen need to a struct e.g paramStruct.parentid='whatever'--->
-<cfparam name="attributes.copyUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the copy screen need to a struct e.g paramStruct.parentid='whatever'--->
-<cfparam name="attributes.editUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the edit screen need to a struct e.g paramStruct.parentid='whatever'--->
+	<cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
+	<cfparam name="attributes.addUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the add screen need to a struct e.g paramStruct.parentid='whatever'--->
+	<cfparam name="attributes.copyUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the copy screen need to a struct e.g paramStruct.parentid='whatever'--->
+	<cfparam name="attributes.editUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the edit screen need to a struct e.g paramStruct.parentid='whatever'--->
 
-<cfparam name="attributes.emptymessage" default="You do not currently have any content. Use the [Add] button above to begin." />
+	<cfparam name="attributes.emptymessage" default="You do not currently have any content. Use the [Add] button above to begin." />
 
-<!--- Convert attributes.lCustomColumns to array of structs --->
-<cfif listLen(attributes.lCustomColumns)>
-	<cfloop list="#attributes.lCustomColumns#" index="i">
-		<cfset stCustomColumn = structNew() />
-		<cfset stCustomColumn.title = listFirst(i,":") />
-		<cfset stCustomColumn.webskin = listLast(i,":") />
-		<cfset arrayAppend(attributes.aCustomColumns, stCustomColumn) />
-	</cfloop>
-</cfif>
+	<!--- Convert attributes.lCustomColumns to array of structs --->
+	<cfif listLen(attributes.lCustomColumns)>
+		<cfloop list="#attributes.lCustomColumns#" index="i">
+			<cfset stCustomColumn = structNew() />
+			<cfset stCustomColumn.title = listFirst(i,":") />
+			<cfset stCustomColumn.webskin = listLast(i,":") />
+			<cfset arrayAppend(attributes.aCustomColumns, stCustomColumn) />
+		</cfloop>
+	</cfif>
 
-<!--- I18 conversion off text output attributes --->
-<cfset attributes.description = application.rb.getResource("#attributes.rbkey#.description@text",attributes.description) />
+	<!--- I18 conversion off text output attributes --->
+	<cfset attributes.description = application.rb.getResource("#attributes.rbkey#.description@text",attributes.description) />
 
-<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
-	<cfset typelabel = application.stCOAPI[attributes.typename].displayname />
-<cfelse>
-	<cfset typelabel = attributes.typename />
-</cfif>
+	<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
+		<cfset typelabel = application.stCOAPI[attributes.typename].displayname />
+	<cfelse>
+		<cfset typelabel = attributes.typename />
+	</cfif>
 
-<cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
-	<cfset structInsert(session.objectadmin, attributes.typename, structnew())>
-</cfif>
+	<cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
+		<cfset structInsert(session.objectadmin, attributes.typename, structnew())>
+	</cfif>
 
-<cfset PrimaryPackage = duplicate(application.stCOAPI[attributes.typename]) />
-<cfset PrimaryPackagePath = application.stCOAPI[attributes.typename].packagepath />
+	<cfset PrimaryPackage = duplicate(application.stCOAPI[attributes.typename]) />
+	<cfset PrimaryPackagePath = application.stCOAPI[attributes.typename].packagepath />
 
-<cfif not len(attributes.sqlWhere)>
-	<cfset attributes.sqlWhere = "0=0" />
-</cfif>
+	<cfif not len(attributes.sqlWhere)>
+		<cfset attributes.sqlWhere = "0=0" />
+	</cfif>
 
-<!--- Make sure the type is deployed --->
-<cfset alterType = createObject("component","farcry.core.packages.farcry.alterType") />
+	<!--- Make sure the type is deployed --->
+	<cfset alterType = createObject("component","farcry.core.packages.farcry.alterType") />
 
-<!--- Deploy type if it has been requested --->
-<cfif structkeyexists(url,"deploy") and url.deploy>
-	<cfset application.fc.lib.db.deployType(typename=attributes.typename,bDropTable=true,dsn=application.dsn) />
-	<cflocation url="#cgi.script_name#?#replacenocase(cgi.query_string,'deploy=true','')#" />
-</cfif>
+	<!--- Deploy type if it has been requested --->
+	<cfif structkeyexists(url,"deploy") and url.deploy>
+		<cfset application.fc.lib.db.deployType(typename=attributes.typename,bDropTable=true,dsn=application.dsn) />
+		<cflocation url="#cgi.script_name#?#replacenocase(cgi.query_string,'deploy=true','')#" />
+	</cfif>
 
-<!--- If type isn't deployed, display error --->
-<cfif not structkeyexists(attributes,"qRecordSet") and not application.fc.lib.db.isDeployed(typename=attributes.typename,dsn=application.dsn)>
+	<!--- If type isn't deployed, display error --->
+	<cfif not structkeyexists(attributes,"qRecordSet") and not application.fc.lib.db.isDeployed(typename=attributes.typename,dsn=application.dsn)>
 
-	<cfoutput>
-		<h1><admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource></h1>
-		<p>The '<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname")>#application.stCOAPI[attributes.typename].displayname#<cfelse>#listlast(application.stCOAPI[attributes.typename].name,'.')#</cfif>' content type has not been deployed yet. Click <a href="#cgi.SCRIPT_NAME#?#cgi.query_string#&deploy=true">here</a> to deploy it now.</p>
-	</cfoutput>
-	<cfexit method="exittag" />
-	
-<cfelse>
+		<cfoutput>
+			<h1><admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource></h1>
+			<p>The '<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname")>#application.stCOAPI[attributes.typename].displayname#<cfelse>#listlast(application.stCOAPI[attributes.typename].name,'.')#</cfif>' content type has not been deployed yet. Click <a href="#cgi.SCRIPT_NAME#?#cgi.query_string#&deploy=true">here</a> to deploy it now.</p>
+		</cfoutput>
+		<cfexit method="exittag" />
+		
+	<cfelse>
 
-	<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
+		<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
 
-	<cfif isDefined("attributes.r_oTypeAdmin")>
-		<cfset caller[attributes.r_oTypeAdmin]=oTypeAdmin>
-	</cfif>	
-</cfif>
-
-
-
+		<cfif isDefined("attributes.r_oTypeAdmin")>
+			<cfset caller[attributes.r_oTypeAdmin]=oTypeAdmin>
+		</cfif>	
+	</cfif>
 
 </cfif>
+
 
 <cfif thistag.executionMode eq "End">
 	
@@ -1221,108 +1217,90 @@
 	
 	<cfsavecontent variable="ActionDropdown">
 		
-
-		<cfoutput>
+		<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+		<cfif Len(attributes.plugin)>
+			<cfset overviewURL = listAppend(overviewURL,'plugin=#attributes.plugin#', '&') />
+		</cfif>	
 		
+		<cfset editURL = "#application.url.farcry#/conjuror/invocation.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
 		
-	<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
-	<cfif Len(attributes.plugin)>
-		<cfset overviewURL = listAppend(overviewURL,'plugin=#attributes.plugin#', '&') />
-	</cfif>	
+		<cfif not structIsEmpty(attributes.editUrlParams)>
+			<cfloop collection="#attributes.editUrlParams#" item="key">
+				<cfset EditURL="#EditURL#&#key#=#attributes.editUrlParams[key]#">
+			</cfloop>
+		</cfif>	
+		<cfif Len(attributes.plugin)>
+			<cfset editURL = listAppend(editURL,'plugin=#attributes.plugin#', '&') />
+		</cfif>	
+		
+		<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe&method=#attributes.editMethod#">
+		<cfif not structIsEmpty(attributes.editUrlParams)>
+			<cfloop collection="#attributes.editUrlParams#" item="key">
+				<cfset createDraftURL="#createDraftURL#&#key#=#attributes.editUrlParams[key]#">
+			</cfloop>
+		</cfif>	
+		
+		<cfif attributes.bViewCol>	
+			<ft:button value="Overview" text="" title="Open up the overview screen for this object" icon="fa fa-th" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+		</cfif>
+		<cfif attributes.bEditCol>
 	
-	<cfset editURL = "#application.url.farcry#/conjuror/invocation.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
-	
-	<cfif not structIsEmpty(attributes.editUrlParams)>
-		<cfloop collection="#attributes.editUrlParams#" item="key">
-			<cfset EditURL="#EditURL#&#key#=#attributes.editUrlParams[key]#">
-		</cfloop>
-	</cfif>	
-	<cfif Len(attributes.plugin)>
-		<cfset editURL = listAppend(editURL,'plugin=#attributes.plugin#', '&') />
-	</cfif>	
-	
-	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe&method=#attributes.editMethod#">
-	<cfif not structIsEmpty(attributes.editUrlParams)>
-		<cfloop collection="#attributes.editUrlParams#" item="key">
-			<cfset createDraftURL="#createDraftURL#&#key#=#attributes.editUrlParams[key]#">
-		</cfloop>
-	</cfif>	
-
-		
-		
-			<cfif attributes.bViewCol>	
-				<ft:button value="Overview" text="" title="Open up the overview screen for this object" icon="fa fa-th" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#overviewURL#&objectid=#arguments.st.objectid#');" />
-			</cfif>
-			<cfif attributes.bEditCol>
-		
-				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
-				<cfif not listLen(lWorkflowTypenames)>	
-					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="fa fa-unlock" class="" type="submit" selectedObjectID="#arguments.st.objectid#" />
-					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
-						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
-							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
-								
-									<ft:button value="Create Draft Object" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Create a draft version of this object and begin editing" icon="fa fa-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
-								
-							<cfelseif arguments.st.bHasMultipleVersion>
-								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
-								
-									<ft:button value="Edit Draft" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit the draft version of this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
-											
-							<cfelse>
-								
-									<ft:button value="Edit" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
-									
-							</cfif>
+			<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+			<cfif not listLen(lWorkflowTypenames)>	
+				<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
+					<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="fa fa-unlock" class="" type="submit" selectedObjectID="#arguments.st.objectid#" />
+				<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
+					<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
+						<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
+							<ft:button value="Create Draft Object" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Create a draft version of this object and begin editing" icon="fa fa-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+						<cfelseif arguments.st.bHasMultipleVersion>
+							<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
+							<ft:button value="Edit Draft" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit the draft version of this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 						<cfelse>
-							
-								<ft:button value="Edit" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
-							
+							<ft:button value="Edit" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
 						</cfif>
+					<cfelse>
+						<ft:button value="Edit" text="#application.rb.getResource('objectadmin.buttons.edit@label', 'Edit')#" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('#application.rb.getResource("objectadmin.modal.heading@text", 'Administration')#', '#editURL#&objectid=#arguments.st.objectid#');" />
 					</cfif>
-				</cfif>	
-			
-			</cfif>
-			
+				</cfif>
+			</cfif>	
+
+		</cfif>
+
+		<cfif attributes.bPreviewCol>
 			<cfif attributes.bPreviewCol>
-				<cfif attributes.bPreviewCol>
-					<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye only-icon"></i></a>
-				</cfif>		
-			</cfif>
+				<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye only-icon"></i></a>
+			</cfif>		
+		</cfif>
+		
+		<cfif len(attributes.lCustomActions)>
+			<cfoutput><div class="btn-group"></cfoutput>
 			
-			<cfif len(attributes.lCustomActions)>
-				<cfoutput><div class="btn-group"></cfoutput>
+				<ft:button value="toggle" text="" icon=" ,fa-caret-down" dropdownToggle="true" type="button" />
 				
-					<ft:button value="toggle" text="" icon=" ,fa-caret-down" dropdownToggle="true" type="button" />
-					
-					<cfoutput>
-						<div class="dropdown-menu">
-				
-						<cfif listLen(attributes.lCustomActions)>
-							<cfloop list="#attributes.lCustomActions#" index="i">
+				<cfoutput><div class="dropdown-menu"></cfoutput>
+			
+					<cfif listLen(attributes.lCustomActions)>
+						<cfloop list="#attributes.lCustomActions#" index="i">
+							<cfoutput>
 								<li>
 									<ft:button value="#listFirst(i, ":")#" text="#listLast(i, ":")#" renderType="link" selectedObjectID="#arguments.st.objectid#" />
 								</li>
-							</cfloop>
-						</cfif>
-						
-						</div>
-					</cfoutput>
+							</cfoutput>
+						</cfloop>
+					</cfif>
+					
 				<cfoutput></div></cfoutput>
 				
-			</cfif>		
-		
-		
-		</cfoutput>
-		
+			<cfoutput></div></cfoutput>
+			
+		</cfif>		
+
 	</cfsavecontent>
 	
 	<cfset stObjectAdminData.action = ActionDropdown />
-
 	
 	<cfreturn stObjectAdminData />
-
 </cffunction>
 
-<cfsetting enablecfoutputonly="no">
+<cfsetting enablecfoutputonly="false">
