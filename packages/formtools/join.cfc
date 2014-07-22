@@ -1,5 +1,4 @@
-
-<cfcomponent extends="farcry.core.packages.formtools.field" name="join" displayname="join" hint="Used to liase with join type fields (array and uuid)" bDocument="false"> 
+<cfcomponent extends="farcry.core.packages.formtools.field" name="join" displayname="join" output="false" hint="Used to liase with join type fields (array and uuid)" bDocument="false"> 
 
 	<cfproperty name="ftJoin" required="true" default="" options="comma seperated list of types" hint="A list of the user can select from. e.g 'dmImage,dmfile,dmflash'"/>
 	<cfproperty name="ftAllowSelect" required="false" default="true" options="true,false" hint="Allows user to select existing records within the library picker"/>
@@ -8,22 +7,23 @@
 	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,remove" hint="remove will only remove from the join, delete will remove from the database. detach is a deprecated alias for remove."/>
 	<cfproperty name="ftAllowRemoveAll" required="false" default="false" options="true,false" hint="Allows user to remove all items at once"/>
 	
-	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
-	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="datetimelastupdated desc" hint="Nominate a specific property to order library results by."/><!--- detach or delete --->
+	<cfproperty name="ftLibraryData" default="" hint="Name of a function to return the library data. By default will look for ./webskin/typename/librarySelected.cfm"/><!--- Name of a function to return the library data --->
+	<cfproperty name="ftLibraryDataTypename" default="" hint="Typename containing the function defined in ftLibraryData"/><!--- Typename containing the function defined in ftLibraryData --->	
+	<cfproperty name="ftLibraryDataSQLWhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/>
+	<cfproperty name="ftLibraryDataSQLOrderBy" required="false" default="datetimelastupdated desc" hint="Nominate a specific property to order library results by."/>
 	
+	<cfproperty name="ftLibraryEditWebskin" default="edit" hint="???"/>
 	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" hint="webskin to overwrite each record in list"/>
 	<cfproperty name="ftLibrarySelectedListClass" default="arrayDetail" type="string" hint="overwrite the style class of the list"/>
 	<cfproperty name="ftLibrarySelectedListStyle" default="" type="string" hint="write your own inline style for the class" />
 	<cfproperty name="ftLibraryListItemWidth" default="" type="string" hint="???" />
 	<cfproperty name="ftLibraryListItemHeight" default="" type="string" hint="???"/>
+
 	<cfproperty name="ftRenderType" default="Library" options="Library, list, checkbox or radio" type="string" hint="Specify how to render the form element for the array, library pop-up, select dropdown, or list of checkbox or radio buttons."/>
 	<cfproperty name="ftSelectSize" default="10" type="string" hint="Specify the number of items displayed of a select list."/>
 	<cfproperty name="ftSelectMultiple" default="true" options="true,false" type="boolean" hint="Allow selection of multiple items from a select list. Values - true or false, if this property is omitted then allowing multiple select is default"/>
 	<cfproperty name="ftAllowLibraryEdit" default="false" hint="???"/>
-	<cfproperty name="ftLibraryEditWebskin" default="edit" hint="???"/>
 	<cfproperty name="ftFirstListLabel" default="-- SELECT --" hint="Used with ftRenderType, this is the value of the first element in the list"/>
-	<cfproperty name="ftLibraryData" default="" hint="Name of a function to return the library data. By default will look for ./webskin/typename/librarySelected.cfm"/><!--- Name of a function to return the library data --->
-	<cfproperty name="ftLibraryDataTypename" default="" hint="Typename containing the function defined in ftLibraryData"/><!--- Typename containing the function defined in ftLibraryData --->	
 	
 	<cfproperty name="ftAllowBulkUpload" default="false" options="true,false" hint="Allows user to upload items in bulk. Only used for array properties." />
 	
