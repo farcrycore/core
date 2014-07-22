@@ -1269,7 +1269,7 @@
 
 		<cfif attributes.bPreviewCol>
 			<cfif attributes.bPreviewCol>
-				<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye only-icon"></i></a>
+				<cfoutput><a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye only-icon"></i></a></cfoutput>
 			</cfif>		
 		</cfif>
 		
