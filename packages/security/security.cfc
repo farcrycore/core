@@ -99,7 +99,7 @@
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="checkPermission" access="public" output="true" returntype="boolean" hint="Returns true if a user has the specified permission" bDocument="true">
+	<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Returns true if a user has the specified permission" bDocument="true">
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to check" />
 		<cfargument name="object" type="string" required="false" default="" hint="If specified, will check barnacle" />
 		<cfargument name="role" type="string" required="false" default="" hint="List of roles to check" />
@@ -219,7 +219,7 @@
 		
 	</cffunction>
 
-	<cffunction name="getCurrentRoles" access="public" output="true" returntype="string" hint="Returns the roles of the current logged in user" bDocument="true">
+	<cffunction name="getCurrentRoles" access="public" output="false" returntype="string" hint="Returns the roles of the current logged in user" bDocument="true">
 		<cfif not isdefined("this.cache.defaultroles")>
 			<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
 		</cfif>
@@ -385,7 +385,7 @@
 	</cffunction>
 	
 
-	<cffunction name="authenticate" access="public" output="true" returntype="struct" hint="Attempts to authenticate a user using each directory, and returns true if successful">
+	<cffunction name="authenticate" access="public" output="false" returntype="struct" hint="Attempts to authenticate a user using each directory, and returns true if successful">
 		<cfset var ud = "" />
 		<cfset var stResult = structnew() />
 		<cfset var udlist = structsort(this.userdirectories,"numeric","asc","seq") />
