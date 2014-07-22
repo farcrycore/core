@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true">
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
@@ -77,3 +78,5 @@
 	</button>
 	</cfoutput>
 </cfif>
+
+<cfsetting enablecfoutputonly="false">
