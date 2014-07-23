@@ -1485,31 +1485,45 @@
 		<cfif application.fc.factory.farFU.isUsingFU()>
 			
 			<cfif len(arguments.objectid)>
-				<!--- LOOK UP IN MEMORY CACHE ---> 
-				<cfif structKeyExists(this.stLookup, arguments.objectid)>
-					<cfset returnURL = this.stLookup[arguments.objectid].friendlyURL />
-				
-				<!--- IF NOT IN CACHE CHECK THE DATABASE --->
-				<cfelse>
+
+				<cfif StructKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
+						
+					<!--- LOOK UP IN MEMORY CACHE ---> 
+					<cfif structKeyExists(this.stLookup, arguments.objectid)>
+						<cfset returnURL = this.stLookup[arguments.objectid].friendlyURL />
 					
-					<!--- GET FRIENDLY URL BASED ON THE OBJECTID --->					
-					<cfset stFUObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
+					<!--- IF NOT IN CACHE CHECK THE DATABASE --->
+					<cfelse>
+						
+						<!--- GET FRIENDLY URL BASED ON THE OBJECTID --->					
+						<cfset stFUObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
+						
+						<!--- JUST IN CASE WE DONT HAVE A DEFAULT FU SET, USE THE SYSTEM OBJECT IF AVAILABLE --->
+						<cfif structIsEmpty(stFUObject)>
+							<cfset stFUObject = getSystemObject(refObjectID="#arguments.objectid#") />
+						</cfif>
+						
+						<!--- IF WE FOUND AN FU, THE USE IT, OTHERWISE START THE URL SYNTAX --->
+						<cfif NOT structIsEmpty(stFUObject)>
+							<cfset returnURL = "#stFUObject.friendlyURL#">
+						
+						</cfif>					
+					</cfif>	
+
+
+				</cfif>
+
+				<cfif not len(returnURL)>
 					
-					<!--- JUST IN CASE WE DONT HAVE A DEFAULT FU SET, USE THE SYSTEM OBJECT IF AVAILABLE --->
-					<cfif structIsEmpty(stFUObject)>
-						<cfset stFUObject = getSystemObject(refObjectID="#arguments.objectid#") />
+					<cfif len(arguments.type)>							
+						<cfset returnURL = "/#typeFU#" />
 					</cfif>
 					
-					<!--- IF WE FOUND AN FU, THE USE IT, OTHERWISE START THE URL SYNTAX --->
-					<cfif NOT structIsEmpty(stFUObject)>
-						<cfset returnURL = "#stFUObject.friendlyURL#">
-					<cfelse>
-						<cfif len(arguments.type)>							
-							<cfset returnURL = "/#typeFU#" />
-						</cfif>
-						<cfset returnURL = "#returnURL#/#arguments.objectid#">
-					</cfif>					
-				</cfif>	
+					<cfset returnURL = "#returnURL#/#arguments.objectid#">
+
+				</cfif>
+
+
 			<cfelseif len(typeFU)>
 				<cfset returnURL = "/#typeFU#" />			
 			</cfif>
