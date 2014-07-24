@@ -40,6 +40,7 @@
 			   type: "POST",
 			   url: '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxSetTemplatePreview&ajaxmode=1',
 			   data: 'objectID=' + r_objectid + '&Typename=' + r_typename + '&webskin=' + r_webskin , 
+			   dataType: 'html',
 			   cache: false,
 			   timeout: 2000,
 			   success: function(msg){
@@ -105,6 +106,7 @@
 			   type: "POST",
 			   url: '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxGetTemplateDropdowns',
 			   data: 'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '&' + $j('form.uniForm div.multiField input:hidden',(parent || opener).document).serialize() + '&' + $j('##wizardID',(parent || opener).document).serialize(),
+			   dataType: 'html',
 			   cache: false,
 			   timeout: 2000,
 			   success: function(msg){
