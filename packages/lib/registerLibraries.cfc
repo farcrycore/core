@@ -213,6 +213,14 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery.ajaxq" 
 							lFiles="jquery.ajaxq-0.0.1.js" />
 
+		<!--- FORMTOOLS --->
+		<skin:registerJS	id="reverseUUID" core="true" bCombine="false"
+							baseHREF="#application.url.webtop#/js/formtools" 
+							lFiles="reverseUUID.js" />
+
+
+							
+
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"
