@@ -574,6 +574,7 @@
 			<cfoutput><h1>Application Failed to Initialise</h1></cfoutput>
 			<cfset request.fcInitError = true />
 			<cfdump var="#cfcatch#" expand="false" />
+			<cfdump var="#createObject("java", "java.net.InetAddress").localhost.getHostName()#" />
 			<cfabort />
 		</cfcatch>
 		
