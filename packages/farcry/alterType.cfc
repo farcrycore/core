@@ -410,6 +410,41 @@ $out:$
 		</cfloop>
 	</cffunction>
 	
+	
+	<cffunction name="updateWatchingFields" output="false" hint="Cycles through coapi and updates all the watching fields from the ftWatchField metadata properties">
+		<cfargument name="stCOAPI" type="struct" required="true" hint="The COAPI metadata struct" />
+		
+		<cfset var iType = "" />
+		<cfset var iProperty = "" />
+		<cfset var iWatchField = "" />
+		<cfset var iWatchType = "" />
+		<cfset var iWatchProperty = "" />
+		<cfset var ftWatchingFields = "">
+		
+		<cfloop collection="#arguments.stCOAPI#" item="iType">
+			
+			<cfloop collection="#arguments.stCOAPI[iType].stProps#" item="iProperty">
+				
+				<cfloop list="#arguments.stCOAPI[iType].stProps[iProperty].metadata.ftWatchFields#" index="iWatchField">
+					
+					<cfif listLen(iWatchField,".") EQ 1>
+						<cfset iWatchType = iType><!--- Current type --->
+						<cfset iWatchProperty = iWatchField>
+						<cfparam name="arguments.stCOAPI['#iWatchType#'].stProps['#iWatchProperty#'].metadata.ftWatchingFields" default="">
+						<cfset arguments.stCOAPI[iWatchType].stProps[iWatchProperty].metadata.ftWatchingFields = listAppend(arguments.stCOAPI[iWatchType].stProps[iWatchProperty].metadata.ftWatchingFields, "#iProperty#")>
+					<cfelse>
+						<cfset iWatchType = listFirst(iWatchField,".")>
+						<cfset iWatchProperty = listLast(iWatchField,".")>
+						<cfparam name="arguments.stCOAPI['#iWatchType#'].stProps['#iWatchProperty#'].metadata.ftWatchingFields" default="">
+						<cfset arguments.stCOAPI[iWatchType].stProps[iWatchProperty].metadata.ftWatchingFields = listAppend(arguments.stCOAPI[iWatchType].stProps[iWatchProperty].metadata.ftWatchingFields, "#iType#.#iProperty#")>
+					</cfif>
+					
+				</cfloop>
+			</cfloop>
+		</cfloop>
+			
+	</cffunction>
+	
 	<cffunction name="refreshAllCFCAppData" output="true" hint="Inserts the metadata information for each cfc into the application scope.">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfargument name="dbowner" required="No" default="#application.dbowner#">
@@ -467,6 +502,7 @@ $out:$
 		</cfloop>
 		
 		<cfset updateJoins(application.stCOAPI) />
+		<cfset updateWatchingFields(application.stCOAPI) />
 	</cffunction>
 
 </cfcomponent>

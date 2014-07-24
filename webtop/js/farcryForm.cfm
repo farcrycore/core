@@ -887,7 +887,36 @@
 			return false;
 		});	
 	});		
+	
+	$fc.refreshProperty = function(propertyWrap,focusFieldID) {
 
+		$j(propertyWrap).mask('');
+		var $wrap = $j(propertyWrap);
+		
+		var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&view=displayAjaxRefreshAutoSaveProperty';
+		
+		if (typeof($wrap) == 'undefined'){
+			// ignore
+		} else {
+			if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
+				$j.ajaxq('AutoSave',{
+				    url: refreshPropertyURL,
+				    cache: false,
+				    success: function(html)
+				    {
+				    	$wrap.html(html);
+				    }
+				});
+			}
+		}
+		
+		//$wrap.load(refreshPropertyURL, 
+		//	function(data){
+		//		$j('##' + focusFieldID).focus();
+		//	});
+
+		$j(propertyWrap).unmask('');			
+	};	
 <cfsilent></script></cfsilent><!--- /trick editor to highlight syntax --->
 </cfoutput>
 

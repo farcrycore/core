@@ -13,6 +13,22 @@
 
 jQuery.ajaxq = function (queue, options)
 {
+
+
+
+   var showQueueIndicator = function() {
+         if($j("#autosaveindicator").length == 0) {
+            var fcAutoSaveIndicatorTPL = $j("<div id='autosaveindicator' style='position:absolute;top:0px;text-align: center; display: none;width:100%;'><div style='display: inline-block;border: 1px solid #F0C36D;background-color: #F9EDBE;padding:2px;'>Saving...</div></div>");
+            $j("body").append(fcAutoSaveIndicatorTPL);
+        }
+        $j("#autosaveindicator").show(); 
+    }
+
+   var hideQueueIndicator = function() {
+        $j("#autosaveindicator").hide();
+    }
+
+
 	// Initialize storage for request queues if it's not initialized yet
 	if (typeof document.ajaxq == "undefined") document.ajaxq = {q:{}, r:null};
 
@@ -33,6 +49,8 @@ jQuery.ajaxq = function (queue, options)
 
 		options.complete = function (request, status)
 		{
+
+			hideQueueIndicator();
 			// Dequeue the current request
 			document.ajaxq.q[queue].shift ();
 			document.ajaxq.r = null;
@@ -44,6 +62,7 @@ jQuery.ajaxq = function (queue, options)
 			if (document.ajaxq.q[queue].length > 0) document.ajaxq.r = jQuery.ajax (document.ajaxq.q[queue][0]);
 		};
 
+		showQueueIndicator();
 		// Enqueue the request
 		document.ajaxq.q[queue].push (options);
 
@@ -60,4 +79,4 @@ jQuery.ajaxq = function (queue, options)
 
 		document.ajaxq.q[queue] = [];
 	}
-}
+};

@@ -18,7 +18,7 @@
 	<cfproperty name="ftAutoSave" required="false" default="false" hint="Should the object be saved if the field changes?" />
 	<cfproperty name="ftWatchFields" required="false" default="" hint="If any of these fields change, then update the current field? Use the format 'typename.property' if you wish to update all field regardless of object. Use just 'property' if you wish to update just that object." />
 	<cfproperty name="ftReloadOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the entire page be refreshed?" />
-	<cfproperty name="ftRefreshPropertyOnAutoSave" required="false" default="true" hint="If the property is autosaved, should the field be refreshed?" />
+	<cfproperty name="ftRefreshPropertyOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the field be refreshed?" />
 	
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.field" output="false" hint="Returns a copy of this initialised object">

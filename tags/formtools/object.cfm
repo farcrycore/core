@@ -563,49 +563,6 @@
 					<cfif NOT request.mode.ajax><!--- We do not want multiple of this live watching code on a page --->
 						<skin:onReady id="wrap-save-on-change">
 						<cfoutput>
-							
-							$fc.reloadWebskinWraps = function(options) {
-								var $defaultOptions = {
-								    typename: '',
-								    objectid: '',
-								    webskin: ''
-								}
-								
-								var $options = $.extend({}, $defaultOptions, options || {});
-								
-								$j('.webskin-wrap').each(function(index) {
-									var $webskinWrap = $j(this);
-									var $webskinTypename = $webskinWrap.attr('ft:typename');
-									var $webskinObjectID = $webskinWrap.attr('ft:objectid');
-									var $webskinView = $webskinWrap.attr('ft:webskin');
-									
-									var bRefresh = true;
-									
-									if($options.typename.length){
-										if( $webskinTypename != $options.typename ) {
-											bRefresh = false;
-										}
-									}
-									
-									if($options.objectid.length){
-										if( $webskinObjectID != $options.objectid ) {
-											bRefresh = false;
-										}
-									}
-									
-									if($options.webskin.length){
-										if( $webskinView != $options.webskin ) {
-											bRefresh = false;
-										}
-									}
-									
-									if (bRefresh){
-										$fc.reloadWebskinWrap($webskinWrap);
-									}
-								});
-								
-							}
-							
 							$fc.reloadWebskinWrap = function($webskinWrap,focusFieldID) {
 								
 								focusFieldID = focusFieldID ? focusFieldID : '';
@@ -615,9 +572,9 @@
 								var $webskinObjectID = $webskinWrap.attr('ft:objectid');
 								var $webskinView = $webskinWrap.attr('ft:webskin');
 								
-								$j( $webskinWrap ).toromask('&nbsp;');
+								$j( $webskinWrap ).mask('&nbsp;');
 								$j( $webskinWrap ).load('/index.cfm?ajaxmode=1&type=' + $webskinTypename + '&objectid=' + $webskinObjectID + '&view=' + $webskinView, function(){
-									$j( $webskinWrap ).torounmask('');
+									$j( $webskinWrap ).unmask('');
 									if (focusFieldID.length){ $j('##' + focusFieldID).focus(); }
 								});
 							}
