@@ -532,7 +532,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfif structKeyExists(stItem, "alias")>
 			<cfset stResult.alias = stItem.alias>
 		</cfif>
-
+		<cfif structKeyExists(stItem, "label")>
+			<cfset stResult.label = stItem.label>
+		</cfif>
 		<cfif structKeyExists(stItem, "link")>
 			<cfset itemLink = stItem.link>
 		<cfelseif structKeyExists(stItem, "content")>

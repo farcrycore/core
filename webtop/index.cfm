@@ -101,6 +101,9 @@
 <cfif structKeyExists(stItem, "bodyView")>
 	<cfparam name="url.bodyView" default="#stItem.bodyView#" />
 </cfif>
+<cfif structKeyExists(stItem, "label")>
+	<cfparam name="request.fc.webtopPageTitle" default="#stItem.label#" />
+</cfif>
 
 <cfparam name="defaultTypename" default="dmNavigation" />
 <cfparam name="url.type" default="#defaultTypename#" />
@@ -109,6 +112,7 @@
 <cfparam name="url.view" default="webtopPageStandard" />
 <cfparam name="url.bodyView" default="webtopBody" />
 <cfparam name="stItem.bodyInclude" default="" />
+<cfparam name="request.fc.webtopPageTitle" default="" />
 
 
 <!--- execute the view on the type / object --->

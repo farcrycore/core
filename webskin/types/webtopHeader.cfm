@@ -5,11 +5,19 @@
 
 <cfparam name="session.writingDir" default="ltr">
 <cfparam name="session.userLanguage" default="en">
+<cfparam name="request.fc.webtopPageTitle" default="">
 
 <cfset request.fc.inWebtop = 1>
 
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems()>
+
+<!--- webtop page title --->
+<cfset title = "[#application.applicationname#] #application.fapi.getConfig("general", "sitetitle")#">
+<cfif len(request.fc.webtopPageTitle)>
+	<cfset title = title & " - #request.fc.webtopPageTitle#">
+</cfif>
+<cfset title = title & " - FarCry Webtop">
 
 <!--- init user profile info --->
 <cfset webtopUsername = "FarCry User">
@@ -35,7 +43,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
+<title>#title#</title>
 </cfoutput>
 
 <skin:loadCSS id="fc-bootstrap" />
