@@ -105,7 +105,7 @@
 	<cfproperty name="ftConvertImageToFormat" type="string" hint="<cfimage> support property" required="false" default="" />
 	<cfproperty name="ftbSetAntialiasing" type="boolean" hint="<cfimage> support property" required="false" default="true" />
 	<cfproperty name="ftInterpolation" type="string" hint="<cfimage> support property" required="false" default="blackman" />
-	<cfproperty name="ftQuality" type="numeric" hint="<cfimage> support property" required="false" default="0.8" />
+	<cfproperty name="ftQuality" type="numeric" hint="<cfimage> support property" required="false" default="1" />
 	<cfproperty name="ftbUploadOnly" type="boolean" hint="Only upload the image and do not optimize or process it. Very useful for source images. Otherwise FarCry will optimize the source image, then read from that dequalitized image to make other optimized images. Can be used for any image field (not just source images)." required="false" default="false" />
 	<cfproperty name="ftCropPosition" type="string" hint="Used when ftAutoGenerateType = aspectCrop" required="false" default="center" />
 	<cfproperty name="ftThumbnailBevel" type="boolean" hint="???" required="false" default="false" />
@@ -145,6 +145,7 @@
 	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
+	    <cfset var imageMaxWidth = 400 />
 		
 		
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
@@ -177,6 +178,7 @@
 	    <skin:loadCSS id="jquery-uploadify" />
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
+	    
 	    <skin:loadCSS id="image-formtool" />
 		<skin:loadJS id="image-formtool" />
 		<skin:htmlHead><cfoutput>
@@ -194,6 +196,13 @@
 			<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#</cfoutput>
 		</cfsavecontent>
 	    
+		<cfif bFileExists>
+			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
+			<cfif stImage.width lt imageMaxWidth>
+				<cfset imageMaxWidth = stImage.width>
+			</cfif>
+		</cfif>
+
 	    <cfif len(arguments.stMetadata.value)>
 			<cfif not bFileExists>
 				<cfset arguments.stMetadata.value = "" />
@@ -264,8 +273,6 @@
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		<cfif arguments.stMetadata.ftShowMetadata>
-							    		<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
-							    		
 							    		Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 							    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 							    	</cfif>
@@ -328,9 +335,7 @@
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		<cfif arguments.stMetadata.ftShowMetadata>
-							    		<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
-							    		
-								    	Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+							    		Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 										<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 									</cfif>
 						    	</div>
@@ -414,7 +419,7 @@
 		
 		<!--- Preview --->
 		<cfif bFileExists>
-			<cfset preview = "<img src='#getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path#' style='max-width:400px; max-height:400px;' />" />
+			<cfset preview = "<img src='#getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path#' style='width:400px; max-width:400px; max-height:400px;' />" />
 			<cfif arguments.stMetadata.ftShowMetadata>
 				<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
 				<cfset preview = preview & "<br><div style='width:#previewwidth#px;'>#round(stImage.size/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
@@ -429,7 +434,7 @@
 				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 				<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 				<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
-				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><i class="fa fa-picture-o fa-fw"></i></span>
 				<span class="dependant-label">#arguments.stMetadata.ftLabel#</span>
 				<span class="dependant-options"<cfif not len(arguments.stMetadata.value) and not len(arguments.stObject[arguments.stMetadata.ftSourceField]) and not arguments.stMetadata.ftAllowUpload> style="display:none;"</cfif>>
 					(
@@ -1084,8 +1089,8 @@
 	<cffunction name="GenerateImage" access="public" output="false" returntype="struct">
 		<cfargument name="source" type="string" required="true" hint="The absolute path where the image that is being used to generate this new image is located." />
 		<cfargument name="destination" type="string" required="false" default="" hint="The absolute path where the image will be stored." />
-		<cfargument name="width" type="numeric" required="false" default="#application.config.image.StandardImageWidth#" hint="The maximum width of the new image." />
-		<cfargument name="height" type="numeric" required="false" default="#application.config.image.StandardImageHeight#" hint="The maximum height of the new image." />
+		<cfargument name="width" type="numeric" required="false" default="0" hint="The maximum width of the new image." />
+		<cfargument name="height" type="numeric" required="false" default="0" hint="The maximum height of the new image." />
 		<cfargument name="autoGenerateType" type="string" required="false" default="FitInside" hint="How is the new image to be generated (ForceSize,FitInside,Pad)" />
 		<cfargument name="padColor" type="string" required="false" default="##ffffff" hint="If AutoGenerateType='Pad', image will be padded with this colour" />
 		<cfargument name="customEffectsObjName" type="string" required="true" default="imageEffects" hint="The object name to run the effects on (must be in the package path)" />
@@ -1110,12 +1115,21 @@
 		<cfset var YCoordinate = 0 />
 		<cfset var stBeveledImage = structNew() />
 		<cfset var widthPercent = 0 />
-		<cfset var heigthPercent = 0 />
+		<cfset var heightPercent = 0 />
 		<cfset var usePercent = 0 />
 		<cfset var pixels = 0 />
 		<cfset var bModified = false />
 		<cfset var oImageEffects = "" />
 		<cfset var aMethods = "" />
+		<cfset var i = "" />
+		<cfset var lArgs = "" />
+		<cfset var find = "" />
+		<cfset var methodName = "" />
+		<cfset var stArgCollection = structNew() />
+		<cfset var argName = "" />
+		<cfset var argValue = "" />
+		<cfset var objWatermark = "" />
+		<cfset var argsIndex = "" />
 		
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
@@ -1445,8 +1459,9 @@
 	</cffunction>
 	
 	<cffunction name="onFileChange" access="public" returntype="any" output="false" hint="Called internally (by the image formtool) just before a new image is returned to calling code.">
-		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
-		<cfargument name="objectid" required="true" type="uuid" hint="The id of the record that this field is part of.">
+		<cfargument name="typename" required="false" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="objectid" required="false" type="uuid" hint="The id of the record that this field is part of.">
+		<cfargument name="stObject" required="false" type="struct" hint="Alternative to typename+objectid" />
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="value" required="true" type="string" hint="The new filename value" />
 		
@@ -1490,8 +1505,8 @@
 			<cfset stResult.error = "No file defined" />
 			<cfreturn stResult />
 		</cfif>
-
-		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stObject[arguments.stMetadata.name],admin=true) />
+		
+		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stObject[arguments.stMetadata.name],admin=arguments.admin) />
 		
 		<cfreturn stResult />
 	</cffunction>

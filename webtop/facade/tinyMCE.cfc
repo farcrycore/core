@@ -250,17 +250,17 @@
 	</cffunction>
 	
 	
-	<cffunction name="ajaxSetTemplatePreview" access="remote" output="true" returntype="void">
-	 	<cfargument name="objectid" required="yes" type="uuid" hint="ObjectID of the object to be rendered.">
-	 	<cfargument name="typename" required="yes" default="" type="string" hint="typename of the object to be rendered.">
-	 	<cfargument name="webskin" required="yes" type="string" hint="name of the webskin to use to render the object template.">
-	
-		<cfset var o = createobject("component", application.stcoapi[arguments.typename].packagepath) />
-		<cfset var HTML = o.getView(objectid="#arguments.objectid#", template="#arguments.webskin#") />	
-	
-		<cfoutput>#trim(HTML)#</cfoutput>	
-	
-	</cffunction>
+	<cffunction name="ajaxSetTemplatePreview" access="remote" output="true" returntype="string" returnformat="plain">
+                <cfargument name="objectid" required="yes" type="uuid" hint="ObjectID of the object to be rendered.">
+                <cfargument name="typename" required="yes" default="" type="string" hint="typename of the object to be rendered.">
+                <cfargument name="webskin" required="yes" type="string" hint="name of the webskin to use to render the object template.">
+
+                <cfset var o = createobject("component", application.stcoapi[arguments.typename].packagepath) />
+                <cfset var HTML = o.getView(objectid="#arguments.objectid#", template="#arguments.webskin#") />
+
+                <cfcontent type="text/html">
+                <cfreturn trim(HTML) />
+        </cffunction>
 
 
 </cfcomponent>
