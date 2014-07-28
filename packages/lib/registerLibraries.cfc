@@ -216,7 +216,7 @@
 		<!--- FORMTOOLS --->
 		<skin:registerJS	id="reverseUUID" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/js/formtools" 
-							lFiles="reverseUUID.js" />
+							lFiles="reverseuuid.js" />
 
 
 							
