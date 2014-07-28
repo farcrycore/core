@@ -898,7 +898,7 @@
 		if (typeof($wrap) == 'undefined'){
 			// ignore
 		} else {
-			if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
+			//if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
 				$j.ajaxq('AutoSave',{
 				    url: refreshPropertyURL,
 				    cache: false,
@@ -907,7 +907,7 @@
 				    	$wrap.html(html);
 				    }
 				});
-			}
+			//}
 		}
 		
 		//$wrap.load(refreshPropertyURL, 

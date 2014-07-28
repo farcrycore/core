@@ -628,7 +628,8 @@
 											}						
 										});
 										
-										
+										var $propertyRefreshWrap = $j(this).closest('.propertyRefreshWrap');
+
 										if(data['BSUCCESS'] == 1) {
 											var focusFieldID = '';
 											if ($webskinWrap.length) {
@@ -640,7 +641,10 @@
 												if (reloadOnAutoSave == 'Yes'){
 													location=location;
 												} else {
-													$fc.refreshProperty( $j(this).closest('span.propertyRefreshWrap') );
+													
+													if ($propertyRefreshWrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
+														$fc.refreshProperty( $propertyRefreshWrap );
+													}
 													
 													if (propertyWatchingFields.length){
 														var valueArray = propertyWatchingFields.split(",");
@@ -667,7 +671,7 @@
 												}
 											}
 										} else {
-											$fc.refreshProperty( $j(this).closest('span.propertyRefreshWrap') );
+											$fc.refreshProperty( $propertyRefreshWrap );
 											if (data['MESSAGE'].length){
 												alert(data['MESSAGE']);
 											} else {

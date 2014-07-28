@@ -81,8 +81,11 @@
 						<cfinvokeargument name="bAudit" value="false">
 					</cfinvoke>
 				<cfelse>
-					<cfset stProps = {objectID="#stobj.objectid#", typename="#stobj.typename#", "#url.propertyName#"="#stValidateFieldResult.value#" }>
-					<cfset stSetDataResult = application.fapi.setData(	stProperties="#stProps#", 
+					<cfif structKeyExists(stFieldMetadata, "bLabel") AND stFieldMetadata.bLabel >
+						<cfset stProperties.label = trim(autoSetLabel(stProperties=stProperties)) />
+					</cfif>
+
+					<cfset stSetDataResult = application.fapi.setData(	stProperties="#stProperties#", 
 																		bSessionOnly="#url.bSessionOnly#", 
 																		bSetDefaultCoreProperties="#bSetDefaultCoreProperties#", 
 																		bAudit="false") />
