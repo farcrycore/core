@@ -78,7 +78,7 @@
 			<cfdefaultcase>
 				<cfsavecontent variable="html">
 					<cfoutput>
-						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#arguments.stMetadata.value#</cfif>" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#arguments.stMetadata.value#</cfif>" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" />
 					</cfoutput>
 				</cfsavecontent>
 			</cfdefaultcase>
