@@ -475,7 +475,7 @@
 			</cfif>
 			
 			<cfif bHasVersionID> 
-			and versionID is null 
+			and (versionID = '' OR versionID is null)
 			</cfif> 
 			
 			<cfif len(trim(arguments.sqlOrderBy))>
