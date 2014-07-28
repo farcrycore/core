@@ -6,38 +6,46 @@
 
 <!--- STPARAMS --->
 <cfparam name="stParam.q" type="query" />
+<cfparam name="stParam.stMetadata" type="struct" />
 
 
 <cfoutput>
-<table class="reverseuuid-sortable">
-	<thead>
-		<tr>
-			<cfif listFindNoCase(stParam.q.columnList, "seq")>
-				<th>grip</th>
-			</cfif>
-			<th>label</th>
-			<th>manage</th>
-		</tr>
-	</thead>
-	
-	<tbody>
-		<cfloop query="stParam.q">
-			<tr objectid="#stParam.q.objectid#">
+<div class="multiField">
+	<table class="table table-striped reverseuuid-sortable" style="margin:0px;">
+		<cfif listFindNoCase(stParam.q.columnList, "seq")>
+			<col style="width:24px;" >
+		</cfif>
+		<col style="" >
+		<col style="width:100px;" >
+		<thead>
+			<tr>
 				<cfif listFindNoCase(stParam.q.columnList, "seq")>
-					<td class="reverseuuid-gripper" style="cursor:move"><i class="fa fa-sort"></i></td>
+					<th>&nbsp;</th>
 				</cfif>
-				<td>#stParam.q.label#</td>
-				<td>
-					<ft:button type="button" value="edit" renderType="link" class="reverseuuid-edit" />
-					<ft:button type="button" value="delete" renderType="link" class="reverseuuid-delete" />
-				</td>
+				<th>Label</th>
+				<th>Manage</th>
 			</tr>
-		</cfloop>
-	</tbody>
-</table>
+		</thead>
+		
+		<tbody>
+			<cfloop query="stParam.q">
+				<tr objectid="#stParam.q.objectid#">
+					<cfif listFindNoCase(stParam.q.columnList, "seq")>
+						<td class="reverseuuid-gripper" style="cursor:move"><i class="fa fa-sort"></i></td>
+					</cfif>
+					<td>#stParam.q.label#</td>
+					<td>
+						<ft:button type="button" value="edit" class="reverseuuid-edit btn-small" icon="fa-pencil" text="" />
+						<ft:button type="button" value="delete" class="reverseuuid-delete btn-small" icon="fa-trash-o" text="" />
+					</td>
+				</tr>
+			</cfloop>
+		</tbody>
+	</table>
+	<ft:buttonPanel style="text-align:left;">
+		<ft:button type="button" value="Add" class="reverseuuid-add btn-small" icon="fa-plus" text="Add New" priority="default" />
+	</ft:buttonPanel>
+</div>
 </cfoutput>
 
-<ft:buttonPanel>
-	<ft:button type="button" value="add" renderType="link" class="reverseuuid-add" />
-</ft:buttonPanel>
 

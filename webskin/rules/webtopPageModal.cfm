@@ -5,6 +5,8 @@
 
 <cfparam name="stParam.bodyInclude" default="">
 
+<cfset request.fc.bShowTray = false />
+
 <skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
 <!--- body --->

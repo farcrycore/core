@@ -1,21 +1,21 @@
 $j(document).ready(function(){ 
 	$j(document).on("click",".reverseuuid-add", function(e) {
-		var $objectid = $j(this).parents('[objectid]').attr('objectid');
 		var $formtoolWrap = $j(this).parents('.reverseuuid-wrap');
 		var $formtoolWrapTypename = $formtoolWrap.attr('formtoolWrapTypename');
 		var $formtoolWrapObjectID = $formtoolWrap.attr('formtoolWrapObjectID');
 		var $formtoolWrapProperty = $formtoolWrap.attr('formtoolWrapProperty');
 		var $formtoolWrapJoinTypename = $formtoolWrap.attr('formtoolWrapJoinTypename');
+		var $formtoolWrapJoinDisplayname = $formtoolWrap.attr('formtoolWrapJoinDisplayname');
 		var $formtoolWrapEditView = $formtoolWrap.attr('formtoolWrapEditView');
 		var $formtoolWrapEditBodyView = $formtoolWrap.attr('formtoolWrapEditBodyView');
 		var $onHidden = function() {
-			$fc.refreshProperty( $j("span[watchfieldname='" + $formtoolWrapTypename + "." + $formtoolWrapProperty + "']").closest('span.propertyRefreshWrap') );
+			$fc.refreshProperty( $formtoolWrap.closest('span.propertyRefreshWrap') );
 			return true;
 		}
 
-		$fc.openBootstrapModal({	title: 'Edit', 
+		$fc.openBootstrapModal({	title: 'Edit ' + $formtoolWrapJoinDisplayname, 
 									onHidden:$onHidden, 
-									url: '#application.url.webroot#/index.cfm?type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=' + $formtoolWrapEditView + '&bodyView=editReverseUUIDObjectAdd&reverseUUIDProperty=' + $formtoolWrapProperty
+									url: '/index.cfm?type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=' + $formtoolWrapEditView + '&bodyView=editReverseUUIDObjectAdd&reverseUUIDProperty=' + $formtoolWrapProperty
 		});
 
 	});
@@ -27,16 +27,17 @@ $j(document).ready(function(){
 		var $formtoolWrapObjectID = $formtoolWrap.attr('formtoolWrapObjectID');
 		var $formtoolWrapProperty = $formtoolWrap.attr('formtoolWrapProperty');
 		var $formtoolWrapJoinTypename = $formtoolWrap.attr('formtoolWrapJoinTypename');
+		var $formtoolWrapJoinDisplayname = $formtoolWrap.attr('formtoolWrapJoinDisplayname');
 		var $formtoolWrapEditView = $formtoolWrap.attr('formtoolWrapEditView');
 		var $formtoolWrapEditBodyView = $formtoolWrap.attr('formtoolWrapEditBodyView');
 		var $onHidden = function() {
-			$fc.refreshProperty( $j("span[watchfieldname='" + $formtoolWrapTypename + "." + $formtoolWrapProperty + "']").closest('span.propertyRefreshWrap') );
+			$fc.refreshProperty( $formtoolWrap.closest('span.propertyRefreshWrap') );
 			return true;
 		}
 
-		$fc.openBootstrapModal({	title: 'Edit', 
+		$fc.openBootstrapModal({	title: 'Edit ' + $formtoolWrapJoinDisplayname, 
 									onHidden:$onHidden, 
-									url: '#application.url.webroot#/index.cfm?type=' + $formtoolWrapJoinTypename + '&objectid=' + $objectid + '&view=' + $formtoolWrapEditView + '&bodyView=' + $formtoolWrapEditBodyView
+									url: '/index.cfm?type=' + $formtoolWrapJoinTypename + '&objectid=' + $objectid + '&view=' + $formtoolWrapEditView + '&bodyView=' + $formtoolWrapEditBodyView
 		});
 
 	});
@@ -52,22 +53,24 @@ $j(document).ready(function(){
 		var $formtoolWrapJoinTypename = $formtoolWrap.attr('formtoolWrapJoinTypename');
 		var $formtoolWrapEditView = $formtoolWrap.attr('formtoolWrapEditView');
 		var $formtoolWrapEditBodyView = $formtoolWrap.attr('formtoolWrapEditBodyView');
-		var $onHidden = function() {
-			$fc.refreshProperty( $j("span[watchfieldname='" + $formtoolWrapTypename + "." + $formtoolWrapProperty + "']").closest('span.propertyRefreshWrap') );
-			return true;
+		var $formtoolWrapConfirmDeleteText = $formtoolWrap.attr('formtoolWrapConfirmDeleteText');
+
+		if( !confirm( $formtoolWrapConfirmDeleteText ) ) {
+			return false;
 		}
 
+	
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + $formtoolWrapJoinTypename + '&objectid=' + $objectid + '&view=editReverseUUIDObjectDelete',
+ 			url: '/index.cfm?ajaxmode=1&type=' + $formtoolWrapJoinTypename + '&objectid=' + $objectid + '&view=editReverseUUIDObjectDelete',
 			data: {},
 			dataType: "html",
 			complete: function(data){
 				$j($row).hide('fast');
 			}
 		});	
-
+		
 	});
 
 	$j('.reverseuuid-sortable').sortable({
@@ -85,7 +88,7 @@ $j(document).ready(function(){
 			$j.ajax({
 				cache: false,
 				type: "POST",
-	 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=editReverseUUIDObjectSort&reverseUUIDProperty=' + $formtoolWrapProperty,
+	 			url: '/index.cfm?ajaxmode=1&type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=editReverseUUIDObjectSort&reverseUUIDProperty=' + $formtoolWrapProperty,
 				data: {'lSortOrderIDs':$lSortOrder},
 				dataType: "html",
 				complete: function(data){

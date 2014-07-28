@@ -7,7 +7,8 @@
 	<cfproperty name="ftEditView" default="webtopPageModal" type="string" />
 	<cfproperty name="ftEditBodyView" default="editReverseUUIDObject" type="string" />
 	<cfproperty name="ftConfirmDeleteText" default="Are you sure?" type="string" />
-
+	<cfproperty name="ftManageInOverview" default="false" type="boolean" hint="Should the relationship be managed in the overview tab?" />
+	<cfproperty name="ftLibraryDataSQLOrderBy" required="false" default="datetimecreated" hint="Nominate a specific property to order library results by."/>
 
 
 	
@@ -29,7 +30,9 @@
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 
-
+		<skin:loadJS id="jquery-ajaxq" />
+		<skin:loadJS id="fc-jquery-ui" />
+		<skin:loadCSS id="jquery-ui" />
 
 
 
@@ -41,7 +44,7 @@
 			<cfif structKeyExists(application.stCoapi['#arguments.stMetadata.ftJoin#'].stProps, "seq")>
 				seq,
 			</cfif>
-			datetimecreated
+			#arguments.stMetadata.ftLibraryDataSQLOrderBy#
 		</cfquery>
 
 
@@ -60,8 +63,10 @@
 					formtoolWrapObjectID="#arguments.stObject.objectid#" 
 					formtoolWrapProperty="#arguments.stMetadata.name#" 
 					formtoolWrapJoinTypename="#arguments.stMetadata.ftJoin#"
+					formtoolWrapJoinDisplayname="#JSStringFormat(application.fapi.getContentTypeMetadata(typename=arguments.stMetadata.ftJoin,md='displayName', default=arguments.stMetadata.ftJoin))#"
 					formtoolWrapEditView="#arguments.stMetadata.ftEditView#"
-					formtoolWrapEditBodyView="#arguments.stMetadata.ftEditBodyView#">
+					formtoolWrapEditBodyView="#arguments.stMetadata.ftEditBodyView#"
+					formtoolWrapConfirmDeleteText="#arguments.stMetadata.ftConfirmDeleteText#">
 			</cfoutput>	
 			
 			<cfif NOT len(arguments.stMetadata.ftTableView)>
@@ -73,7 +78,7 @@
 			</cfif>
 
 			<cfif structKeyExists(application.stcoapi[typename].stWebskins, "#arguments.stMetadata.ftTableView#")>
-				<skin:view typename="#arguments.stObject.typename#" objectid="#arguments.stObject.objectid#" webskin="#arguments.stMetadata.ftTableView#" q="#q#" bIgnoreSecurity="true"  />
+				<skin:view typename="#arguments.stObject.typename#" objectid="#arguments.stObject.objectid#" webskin="#arguments.stMetadata.ftTableView#" q="#q#" stMetadata="#stMetadata#" bIgnoreSecurity="true"  />
 			</cfif>	
 		
 			<cfoutput>
