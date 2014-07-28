@@ -445,7 +445,7 @@
 		
 		$fc.openBootstrapModal({
 			title:'Library',
-			url: '#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyview=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters,
+			url: '#application.url.webroot#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyview=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters,
 			onHidden: function () {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
@@ -458,7 +458,7 @@
 		var filterTypename = $j('##' + id + '-add-type').val();
 		$fc.openBootstrapModal({
 			title:'Add New',
-			url: '#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename,
+			url: '#application.url.webroot#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename,
 			onHidden: function () {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
@@ -470,7 +470,7 @@
 		var filterTypename = $j('##' + id + '-bulkupload-type').val();
 		$fc.openBootstrapModal({
 			title:'Bulk Upload',
-			url: '#application.url.webtop#/index.cfm?typename='+filterTypename+'&view=webtopPageModal&bodyView=webtopBodyBulkUpload&parentType='+typename+'&parentObjectID='+objectid+'&parentProperty=' + property + '&fieldname=' + id,
+			url: '#application.url.webroot#/index.cfm?typename='+filterTypename+'&view=webtopPageModal&bodyView=webtopBodyBulkUpload&parentType='+typename+'&parentObjectID='+objectid+'&parentProperty=' + property + '&fieldname=' + id,
 			onHidden: function () {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
@@ -483,7 +483,7 @@
 		//$j("div.ui-dialog", parent.document.body).addClass('nested');	
 		$fc.openBootstrapModal({
 			title:'Edit',
-			url: '#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryEdit' + '&property=' + property + '&editid=' + editid + '&iframe=1',
+			url: '#application.url.webroot#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryEdit' + '&property=' + property + '&editid=' + editid + '&iframe=1',
 			onHidden: function () {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
@@ -495,7 +495,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -516,7 +516,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -593,7 +593,7 @@
 		$j.ajax({
 			type: "POST",
 			cache: false,
- 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property + '&prefix=' + prefix,
+ 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property + '&prefix=' + prefix,
 		 	success: function(msg){
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
@@ -747,14 +747,14 @@
 			 
 			return $fc.openBootstrapModal({
 				title:'Edit',
-				url:'#application.url.webtop#/index.cfm?view=webtopPageStandard&bodyView=edit&objectid=' + libraryObjectID,
+				url:'#application.url.webroot#/index.cfm?view=webtopPageStandard&bodyView=edit&objectid=' + libraryObjectID,
 				onShown:function(){},
 				onHidden:function(){
 
 					$j.ajax({
 						type: "POST",
 						cache: false,
-			 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+			 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
 					 	success: function(msg){
 							$wrapper.html(msg);
 					   	},
@@ -790,7 +790,7 @@
 					$j.ajax({
 						type: "POST",
 						cache: false,
-			 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+			 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
 					 	success: function(msg){
 							$wrapper.html(msg);
 							//fcForm.initSortable(typename,objectid,property,id);	
@@ -802,7 +802,7 @@
 				
 			});
 			$j(newDialogDiv).dialog('open');
-			$j('iframe',$j(newDialogDiv)).attr('src','#application.url.webtop#/index.cfm?type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayLibraryTabs' + '&property=' + $wrapper.attr('ft:property'));
+			$j('iframe',$j(newDialogDiv)).attr('src','#application.url.webroot#/index.cfm?type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayLibraryTabs' + '&property=' + $wrapper.attr('ft:property'));
 				 
 		});	
 			

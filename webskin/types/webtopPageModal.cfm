@@ -1,4 +1,5 @@
 <cfsetting enablecfoutputonly="true">
+<!--- @@allowredirect: 0 --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
