@@ -25,9 +25,6 @@
 		input[type=radio] {
 			margin-top: 2px !important;
 		}
-		input.rename[type=radio] {
-			margin-top: 6px !important;
-		}
 	</style>
 </cfoutput></skin:htmlHead>
 
@@ -114,10 +111,11 @@
 									</cfsavecontent>
 									
 									<cfif foundoption>
-										<label for="field_#thistable#_#thisfield#_rename" class="radio inline" style="white-space: nowrap;padding-top:7px">
+										<label for="field_#thistable#_#thisfield#_rename" class="radio inline">
 											<input type="radio" class="rename" name="field_#thistable#_#thisfield#" id="field_#thistable#_#thisfield#_rename" value="rename" />
-											Rename &nbsp;#trim(renameoptions)#
+											Rename
 										</label>
+										&nbsp;#trim(renameoptions)#
 									</cfif>
 								</cfoutput>
 							</ft:field>
