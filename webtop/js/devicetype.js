@@ -2,7 +2,7 @@ $fc = window.$fc || {};
 
 $fc.switchDeviceType = function(deviceType) {
 	$fc.setDeviceTypeCookie(deviceType);
-	window.location = window.location;
+	window.location = window.location.href.replace(window.location.hash, "");
 }
 
 $fc.setDeviceTypeCookie = function(deviceType) {
