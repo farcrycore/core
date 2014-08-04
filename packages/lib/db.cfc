@@ -797,7 +797,7 @@
 			<cfset diff = arguments.stDiff />
 			<cfswitch expression="#arguments.stDiff.resolution#">
 				<cfcase value="+">
-					<cfset arrayappend(aChanges,createChange(action="deploySchema",schema=arguments.stDiff.newMetadata,bDropTable=true)) />
+					<cfset arrayappend(aChanges,createChange(action="deploySchema",schema=arguments.stDiff.newMetadata,bDropTable=false)) />
 				</cfcase>
 				<cfcase value="x">
 					<cfloop collection="#arguments.stDiff.fields#" item="arguments.propertyname">

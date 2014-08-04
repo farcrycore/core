@@ -80,7 +80,7 @@
 			</cfcase>
 			<cfcase value="+">
 				<cfif form["table_#thistable#"] eq "deploy">
-					<cfset arrayappend(aChanges,application.fc.lib.db.createChange(action="deploySchema",schema=stDiff.tables[thistable].newmetadata,bDropTable=true)) />
+					<cfset arrayappend(aChanges,application.fc.lib.db.createChange(action="deploySchema",schema=stDiff.tables[thistable].newmetadata,bDropTable=false)) />
 				</cfif>
 			</cfcase>
 			<cfcase value="-">
