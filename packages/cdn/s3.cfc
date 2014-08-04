@@ -796,7 +796,8 @@
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
 			<cfset substituteValues[1] = cfhttp.statuscode>
-			<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
+			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
 	
