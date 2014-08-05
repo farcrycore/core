@@ -425,14 +425,18 @@
 		
 		<cfloop query="qIndexes">
 			<cfif len(qIndexes.index_name)>
-				<cfparam name="stResult.#qIndexes.index_name#" default="#structnew()#" />
+				<cfif not structkeyexists(stResult,qIndexes.index_name)>
+					<cfset stResult[qIndexes.index_name] = structnew() />
+				</cfif>
 				<cfset stResult[qIndexes.index_name].name = qIndexes.index_name />
 				<cfif qIndexes.index_name eq "primary">
 					<cfset stResult[qIndexes.index_name].type = "primary" />
 				<cfelse>
 					<cfset stResult[qIndexes.index_name].type = "unclustered" />
 				</cfif>
-				<cfparam name="stResult.#qIndexes.index_name#.fields" default="#arraynew(1)#" />
+				<cfif not structkeyexists(stResult[qIndexes.index_name],"fields")>
+					<cfset stResult[qIndexes.index_name].fields = arraynew(1) />
+				</cfif>
 				<cfloop list="#qIndexes.column_name#" index="thiscolumn">
 					<cfset arrayappend(stResult[qIndexes.index_name].fields,trim(thiscolumn)) />
 				</cfloop>
