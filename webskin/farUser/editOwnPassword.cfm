@@ -7,6 +7,8 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<ft:serverSideValidation />
+
 <cfset stUser = getByUserId(application.factory.oUtils.listSlice(session.security.userid,1,-2,"_")) />
 <cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
 	<cfset stObj = stUser />
@@ -22,7 +24,7 @@ ACTION
 ------------------------------>
 <ft:processform action="Save">
 	<ft:validateFormObjects typename="farUser" objectid="#stobj.objectid#" />
-	
+
 	<cfif request.stFarcryFormValidation.bSuccess>
 		<ft:processformobjects objectid="#stobj.objectid#" />
 		<skin:bubble title="Your password has been updated" rbkey="coapi.farUser.changepassword.passwordchanged" tags="security,info" />

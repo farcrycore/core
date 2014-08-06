@@ -698,41 +698,8 @@
 				
 			</cfif>	
 			
-			<cfif NOT len(Attributes.r_stFields) and 1 eq 0>
-				
-				<grid:div class="control-group ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType# #variables.errorClass#">
-					
-					<cfoutput>#variables.formValidationMessage#</cfoutput>
-					
-					<cfif structKeyExists(ftFieldMetadata, "ftshowlabel")>
-						<cfset bShowLabel = ftFieldMetadata.ftShowLabel />
-					<cfelse>
-						<cfset bShowLabel = true />
-					</cfif>
-		
-					<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
-						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
-					</cfif>
-					
-	
-					<cfoutput>
-					<div class="controls">
-						
-		
-						#variables.returnHTML#
-						
-						<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-							<!--- <cfoutput><p class="formHint">#ftFieldMetadata.ftHint#</p></cfoutput> --->
-							<cfoutput><span class="help-inline">#ftFieldMetadata.ftHint#</span></cfoutput>
-						<cfelse>
-							<!--- <cfoutput><br style="clear:both;"></cfoutput> --->
-						</cfif>
-						
-					</div>
-					</cfoutput>
-					
-				</grid:div>
-			<cfelse>
+
+
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = variables.returnHTML>
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].errorClass = variables.errorClass />
@@ -752,7 +719,7 @@
 				<cfelse>
 					<cfset Request.farcryForm.stObjects[#variables.prefix#].MetaData[#ftFieldMetadata.Name#].Label = "">
 				</cfif>
-			</cfif>
+
 		</cfif>
 	</cfloop>
 	
@@ -761,7 +728,7 @@
 	
 
 	
-	<cfif len(Attributes.r_stFields) or 1 eq 1>
+	<cfif len(Attributes.r_stFields)>
 		<cfloop list="#attributes.r_stFields#" index="i">
 			<cfif structKeyExists(Request.farcryForm.stObjects[variables.prefix],'MetaData')>
 				<cfset CALLER[i] = Request.farcryForm.stObjects[variables.prefix]['MetaData']>
@@ -804,20 +771,20 @@
 						<skin:view stObject="#stObj#" webskin="#ftFieldMetadata.ftRenderWebskinBefore#" />
 					</cfif>
 
-					<cfif ftFieldMetadata.ftShowLabel>
-						<ft:field 	for="#ftFieldMetadata.formFieldName#" 
-									label="#ftFieldMetadata.ftLabel#" 
-									labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
-									hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
-									errorMessage="#ftFieldMetadata.errorMessage#"
-									class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
-
-							<cfoutput>#ftFieldMetadata.html#</cfoutput>
-							
-						</ft:field>
-					<cfelse>
-						<cfoutput>#ftFieldMetadata.html#</cfoutput>
+					<cfif not ftFieldMetadata.ftShowLabel>
+						<cfset ftFieldMetadata.ftLabel = "">
 					</cfif>
+
+					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
+								label="#ftFieldMetadata.ftLabel#" 
+								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
+								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
+								errorMessage="#ftFieldMetadata.errorMessage#"
+								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
+
+						<cfoutput>#ftFieldMetadata.html#</cfoutput>
+						
+					</ft:field>
 
 					<!--- webskin rendered after the field (ftRenderWebskinAfter) --->
 					<cfif isDefined("ftFieldMetadata.ftRenderWebskinAfter") AND len(ftFieldMetadata.ftRenderWebskinAfter)>
