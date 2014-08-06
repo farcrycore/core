@@ -15,9 +15,13 @@
 		</div>
 	</cfoutput>
 
+	<cfset stPropMetadata = structNew()>
+	<cfset stPropMetadata.userid.ftLabelAlignment = "block" />
+	<cfset stPropMetadata.password.ftLabelAlignment = "block" />
+	
 <ft:form>
 	<cfoutput><br style="clear:both;" /></cfoutput>
-	<ft:object objectid="#stobj.objectid#" typename="farUser" lfields="userid,password" />
+	<ft:object objectid="#stobj.objectid#" typename="farUser" lfields="userid,password" stPropMetadata="#stPropMetadata#"/>
 	
 	<skin:view typename="dmProfile" webskin="registerEditNewProfile" key="registerNewUser" />
 	
