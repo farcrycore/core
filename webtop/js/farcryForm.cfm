@@ -470,7 +470,7 @@
 		var filterTypename = $j('##' + id + '-bulkupload-type').val();
 		$fc.openBootstrapModal({
 			title:'Bulk Upload',
-			url: '#application.url.webroot#/index.cfm?typename='+filterTypename+'&view=webtopPageModal&bodyView=webtopBodyBulkUpload&parentType='+typename+'&parentObjectID='+objectid+'&parentProperty=' + property + '&fieldname=' + id,
+			url: '#application.url.webtop#/index.cfm?typename='+filterTypename+'&view=webtopPageModal&bodyView=webtopBodyBulkUpload&parentType='+typename+'&parentObjectID='+objectid+'&parentProperty=' + property + '&fieldname=' + id,
 			onHidden: function () {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
