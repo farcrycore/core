@@ -294,7 +294,7 @@
 				<!--- set up validation selectors and classes based on the form theme --->
 				<cfset stValConfig = structNew()>
 				<cfif formtheme eq "bootstrap">
-					<cfset stValConfig.wrapper = "">d
+					<cfset stValConfig.wrapper = "">
 					<cfset stValConfig.errorElement = "p">
 					<cfset stValConfig.errorElementClass = "text-error">
 					<cfset stValConfig.errorPlacementSelector = "div.control-group">
