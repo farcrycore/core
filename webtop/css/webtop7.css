@@ -1284,6 +1284,10 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 	padding: 8px 20px;
 }
 
+.form-horizontal .controls .multiFieldNoLabel {
+    margin-left: -240px;
+}
+
 .multiField .form-actions {
 	
 }

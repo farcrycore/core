@@ -41,20 +41,21 @@
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<cfparam name="arguments.stMetadata.ftLabel" default="#arguments.stMetadata.name#" />
+		<cfparam name="arguments.stMetadata.ftLabelAlignment" default="inline" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="changepassword" />
 
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="changepassword">
 				<cfsavecontent variable="html">
 					<cfoutput>
-						<div class="multiField">
-							<ft:field label="Current password" labelAlignment="block" for="#arguments.fieldname#">
+						<div class="multiField multiFieldNoLabel">
+							<ft:field label="Current password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#">
 								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
-							<ft:field label="New password" labelAlignment="block" for="#arguments.fieldname#New">
+							<ft:field label="New password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#New">
 								<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
-							<ft:field label="Re-enter new password" labelAlignment="block" for="#arguments.fieldname#Confirm">
+							<ft:field label="Re-enter new password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#Confirm">
 								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 						</div>
@@ -64,11 +65,11 @@
 			<cfcase value="confirmpassword">
 				<cfsavecontent variable="html">
 					<cfoutput>				
-						<div class="multiField">
-							<ft:field label="Choose a password" labelAlignment="block" for="#arguments.fieldname#">
+						<div class="multiField multiFieldNoLabel">
+							<ft:field label="Choose a password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#">
 								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
-							<ft:field label="Re-enter password" labelAlignment="block" for="#arguments.fieldname#Confirm">
+							<ft:field label="Re-enter password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#Confirm">
 								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 						</div>
