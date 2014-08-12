@@ -49,13 +49,17 @@
 	<cffunction name="getURLPath" output="false" access="public" returntype="string" hint="Returns full internal path. Works for files and directories.">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
-		
+
 		<cfset var urlpath = "" />
-		<cfset var urlEncodedFilename = "" />
 		<cfset var filename = listLast(arguments.file, "/") />
 		<cfset var fileLastname = listLast(filename, ".") />
 		<cfset var fileFirstname = left(filename, len(filename) - len(fileLastname) - 1) />
-		<cfset var filePath = left(arguments.file, len(arguments.file) - len(filename)) />
+		<cfset var filePath = "" />
+		
+		<!--- Get file path if exist --->
+		<cfif find("/", arguments.file) GT 0>
+			<cfset filePath = left(arguments.file, len(arguments.file) - len(filename)) />
+		</cfif>
 		
 		<cfif not structkeyexists(arguments.config,"urlPath")>
 			<cfset application.fapi.throw(message="no URL is available for CDN location [{1}]",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ arguments.config.name ]) />
