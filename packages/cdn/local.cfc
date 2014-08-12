@@ -51,19 +51,21 @@
 		<cfargument name="file" type="string" required="true" />
 		
 		<cfset var urlpath = "" />
+		<cfset var urlEncodedFilename = "" />
+		<cfset var filename = listLast(arguments.file, "/") />
+		<cfset var fileLastname = listLast(filename, ".") />
+		<cfset var fileFirstname = left(filename, len(filename) - len(fileLastname) - 1) />
+		<cfset var filePath = left(arguments.file, len(arguments.file) - len(filename)) />
 		
 		<cfif not structkeyexists(arguments.config,"urlPath")>
 			<cfset application.fapi.throw(message="no URL is available for CDN location [{1}]",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ arguments.config.name ]) />
 		</cfif>
 		
 		<cfif left(arguments.file,1) eq "/">
-			<cfset urlpath = arguments.config.urlpath & arguments.file />
+			<cfset urlpath = arguments.config.urlpath & filePath & urlEncodedFormat(fileFirstname) & "." & urlEncodedFormat(fileLastname) />
 		<cfelse>
-			<cfset urlpath = arguments.config.urlpath & "/" & arguments.file />
+			<cfset urlpath = arguments.config.urlpath & "/" & filePath & urlEncodedFormat(fileFirstname) & "." & urlEncodedFormat(fileLastname) />
 		</cfif>
-		
-		<!--- URL encode the filename --->
-		<cfset urlpath = rereplace(urlpath,"[^/]+\.\w+$",urlencodedformat(listfirst(listlast(urlpath,"/"),".")) & "." & listlast(urlpath,"."))>
 		
 		<cfreturn urlpath />
 	</cffunction>
