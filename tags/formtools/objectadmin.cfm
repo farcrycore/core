@@ -94,6 +94,7 @@
 	<cfparam name="attributes.bFlowCol" default="true" type="boolean">
 	<cfparam name="attributes.bPreviewCol" default="true" type="boolean">
 
+	<cfparam name="attributes.gridPreview" default="" type="string"><!--- Nominate a specific view for the preview; defaults to system default --->
 
 	<cfparam name="attributes.editMethod" default="edit" type="string">
 	<cfparam name="attributes.copyMethod" default="copy" type="string">
@@ -1268,7 +1269,9 @@
 		</cfif>
 
 		<cfif attributes.bPreviewCol>
-			<cfif attributes.bPreviewCol>
+			<cfif len(attributes.gridPreview)>
+				<cfoutput><a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid, view=attributes.gridPreview)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye only-icon"></i></a></cfoutput>
+			<cfelse>
 				<cfoutput><a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye only-icon"></i></a></cfoutput>
 			</cfif>		
 		</cfif>
