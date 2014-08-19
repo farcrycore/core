@@ -15,7 +15,7 @@
 																property="#url.reverseUUIDProperty#") />
 
 
-<cfquery name="q">
+<cfquery name="q" datasource="#application.dsn#">
 	SELECT objectID,seq
 	FROM #stPropMetadata.ftJoin#
 	WHERE #stPropMetadata.ftJoinProperty# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stobj.objectid#" />

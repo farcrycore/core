@@ -34,9 +34,7 @@
 		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 
-
-
-		<cfquery name="q">
+		<cfquery name="q" datasource="#application.dsn#">
 			SELECT *
 			FROM #arguments.stMetadata.ftJoin#
 			WHERE #arguments.stMetadata.ftJoinProperty# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stObject.objectid#" />
