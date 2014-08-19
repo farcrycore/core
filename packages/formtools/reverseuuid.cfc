@@ -6,6 +6,7 @@
 	<cfproperty name="ftTableView" default="editReverseUUIDTable" type="string" />
 	<cfproperty name="ftEditView" default="webtopPageModal" type="string" />
 	<cfproperty name="ftEditBodyView" default="editReverseUUIDObject" type="string" />
+	<cfproperty name="ftAddBodyView" default="editReverseUUIDObjectAdd" type="string" />
 	<cfproperty name="ftConfirmDeleteText" default="Are you sure?" type="string" />
 	<cfproperty name="ftManageInOverview" default="false" type="boolean" hint="Should the relationship be managed in the overview tab?" />
 	<cfproperty name="ftLibraryDataSQLOrderBy" required="false" default="datetimecreated" hint="Nominate a specific property to order library results by."/>
@@ -64,6 +65,7 @@
 					formtoolWrapJoinDisplayname="#JSStringFormat(application.fapi.getContentTypeMetadata(typename=arguments.stMetadata.ftJoin,md='displayName', default=arguments.stMetadata.ftJoin))#"
 					formtoolWrapEditView="#arguments.stMetadata.ftEditView#"
 					formtoolWrapEditBodyView="#arguments.stMetadata.ftEditBodyView#"
+					formtoolWrapAddBodyView="#arguments.stMetadata.ftAddBodyView#"
 					formtoolWrapConfirmDeleteText="#arguments.stMetadata.ftConfirmDeleteText#">
 			</cfoutput>	
 			

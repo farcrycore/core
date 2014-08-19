@@ -8,6 +8,7 @@ $j(document).ready(function(){
 		var $formtoolWrapJoinDisplayname = $formtoolWrap.attr('formtoolWrapJoinDisplayname');
 		var $formtoolWrapEditView = $formtoolWrap.attr('formtoolWrapEditView');
 		var $formtoolWrapEditBodyView = $formtoolWrap.attr('formtoolWrapEditBodyView');
+		var $formtoolWrapAddBodyView = $formtoolWrap.attr('formtoolWrapAddBodyView');
 		var $onHidden = function() {
 			$fc.refreshProperty( $formtoolWrap.closest('span.propertyRefreshWrap') );
 			return true;
@@ -15,7 +16,7 @@ $j(document).ready(function(){
 
 		$fc.openBootstrapModal({	title: 'Edit ' + $formtoolWrapJoinDisplayname, 
 									onHidden:$onHidden, 
-									url: '/index.cfm?type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=' + $formtoolWrapEditView + '&bodyView=editReverseUUIDObjectAdd&reverseUUIDProperty=' + $formtoolWrapProperty
+									url: '/index.cfm?type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=' + $formtoolWrapEditView + '&bodyView=' + $formtoolWrapAddBodyView + '&reverseUUIDProperty=' + $formtoolWrapProperty
 		});
 
 	});
