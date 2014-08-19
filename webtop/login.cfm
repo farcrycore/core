@@ -43,9 +43,12 @@ GENERIC LOGIN
 <cfelse>
 
 	<cfset stResult = application.security.processLogin() />
-
 	<cfif stResult.authenticated and not request.mode.profile>
-		<cflocation url="#application.fc.lib.esapi.DecodeFromURL(stResult.loginReturnURL)#" addtoken="false" />
+		<cfset location = trim(application.fc.lib.esapi.DecodeFromURL(stResult.loginReturnURL))>
+		<cfif NOT len(location)>
+			<cfset location = application.url.webtop>
+		</cfif>
+		<cflocation url="#location#" addtoken="false" />
 	<cfelse>
 		<skin:view typename="#stResult.loginTypename#" template="#stResult.loginWebskin#" stParam="#stResult#" />
 		

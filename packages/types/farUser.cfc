@@ -193,7 +193,7 @@
 		<!--- --------------------------- --->	
 		<cfquery datasource="#application.dsn#" name="qDuplicate">
 		SELECT objectid from farUser
-		WHERE upper(userid) = '#ucase(stFieldPost.Value)#'
+		WHERE upper(userid) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#ucase(stFieldPost.Value)#" />
 		</cfquery>
 		
 		<cfif qDuplicate.RecordCount>
