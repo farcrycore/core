@@ -744,6 +744,7 @@
 		   
 			<!--- image is too small - only generate image for specific methods --->
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
+
 			<cfreturn passed(stGeneratedImage.filename) />
 			
 		<cfelseif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width lt stImage.width)
@@ -1654,4 +1655,51 @@
 		<cfreturn r_stResult />
 	</cffunction>
 	
+	<cffunction name="generateImageFrom" access="public" output="false" returntype="struct" hint="This function is used to generate the image for a property from the image of another property. It returns a copy of the object with the updated path to the generated destination image.">
+		<cfargument name="stProperties" required="true" type="struct" />
+		<cfargument name="source_property" required="true" type="string" hint="The property to copy the image from." />
+		<cfargument name="dest_property" required="true" type="string" hint="The property to copy the image to." />
+		
+		<cfset var stResult = structnew() />
+		<cfset var stFixed = false />
+		<cfset var stDestMetadata = application.fapi.getPropertyMetadata(	typename="#arguments.stProperties.typename#", property="#arguments.dest_property#") />
+		<cfset var stProps = application.fapi.getContentTypeMetadata(typename="#arguments.stProperties.typename#").stProps />
+		<cfset var source_image = "" />
+
+
+		<cfset stResult = handleFileSource(	sourceField=#arguments.source_property#,
+											stObject=arguments.stProperties,
+											destination="#stDestMetadata.ftDestination#",
+											stFields=stProps ) />
+
+		<cfif isdefined("stResult.value") and len(stResult.value)>	
+
+
+			<cfset source_image = application.fc.lib.cdn.ioCopyFile(	source_location='images',
+																		source_file="#stProperties[source_property]#",
+																		dest_location="images", 
+																		dest_file="#stDestMetadata.ftDestination#/#GetFileFromPath(stResult.value)#") />
+
+			<cfset stFixed = fixImage(	source_image,
+										stProps[arguments.dest_property].metadata,
+										stProps[arguments.dest_property].metadata.ftAutoGenerateType,
+										stProps[arguments.dest_property].metadata.ftQuality) />
+			
+			<cfif stFixed.bSuccess>
+				<cfset stResult.value = stFixed.value />
+			<cfelseif structkeyexists(stFixed,"error")>
+				<!--- Do nothing - an error from fixImage means there was no resize --->
+			</cfif>
+
+			<cfif not structkeyexists(stResult,"error")>
+				<cfset onFileChange(typename=arguments.stProperties.typename,
+									objectid=arguments.stProperties.objectid,
+									stMetadata=stProps[arguments.dest_property].metadata,
+									value=stResult.value) />
+				<cfset stProperties[arguments.dest_property] = stResult.value />
+			</cfif>			
+		</cfif>
+		
+		<cfreturn stProperties />
+	</cffunction>
 </cfcomponent> 
