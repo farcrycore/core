@@ -97,9 +97,9 @@
 		
 		<!--- Remove potentially invalid characters --->
 		<cfif refindnocase("\w:",arguments.path)>
-			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/ ]","", "all") />
+			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/]","", "all") />
 		<cfelse>
-			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
+			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/]","", "all") />
 		</cfif>
 		
 		<!--- Remove trailing slash --->
