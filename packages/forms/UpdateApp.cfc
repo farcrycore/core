@@ -102,8 +102,6 @@
 		<cfset application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow") />
 		<cfset application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category") />
 		<cfset application.factory.oCon = createObject("component","#application.packagepath#.rules.container") />
-		<cfset application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator") />
-		<cfset application.bGeoLocatorInit = application.factory.oGeoLocator.init() />
 		<cftry>
 			<cfset application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU") />
 			<cfcatch>
