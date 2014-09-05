@@ -250,7 +250,7 @@
 		<cfset urlpath = "#arguments.config.pathPrefix##urlpath#" />
 		
 		<!--- URL encode the filename --->
-		<cfset urlpath = replacelist(urlencodedformat(urlpath),"%2F,%20,%2D,%2E,%5F","/, ,-,.,_")>
+		<cfset urlpath = replacelist(urlencodedformat(urlpath),"%2F,%20,%2D,%2E,%5F,%27","/, ,-,.,_,'")>
 		
 		<cfif structkeyexists(arguments.config,"security") and arguments.config.security eq "private">
 			<cfset epochTime = DateDiff("s", DateConvert("utc2Local", "January 1 1970 00:00"), now()) + arguments.config.urlExpiry />
