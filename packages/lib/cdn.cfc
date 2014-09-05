@@ -88,18 +88,21 @@
 	
 	<cffunction name="normalizePath" returntype="string" access="public" output="false" hint="Normalizes filename character set, replaces '\' with '/', removes trailing '/'">
 		<cfargument name="path" type="string" required="true" />
-		
+		<cfargument name="bRetrieve" type="boolean" required="false" default="false" />
+
 		<!--- Normalize slashes to forward slash --->
 		<cfset arguments.path = replace(arguments.path,"\","/","ALL") />
 		
 		<!--- Remove duplicate slashes --->
 		<cfset arguments.path = rereplace(arguments.path,"(.)//","\1/","ALL") />
 		
-		<!--- Remove potentially invalid characters --->
-		<cfif refindnocase("\w:",arguments.path)>
-			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/]","", "all") />
-		<cfelse>
-			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/]","", "all") />
+		<!--- Remove potentially invalid characters when uploading--->
+		<cfif NOT bRetrieve>
+			<cfif refindnocase("\w:",arguments.path)>
+				<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/ ]","", "all") />
+			<cfelse>
+				<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
+			</cfif>
 		</cfif>
 		
 		<!--- Remove trailing slash --->
@@ -239,10 +242,11 @@
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="admin" type="boolean" required="false" default="false" />
-		
+		<cfargument name="bRetrieve" type="boolean" required="false" default="false" />
+
 		<cfset var config = this.locations[arguments.location] />
 		
-		<cfset arguments.file = normalizePath(arguments.file) />
+		<cfset arguments.file = normalizePath(arguments.file,arguments.bRetrieve) />
 		
 		<cfreturn this.cdns[config.cdn].ioGetFileLocation(config=config,argumentCollection=arguments) />
 	</cffunction>
