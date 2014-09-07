@@ -10,6 +10,9 @@
 
 <skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
+<cfif not structKeyExists(url, "typename")>
+	<cfset url.typename = url.type />
+</cfif>
 <!--- body --->
 <cfif isValid("uuid", url.objectid)>
 	<skin:view objectid="#url.objectid#" typename="#stObj.typename#" webskin="#url.bodyView#" />
