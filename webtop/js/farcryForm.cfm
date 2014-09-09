@@ -447,6 +447,7 @@
 			title:'Library',
 			url: '#application.url.webroot#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyview=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters,
 			onHidden: function () {
+				$j('##' + id).trigger('change');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
 			}
@@ -460,6 +461,7 @@
 			title:'Add New',
 			url: '#application.url.webroot#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename,
 			onHidden: function () {
+				$j('##' + id).trigger('change');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
 			}
@@ -472,6 +474,7 @@
 			title:'Bulk Upload',
 			url: '#application.url.webtop#/index.cfm?typename='+filterTypename+'&view=webtopPageModal&bodyView=webtopBodyBulkUpload&parentType='+typename+'&parentObjectID='+objectid+'&parentProperty=' + property + '&fieldname=' + id,
 			onHidden: function () {
+				$j('##' + id).trigger('change');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
 			}
@@ -485,6 +488,7 @@
 			title:'Edit',
 			url: '#application.url.webroot#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryEdit' + '&property=' + property + '&editid=' + editid + '&iframe=1',
 			onHidden: function () {
+				$j('##' + id).trigger('change');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				return true;
 			}
@@ -508,6 +512,7 @@
 				} else {
 					$j('##' + formfieldname).val('');
 				}
+				$j('##' + formfieldname).trigger('change');
 				
 			}
 		});	
@@ -520,7 +525,8 @@
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
-				$j('##' + formfieldname).attr('value', '');		
+				$j('##' + formfieldname).attr('value', '');	
+				$j('##' + formfieldname).trigger('change');	
 				$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
 				$j('##join-' + objectid + '-' + property).remove();								
 			}
@@ -536,11 +542,13 @@
 		} else {
 			$j('##' + formfieldname).val('');
 		}
+		$j('##' + formfieldname).trigger('change');
 	}
 	fcForm.detachAllLibraryItems = function(typename,objectid,property,formfieldname,itemids) {
 		$j('##' + formfieldname).attr('value', '');		
+		$j('##' + formfieldname).trigger('change');		
 		$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
-		$j('##join-' + objectid + '-' + property).remove();			
+		$j('##join-' + objectid + '-' + property).remove();	
 	}
 		
 	fcForm.initLibrary = function(typename,objectid,property,urlParams) {
