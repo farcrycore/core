@@ -514,7 +514,7 @@
 		<cfset stReturn = getGateway(dsn=arguments.dsn).createData(schema=getTableMetadata(arguments.typename),stProperties=stProperties,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
-			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes" />
+			<cflog text="#serializeJSON(stReturn)#" file="coapi" type="error" application="yes" />
 		</cfif>
 		
     	<cfreturn stReturn />
