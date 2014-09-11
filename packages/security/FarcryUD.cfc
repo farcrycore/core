@@ -14,8 +14,8 @@
 
 	<cffunction name="getOutputHashName" access="public" returntype="string" output="false" hint="Return the name of the hash used to encoded passwords">
 
-		<cfif structKeyExists(application.config.security,"passwordHashAlgorithm") and application.security.cryptlib.isHashAlgorithmSupported(application.config.security.passwordHashAlgorithm)>
-			<cfreturn application.config.security.passwordHashAlgorithm />
+		<cfif application.security.cryptlib.isHashAlgorithmSupported(application.fapi.getConfig("security","passwordHashAlgorithm","na"))>
+			<cfreturn application.fapi.getConfig("security","passwordHashAlgorithm") />
 		<cfelse>
 			<cfreturn this.standardHash />
 		</cfif>
@@ -123,7 +123,7 @@
 			<cfset stResult.UD = "CLIENTUD" />
 			
 			<!--- Count failed logins --->
-	        <cfset dateTolerance = DateAdd("n","-#application.config.general.loginAttemptsTimeOut#",Now()) />
+	        <cfset dateTolerance = DateAdd("n","-#application.fapi.getConfig("general","loginAttemptsTimeOut")#",Now()) />
 	        <cfif isJSON(qUser.failedLogins)>
 		        <cfset failedLogins = deserializeJSON(qUser.failedLogins) />
 	        </cfif>
@@ -134,10 +134,10 @@
 	        </cfloop>
 			
 			<!--- Set the result --->
-			<cfif failureCount gte application.config.general.loginAttemptsAllowed>
+			<cfif failureCount gte application.fapi.getConfig("general","loginAttemptsAllowed")>
 				<!--- User is locked out due to high number of failed logins recently --->
 				<cfset stResult.authenticated = false />
-				<cfset stResult.message = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.config.general.loginAttemptsTimeOut# minutes." />
+				<cfset stResult.message = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.fapi.getConfig("general","loginAttemptsTimeOut")# minutes." />
 				<cfset application.fapi.getContentType("farUser").addLoginFailure(objectid=qUser.objectid,reason="Locked account due to failed logins") />
 			<cfelseif qUser.recordcount and qUser.userstatus eq "active">
 				<!--- User successfully logged in --->

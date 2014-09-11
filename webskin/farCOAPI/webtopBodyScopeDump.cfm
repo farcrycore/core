@@ -134,7 +134,13 @@
 		<cfset keys = listtoarray(listsort(structkeylist(selectedvar),"textnocase")) />
 		
 		<cfif arraylen(keys)>
-			<cfset colcount = 5 />
+			<cfset maxLength = 0 />
+			<cfloop array="#keys#" index="i">
+				<cfif len(i) gt maxLength>
+					<cfset maxLength = len(i) />
+				</cfif>
+			</cfloop>
+			<cfset colcount = round(100/maxLength) />
 			<cfset rowcount = ceiling(arraylen(keys) / colcount) />
 			
 			<cfoutput>

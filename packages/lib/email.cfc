@@ -111,11 +111,11 @@
 		</cfif>
 		
 		<!--- If the white list is defined then filter out all undefined addresses --->
-		<cfif isdefined("application.config.general.emailWhitelist") and len(application.config.general.emailWhitelist)>
+		<cfif len(application.fapi.getConfig("general","emailWhitelist",""))>
 			<cfloop list="#arguments.mailArguments.to#" index="email">
 				<cfset bSend = false />
 
-				<cfloop list="#application.config.general.emailWhitelist#" index="white" delimiters="#chr(10)#">
+				<cfloop list="#application.fapi.getConfig("general","emailWhitelist")#" index="white" delimiters="#chr(10)#">
 					<cfif len(email) AND findNoCase(white,email)>
 						<cfset bSend = true />
 						<cfbreak />

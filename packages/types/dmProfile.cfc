@@ -84,13 +84,13 @@ TYPE PROPERTIES
 
 	<cfproperty name="locale" type="string" required="yes" default="en_AU" 
 		ftSeq="13" ftFieldset="User settings" ftLabel="Locale" 
-		ftType="list" ftDefaultType="evaluate" ftDefault="application.config.general.locale" 
+		ftType="list" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','locale')" 
 		ftListDataTypename="dmProfile" ftListData="getLocales"
 		hint="Profile object locale">
 
 	<cfproperty name="overviewHome" type="string" required="no" default="" 
 		ftSeq="14" ftFieldset="User settings" ftLabel="Default site tree location" 
-		ftType="navigation" ftAlias="root" ftRenderType="dropdown" ftDefaultType="evaluate" ftDefault="application.navid.home" 
+		ftType="navigation" ftAlias="root" ftRenderType="dropdown" ftDefaultType="evaluate" ftDefault="application.fapi.getNavID('home')" 
 		ftSelectMultiple="false"
 		hint="Nav Alias name for this users home node in the overview tree">
 

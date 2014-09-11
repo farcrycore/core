@@ -63,8 +63,8 @@
 			<cfelse>
 				<cfset configJS = arguments.stMetadata.ftRichtextConfig>
 			</cfif>
-		<cfelseif isdefined("application.config.tinyMCE.tinyMCE4_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE4_config))>
-			<cfset configJS = application.config.tinyMCE.tinyMCE4_config />
+		<cfelseif application.fapi.getConfig("tinyMCE","bUseConfig",false) and len(application.fapi.getConfig("tinyMCE","tinyMCE4_config",""))>
+			<cfset configJS = application.fapi.getConfig("tinyMCE","tinyMCE4_config") />
 		<cfelse>
 			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
 		</cfif>	

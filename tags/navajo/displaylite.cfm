@@ -44,8 +44,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <!--- method for dealing with the missing url param... redirect to home page --->
 <cfif not isDefined("url.objectId")>
-	<cfif isDefined("application.navid.home")>
-		<cfset url.objectid = application.navid.home>
+	<cfif application.fapi.checkNavID("home")>
+		<cfset url.objectid = application.fapi.getNavID('home')>
 		<cftrace var="application.navid.home" text="home UUID set" />
 	<cfelse>
 		<cflocation url="#application.url.webroot#/" addtoken="No">
@@ -173,7 +173,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 	<!--- otherwise, use the home node as a last resort --->
 	<cfelse>
-		<cfset request.navid = application.navid.home>
+		<cfset request.navid = application.fapi.getNavID('home')>
 	</cfif>
 </cfif>
 

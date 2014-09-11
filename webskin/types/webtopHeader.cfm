@@ -73,7 +73,7 @@
 				<div class="farcry-header-brand">
 					<a target="_blank" href="/" data-intro="Preview your site in a new tab" data-position="right">
 						<cfif len(application.fapi.getConfig("general", "webtoplogopath"))>
-							<img src="#application.fapi.getConfig("general", "webtoplogopath")#" alt="#application.config.general.sitetitle#"><!--- fit inside 180x60 --->
+							<img src="#application.fapi.getConfig("general", "webtoplogopath")#" alt="#application.fapi.getConfig("general","sitetitle")#"><!--- fit inside 180x60 --->
 						<cfelse>
 							#application.fapi.getConfig("general", "sitetitle")#
 						</cfif>

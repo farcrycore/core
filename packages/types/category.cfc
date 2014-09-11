@@ -53,7 +53,7 @@
 			WHERE objectID = '#arguments.stProperties.objectID#'
 			</cfquery>		
 			
-			<cfset application.catid = getCatAliases() />
+			<cfset application.catid = getCatAliases(bIgnoreCache=true) />
 			
 		</cfif>
 		
@@ -139,36 +139,48 @@
 	
 	<cffunction name="getCatAliases" output="true" returntype="struct" hint="Returns a structure of all categories keyed by alias." access="public">
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
+		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" hint="Ignores the object broker cache and retrieves from the database" />
+
 		<cfset var q = queryNew('objectid,alias')>
 		<cfset var st = structNew()>
 		<cfset var stLocal = structNew()>
 
-		<cftry>
-			<cfquery name="stLocal.q" datasource="#arguments.dsn#">
-			SELECT objectid,alias
-			FROM #application.dbowner#dmCategory
-			WHERE alias IS NOT null OR alias <> ''
-			</cfquery>
+		<cfif isdefined("application.fc.lib.objectbroker") and not arguments.bIgnoreCache>
+			<!--- if the objectbroker is set up and we aren't skipping the cache, get the struct from object broker --->
+			<cfset st = application.fc.lib.objectbroker.GetFromObjectBroker("catid","catid") />
+		</cfif>
 
-			<cfloop query="stLocal.q">
-				<cfif trim(stLocal.q.alias) NEQ "">
-					<cfset stLocal.lAliases = trim(stLocal.q.alias)>
-					<cfloop index="stLocal.currentAlias" list="#stLocal.lAliases#">
-						<cfset stLocal.currentAlias = trim(stLocal.currentAlias)>
-						<cfif StructKeyExists(st,stLocal.currentAlias)>
-							<cfset st[stLocal.currentAlias] = ListAppend(st[stLocal.currentAlias],stLocal.q.objectid)>
-						<cfelse>
-							<cfset st[stLocal.currentAlias] = stLocal.q.objectid>
-						</cfif>
-					</cfloop>
-				</cfif>
-			</cfloop>
+		<cfif structIsEmpty(st)>
+			<cftry>
+				<cfquery name="stLocal.q" datasource="#arguments.dsn#">
+				SELECT objectid,alias
+				FROM #application.dbowner#dmCategory
+				WHERE alias IS NOT null OR alias <> ''
+				</cfquery>
 
-			<cfcatch>
-				<!--- then the 'alias' column prolly doesn't exist yet - do nothing --->
-				<cftrace category="farcry.category" type="warning" text="getCatAliases lookup failed.  Perhaps column doesn't exist?" var="cfcatch.detail">
-			</cfcatch>
-		</cftry>
+				<cfloop query="stLocal.q">
+					<cfif trim(stLocal.q.alias) NEQ "">
+						<cfset stLocal.lAliases = trim(stLocal.q.alias)>
+						<cfloop index="stLocal.currentAlias" list="#stLocal.lAliases#">
+							<cfset stLocal.currentAlias = trim(stLocal.currentAlias)>
+							<cfif StructKeyExists(st,stLocal.currentAlias)>
+								<cfset st[stLocal.currentAlias] = ListAppend(st[stLocal.currentAlias],stLocal.q.objectid)>
+							<cfelse>
+								<cfset st[stLocal.currentAlias] = stLocal.q.objectid>
+							</cfif>
+						</cfloop>
+					</cfif>
+				</cfloop>
+
+				<cfcatch>
+					<!--- then the 'alias' column prolly doesn't exist yet - do nothing --->
+					<cftrace category="farcry.category" type="warning" text="getCatAliases lookup failed.  Perhaps column doesn't exist?" var="cfcatch.detail">
+				</cfcatch>
+			</cftry>
+
+			<cfset st.datetimeLastUpdated = now() />
+			<cfset application.fc.lib.objectBroker.AddToObjectBroker(st,"catid","catid") />
+		</cfif>
 
 		<cfreturn st>
 	</cffunction>
@@ -453,8 +465,8 @@
 		<cfset var lCategoryIDs="">
 		<cfset var lDescendents	= '' />
 		
-		<cfif isDefined("arguments.Alias") and len(arguments.Alias) and structKeyExists(application.catid,arguments.Alias)>
-			<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.catid[arguments.Alias]) />
+		<cfif isDefined("arguments.Alias") and len(arguments.Alias) and application.fapi.checkCatID(arguments.Alias)>
+			<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.fapi.getCatID(arguments.Alias)) />
 		</cfif>
 
 		

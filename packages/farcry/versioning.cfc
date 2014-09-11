@@ -346,7 +346,7 @@ $out:$
 			
 			<cfset stEmail.rbkey = "workflow.email.approved" />
 			<cfset stEmail.variables = arraynew(1) />
-			<cfset stEmail.variables[1] = application.config.general.sitetitle />
+			<cfset stEmail.variables[1] = application.fapi.getConfig("general","sitetitle") />
 			<cfif len(stProfile.firstName) gt 0>
 				<cfset stEmail.variables[2] = stProfile.firstName />
 			<cfelse>
@@ -430,7 +430,7 @@ Your page "{3}" has been approved.
 				
 				<cfset stEmail.rbkey = "workflow.email.pending" />
 				<cfset stEmail.variables = arraynew(1) />
-				<cfset stEmail.variables[1] = application.config.general.sitetitle />
+				<cfset stEmail.variables[1] = application.fapi.getConfig("general","sitetitle") />
 				<cfif len(stApprovers[item].firstName) gt 0>
 					<cfset stEmail.variables[2] = stApprovers[item].firstName />
 				<cfelse>
@@ -505,7 +505,7 @@ You may approve/decline this page by browsing to the following location:
 			
 			<cfset stEmail.rbkey = "workflow.email.draft" />
 			<cfset stEmail.variables = arraynew(1) />
-			<cfset stEmail.variables[1] = application.config.general.sitetitle />
+			<cfset stEmail.variables[1] = application.fapi.getConfig("general","sitetitle") />
 			<cfif len(stProfile.firstName) gt 0>
 				<cfset stEmail.variables[2] = stProfile.firstName />
 			<cfelse>
@@ -520,7 +520,7 @@ You may approve/decline this page by browsing to the following location:
 			</cfif>
 			<cfset stEmail.variables[4] = application.fapi.getResource("workflow.email.comment@text","Comments added on status change:
 {1}",arguments.comment) />
-			<cfset stEmail.variables[5] = "#application.config.general.adminServer##application.url.farcry#/index.cfm?sec=site&rootObjectID=#ParentID#" />
+			<cfset stEmail.variables[5] = "#application.fapi.getConfig("general","adminServer")##application.url.farcry#/index.cfm?sec=site&rootObjectID=#ParentID#" />
 			
 			<cfsavecontent variable="stEmail.bodyPlain"><cfoutput>
 Hi {2},

@@ -3,7 +3,7 @@
 	<cffunction name="fGetOnclickEvent" hint="returns the onclick event for the editor based on the application.config.general.richTextEditor">
 		<cfset var onClickEvent = "">
 		<!--- work out if onClick event needed for specified rich text editor --->
-		<cfswitch expression="#application.config.general.richTextEditor#">
+		<cfswitch expression="#application.fapi.getConfig("general","richTextEditor")#">
 			<cfcase value="soEditorPro">
 				<cfset onClickEvent = "soEditorbody.updateFormField();">
 			</cfcase>

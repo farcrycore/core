@@ -269,10 +269,10 @@
 		<cfif structKeyExists(url, "ud")>
 			<cfset result = url.ud />
 		<cfelse>			
-			<cfif isdefined("application.config.security.defaultUserDirectory") and len(application.config.security.defaultUserDirectory)>
-				<cfset result = application.config.security.defaultUserDirectory />
-			<cfelseif isdefined("application.config.general.defaultUserDirectory") and len(application.config.general.defaultUserDirectory)>
-				<cfset result = application.config.general.defaultUserDirectory />
+			<cfif len(application.fapi.getConfig("security","defaultUserDirectory",""))>
+				<cfset result = application.fapi.getConfig("security","defaultUserDirectory") />
+			<cfelseif len(application.fapi.getConfig("general","defaultUserDirectory",""))>
+				<cfset result = application.fapi.getConfig("general","defaultUserDirectory") />
 			<cfelse>
 				<cfset result = listfirst(getAllUD()) />
 			</cfif>

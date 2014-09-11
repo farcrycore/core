@@ -181,7 +181,7 @@ $out:$
 	</cfif>
 		
 	<!--- if they are moving to trash - log this as the audit note	 --->
-	<cfif isDefined("application.navid.rubbish") AND URL.destObjectID IS application.navid.rubbish>
+	<cfif application.fapi.checkNavID("rubbish") AND URL.destObjectID IS application.fapi.getNavID('rubbish')>
 		<farcry:logevent objectid="#srcobj.objectid#" type="sitetree" event="movenode" notes="Object moved to trash" />
 	<cfelse>
 		<farcry:logevent objectid="#srcobj.objectid#" type="sitetree" event="movenode" notes="Object moved to new parentid #url.destObjectID#" />

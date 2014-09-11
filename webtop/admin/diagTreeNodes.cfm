@@ -58,7 +58,7 @@ $out:$
 				SELECT * FROM #application.dbowner#nested_tree_objects
 				WHERE
 				typename = 'dmNavigation'
-				AND     objectid <> '#application.navid.root#'
+				AND     objectid <> '#application.fapi.getNavID('root')#'
 				AND parentid NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qOrphansTemp.objectid)#" />)
 				and parentid is not null
 			</cfquery>
@@ -69,7 +69,7 @@ $out:$
 				SELECT * FROM #application.dbowner#Nested_Tree_Objects
 				WHERE
 				typename = 'dmNavigation'
-				AND     objectid <> '#application.navid.root#'
+				AND     objectid <> '#application.fapi.getNavID('root')#'
 				AND parentid NOT IN (select objectid from Nested_Tree_Objects)
 				and parentid is not null
 			</cfquery>
@@ -132,8 +132,8 @@ $out:$
 				</table>
 				<hr />
 				<select name="navalias" size="1">
-				<cfloop collection="#application.navid#" item="key">
-					<option value="#application.navid[key]#"> #key#
+				<cfloop collection="#application.fapi.getContentType('dmNavigation').getNavAlias()#" item="key">
+					<option value="#application.fapi.getNavID(key)#"> #key#
 				</cfloop>
 				</select>
 				<input type="submit" name="action" value="Attach Orphans" class="f-submit" />

@@ -22,7 +22,7 @@ ACTION
 			<cfset oConfig.delete(objectid=thisconfig) />
 			
 			<cfif len(stConfig.configtypename) AND structkeyexists(application.stCOAPI, stConfig.configtypename)>
-				<cfset application.config[stConfig.configkey] = oConfig.getConfig(key=stConfig.configkey) />
+				<cfset application.config[stConfig.configkey] = oConfig.getConfig(key=stConfig.configkey,bIgnoreCache=true) />
 				<cfset applyReadOnlyConfig(stConfig.configkey)>
 				<cfif structkeyexists(application.stCOAPI[stConfig.configtypename],"displayname")>
 					<cfset stConfig.configkey = application.stCOAPI[stConfig.configtypename].displayname />

@@ -50,7 +50,7 @@
 			
 			$j(".farcry-main").delegate(".alert-error .refresh-tree","click",function(){
 				var $tree = $j("##categorytree-tree").tree();
-				$fc.tree.reloadBranch($tree,'#application.catid.root#',true);
+				$fc.tree.reloadBranch($tree,application.fapi.getCatID("root"),true);
 				$(this).closest(".error").remove();
 			});
 		</script>

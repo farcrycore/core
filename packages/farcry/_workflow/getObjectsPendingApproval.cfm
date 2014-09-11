@@ -151,7 +151,7 @@ $out:$
 			</cfif>
 
 			<!--- Append content for object details to be outputted later - note object must not be in trash either --->
-			<cfif stLocal.bCanApprove EQ 1 AND stLocal.parentid NEQ application.navid.rubbish>
+			<cfif stLocal.bCanApprove EQ 1 AND stLocal.parentid NEQ application.fapi.getNavID("rubbish")>
 				<cfset QueryAddRow(stReturn.qList)>
 				<cfset stLocal.iCounter = stLocal.iCounter + 1>
 

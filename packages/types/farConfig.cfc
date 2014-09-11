@@ -249,91 +249,102 @@ object methods
 	<cffunction name="getConfig" access="public" output="true" returntype="struct" hint="Finds the config for the specified config, create it if it doesn't exist, then return it">
 		<cfargument name="key" type="string" required="true" hint="The key of the config to load" />
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Allows the installer to not audit" />
-		
-		<cfset var stResult = "" />
+		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" hint="Ignores the object broker cache and retrieves from the database" />
+
 		<cfset var qConfig = "" />
 		<cfset var migratedConfig = "" />
 		<cfset var stObj = structnew() />
-		<cfset var thisform = "" />
-		<cfset var wConfig = "" />
 		<cfset var configkey = "" />
 		<cfset var bChanged = false />
 		<cfset var stDefault = structnew() />
 		<cfset var formkey = "" />
-		<cfset var st = structnew() />
-		
-		<!--- Find a config item that stores this config data --->
-		<cfquery datasource="#application.dsn#" name="qConfig">
-			select	*, 'farConfig' AS typename
-			from	farConfig
-			where	configkey = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.key#" />
-		</cfquery>
-		
-		<cfif qConfig.recordcount>
-			<!--- migrate old WDDX configs to JSON --->
-			<cfif isWDDX(qConfig.configdata[1])>
-				<cfset migratedConfig = migrateConfigWDDXtoJSON(objectid=qConfig.objectid[1])>
-				<cfset querySetCell(qConfig, "configdata", migratedConfig, 1)>
+		<cfset var stResult = structnew() />
+
+		<cfif isdefined("application.fc.lib.objectbroker") and not arguments.bIgnoreCache>
+			<!--- if the objectbroker is set up and we aren't skipping the cache, get the config from object broker --->
+			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker(arguments.key,"config") />
+		</cfif>
+
+		<!--- as a final resort, get the config from the db --->
+		<cfif structIsEmpty(stResult)>
+			<!--- Find a config item that stores this config data --->
+			<cfquery datasource="#application.dsn#" name="qConfig">
+				select	*, 'farConfig' AS typename
+				from	farConfig
+				where	configkey = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.key#" />
+			</cfquery>
+			
+			<cfif qConfig.recordcount>
+				<!--- migrate old WDDX configs to JSON --->
+				<cfif isWDDX(qConfig.configdata[1])>
+					<cfset migratedConfig = migrateConfigWDDXtoJSON(objectid=qConfig.objectid[1])>
+					<cfset querySetCell(qConfig, "configdata", migratedConfig, 1)>
+				</cfif>
+
+				<!--- deserialise JSON into config struct --->
+				<cfif isJSON(qConfig.configdata[1])>
+					<cfset stResult = deserializeJSON(qConfig.configdata[1])>				
+				</cfif>
+			</cfif>
+			
+			<!--- make sure the result is a struct --->
+			<cfif not isStruct(stResult)>
+				<cfset stResult = structnew() />
+				<cfset bChanged = true />
 			</cfif>
 
-			<!--- deserialise JSON into config struct --->
-			<cfif isJSON(qConfig.configdata[1])>
-				<cfset stResult = deserializeJSON(qConfig.configdata[1])>				
+			<!--- Find the config form component with that key --->
+			<cfif structKeyExists(qConfig, "configtypename") AND NOT len(qConfig.configtypename) and not structkeyexists(stResult,"typename")>
+				<cfset stResult.typename = getForm(arguments.key) />
+				<cfset bChanged = true />
 			</cfif>
-		</cfif>
-		
-		<!--- make sure the result is a struct --->
-		<cfif not isStruct(stResult)>
-			<cfset stResult = structnew() />
-			<cfset bChanged = true />
-		</cfif>
-		
-		<!--- Find the config form component with that key and get the default values --->
-		<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
-			<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq arguments.key>
-				<!--- Append defaults - ensures that new properties are picked up --->
-				<cfset stDefault = createobject("component",application.stCOAPI[thisform].packagepath).getData(application.fc.utils.createJavaUUID()) />
+			
+			<!--- update with missing values --->
+			<cfif structkeyexists(application.stCOAPI,stResult.typename)>
+				<cfset stDefault = createobject("component",application.stCOAPI[stResult.typename].packagepath).getData(application.fc.utils.createJavaUUID()) />
 				<cfloop collection="#stDefault#" item="formkey">
 					<cfif not structkeyexists(stResult,formkey)>
 						<cfset stResult[formkey] = stDefault[formkey] />
 						<cfset bChanged = true />
 					</cfif>
 				</cfloop>
-				<cfset stResult.typename = thisform />
-				<!--- Ensure the config typename is set in the farConfig record for faster lookups --->
-				<cfif structKeyExists(qConfig, "configtypename") AND NOT len(qConfig.configtypename)>
-					<cfset bChanged = true />
+			</cfif>
+
+			<!--- if the config was updated, save to db --->
+			<cfif bChanged>
+				<!--- Copy the result back to an stObj --->
+				<cfset stObj.configdata = serializeJSON(stResult)>
+
+				<!--- Set up the config item values --->
+				<cfif qConfig.recordcount>
+					<cfset stObj.objectid = qConfig.objectid[1] />
+				<cfelse>
+					<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 				</cfif>
+				<cfset stObj.typename = "farConfig" />
+				<cfset stObj.configkey = arguments.key />
+				<cfif structKeyExists(stResult, "typename")>
+					<cfset stObj.configtypename = stResult.typename />				
+				</cfif>
+				<cfset stObj.label = autoSetLabel(stProperties=stObj)>				
+				<cfset stObj.datetimecreated = now() />
+
+				<!--- Save the config data (ensures that new configs and new properties are saved) --->
+				<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
 			</cfif>
-		</cfloop>
 
-		<cfif bChanged>
-			<!--- Copy the result back to an stObj --->
-			<cfset stObj.configdata = serializeJSON(stResult)>
-
-			<!--- Set up the config item values --->
-			<cfif qConfig.recordcount>
-				<cfset stObj.objectid = qConfig.objectid[1] />
-			<cfelse>
-				<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
+			<cfif structkeyexists(stResult,"typename")>
+				<cfset structdelete(stResult,"typename") />
 			</cfif>
-			<cfset stObj.typename = "farConfig" />
-			<cfset stObj.configkey = arguments.key />
-			<cfif structKeyExists(stResult, "typename")>
-				<cfset stObj.configtypename = stResult.typename />				
+			<cfif structkeyexists(stResult,"objectid")>
+				<cfset structdelete(stResult,"objectid") />
 			</cfif>
-			<cfset stObj.label = autoSetLabel(stProperties=stObj)>				
-			<cfset stObj.datetimecreated = now() />
 
-			<!--- Save the config data (ensures that new configs and new properties are saved) --->
-			<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
-		</cfif>
+			<cfset stResult.datetimeLastUpdated = now() />
 
-		<cfif structkeyexists(stResult,"typename")>
-			<cfset structdelete(stResult,"typename") />
-		</cfif>
-		<cfif structkeyexists(stResult,"objectid")>
-			<cfset structdelete(stResult,"objectid") />
+			<cfif isdefined("application.fc.lib.objectbroker")>
+				<cfset application.fc.lib.objectBroker.AddToObjectBroker(stResult,"config",arguments.key) />
+			</cfif>
 		</cfif>
 		
 		<cfreturn stResult />
@@ -368,26 +379,24 @@ object methods
 		<cfset var configkey = "">
 		<cfset var stReadOnly = structNew()>
 
-		<cfparam name="application.config._readonly" default="#structNew()#">
-		<cfset stReadOnly = duplicate(application.config._readonly)>
+		<cfparam name="application.config_readonly" default="#structNew()#">
+		<cfset stReadOnly = duplicate(application.config_readonly)>
 
 		<cfset structclear(application.config) />
-		<cfset application.config._readonly = stReadOnly>
 		<cfloop list="#getConfigKeys()#" index="configkey">
-			<cfset application.config[configkey] = getConfig(configkey) />
+			<cfset application.config[configkey] = getConfig(key=configkey,bIgnoreCache=true) />
 			<cfset applyReadOnlyConfig(configkey)>
 		</cfloop>
-
 	</cffunction>
 
 	<cffunction name="applyReadOnlyConfig" access="public" output="false" hint="Reloads all configuration data and re-applies the values for any read-only config properties">
 		<cfargument name="configkey" required="true">
 
-		<cfparam name="application.config._readonly" default="#structNew()#">
+		<cfparam name="application.config_readonly" default="#structNew()#">
 
 		<!--- re-apply read only properties --->
-		<cfif isDefined("application.config._readonly.#arguments.configkey#")>
-			<cfset structAppend(application.config[arguments.configkey], application.config._readonly[arguments.configkey], true)>
+		<cfif isDefined("application.config_readonly.#arguments.configkey#")>
+			<cfset structAppend(application.config[arguments.configkey], application.config_readonly[arguments.configkey], true)>
 		</cfif>
 	</cffunction>
 
@@ -398,6 +407,7 @@ object methods
 		<cfset var thisprop = "" />
 		
 		<cfset config = deserializeJSON(arguments.stProperties.configdata)>
+		<cfset config.datetimeLastUpdated = now() />
 
 		<!--- re-apply read only properties --->
 		<cfset applyReadOnlyConfig(arguments.stProperties.configkey)>
@@ -406,8 +416,12 @@ object methods
 		<cfif structKeyExists(stProperties, "configtypename") AND len(stProperties.configtypename) and structkeyexists(application.stCOAPI,stProperties.configtypename)>
 			<cfset config = application.fapi.getContentType(stProperties.configtypename).process(fields = config) />
 		</cfif>
-		
+
 		<cfset application.config[arguments.stProperties.configkey] = duplicate(config) />
+
+		<cfif isdefined("application.fc.lib.objectbroker")>
+			<cfset application.fc.lib.objectBroker.AddToObjectBroker(config,"config",arguments.stProperties.configkey) />
+		</cfif>
 		
 		<cfreturn arguments.stProperties />
 	</cffunction>

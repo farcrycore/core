@@ -210,7 +210,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 				<farcry:traceWebskin 
 							objectid="#stobj.objectid#" 
-							typename="#stobj.typename#" 
+							typename="#webskinTypename#" 
 							template="#arguments.template#">
 				
 					<cfoutput><div id="#arguments.ajaxID#"></div></cfoutput>
@@ -602,8 +602,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- ALIAS: check for a nav alias in the site tree matching the typename --->
 		<cfif not len(navID)>
 			<!--- TODO: replace navid lookup with a FAPI call --->
-			<cfif structKeyExists(application.navid, "#arguments.typename#")>
-				<cfset navID = listFirst(application.navid["#arguments.typename#"]) />
+			<cfif application.fapi.checkNavID(arguments.typename)>
+				<cfset navID = listFirst(application.fapi.getNavID(arguments.typename)) />
 			</cfif>
 		</cfif>
 		

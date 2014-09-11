@@ -106,7 +106,7 @@ Parent Object: URL.OBJECTID
 					<cfcase value="dmNews">
 						<!--- set a default expiry date --->
 						<cfif propertie eq "expiryDate">
-							<cfset stProps[propertie] =DateAdd(application.config.general.newsExpiryType,application.config.general.newsExpiry,"#now()#")>
+							<cfset stProps[propertie] =DateAdd(application.fapi.getConfig("general","newsExpiryType"),application.fapi.getConfig("general","newsExpiry"),"#now()#")>
 						<cfelse>
 							<cfset stProps[propertie] = CreateODBCDate(now())>
 						</cfif>
@@ -114,7 +114,7 @@ Parent Object: URL.OBJECTID
 					<cfcase value="dmEvent">
 						<!--- set a default expiry date --->
 						<cfif propertie eq "expiryDate">
-							<cfset stProps[propertie] =DateAdd(application.config.general.eventsExpiryType,application.config.general.eventsExpiry,"#now()#")>
+							<cfset stProps[propertie] =DateAdd(application.fapi.getConfig("general","eventsExpiryType"),application.fapi.getConfig("general","eventsExpiry"),"#now()#")>
 						<cfelse>
 							<cfset stProps[propertie] = CreateODBCDate(now())>
 						</cfif>

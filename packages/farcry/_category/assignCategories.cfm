@@ -4,8 +4,8 @@
 	If an alias is sent to this method, then the user has only been allowed to pick from a particular point in the tree.
 	If this is the case, then we only want to delete any categories that have been selected from this point only.
  --->
-<cfif isDefined("arguments.Alias") and len(arguments.Alias) and structKeyExists(application.catid,arguments.Alias)>
-	<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.catid[arguments.Alias]) />
+<cfif isDefined("arguments.Alias") and len(arguments.Alias) and application.fapi.checkCatID(arguments.Alias)>
+	<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.fapi.getCatID(arguments.Alias)) />
 </cfif>
 
 <cfquery datasource="#arguments.dsn#">

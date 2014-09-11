@@ -36,7 +36,7 @@
 
 	<div class="container">
 	
-		 <skin:genericNav navID="#application.navid.home#"
+		 <skin:genericNav navID="#application.fapi.getNavID('home')#"
 			id="nav"
 			depth="2"
 			bActive="true"

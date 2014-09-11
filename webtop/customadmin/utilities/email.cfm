@@ -7,7 +7,7 @@
 
 <cfparam name="form.to" default="" />
 <cfparam name="form.bcc" default="" />
-<cfparam name="form.from" default="#application.config.general.adminemail#" />
+<cfparam name="form.from" default="#application.fapi.getConfig("general","adminemail")#" />
 <cfparam name="form.replyto" default="" />
 <cfparam name="form.subject" default="" />
 <cfparam name="form.bodyPlain" default="" />

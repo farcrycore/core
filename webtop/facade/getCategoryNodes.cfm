@@ -22,7 +22,7 @@
 </cfif>
 
 
-<cfparam name="form.node" default="#application.catID.root#" />
+<cfparam name="form.node" default="#application.fapi.getCatID("root")#" />
 <cfparam name="form.lSelectedItems" default="" />
 <cfparam name="form.multiple" default="true" />
 <cfparam name="tempLeft" default="1" />

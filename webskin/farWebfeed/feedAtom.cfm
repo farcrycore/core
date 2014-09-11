@@ -8,7 +8,7 @@
 
 <!--- Get editor --->
 <cfif len(stObj.editor)>
-	<cfset stObj.editor = application.config.general.sitetitle />
+	<cfset stObj.editor = application.fapi.getConfig("general","sitetitle") />
 </cfif>
 
 <!--- Get last changed date --->

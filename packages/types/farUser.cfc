@@ -257,10 +257,10 @@
 		<cfif structKeyExists(arguments.stMetadata, "ftPasswordStrengthRegex") AND len(arguments.stMetadata.ftPasswordStrengthRegex)>
 			<cfset regex = arguments.stMetadata.ftPasswordStrengthRegex>
 			<cfset passwordStrengthHint = arguments.stMetadata.ftPasswordStrengthHelp>
-		<cfelseif isDefined("application.config.security.passwordMinLength") AND application.config.security.passwordMinLength gt 0>
+		<cfelseif application.fapi.getConfig("security","passwordMinLength",0) gt 0>
 			<cfset oSecurityConfig = application.fapi.getContentType(typename="configSecurity")>
 			<cfset regex = oSecurityConfig.getPasswordPolicyRegex()>
-			<cfset passwordStrengthHint = application.config.security.passwordPolicyHint>
+			<cfset passwordStrengthHint = application.fapi.getConfig("security","passwordPolicyHint")>
 		</cfif>
 		
 		<!--- check password strength if we have a password policy regex --->
@@ -281,7 +281,7 @@
 		<cfset var stObject = "" />
 		<cfset var aFailures = arraynew(1) />
 		<cfset var stFailure = structnew() />
-		<cfset var dateTolerance = DateAdd("n",0-application.config.general.loginAttemptsTimeOut,Now()) />
+		<cfset var dateTolerance = DateAdd("n",0-application.fapi.getConfig("general","loginAttemptsTimeOut"),Now()) />
 		
 		<cfif structkeyexists(arguments,"objectID")>
 			<cfset stObject = getData(arguments.objectID) />
@@ -295,7 +295,7 @@
 	        </cfif>
 
 			<!--- remove redundant failures --->
-			<cfloop condition="arraylen(aFailures) and aFailures[1].timestamp lt dateTolerance or arraylen(aFailures) gt application.config.general.loginAttemptsAllowed">
+			<cfloop condition="arraylen(aFailures) and aFailures[1].timestamp lt dateTolerance or arraylen(aFailures) gt application.fapi.getConfig('general','loginAttemptsAllowed')">
 				<cfset arraydeleteat(aFailures,1) />
 			</cfloop>
 

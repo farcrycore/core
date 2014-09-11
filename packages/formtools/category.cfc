@@ -151,10 +151,10 @@
 		<cfset var CategoryName = "" />
 		<cfset var i = "" />
 		<cfset var rootNodeText = "" />
-		<cfset var rootID = application.catid['root'] />
+		<cfset var rootID = application.fapi.getCatID('root') />
 		
-		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
-			<cfset rootID = application.catid[arguments.stMetadata.ftAlias] >
+		<cfif application.fapi.checkCatID(arguments.stMetadata.ftAlias)>
+			<cfset rootID = application.fapi.getCatID(arguments.stMetadata.ftAlias) >
 		</cfif>
 
 		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=arguments.stMetadata.ftAlias) />
@@ -193,7 +193,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfset var html = "" />
-		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 		<cfset var stBranch = structnew() />
 		<cfset var lCatIDs = "">
 
@@ -208,10 +208,10 @@
 		<skin:loadCSS id="jquery-modal" />
 		<skin:loadCSS id="fc-icons" />
 		
-		<cfif (len(arguments.stMetadata.ftAlias) AND arguments.stMetadata.ftAlias eq "root") or not structkeyexists(application.catid,arguments.stMetadata.ftAlias)>
+		<cfif (len(arguments.stMetadata.ftAlias) AND arguments.stMetadata.ftAlias eq "root") or not application.fapi.checkCatID(arguments.stMetadata.ftAlias)>
 			<cfset stBranch = stTree />
 		<cfelse>
-			<cfset stBranch = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid[arguments.stMetadata.ftAlias]) />
+			<cfset stBranch = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID(arguments.stMetadata.ftAlias)) />
 		</cfif>
 		<cfset stBranch["roothash"] = stTree.hash />
 
@@ -271,7 +271,7 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
-		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 		<cfset var stResult = structnew() />
 		<cfset var stCat = structnew() />
 		<cfset var stSource = structnew() />
@@ -292,18 +292,18 @@
 		<cftry>
 			<cfif arguments.stMetadata.ftJQueryAllowMove and isdefined("url.move")>
 				<cfset stResult = application.factory.oTree.moveBranch(objectid=url.move,parentid=url.to,pos=url.position) />
-				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 				<cfset stResult["roothash"] = stTree.hash />
 				<cfreturn serializeJSON(stResult) />
 			<cfelseif arguments.stMetadata.ftJQueryAllowAdd and isdefined("url.add")>
 				<cfset stCat = application.fapi.getContentObject(objectid=url.add) />
 				<cfset stResult = application.factory.oTree.setYoungest(objectid=url.add,parentid=url.to,objectname=stCat.label,typename=stCat.typename) />
-				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 				<cfset stResult["roothash"] = stTree.hash />
 				<cfreturn serializeJSON(stResult) />
 			<cfelseif arguments.stMetadata.ftJQueryAllowRemove and isdefined("url.remove")>
 				<cfset stResult = application.fapi.getContentType("dmCategory").deleteCategory(dsn=application.dsn,categoryid=url.remove) />
-				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 				<cfset stResult["roothash"] = stTree.hash />
 				<cfreturn serializeJSON(stResult) />
 			<cfelseif isdefined("url.node")>

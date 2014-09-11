@@ -21,10 +21,10 @@
 
 <body>
 
-<h1>#application.config.general.sitetitle#</h1>
+<h1>#application.fapi.getConfig("general","sitetitle")#</h1>
 </cfoutput>
 
-<skin:genericNav navID="#application.navid.home#" id="nav" depth="1" bActive="true" bIncludeHome="true">
+<skin:genericNav navID="#application.fapi.getNavID('home')#" id="nav" depth="1" bActive="true" bIncludeHome="true">
 
 
 <cfsetting enablecfoutputonly="false">

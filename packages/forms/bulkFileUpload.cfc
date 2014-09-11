@@ -40,7 +40,7 @@
 		<cfset entries = zipFile.entries() />
 		
 		<!--- Get the data on the starting point in the tree --->
-		<cfset qStartingPointData = createObject("component", "#application.packagepath#.farcry.tree").getNode(objectid=application.navid.fileroot) />
+		<cfset qStartingPointData = createObject("component", "#application.packagepath#.farcry.tree").getNode(objectid=application.fapi.getNavID("fileroot")) />
 		
 		<!--- Set the floor for adding folders and files --->
 		<cfset iBaseLevel = qStartingPointData.nLevel />

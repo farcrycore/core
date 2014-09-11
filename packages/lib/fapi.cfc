@@ -1240,11 +1240,17 @@
 			
 			<cfset var result = "" />
 			
-			<cfif isDefined("application.config.#arguments.key#.#arguments.name#")>
-				<cfset result = application.config[arguments.key][arguments.name] />
+			<cfif not isdefined("request.cache.config.#arguments.key#")>
+				<cfset request.cache.config[arguments.key] = application.fapi.getContentType("farConfig").getConfig(arguments.key) />
+			</cfif>
+
+			<cfif isdefined("application.config_readonly.#arguments.key#.#arguments.name#")>
+				<cfset result = application.config_readonly[arguments.key][arguments.name] />
+			<cfelseif isDefined("request.cache.config.#arguments.key#.#arguments.name#")>
+				<cfset result = request.cache.config[arguments.key][arguments.name] />
 			<cfelseif structKeyExists(arguments, "default")>
 				<cfset result = arguments.default />
-			<cfelse>
+			<cfelse><cfdump var="#request.cache.config#"><cfdump var="#arguments#"><cfabort>
 				<cfthrow message="The config item [#arguments.key#:#arguments.name#] was not found and no default value was passed." />
 			</cfif>
 			
@@ -1267,9 +1273,9 @@
 			<cfif isDefined("application.config.#arguments.key#.#arguments.name#")>
 				<cfset application.config[arguments.key][arguments.name] = arguments.value />
 				<cfif arguments.bReadOnly>
-					<cfparam name="application.config._readonly" default="#structNew()#">
-					<cfparam name="application.config._readonly.#arguments.key#" default="#structNew()#">
-					<cfset application.config._readonly[arguments.key][arguments.name] = arguments.value>
+					<cfparam name="application.config_readonly" default="#structNew()#">
+					<cfparam name="application.config_readonly.#arguments.key#" default="#structNew()#">
+					<cfset application.config_readonly[arguments.key][arguments.name] = arguments.value>
 				</cfif>
 			<cfelse>
 				<cfthrow message="The config item [#arguments.key#:#arguments.name#] was not found." />
@@ -1291,8 +1297,12 @@
 	
 			<cfset var result = "" />
 			
-			<cfif structKeyExists(application, "navID") AND len(arguments.alias)>
-				<cfset result = structKeyExists(application.navid, arguments.alias) />
+			<cfif not isdefined("request.cache.navid")>
+				<cfset request.cache.navid = application.fapi.getContentType("dmNavigation").getNavAlias() />
+			</cfif>
+
+			<cfif len(arguments.alias)>
+				<cfset result = structKeyExists(request.cache.navid, arguments.alias) />
 			<cfelse>
 				<cfset result = false />
 			</cfif>
@@ -1315,10 +1325,14 @@
 			<cfset var result = "" />
 			<cfset var message	= '' />
 			
+			<cfif not isdefined("request.cache.navid")>
+				<cfset request.cache.navid = application.fapi.getContentType("dmNavigation").getNavAlias() />
+			</cfif>
+
 			<cfif CheckNavID(arguments.alias)>
-				<cfset result = application.navid[arguments.alias] />
+				<cfset result = request.cache.navid[arguments.alias] />
 			<cfelseif CheckNavID(arguments.alternateAlias)>
-				<cfset result = application.navid[arguments.alternateAlias] />
+				<cfset result = request.cache.navid[arguments.alternateAlias] />
 			<cfelse>
 				<cfset message = getResource(key="FAPI.messages.NavigationAliasNotFound@text", default="The Navigation alias [{1}] and alternate alias [{2}] was not found", substituteValues=array(arguments.alias, arguments.alternateAlias)) />
 				<cfthrow message="#message#" />
@@ -1332,8 +1346,12 @@
 	
 			<cfset var result = "" />
 			
-			<cfif structKeyExists(application, "catID") AND len(arguments.alias)>
-				<cfset result = structKeyExists(application.catID, arguments.alias) />
+			<cfif not isdefined("request.cache.catid")>
+				<cfset request.cache.catid = application.fapi.getContentType("dmCategory").getCatAliases() />
+			</cfif>
+
+			<cfif len(arguments.alias)>
+				<cfset result = structKeyExists(request.cache.catid, arguments.alias) />
 			<cfelse>
 				<cfset result = false />
 			</cfif>
@@ -1348,10 +1366,14 @@
 			<cfset var result = "" />
 			<cfset var message = "" />
 			
+			<cfif not isdefined("request.cache.catid")>
+				<cfset request.cache.catid = application.fapi.getContentType("dmCategory").getCatAliases() />
+			</cfif>
+
 			<cfif CheckCatID(arguments.alias)>
-				<cfset result = application.catID[arguments.alias] />
+				<cfset result = request.cache.catid[arguments.alias] />
 			<cfelseif CheckCatID(arguments.alternateAlias)>
-				<cfset result = application.catID[arguments.alternateAlias] />
+				<cfset result = request.cache.catid[arguments.alternateAlias] />
 			<cfelse>			
 				<cfset message = getResource(key="FAPI.messages.CategoryAliasNotFound@text", 
 					default="The category alias [{1}] and alternate alias [{2}] was not found",

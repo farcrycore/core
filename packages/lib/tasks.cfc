@@ -361,7 +361,7 @@
 	
 	<cffunction name="clearTaskResults" output="false" access="public" returntype="void" description="Removes results that are too old from the queue">
 		<cfargument name="jobID" type="uuid" required="false" />
-		<cfargument name="before" type="numeric" required="false" default="#getTickCount() - application.config.taskqueue.resultTimeout * 60000#" />
+		<cfargument name="before" type="numeric" required="false" default="#getTickCount() - application.fapi.getConfig("taskqueue","resultTimeout") * 60000#" />
 		
 		<cfset var thisresult = "" />
 		
@@ -466,7 +466,7 @@
 		
 		<cfloop collection="#this.threads#" item="threadID">
 			<!--- terminate threads that haven't done anything in a while --->
-			<cfif dateadd("n",application.config.taskqueue.threadTimeout,this.threads[threadID].timestamp) lt now()>
+			<cfif dateadd("n",application.fapi.getConfig("taskqueue","threadTimeout"),this.threads[threadID].timestamp) lt now()>
 				<!--- terminate thread --->
 				<cfset killThread(threadID) />
 			</cfif>
@@ -480,7 +480,7 @@
 		<cfset var stResult	= '' />
 		<cfset var existingtrace	= '' />
 
-		<cfif structcount(this.threads) lt application.config.taskqueue.maxThreads>
+		<cfif structcount(this.threads) lt application.fapi.getConfig("taskqueue","maxThreads")>
 			<cfset thisthread = "thread_" & replace(createuuid(),"-","","ALL") />
 			<cfset this.threads[thisthread] = {
 				threadID = thisThread,

@@ -19,7 +19,14 @@
 					</cfif>
 				</cfloop>
 			</cfif>
-		</cfif>	
+
+			<cfif structkeyexists(application,"stCOAPI")>
+				<cfset configureType("config",100) />
+				<cfset configureType("navid",1) />
+				<cfset configureType("catid",1) />
+				<cfset configureType("fuLookup",application.fapi.getConfig("cache","maximumFriendlyURLs")) />
+			</cfif>
+		</cfif>
 
 		<cfif not isdefined("application.fcstats.objectbroker") or not isobject(application.fcstats.objectbroker)>
 			<cfparam name="application.fcstats" default="#structnew()#" />
@@ -40,7 +47,6 @@
 	<cffunction name="configureType" access="public" output="false" returntype="boolean">
 		<cfargument name="typename" required="yes" type="string">
 		<cfargument name="MaxObjects" required="no" type="numeric" default="100">
-		<cfargument name="MaxWebskins" required="no" type="numeric" default="10">
 		
 		<cfset var bResult = "true" />
 		
@@ -54,7 +60,7 @@
 	</cffunction>
 	
 	<cffunction name="GetObjectCacheEntry" access="public" output="false" returntype="struct" hint="Get an object's cache entry in the object broker">
-		<cfargument name="ObjectID" required="yes" type="UUID">
+		<cfargument name="ObjectID" required="yes" type="string">
 		<cfargument name="typename" required="true" type="string">
 		
 		<cfif isCacheable(typename=arguments.typename,action="read")>
@@ -65,7 +71,7 @@
 	</cffunction>
 			
 	<cffunction name="GetFromObjectBroker" access="public" output="false" returntype="struct">
-		<cfargument name="ObjectID" required="yes" type="UUID">
+		<cfargument name="ObjectID" required="yes" type="string">
 		<cfargument name="typename" required="true" type="string">
 
 		<cfreturn GetObjectCacheEntry(objectId=arguments.objectId,typename=arguments.typename)>
@@ -519,7 +525,7 @@
 		<cfparam name="request.mode.design" default="0">
 		
 		<!--- Mode --->
-		<cfset baseCheck = baseCheck and application.bObjectBroker and
+		<cfset baseCheck = baseCheck and application.bObjectBroker and structKeyExists(application.objectbroker,arguments.typename) and
 				  not (
 				  	structKeyExists(request,"mode") AND 
 				  	(
@@ -538,8 +544,11 @@
 		<!--- Cache settings --->
 		<cfset baseCheck = baseCheck and not (structKeyExists(url, "updateapp") AND url.updateapp EQ 1) and
 		  (
-		  	isdefined("application.stCOAPI.#arguments.typename#.bObjectBroker") and 
-		  	application.stcoapi[arguments.typename].bObjectBroker
+		  	listfindnocase("fulookup,config,navid,catid",arguments.typename)
+		  	OR (
+			  isdefined("application.stCOAPI.#arguments.typename#.bObjectBroker") and 
+			  application.stcoapi[arguments.typename].bObjectBroker
+			)
 		  ) />
 		<cfif baseCheck eq false>
 			<cfset countUncacheable(argumentCollection=arguments,reason="settings") />
@@ -653,9 +662,14 @@
 	<cffunction name="AddToObjectBroker" access="public" output="true" returntype="boolean">
 		<cfargument name="stObj" required="yes" type="struct">
 		<cfargument name="typename" required="true" type="string">
+		<cfargument name="key" required="false" type="string">
 		
-		<cfif isCacheable(typename=arguments.typename,action="write") and structkeyexists(arguments.stObj, "objectid")>
-			<cfset cacheAdd("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.stObj.objectid#",arguments.stObj,24*60*60) />
+		<cfif not structkeyexists(arguments,"key") and structkeyexists(arguments.stObj,"objectid")>
+			<cfset arguments.key = arguments.stObj.objectid />
+		</cfif>
+
+		<cfif isCacheable(typename=arguments.typename,action="write") and structkeyexists(arguments,"key")>
+			<cfset cacheAdd("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.key#",arguments.stObj,24*60*60) />
 			<cfset cleanupObjectBroker(typename=arguments.typename)>
 			<cfreturn true />
 		</cfif>
@@ -695,7 +709,7 @@
 		<cfset var i = "" />
 		<cfset var objectToDelete = "" />
 		
-		<cfif application.bObjectBroker>
+		<cfif application.bObjectBroker and structkeyexists(application.objectbroker,arguments.typename)>
 			<!--- Reap any recycled entries first. If we're lucky we might not need to evict any objects still present in the cache. --->
 			<cfset reapDeadEntriesFromBroker() />
 			
@@ -726,12 +740,13 @@
 		
 		<cfif application.bObjectBroker and len(arguments.typename) and application.stcoapi[arguments.typename].bObjectBroker>
 			<cfloop list="#arguments.lObjectIDs#" index="i">
-
-				<!--- Find any ancestor webskins and delete them as well --->
-				<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
-				<cfloop query="qWebskinAncestors">
-					<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
-				</cfloop>
+				<cfif isvalid("uuid",i)>
+					<!--- Find any ancestor webskins and delete them as well --->
+					<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
+					<cfloop query="qWebskinAncestors">
+						<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
+					</cfloop>
+				</cfif>
 
 				<!--- Remove the object itself and it's webskins --->
 				<cfset regexString = "^#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#i#" />

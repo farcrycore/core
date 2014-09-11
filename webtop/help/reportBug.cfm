@@ -49,7 +49,7 @@ $out:$
 	<cfif isdefined("form.submit")>
 		<!--- send email --->
 		<!--- i18n: leaving these alone, going to oz?? --->
-		<cfmail from="#form.emailAddress#" to="#application.config.general.bugEmail#" subject="#form.bugTitle#">
+		<cfmail from="#form.emailAddress#" to="#application.fapi.getConfig("general","bugEmail")#" subject="#form.bugTitle#">
 #form.bugFinder# has reported the following FarCry bug:
 
 Title: #form.bugTitle#

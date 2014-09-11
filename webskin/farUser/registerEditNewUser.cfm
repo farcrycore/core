@@ -11,7 +11,7 @@
 
 	<cfoutput>
 		<div class="loginInfo">
-			<admin:resource key="coapi.farLogin.register.blurb@text" var1="#application.config.general.siteTitle#">Enter your details below to register for {1}</admin:resource>
+			<admin:resource key="coapi.farLogin.register.blurb@text" var1="#application.fapi.getConfig("general","siteTitle")#">Enter your details below to register for {1}</admin:resource>
 		</div>
 	</cfoutput>
 

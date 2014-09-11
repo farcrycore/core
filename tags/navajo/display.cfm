@@ -93,6 +93,7 @@
 		<!--- If we make it to here, we just have to redirect to the home page. --->
 		<cfif application.fapi.checkNavID("home")>
 			<cfset url.objectid = application.fapi.getNavID("home") />
+			<cfset url.type = "dmNavigation" />
 		<cfelse>
 			<cflocation url="#application.url.webroot#/" addtoken="No">
 		</cfif>

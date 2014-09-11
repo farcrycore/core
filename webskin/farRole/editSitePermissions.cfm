@@ -103,7 +103,7 @@ Webtop, Section, SubSection, Menu, MenuItem
 
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
 
-<cfset qNode = o.getNode(objectid="#application.navID['root']#")>
+<cfset qNode = o.getNode(objectid="#application.fapi.getNavID('root')#")>
 
 
 <cfoutput>

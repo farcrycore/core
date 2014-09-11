@@ -146,7 +146,7 @@
 	
     <cfscript>
         o = createObject("component", "#application.packagepath#.farcry.tree");
-        qNodes = o.getDescendants(dsn=application.dsn, objectid=application.catid.root);
+        qNodes = o.getDescendants(dsn=application.dsn, objectid=application.fapi.getCatID("root"));
     </cfscript>
 		
 	<cfoutput>
@@ -177,7 +177,7 @@
 				</label>
 				<div class="controls">
 					<select name="startPoint" id="startPoint">
-						<option value="#application.catid.root#" selected>#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
+						<option value="#application.fapi.getCatID("root")#" selected>#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
 						<cfloop query="qNodes">
 							<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 						</cfloop>

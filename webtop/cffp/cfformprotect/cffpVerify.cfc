@@ -51,9 +51,7 @@ NOTES       : Dave Shuck - created
 		</cfscript>
 		
 		<!--- Override with core config --->
-		<cfloop collection="#application.config.formProtection#" item="configItem">
-			<cfset variables.Config["#configItem#"] = application.config.formProtection["#configItem#"] />
-		</cfloop>
+		<cfset structappend(variables.Config,application.fapi.getContentType("farConfig").getConfig("formProtection"),true) />
 		
 		<!--- Override any default config settings with the config attributes passed in --->
 		<cfif not structIsEmpty(arguments.stConfig)>

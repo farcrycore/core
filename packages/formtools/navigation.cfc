@@ -56,10 +56,10 @@
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stObject[arguments.stMetadata.ftWatch])>
 			<cfset rootID = arguments.stObject[arguments.stMetadata.ftWatch] />
-		<cfelseif structKeyExists(application.navid, arguments.stMetadata.ftAlias)>
-			<cfset rootID = application.navid[arguments.stMetadata.ftAlias] >
+		<cfelseif application.fapi.checkNavID(arguments.stMetadata.ftAlias)>
+			<cfset rootID = application.fapi.getNavID(arguments.stMetadata.ftAlias) >
 		<cfelse>
-			<cfset rootID = application.navid['root'] >
+			<cfset rootID = application.fapi.getNavID("root") >
 		</cfif>
 
 		<cfset stNav = oNav.getData(objectid=rootID) />

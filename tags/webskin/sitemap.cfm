@@ -31,7 +31,7 @@
 
 <!--- optional attributes --->
 <cfparam name="attributes.depth" default="4" type="numeric" />
-<cfparam name="attributes.startPoint" default="#application.navid.home#" type="string" />
+<cfparam name="attributes.startPoint" default="#application.fapi.getNavID('home')#" type="string" />
 
 <!--- deprecated attributes --->
 <cfparam name="attributes.bDisplay" default="true" />

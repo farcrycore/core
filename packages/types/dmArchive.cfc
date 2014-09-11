@@ -183,16 +183,15 @@
 				
 				<cfif structisempty(stParent) or structkeyexists(stParent,"bDefaultObject")>
 					<!--- Make sure there is an "Undelete navigation node" --->
-					<cfif structkeyexists(application.navid,"undelete")>
-						<cfset stParent = application.fapi.getContentObject(typename="dmNavigation",objectid=application.navid.undelete) />
+					<cfif application.fapi.checkNavID("undelete")>
+						<cfset stParent = application.fapi.getContentObject(typename="dmNavigation",objectid=application.fapi.getNavID("undelete")) />
 					<cfelse>
 						<cfset stParent = application.fapi.getContentObject(typename="dmNavigation",objectid=createuuid()) />
 						<cfset stParent.title = "Undelete" />
 						<cfset stParent.label = "Undelete" />
 						<cfset stParent.lNavIDAlias = "undelete" />
 						<cfset application.fapi.setData(stProperties=stParent) />
-						<cfset application.factory.oTree.setYoungest(parentid=application.navid.root,objectid=stParent.objectid,objectname=stParent.label,typename="dmNavigation") />
-						<cfset application.navid["undelete"] = stParent.objectID />
+						<cfset application.factory.oTree.setYoungest(parentid=application.fapi.getNavID("root"),objectid=stParent.objectid,objectname=stParent.label,typename="dmNavigation") />
 					</cfif>
 				</cfif>
 				

@@ -116,10 +116,10 @@ WHERE qSecondaryNav.NLEVEL > #qCurrentLevel.NLEVEL#
 					} else {
 						// Top Level Navigation (Under Home level)
 						// If same level as home and not home, don't show
-						if (q2ndNavStatus.NLEVEL EQ (qCurrentLevel.nlevel - 1) AND (q2ndNavStatus.ObjectID NEQ application.navID.home)) {
+						if (q2ndNavStatus.NLEVEL EQ (qCurrentLevel.nlevel - 1) AND (q2ndNavStatus.ObjectID NEQ application.fapi.getNavID('home'))) {
 							bShow = "no";
 						// show home as parent
-						} else if (q2ndNavStatus.ObjectID EQ application.navID.home) {
+						} else if (q2ndNavStatus.ObjectID EQ application.fapi.getNavID('home')) {
 							class="secNavParent";
 						} else {
 							class="secNavSibling";

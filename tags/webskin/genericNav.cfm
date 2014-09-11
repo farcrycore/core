@@ -66,7 +66,7 @@
 
 <cfif attributes.bIncludeHome>
 	<!--- // get application.navid.home objectName --->
-	<cfset homeNode = o.getNode(objectID=#application.navid[attributes.homeAlias]#)>
+	<cfset homeNode = o.getNode(objectID=#application.fapi.getNavID(attributes.homeAlias)#)>
 </cfif>
 
 <cfif attributes.bLast>
@@ -166,7 +166,7 @@
 						}				
 						
 						writeOutput("<li");
-						if(request.sectionObjectID eq application.navid[attributes.homeAlias]){
+						if(request.sectionObjectID eq application.fapi.getNavID(attributes.homeAlias)){
 							homeclass=homeclass & ' #attributes.ActiveClass# ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
@@ -250,7 +250,7 @@
 			writeOutput(">");
 						
 			writeOutput("<li");
-			if(request.sectionObjectID eq application.navid.home)
+			if(request.sectionObjectID eq application.fapi.getNavID('home'))
 			{
 				writeOutput(" class=""active""");
 			}

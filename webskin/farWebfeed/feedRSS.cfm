@@ -8,7 +8,7 @@
 
 <!--- Get editor --->
 <cfif len(stObj.editor)>
-	<cfset stObj.editor = application.config.general.sitetitle />
+	<cfset stObj.editor = application.fapi.getConfig("general","sitetitle") />
 </cfif>
 
 <!--- Get last changed date --->
@@ -62,7 +62,7 @@
 		<atom:link href="#rsspath#" rel="self" type="application/rss+xml" />
 		<description><![CDATA[#stObj.description#]]></description>
 		<lastBuildDate>#lsdateformat(builddate,"ddd, dd mmm yyyy")# #lstimeformat(builddate,"HH:mm:ss")# GMT</lastBuildDate>
-		<language>#replace(lcase(application.config.general.locale),"_","-")#</language>
+		<language>#replace(lcase(application.fapi.getConfig("general","locale")),"_","-")#</language>
 		<generator>#stObj.generator#</generator>
 </cfoutput>
 

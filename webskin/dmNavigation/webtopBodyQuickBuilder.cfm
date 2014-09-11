@@ -223,7 +223,7 @@ $out:$
 		<skin:loadJS id="jquery-autoresize" />
 		
 		<cfset o = createObject("component", "#application.packagepath#.farcry.tree") />
-		<cfset qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root) />
+		<cfset qNodes = o.getDescendants(dsn=application.dsn, objectid=application.fapi.getNavID('root')) />
 		
 		
 		<ft:form>
@@ -286,9 +286,9 @@ $out:$
 				<ft:field label="#application.rb.getResource('quickbuilder.labels.createStructureWithin@label','Create structure within')#">
 					<cfoutput>
 						<select name="startPoint" id="startPoint">
-							<option value="#application.navid.root#">#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
+							<option value="#application.fapi.getNavID('root')#">#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
 							<cfloop query="qNodes">
-							<option value="#qNodes.objectId#"<cfif qNodes.objectId eq application.navid.home> selected="selected"</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+							<option value="#qNodes.objectId#"<cfif qNodes.objectId eq application.fapi.getNavID('home')> selected="selected"</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 							</cfloop>
 						</select>				
 					</cfoutput>
@@ -301,7 +301,7 @@ $out:$
 				</ft:field>
 				
 				
-				<sec:CheckPermission permission="Create" objectid="#application.navid.home#">
+				<sec:CheckPermission permission="Create" objectid="#application.fapi.getNavID('home')#">
 					<ft:field label="Auto Create Children">
 						<cfset objType = CreateObject("component","#Application.stcoapi.dmNavigation.packagePath#")>
 						<cfset lPreferredTypeSeq = "dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->

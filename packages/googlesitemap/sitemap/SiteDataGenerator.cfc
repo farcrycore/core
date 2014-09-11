@@ -20,7 +20,7 @@
 		<cfset variables.SiteConfig=arguments.SiteConfig>
 		<!--- set default values --->
 		<cfif not structKeyExists(variables.SiteConfig, "startPoint")>
-			<cfset variables.SiteConfig.startPoint=application.navid.root>
+			<cfset variables.SiteConfig.startPoint=application.fapi.getNavID("root")>
 		</cfif>
 		<cfif not structKeyExists(variables.SiteConfig, "depth")>
 			<cfset variables.SiteConfig.depth=5>

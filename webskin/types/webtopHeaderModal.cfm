@@ -13,7 +13,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
+<title>[#application.applicationname#] #application.fapi.getConfig("general","sitetitle")# - FarCry Webtop</title>
 
 <skin:loadCSS id="fc-bootstrap" />
 <skin:loadCSS id="fc-fontawesome" />

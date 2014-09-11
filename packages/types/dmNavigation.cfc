@@ -75,13 +75,14 @@
 		<cfset var j = "" />
 		<cfset var q = queryNew("value,name") />
 		<cfset var stNav	= '' />
+		<cfset var stNavID = getNavAlias() />
 		
 		<cfset queryaddrow(q,1) />
 		<cfset querysetcell(q, "value", "") />
 		<cfset querysetcell(q, "name", "#application.rb.getResource('coapi.dmNavigation.properties.externallink@nooptions','-- None --')#") />
 		
-		<cfloop collection="#application.navid#" item="i">
-			<cfloop list="#application.navid[i]#" index="j">
+		<cfloop collection="#stNavID#" item="i">
+			<cfloop list="#stNavID[i]#" index="j">
 				<cfset stNav = oNav.getData(objectid="#j#") />
 				<cfset queryaddrow(q,1) />
 				<cfset querysetcell(q, "value", j) />
@@ -104,7 +105,7 @@
 		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
 		
 		<cflock scope="Application" timeout="20">
-			<cfset application.navid = getNavAlias()>
+			<cfset application.navid = getNavAlias(bIgnoreCache=true)>
 		</cflock>
 		
 		<cfif structKeyExists(stProperties, "title")>
@@ -281,39 +282,51 @@
 	
 	<cffunction name="getNavAlias" access="public" hint="Return a structure of all the dmNavigation nodes with aliases." returntype="struct" output="false">
 		<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
-	
+		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" hint="Ignores the object broker cache and retrieves from the database" />
+
 		<cfset var stResult = structNew()>
 		<cfset var q = "">
 		<cfset var i	= '' />
 		
-		<!--- $TODO: all app vars should be passed in as arguments! 
-		move application.dbowner (and others no doubt) GB$ --->
-		<cfquery datasource="#arguments.dsn#" name="q">
-		SELECT nav.objectID, nav.lNavIDAlias, ntm.nLeft
-		FROM	#application.dbowner#dmNavigation nav, 
-				#application.dbowner#nested_tree_objects ntm
-		WHERE	nav.objectid = ntm.objectid
-		AND lNavIDAlias <> ''
-		AND lNavIDAlias IS NOT NULL
-		ORDER BY ntm.nLeft
-		</cfquery>
-	
-		<cfloop query="q">
-			<cfscript>
-				if(len(q.lNavIdAlias))
-				{
-					for( i=1; i le ListLen(q.lNavIdAlias); i=i+1 )
+		<cfif isdefined("application.fc.lib.objectbroker") and not arguments.bIgnoreCache>
+			<!--- if the objectbroker is set up and we aren't skipping the cache, get the struct from object broker --->
+			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker("navid","navid") />
+		</cfif>
+
+		<cfif structIsEmpty(stResult)>
+			<!--- $TODO: all app vars should be passed in as arguments! 
+			move application.dbowner (and others no doubt) GB$ --->
+			<cfquery datasource="#arguments.dsn#" name="q">
+			SELECT nav.objectID, nav.lNavIDAlias, ntm.nLeft
+			FROM	#application.dbowner#dmNavigation nav, 
+					#application.dbowner#nested_tree_objects ntm
+			WHERE	nav.objectid = ntm.objectid
+			AND lNavIDAlias <> ''
+			AND lNavIDAlias IS NOT NULL
+			ORDER BY ntm.nLeft
+			</cfquery>
+		
+			<cfloop query="q">
+				<cfscript>
+					if(len(q.lNavIdAlias))
 					{
-						alias = Trim(ListGetAt(q.lNavIdAlias,i));
-						if (NOT StructKeyExists(stResult, alias)) {
-							stResult[alias] = q.objectID;
-						} else { 
-							//stResult[alias] = ListAppend(stResult[alias], q.objectID);
+						for( i=1; i le ListLen(q.lNavIdAlias); i=i+1 )
+						{
+							alias = Trim(ListGetAt(q.lNavIdAlias,i));
+							if (NOT StructKeyExists(stResult, alias)) {
+								stResult[alias] = q.objectID;
+							} else { 
+								//stResult[alias] = ListAppend(stResult[alias], q.objectID);
+							}
 						}
 					}
-				}
-			</cfscript>
-		</cfloop>
+				</cfscript>
+			</cfloop>
+
+			<cfset stResult.datetimeLastUpdated = now() />
+			<cfset application.fc.lib.objectBroker.AddToObjectBroker(stResult,"navid","navid") />
+		</cfif>
+
 		<cfreturn stResult>
 	</cffunction>
 	

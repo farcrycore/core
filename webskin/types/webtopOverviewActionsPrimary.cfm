@@ -259,7 +259,7 @@ START WEBSKIN
 		
 					<!--- delete draft veresion --->
 					<cfif stOverviewParams.stPermissions.iDelete eq 1> <!--- delete object --->
-							<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
+							<cfif listContains(application.fapi.getNavID('home'),stobj.objectid) EQ 0 AND listContains(application.fapi.getNavID('root'),stobj.objectid) eq 0>
 							<!--- check user can delete --->
 								<cfif stOverviewParams.stPermissions.iDelete eq 1>
 									<cfif structkeyexists(stobj,"versionid") and len(stObj.versionid)>
@@ -308,7 +308,7 @@ START WEBSKIN
 		
 				<cfcase value="approved">	
 		
-					<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
+					<cfif listContains(application.fapi.getNavID('home'),stobj.objectid) EQ 0 AND listContains(application.fapi.getNavID('root'),stobj.objectid) eq 0>
 						<!--- check user can delete --->
 						<cfif stOverviewParams.stPermissions.iDelete eq 1>
 							<ft:button 	value="Delete"  

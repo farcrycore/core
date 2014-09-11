@@ -102,7 +102,7 @@
 		<cfif isDefined("session.dmProfile.locale")>
 			<cfset currentLocale = session.dmProfile.locale />
 		<cfelse>
-			<cfset currentLocale = application.config.general.locale />
+			<cfset currentLocale = application.fapi.getConfig("general","locale") />
 		</cfif>
 		
 		<cfreturn currentLocale />

@@ -44,12 +44,8 @@
 
 	<cffunction name="onAppInit" returntype="any" access="public" output="false" hint="Initializes the friendly url scopes and returns a copy of this initialised object">
 
-		<cfset this.stMappings = structNew() />
-		<cfset this.stLookup = structNew() /><!--- SHOULD ONLY CONTAIN THE DEFAULT FU TO BE USED FOR THIS OBJECT --->
-		<cfset this.stDBLookup = structNew() />
-		
 		<cfset setupCoapiAlias() />
-		<cfset initialiseMappings() />		
+		<cfset initialiseMappings() />
 		
 		<cfreturn this />
 	</cffunction>
@@ -164,6 +160,7 @@
 					<cfset stLocal.stResult = setData(stProperties="#stLocal.stProps#") />
 				</cfif>
 			</cfloop>
+			<cfset setMapping(objectid=stLocal.stProps.objectID) />
 
 			<!--- SET THE NEW DEFAULT FU --->
 			<cfset stLocal.stProps = structNew() />
@@ -179,7 +176,7 @@
 			
 		</cfif>
 		
-		<cfset setMapping(objectid="#stLocal.stFU.objectid#") />
+		<cfset setMapping(objectid=stLocal.stFU.objectid) />
 
 		<cfreturn stLocal.stReturn />
 		
@@ -187,14 +184,15 @@
 
 	<cffunction name="getDefaultFUObject" returnType="struct" access="public" output="false" hint="Returns the default FU objectid for an object. Returns empty string if no default is set.">
 		<cfargument name="refObjectID" required="yes" hint="Objectid of the RefObject to retrieve the default" />
+		<cfargument name="bIgnoreCache" required="false" type="boolean" default="false" />
 			
-		<cfset var stLocal = structNew() />
+		<cfset var stDefaultFU = structNew() />
 		
-		<cfset stLocal.stDefaultFU = structNew() />
-
-		<cfif structKeyExists(this.stLookup, "#arguments.refObjectID#")>
-			<cfset stLocal.stDefaultFU = this.stLookup["#arguments.refObjectID#"] />
-		<cfelse>
+		<cfif not arguments.bIgnoreCache>
+			<cfset stDefaultFU = getFUStructByObjectID(arguments.refObjectID) />
+		</cfif>
+		
+		<cfif structIsEmpty(stDefaultFU)>
 			<!--- 
 			SORTING BY DEFAULT FIRST SO THAT IF WE HAVE A DEFAULT SETUP IT WILL BE PICKED UP.
 			However, if no default is available, we will automatically get the custom first or else finally the system
@@ -211,12 +209,15 @@
 			</cfquery>		
 		
 			<cfif stLocal.qDefault.recordCount>
-				<cfset stLocal.stDefaultFU = getData(objectid="#stLocal.qDefault.objectID#") />
-				<cfset setMapping(objectid="#stLocal.qDefault.objectID#", bForce="true", typename="#stLocal.qDefault.typename#") /><!--- Setting bForce ensures that this FU is used as the default because it MAY not have a default set. --->
+				<cfset stDefaultFU = getData(objectid="#stLocal.qDefault.objectID#") />
+
+				<cfif not arguments.bIgnoreCache>
+					<cfset setMapping(objectid="#stLocal.qDefault.objectID#", bForce="true", typename="#stLocal.qDefault.typename#") /><!--- Setting bForce ensures that this FU is used as the default because it MAY not have a default set. --->
+				</cfif>
 			</cfif>
 		</cfif>
 		
-		<cfreturn stLocal.stDefaultFU />
+		<cfreturn stDefaultFU />
 		
 	</cffunction>
 	
@@ -605,24 +606,14 @@
 		<cfset var thisfu = "" />
 		
 		<cfif structkeyexists(arguments,"typename") and len(arguments.typename)>
-			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce,typename="#arguments.typename#") />			
+			<cfset cacheURLStructByURL(stFU.friendlyURL,createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce,typename="#arguments.typename#")) />
 		<cfelse>
-			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce) />
+			<cfset cacheURLStructByURL(stFU.friendlyURL,createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce)) />
 		</cfif>
-		
-		
+
 		<cfif stFU.bDefault>
-			<!--- fu lookup --->
-			<cfset this.stLookup[stFU.refobjectid] = stFU />
-			
-			<!--- Remove archived URLs from the cache - ensures that they will get reloaded with redirect information --->
-			<cfloop collection="#this.stMappings#" item="thisfu">
-				<cfif isDefined("thisfu") and structkeyexists(this.stMappings[thisfu],"objectid") and this.stMappings[thisfu].objectid eq stFU.refobjectid and thisfu neq stFU.friendlyURL>
-					<cfset structdelete(this.stMappings,thisfu) />
-				</cfif>
-			</cfloop>
+			<cfset cacheFUStructByObjectID(stFU.refobjectid,stFU) />
 		</cfif>
-		
 	</cffunction>
 	
 	<cffunction name="initialiseMappings" access="public" hint="Updates the fu application scope with all the persistent FU mappings from the database." output="false" returntype="void" bDocument="true">
@@ -632,12 +623,6 @@
 		<cfset var stDeployResult = StructNew()>
 		<cfset var qLookup = "" />
 		<cfset var stFU = structnew() />
-		
-		<!--- initialise fu scopes --->
-		<cfset this.stMappings = structNew() />
-		<cfset this.stLookup = structNew() />
-		<cfset this.stDBLookup = structNew() /> <!--- Contains keys for EVERY friendly URL in the DB for quick reference. This is so that when building a constructed url, we are not going to use a FU that is in the DB --->
-
 		
 		<!--- Check to make sure the farFU table has been deployed --->
 		<cfif not application.fc.lib.db.isDeployed(typename="farFU",dsn=application.dsn)>
@@ -674,24 +659,13 @@
 			<cfset stFU.applicationname = stLocal.q.applicationname />
 			<cfset stFU.refTypename = stLocal.q.typename />
 			
-			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(stFU=stFU) />
+			<cfset cacheURLStructByURL(stFU.friendlyURL,createURLStruct(stFU=stFU)) />
 			
 			<cfif stFU.bDefault>
 				<!--- fu lookup --->
-				<cfset this.stLookup[stFU.refobjectid] = stFU />
+				<cfset cacheFUStructByObjectID(stFU.refobjectid,stFU) />
 			</cfif>
 		</cfloop>
-		
-		
-		<cfquery datasource="#application.dsn#" name="qLookup">
-		SELECT objectid,friendlyURL
-		FROM farFU
-		</cfquery>
-		
-		<cfloop query="qLookup">
-			<cfset this.stDBLookup[qLookup.friendlyURL] = qLookup.objectid />
-		</cfloop>
-					
 	</cffunction>
 
 	<cffunction name="parseURL" returntype="struct" access="public" output="false" hint="Parses the url.furl and returns all relevent url variables.">
@@ -710,7 +684,7 @@
 		</cfif>
 		
 		<cfif structkeyexists(stLocalURL, "furl") and len(stLocalURL.furl) gt 1>
-			<cfset stResult = getFUData(friendlyURL=stLocalURL.furl) />
+			<cfset stResult = getURLStructByURL(stLocalURL.furl) />
 		</cfif>
 		
 		<!--- Merge the FU data with the URL data --->
@@ -816,13 +790,11 @@
 			<cfif (not structKeyExists(stLocalURL, "furl") or stLocalURL.furl eq "" or stLocalURL.furl EQ "/") 
 					and isUsingFU() 
 					and not structKeyExists(stResult, "ajaxmode")
-					and structKeyExists(stResult, "objectid") and stResult.objectid NEQ application.fapi.getNavID('home')
-					and structKeyExists(this.stLookup, stResult.objectid)>
+					and structKeyExists(stResult, "objectid") and stResult.objectid NEQ application.fapi.getNavID('home')>
 					
+				<cfset stLocal.stDefaultFU = getFUStructByObjectID(stResult.objectid) />
 				
-				<cfset stLocal.stDefaultFU = getData(objectid="#this.stLookup[stResult.objectid].objectid#") />
-				
-				<cfif stLocal.stDefaultFU.redirectionType EQ "none">
+				<cfif not structisempty(stLocal.stDefaultFU) and stLocal.stDefaultFU.redirectionType EQ "none">
 					<!--- Don't want to resend the furl or the objectid --->
 					<cfset structdelete(stLocalURL,"furl") />
 					<cfset structdelete(stLocalURL,"objectid") />
@@ -835,82 +807,7 @@
 			</cfif>
 		</cfif>
 		
-
 		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="getFUData" access="public" returntype="struct" hint="Returns the either a struct of URL variables (objectid,type,urlparameters,etc) OR a redirect struct (url,status) for the specified fURL" output="false">
-		<cfargument name="friendlyURL" type="string" required="Yes">
-		<cfargument name="dsn" required="no" default="#application.dsn#"> 
-
-		<cfset var stReturnFU = StructNew()>
-		<cfset var stLocal = StructNew()>
-		<cfset var fuList = "" />
-		<cfset var fuThis = "" />
-		<cfset var fuToken = "" />
-		<cfset var bParamName = 1 />
-		<cfset var tmpFriendlyURL = "" />
-		
-		<cfif StructKeyExists(this.stMappings,arguments.friendlyURL)>
-			<!--- If cached, return that --->
-			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
-		</cfif>
-		
-		
-		<!--- Strongest match: the exact FU is in database ---> 
-		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet"> 
-		SELECT
-			farFU.objectid as objectid,farFU.friendlyURL as friendlyURL,refObjects.typename as typename 
-		FROM 
-			farFU INNER JOIN refObjects on farFU.refobjectid = refObjects.objectid 
-		WHERE
-			farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" /> 
-		ORDER BY 
-			farFU.bDefault DESC, farFU.fuStatus DESC 
-		</cfquery>
-		
-		<cfif stLocal.qGet.recordcount>
-			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGet.typename[1]) />
-			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
-		</cfif>
-		
-		<!--- 
-		Second strongest match: a part of the FU is in the database (matches against the start of the FU) 
-			- Some old FU's have double slashes. This is to address some legacy situations where a double slash was included as part of the FU. We need to make sure the double slashes remain.
-		--->
-		
-		<cfset tmpFriendlyURL = replaceNoCase(arguments.friendlyURL, "//", "+++", "all") />
-		
-		<cfloop list="#tmpFriendlyURL#" index="fuToken" delimiters="/">
-			<cfif left(fuToken,3) eq "+++">
-				<cfset fuThis = "#fuThis##replaceNoCase(fuToken, '+++', '//')#" />
-			<cfelse>
-				<cfset fuThis = "#fuThis#/#replaceNoCase(fuToken, '+++', '//')#" />
-			</cfif>
-			<cfset fuList = listappend(fuList,fuThis) />
-		</cfloop>
-		
-		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
-			SELECT		objectid,friendlyURL
-			FROM		#application.dbowner#farFU
-			WHERE		friendlyURL in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#fuList#" />)
-			ORDER BY 	friendlyURL desc, bDefault DESC, fuStatus DESC
-		</cfquery>
-		<cfif stLocal.qGet.recordcount>
-			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1],fuParameters=replacenocase(arguments.friendlyURL,stLocal.qGet.friendlyURL,"")) />
-			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
-		</cfif>
-		
-		<!--- Weakest match: the first fURL token is a UUID or a typename/type alias --->
-		<cfif isvalid("uuid",listfirst(arguments.friendlyURL,"/")) 
-				or structkeyexists(this.typeFU,listfirst(arguments.friendlyURL,"/")) 
-				or structkeyexists(application.stCOAPI,listfirst(arguments.friendlyURL,"/"))>
-			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(fuParameters=arguments.friendlyURL) />
-			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
-		</cfif>
-		
-		<!--- No match - this is probably a 404 --->
-		<cfreturn structnew() />
 	</cffunction>
 	
 	<cffunction name="createURLStruct" access="public" returntype="struct" hint="Creates a set of URL variables from a farFU object and/or a fuParametersString">
@@ -1004,7 +901,7 @@
 						</cfcase>
 						
 						<cfcase value="@objectid">
-							<cfif isUUID(fuParam)>
+							<cfif isValid("uuid",fuParam)>
 								<cfset stResult.objectid = fuParam />
 								<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@objectid")) />
 								
@@ -1116,7 +1013,7 @@
 				</cfloop>
 			</cfloop>
 		</cfif>
-				
+		
 		<cfreturn stResult />
 	</cffunction>
 	
@@ -1239,32 +1136,9 @@
 		WHERE	friendlyURL = <cfqueryparam value="#arguments.alias#" cfsqltype="cf_sql_varchar">
 		</cfquery>
 		
-		<cfset StructDelete(this.stMappings,arguments.alias)>
-		<!--- <cfset dataObject.removeMapping(arguments.alias)> --->
-		<cfreturn true>
-	</cffunction>
-	
+		<cfset cacheURLStructByURL(stFU.friendlyURL,structnew()) />
 
-	<cffunction name="getFUstruct" access="public" returntype="struct" hint="Returns a structure of all friendly URLs, keyed on object id." output="No">
-		<cfargument name="domain" required="no" type="string" default="#cgi.server_name#">
-		
-		<cfset var stMappings = initialiseMappings()>
-		<cfset var stFU = structnew()>
-		<cfset var i	= '' />
-		
-		<cfloop collection="#stMappings#" item="i">
-			<cfif findnocase(domain,i)>
-				<cfset stFU[listgetat(stMappings[i],2,"=")] = "/" & listRest(i,'/')>
-			</cfif>
-		</cfloop>
-		
-		<cfreturn stFU>
-	</cffunction>		
-				
-	<cffunction name="IsUUID" returntype="boolean" access="private" output="false" hint="Returns TRUE if the string is a valid CF UUID.">
-		<cfargument name="str" type="string" default="" />
-	
-		<cfreturn REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str) />
+		<cfreturn true>
 	</cffunction>
 	
 	
@@ -1306,7 +1180,7 @@
 			
 			<cfset stLocal.lNavID = ValueList(stLocal.qListNav.objectid)>
 
-			<cfif stLocal.lNavID NEQ "" AND arguments.objectid NEQ application.navid.home>
+			<cfif stLocal.lNavID NEQ "" AND arguments.objectid NEQ application.fapi.getNavID('home')>
 				<!--- optimisation: get all dmnavgiation data to avoid a getData() call --->
 				<cfquery name="stLocal.qListNavAlias" datasource="#application.dsn#">
 		    	SELECT	dm.objectid, dm.label, dm.fu 
@@ -1343,8 +1217,8 @@
 		<cfargument name="objectid" required="true" hint="The objectid of the dmNavigation node" />
 		<cfset var breadCrumb = "">
 
-		<cfif arguments.objectid eq application.navid.home>
-			<cfset breadcrumb = "" /><!--- application.config.fusettings.urlpattern --->
+		<cfif arguments.objectid eq application.fapi.getNavID('home')>
+			<cfset breadcrumb = "" /><!--- application.fapi.getConfig("fusettings","urlpattern") --->
 		<cfelse>
 			<cfset breadcrumb = createFUAlias(objectid=arguments.objectid) />
 		</cfif>
@@ -1358,7 +1232,7 @@
 	<cffunction name="createAll" access="public" returntype="boolean" hint="Deletes old mappings and creates new entries for entire tree, and writes the map file to disk" output="No">
 		
 		<!--- get nav tree --->
-		<cfset var qNav = application.factory.oTree.getDescendants(objectid=application.navid.home, depth=50)>
+		<cfset var qNav = application.factory.oTree.getDescendants(objectid=application.fapi.getNavID('home'), depth=50)>
 		<cfset var qAncestors = "">
 		<cfset var qCrumb = "">
 		<cfset var breadCrumb = "">
@@ -1411,7 +1285,7 @@
 		<cfset newAlias = Trim(newAlias)>
 		<cfset newAlias = ReReplaceNoCase(newAlias," ","-","all")>		
 		<!--- loop over domains and set fu ---> 
-		<!--- <cfloop list="#application.config.fusettings.domains#" index="dom"> --->
+		<!--- <cfloop list="#application.fapi.getConfig("fusettings","domains")#" index="dom"> --->
 			<cfset setMapping(alias=newAlias,mapping="#application.url.conjurer#?objectid=#arguments.objectid#",querystring=arguments.querystring)>
 		<!--- </cfloop> --->
 		<!--- <cfset updateAppScope()> --->
@@ -1435,15 +1309,16 @@
 		<cfset var bMustUseRegularURLParams = false />
 		<cfset var qLookup = "" />
 		<cfset var stFUObject	= '' />
+		<cfset var id = "" />
 		
 		<cfif len(arguments.type)>
 			<cfif isdefined("application.stCOAPI.#arguments.type#.fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
-			
-				<cfif structKeyExists(this.stDBLookup, "/#application.stCOAPI[arguments.type].fuAlias#")>					
+				
+				<cfif getExistsTypeFU(arguments.type)>
 					<cfset typeFU = arguments.type />
-				<cfelse>	
+				<cfelse>
 					<cfset typeFU = application.stCOAPI[arguments.type].fuAlias />
-				</cfif> 
+				</cfif>
 				
 			<cfelse>
 				<cfset typeFU = arguments.type />
@@ -1487,29 +1362,13 @@
 			<cfif len(arguments.objectid)>
 
 				<cfif StructKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
-						
-					<!--- LOOK UP IN MEMORY CACHE ---> 
-					<cfif structKeyExists(this.stLookup, arguments.objectid)>
-						<cfset returnURL = this.stLookup[arguments.objectid].friendlyURL />
 					
-					<!--- IF NOT IN CACHE CHECK THE DATABASE --->
-					<cfelse>
-						
-						<!--- GET FRIENDLY URL BASED ON THE OBJECTID --->					
-						<cfset stFUObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
-						
-						<!--- JUST IN CASE WE DONT HAVE A DEFAULT FU SET, USE THE SYSTEM OBJECT IF AVAILABLE --->
-						<cfif structIsEmpty(stFUObject)>
-							<cfset stFUObject = getSystemObject(refObjectID="#arguments.objectid#") />
-						</cfif>
-						
-						<!--- IF WE FOUND AN FU, THE USE IT, OTHERWISE START THE URL SYNTAX --->
-						<cfif NOT structIsEmpty(stFUObject)>
-							<cfset returnURL = "#stFUObject.friendlyURL#">
-						
-						</cfif>					
-					</cfif>	
+					<cfset stFUObject = getFUStructByObjectID(arguments.objectid) />
 
+					<!--- IF WE FOUND AN FU, THE USE IT, OTHERWISE START THE URL SYNTAX --->
+					<cfif NOT structIsEmpty(stFUObject)>
+						<cfset returnURL = "#stFUObject.friendlyURL#">
+					</cfif>
 
 				</cfif>
 
@@ -1655,99 +1514,7 @@
 		<cfreturn stLocal.qList>
 		
 	</cffunction>
-	
-	<cffunction name="fInsert" access="public" returntype="struct" hint="returns a query of FU for a particular objectid" output="No">
-		<cfargument name="stForm" required="yes" hint="friendly url struct" type="struct" />
 
-		<cfset var stLocal = StructNew()>
-		<cfset var stResult	= '' />
-		
-		<cfset stLocal.returnstruct = StructNew()>
-		<cfset stLocal.returnstruct.bSuccess = 1>
-		<cfset stLocal.returnstruct.message = "">
-
-		<!--- If the ref object does not currently have a default FU, set this as the default --->
-		<cfif structKeyExists(arguments.stForm, "refObjectID")>
-			<cfset stLocal.defaultFU = getDefault(refObjectID="#arguments.stForm.refObjectID#") />
-			<cfif not len(stLocal.defaultFU)>
-				<cfset arguments.stForm.bDefault = 1 />
-			</cfif>
-		</cfif>
-		
-		<cftry>
-
-			<cfif left(arguments.stForm.friendlyURL,1) NEQ "/">
-				<cfset arguments.stForm.friendlyURL = "/#arguments.stForm.friendlyURL#" />
-			</cfif>
-			
-			<cfquery datasource="#application.dsn#" name="stLocal.qCheck">
-			SELECT	objectid
-			FROM	#application.dbowner#farFU
-			WHERE	lower(friendlyURL) = <cfqueryparam value="#LCase(arguments.stForm.friendlyurl)#" cfsqltype="cf_sql_varchar">
-				AND fuStatus > 0
-			</cfquery>
-			
-			<cfif stLocal.qCheck.recordcount EQ 0>
-				<cfset arguments.stForm.objectID = application.fc.utils.createJavaUUID()>
-				<cfset stResult = createData(stProperties="#arguments.stForm#") />
-				
-			
-				<!--- add to app scope --->
-				<cfif arguments.stForm.fuStatus GT 0>
-					<cfset this.stMappings[arguments.stForm.friendlyURL] = StructNew() />
-					<cfset this.stMappings[arguments.stForm.friendlyURL].refobjectid = arguments.stForm.refObjectID />
-					<cfset this.stMappings[arguments.stForm.friendlyURL].queryString = arguments.stForm.querystring />
-					<cfset this.stLookup[arguments.stForm.refObjectID] = arguments.stForm.friendlyURL />
-				</cfif>
-			<cfelse>
-				<cfset stLocal.returnstruct.bSuccess = 0>
-				<cfset stLocal.returnstruct.message = "Sorry the Friendly URL: #arguments.stForm.friendlyurl# is currently active.<br />">
-			</cfif>
-
-			<cfcatch>
-				<cfset stLocal.returnstruct.bSuccess = 0>
-				<cfset stLocal.returnstruct.message = "#cfcatch.message# - #cfcatch.detail#">
-			</cfcatch>
-		</cftry>
-		
-		<cfreturn stLocal.returnstruct>
-	</cffunction>
-	
-	<cffunction name="fDelete" access="public" returntype="struct" hint="returns a query of FU for a particular objectid" output="No">
-		<cfargument name="stForm" required="yes" hint="friendly url struct" type="struct" />
-
-		<cfset var stLocal = StructNew()>
-		<cfset stLocal.returnstruct = StructNew()>
-		<cfset stLocal.returnstruct.bSuccess = 1>
-		<cfset stLocal.returnstruct.message = "">
-
-		<cftry>
-			<cfquery datasource="#application.dsn#" name="stLocal.qList">
-			SELECT	friendlyurl
-			FROM	#application.dbowner#farFU
-			WHERE	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.stForm.lDeleteObjectId#" />)
-			</cfquery>
-
-			<cfquery datasource="#application.dsn#" name="stLocal.qDelete">
-			DELETE
-			FROM	#application.dbowner#farFU
-			WHERE	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.stForm.lDeleteObjectId#" />)
-			</cfquery>
-			
-			<cfloop query="stLocal.qList">
-				<!--- delete from app scope --->
-				<cfset StructDelete(application.FU.mappings,stLocal.qList.friendlyurl)>
-			</cfloop>
-
-			<cfcatch>
-				<cfset stLocal.returnstruct.bSuccess = 0>
-				<cfset stLocal.returnstruct.message = "#cfcatch.message# - #cfcatch.detail#">
-			</cfcatch>
-		</cftry>
-		
-		<cfreturn stLocal.returnstruct>
-	</cffunction>
-		
 	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
@@ -1756,13 +1523,170 @@
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
 		
 		<!--- We need to make sure we update our stDBLookup anytime we save an FU --->
-		<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND len(arguments.stProperties.friendlyURL)>
-			<cfset this.stDBLookup[arguments.stProperties.friendlyURL] = arguments.stProperties.objectID />
+		<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND listlen(arguments.stProperties.friendlyURL) eq 1>
+			<cfset cacheExistsTypeFU(listgetat(arguments.stProperties.friendlyURL,1,"/"), { exists=true }) />
 		</cfif>
 		
 		<cfreturn super.setData(argumentCollection="#arguments#") />
+	</cffunction>
+	
+
+	<cffunction name="getExistsTypeFU" access="public" output="false" returntype="boolean">
+		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" />
+
+		<cfset var stResult = {} />
+		<cfset var qLookup = "" />
+
+		<cfif not arguments.bIgnoreCache>
+			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker("exists_"&arguments.typename,"fuLookup") />
+		</cfif>
+
+		<cfif structIsEmpty(stResult)>
+			<cfquery datasource="#application.dsn#" name="qLookup">
+				select objectid, friendlyURL
+				from farFU
+				where friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="/#application.stCOAPI[arguments.typename].fuAlias#" />
+			</cfquery>
+
+			<cfif qLookup.recordcount>
+				<cfset stResult = { exists=true } />
+			<cfelse>
+				<cfset stResult = { exists=false } />
+			</cfif>
+
+			<cfset cacheExistsTypeFU(arguments.typename,stResult.exists) />
+		</cfif>
+
+		<cfreturn stResult.exists />
+	</cffunction>
+
+	<cffunction name="cacheExistsTypeFU" access="public" output="false" returntype="boolean">
+		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="data" type="boolean" required="true" />
 		
-	</cffunction>		
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker({ exists=arguments.data },"fuLookup","exists_"&arguments.typename) />
+
+		<cfreturn arguments.data />
+	</cffunction>
 	
-	
+	<cffunction name="getFUStructByObjectID" access="public" output="false" returntype="struct">
+		<cfargument name="objectid" type="uuid" required="true" />
+		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" />
+		
+		<cfset var stResult = "" />
+		<cfset var qLookup = "" />
+
+		<cfif not arguments.bIgnoreCache>
+			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker("fu_"&arguments.objectid,"fuLookup") />
+		</cfif>
+
+		<cfif structIsEmpty(stResult)>
+			<!--- GET FRIENDLY URL BASED ON THE OBJECTID --->					
+			<cfset stResult = getDefaultFUObject(refObjectID=arguments.objectid,bIgnoreCache=true) />
+			
+			<!--- JUST IN CASE WE DONT HAVE A DEFAULT FU SET, USE THE SYSTEM OBJECT IF AVAILABLE --->
+			<cfif structIsEmpty(stResult)>
+				<cfset stResult = getSystemObject(refObjectID=arguments.objectid) />
+			</cfif>
+
+			<cfset stResult = cacheFUStructByObjectID(arguments.objectid,stResult) />
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="cacheFUStructByObjectID" access="public" output="false" returntype="struct">
+		<cfargument name="objectid" type="uuid" required="true" />
+		<cfargument name="data" type="struct" required="true" />
+		
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","fu_"&arguments.objectid) />
+
+		<cfreturn duplicate(arguments.data) />
+	</cffunction>
+
+	<cffunction name="getURLStructByURL" access="public" output="false" returntype="struct">
+		<cfargument name="friendlyURL" type="string" required="true" />
+		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" />
+		
+		<cfset var stReturnFU = StructNew()>
+		<cfset var stLocal = StructNew()>
+		<cfset var fuList = "" />
+		<cfset var fuThis = "" />
+		<cfset var fuToken = "" />
+		<cfset var bParamName = 1 />
+		<cfset var tmpFriendlyURL = "" />
+		<cfset var stReturnFU = {} />
+
+		<cfif not arguments.bIgnoreCache>
+			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us_"&arguments.friendlyURL,"fuLookup") />
+		</cfif>
+		
+		<cfif structIsEmpty(stReturnFU)>
+			<!--- Strongest match: the exact FU is in database ---> 
+			<cfquery datasource="#application.dsn#" name="stLocal.qGet"> 
+				SELECT		farFU.objectid as objectid,farFU.friendlyURL as friendlyURL,refObjects.typename as typename 
+				FROM 		farFU 
+							INNER JOIN 
+							refObjects 
+							on farFU.refobjectid = refObjects.objectid 
+				WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" /> 
+				ORDER BY 	farFU.bDefault DESC, farFU.fuStatus DESC 
+			</cfquery>
+			
+			<cfif stLocal.qGet.recordcount>
+				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGet.typename[1])) />
+			</cfif>
+		</cfif>
+		
+		<cfif structisempty(stReturnFU)>
+			<!--- 
+			Second strongest match: a part of the FU is in the database (matches against the start of the FU) 
+				- Some old FU's have double slashes. This is to address some legacy situations where a double slash was included as part of the FU. We need to make sure the double slashes remain.
+			--->
+			
+			<cfset tmpFriendlyURL = replaceNoCase(arguments.friendlyURL, "//", "+++", "all") />
+			
+			<cfloop list="#tmpFriendlyURL#" index="fuToken" delimiters="/">
+				<cfif left(fuToken,3) eq "+++">
+					<cfset fuThis = "#fuThis##replaceNoCase(fuToken, '+++', '//')#" />
+				<cfelse>
+					<cfset fuThis = "#fuThis#/#replaceNoCase(fuToken, '+++', '//')#" />
+				</cfif>
+				<cfset fuList = listappend(fuList,fuThis) />
+			</cfloop>
+			
+			<cfquery datasource="#application.dsn#" name="stLocal.qGet">
+				SELECT		objectid,friendlyURL
+				FROM		#application.dbowner#farFU
+				WHERE		friendlyURL in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#fuList#" />)
+				ORDER BY 	friendlyURL desc, bDefault DESC, fuStatus DESC
+			</cfquery>
+			<cfif stLocal.qGet.recordcount>
+				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(farFUID=stLocal.qGet.objectid[1],fuParameters=replacenocase(arguments.friendlyURL,stLocal.qGet.friendlyURL,""))) />
+			</cfif>
+		</cfif>
+		
+		<cfif structIsEmpty(stReturnFU)>
+			<!--- Weakest match: the first fURL token is a UUID or a typename/type alias --->
+			<cfif isvalid("uuid",listfirst(arguments.friendlyURL,"/")) 
+					or structkeyexists(this.typeFU,listfirst(arguments.friendlyURL,"/")) 
+					or structkeyexists(application.stCOAPI,listfirst(arguments.friendlyURL,"/"))>
+				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(fuParameters=arguments.friendlyURL)) />
+			</cfif>
+		</cfif>
+		
+		<!--- No match - this is probably a 404 --->
+		<cfreturn stReturnFU />
+	</cffunction>
+
+	<cffunction name="cacheURLStructByURL" access="public" output="false" returntype="struct">
+		<cfargument name="friendlyURL" type="string" required="true" />
+		<cfargument name="data" type="struct" required="true" />
+		
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","us_"&arguments.friendlyURL) />
+
+		<cfreturn duplicate(arguments.data) />
+	</cffunction>
+
 </cfcomponent>

@@ -11,10 +11,11 @@
 <cfset changedTypes = "" />
 
 <cfif isdefined("url.logchanges")>
-	<cfset application.config.general.logDBChanges = url.logchanges />
+	<cfset stConfig = application.fapi.getContentType("farConfig").getConfig("general") />
+	<cfset stConfig.logDBChanges = url.logchanges />
 	<cfset qConfig = application.fapi.getContentObjects(typename="farConfig",configkey_eq="general") />
 	<cfset stConfig = application.fapi.getContentObject(typename="farConfig",objectid=qConfig.objectid) />
-	<cfwddx action="cfml2wddx" input="#application.config.general#" output="stConfig.configdata" />
+	<cfwddx action="cfml2wddx" input="#stConfig#" output="stConfig.configdata" />
 	<cfset application.fapi.setData(stProperties=stConfig) />
 	<cfoutput>true</cfoutput>
 	<cfabort>

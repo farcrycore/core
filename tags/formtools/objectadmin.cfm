@@ -78,7 +78,7 @@
 	<cfparam name="attributes.name" default="objectadmin" />
 
 	<!--- admin configuration options --->
-	<cfparam name="attributes.numitems" default="#application.config.general.GENERICADMINNUMITEMS#" type="numeric">
+	<cfparam name="attributes.numitems" default="#application.fapi.getConfig("general","GENERICADMINNUMITEMS")#" type="numeric">
 	<cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
 	<cfparam name="attributes.lButtons" default="*" type="string">

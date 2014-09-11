@@ -36,7 +36,7 @@ $out:$
 --->
 
 <!--- email administrator --->
-<cfmail to="#application.config.general.ADMINEMAIL#" from="#application.config.general.ADMINEMAIL#" subject="Error in #application.applicationname#" type="html">
+<cfmail to="#application.fapi.getConfig("general","ADMINEMAIL")#" from="#application.fapi.getConfig("general","ADMINEMAIL")#" subject="Error in #application.applicationname#" type="html">
 <cfdump var="#error#" label="Error Diagnostics">
 </cfmail>
 

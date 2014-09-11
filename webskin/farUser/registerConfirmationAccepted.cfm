@@ -14,7 +14,7 @@
 
 <cfoutput><div class="loginInfo"></cfoutput>
 
-<admin:resource key="coapi.farLogin.register.complete@html" var1="#application.fapi.getLink(objectid=application.navid.home)#"><cfoutput>
+<admin:resource key="coapi.farLogin.register.complete@html" var1="#application.fapi.getLink(objectid=application.fapi.getNavID('home'))#"><cfoutput>
 	<p>Your Registration is now complete</p>
 	<p><a href="{1}">Click here</a> to return to the home page.</p>
 </cfoutput></admin:resource>

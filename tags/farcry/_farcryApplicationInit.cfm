@@ -139,9 +139,13 @@ test for the existance of each and act accordingly
 <cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
 <cfset application.config = structNew() />
 <cfloop list="#oConfig.getConfigKeys()#" index="configkey">
-	<cfset application.config[configkey] = oConfig.getConfig(configkey) />
+	<cfset application.config[configkey] = oConfig.getConfig(key=configkey,bIgnoreCache=true) />
 </cfloop>
-<cfset application.fc.lib.db.setLogChangeFlags(application.config.general.logDBChanges) />
+<cfset application.fc.lib.db.setLogChangeFlags(application.fapi.getConfig("general","logDBChanges")) />
+<cfset application.fc.lib.objectbroker.configureType("config",listlen(oConfig.getConfigKeys())) />
+<cfset application.fc.lib.objectbroker.configureType("navid",1) />
+<cfset application.fc.lib.objectbroker.configureType("catid",1) />
+<cfset application.fc.lib.objectbroker.configureType("fuLookup",application.fapi.getConfig("cache","maximumFriendlyURLs")) />
 
 <!--- wrap this in a cftry catch in case the policystore isn't initialised yet  --->
 <!--- <cfif StructKeyExists(request,"init") AND request.init eq 0> --->
@@ -152,12 +156,12 @@ Build NavIDs from Navigation Nodes
 <cfscript>
 	// set up requested navid's application.navIds
 	oNav = createObject("component", application.types.dmNavigation.typePath);
-	application.navid = oNav.getNavAlias();
+	application.navid = oNav.getNavAlias(bIgnoreCache=true);
 </cfscript>
 
 <!--- Build catids from category nodes --->
 
-<cfset application.catid = application.factory.oCategory.getCatAliases() />
+<cfset application.catid = application.factory.oCategory.getCatAliases(bIgnoreCache=true) />
 <!--- /_config.cfm --->
 
 

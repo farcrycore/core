@@ -81,19 +81,19 @@
 
 		<cfset var regex = "^.*">
 
-		<cfif int(application.config.security.passwordMinLength) gt 0>
-			<cfset regex = regex & "(?=.{#application.config.security.passwordMinLength#})">
+		<cfif int(application.fapi.getConfig("security","passwordMinLength")) gt 0>
+			<cfset regex = regex & "(?=.{#application.fapi.getConfig("security","passwordMinLength")#})">
 		</cfif>
-		<cfif application.config.security.bIncludeLetters>
+		<cfif application.fapi.getConfig("security","bIncludeLetters")>
 			<cfset regex = regex & "(?=.*[[:alpha:]])">
 		</cfif>
-		<cfif application.config.security.bIncludeMixedCase>
+		<cfif application.fapi.getConfig("security","bIncludeMixedCase")>
 			<cfset regex = regex & "(?=.*[a-z])(?=.*[A-Z])">
 		</cfif>
-		<cfif application.config.security.bIncludeNumeric>
+		<cfif application.fapi.getConfig("security","bIncludeNumeric")>
 			<cfset regex = regex & "(?=.*[0-9])">
 		</cfif>
-		<cfif application.config.security.bIncludeSymbol>
+		<cfif application.fapi.getConfig("security","bIncludeSymbol")>
 			<cfset regex = regex & "(?=.*[^a-zA-Z-0-9])">
 		</cfif>
 

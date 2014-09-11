@@ -454,6 +454,11 @@
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
 		
+		<cfif not structkeyexists(application,"stCOAPI")>
+			<cfdump var="#arguments.exception#">
+			<cfabort>
+		</cfif>
+
 		<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
 		<cfif structkeyexists(server,"railo")>
 			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 10000#" />
@@ -472,8 +477,8 @@
 		<cfset oError.logData(stException) />
 		
 		<!--- Email error --->
-		<cfif isdefined("application.config.general.bEmailErrors") and application.config.general.bEmailErrors and len(application.config.general.errorEmail)>
-			<cfmail to="#application.config.general.errorEmail#" from="#application.config.general.adminEmail#" subject="#application.applicationname#: #stException.message# (#stException.bot#)" type="text/plain"><cfoutput>#oError.formatError(stException,"text")#</cfoutput></cfmail>
+		<cfif isdefined("application.fapi") and application.fapi.getConfig("general","bEmailErrors",true) and len(application.fapi.getConfig("general","errorEmail","")) and len(application.fapi.getConfig("general","adminEmail",""))>
+			<cfmail to="#application.fapi.getConfig("general","errorEmail","")#" from="#application.fapi.getConfig("general","adminEmail","")#" subject="#application.applicationname#: #stException.message# (#stException.bot#)" type="text/plain"><cfoutput>#oError.formatError(stException,"text")#</cfoutput></cfmail>
 		</cfif>
 		
 		<cfset oError.showErrorPage("500 Internal Server Error",stException) />

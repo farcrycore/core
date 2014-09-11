@@ -50,7 +50,7 @@ $out:$
 	oNav = createObject("component",application.types['dmNavigation'].typepath);
 	
 	// delete trash root children objects 
-	stObj = oNav.getData(objectid=application.navid.rubbish);
+	stObj = oNav.getData(objectid=application.fapi.getNavID('rubbish'));
 	aNewObjectIds = arrayNew(1);
 	for(i = 1;i LTE arrayLen(stObj.aObjectIds);i=i+1)
 	{
@@ -80,7 +80,7 @@ $out:$
 	oNav.setData(stProperties=stObj);
 	
 	// delete trash descendants
-	qDesc = oTree.getDescendants(objectid=application.navid.rubbish);		
+	qDesc = oTree.getDescendants(objectid=application.fapi.getNavID('rubbish'));		
 	for(i = 1;i LTE qDesc.recordCount;i=i+1)
 	{	
 		// get object details

@@ -48,7 +48,7 @@ out:
 <cfparam name="attributes.suffix" default="">
 <cfparam name="attributes.includeSelf" default="0"><!--- @@attrhint: include the current item in the bread crumb trail --->
 <cfparam name="attributes.linkSelf" default="true"><!--- @@attrhint: should this item be a link in the bread crumb @@options: true,false --->
-<cfparam name="attributes.homeNavID" default="#application.navid.home#"><!--- @@attrhint: the objectId of the starting element of the breadcrumb. This UUID should be of one of the items in the navigation tree. For example, if you were to set an alias of a navigation you could set this value like: application.navid['myalias']. The default is application.navid.home.  --->
+<cfparam name="attributes.homeNavID" default="#application.fapi.getNavID('home')#"><!--- @@attrhint: the objectId of the starting element of the breadcrumb. This UUID should be of one of the items in the navigation tree. For example, if you were to set an alias of a navigation you could set this value like: application.navid['myalias']. The default is application.navid.home.  --->
 
 <cfscript>
 // get navigation elements
@@ -93,7 +93,7 @@ out:
 	</cfif>
 <cfelse>
 	<!--- output home only --->
-	<cfoutput>#attributes.prefix# <skin:buildLink objectid="#application.navid.home#" class="#attributes.linkClass#" /></cfoutput>
+	<cfoutput>#attributes.prefix# <skin:buildLink objectid="#application.fapi.getNavID('home')#" class="#attributes.linkClass#" /></cfoutput>
 	<!--- #FC-611 if calling page is including itself, display page linked title --->
 	<cfif attributes.includeSelf>
 		<cfoutput>#attributes.separator#</cfoutput>

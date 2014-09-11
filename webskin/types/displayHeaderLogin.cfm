@@ -58,7 +58,7 @@
 		<div class="content-main">
 			<div class="content-block">
 				<div id="header" class="clearfix">
-					<h1 class="pull-left"><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo" <cfif len(webtopLogoPath)>style="background-image:url(#webtopLogoPath#);text-indent:-99999px;"<cfelse>style="width:auto;height:40px;"</cfif>>#application.config.general.siteTitle#</a></h1>
+					<h1 class="pull-left"><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo" <cfif len(webtopLogoPath)>style="background-image:url(#webtopLogoPath#);text-indent:-99999px;"<cfelse>style="width:auto;height:40px;"</cfif>>#application.fapi.getConfig("general","siteTitle")#</a></h1>
 					<h1 class="pull-right"><a href="http://www.farcrycore.org/" target="_blank" class="logo farcry-logo">FarCry Core</a></h1>
 				</div>
 				<div class="content-pod">

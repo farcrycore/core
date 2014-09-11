@@ -39,7 +39,7 @@
 	
 	<!--- No FU --->
 	<cffunction displayname="Parse: /notafu" hint="Checks that this friendly URL is not parsed" name="parseFU_none" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/notafu") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/notafu") />
 		
 		<cfset assertEquals(structkeylist(stResult),"") />
 	</cffunction>
@@ -66,21 +66,21 @@
 	
 	<!--- Constructed FU: only typename --->
 	<cffunction displayname="Parse: /typename" hint="Checks that this friendly URL is parsed as type" name="parseFU_typename" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU") />
 		
 		<cfset assertEquals(structkeylist(stResult),"type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias" hint="Checks that this friendly URL is parsed as type" name="parseFU_typealias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu") />
 		
 		<cfset assertEquals(structkeylist(stResult),"type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as type, and two parameters" name="parseFU_typealias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"param1,param2,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -116,7 +116,7 @@
 	
 	<!--- Constructed FU: type and view --->
 	<cffunction displayname="Parse: /typename/viewname" hint="Checks that this friendly URL is parsed as type and view" name="parseFU_typename_viewname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/displayPageTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/displayPageTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -124,7 +124,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typename/viewalias" hint="Checks that this friendly URL is parsed as type and view" name="parseFU_typename_viewalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/test-page-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/test-page-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -132,7 +132,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewname" hint="Checks that this friendly URL is parsed as type and view" name="parseFU_typealias_viewname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/displayPageTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/displayPageTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -140,7 +140,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewalias" hint="Checks that this friendly URL is parsed as type and view" name="parseFU_typealias_viewalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/test-page-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/test-page-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -169,7 +169,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as type, view, and two parameters" name="parseFU_typealias_viewalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/test-page-default/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/test-page-default/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"param1,param2,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -240,7 +240,7 @@
 	
 	<!--- Constructed FU: type and bodyview --->
 	<cffunction displayname="Parse: /typename/bodyname" hint="Checks that this friendly URL is parsed as type and bodyview" name="parseFU_typename_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/displayTypeBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/displayTypeBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -248,7 +248,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typename/bodyalias" hint="Checks that this friendly URL is parsed as type and bodyview" name="parseFU_typename_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/test-body-type") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/test-body-type") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -256,7 +256,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/bodyname" hint="Checks that this friendly URL is parsed as type and bodyview" name="parseFU_typealias_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/displayTypeBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/displayTypeBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -264,7 +264,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/bodyalias" hint="Checks that this friendly URL is parsed as type and bodyview" name="parseFU_typealias_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/test-body-type") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/test-body-type") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -293,7 +293,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/bodyalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as type, bodyview, and two parameters" name="parseFU_typealias_bodyalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/test-body-type/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/test-body-type/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,param1,param2,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -364,7 +364,7 @@
 	
 	<!--- Constructed FU: type, view, bodyview --->
 	<cffunction displayname="Parse: /typename/viewname/bodyname" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_typename_viewname_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/displayPageTest/displayTypeBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/displayPageTest/displayTypeBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -373,7 +373,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typename/viewname/bodyalias" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_tyepname_viewname_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/displayPageTest/test-body-type") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/displayPageTest/test-body-type") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -382,7 +382,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typename/viewalias/bodyname" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_typename_viewalias_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/test-page-default/displayTypeBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/test-page-default/displayTypeBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -391,7 +391,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typename/viewalias/bodyalias" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_typename_viewalias_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/farFU/test-page-default/test-body-type") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/farFU/test-page-default/test-body-type") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -400,7 +400,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewname/bodyname" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_typealias_viewname_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/displayPageTest/displayTypeBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/displayPageTest/displayTypeBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -409,7 +409,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewname/bodyalias" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_typealias_viewname_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/displayPageTest/test-body-type") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/displayPageTest/test-body-type") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -418,7 +418,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewalias/bodyname" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_typealias_viewalias_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/test-page-default/displayTypeBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/test-page-default/displayTypeBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -427,7 +427,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewalias/bodyalias" hint="Checks that this friendly URL is parsed as type, view and body" name="parseFU_typealias_viewalias_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/test-page-default/test-body-type") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/test-page-default/test-body-type") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -491,7 +491,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/viewalias/bodyalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as type, view, body, and two parameters" name="parseFU_typealias_viewalias_bodyalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/fu/test-page-default/test-body-type/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/fu/test-page-default/test-body-type/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,param1,param2,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
@@ -503,7 +503,7 @@
 	
 	<!--- Constructed FU: only objectid --->
 	<cffunction displayname="Parse: /objectid" hint="Checks that this friendly URL is parsed as object and type" name="parseFU_objectid" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#") />
 		
 		<cfset assertEquals(structkeylist(stResult),"objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -511,7 +511,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as objectid, type, and two parameters" name="parseFU_objectid_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,param1,param2,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -522,7 +522,7 @@
 	
 	<!--- Constructed FU: objectid and view --->
 	<cffunction displayname="Parse: /objectid/viewname" hint="Checks that this friendly URL is parsed as objectid, type, and view" name="parseFU_objectid_viewname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/displayPageTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/displayPageTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -531,7 +531,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/viewalias" hint="Checks that this friendly URL is parsed as objectid, type, and view" name="parseFU_objectid_viewalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-page-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/test-page-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -572,7 +572,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/viewalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as objectid, type, view, and two parameters" name="parseFU_objectid_viewalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-page-default/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/test-page-default/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,param1,param2,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -605,7 +605,7 @@
 	
 	<!--- Constructed FU: objectid and bodyview --->
 	<cffunction displayname="Parse: /objectid/bodyname" hint="Checks that this friendly URL is parsed as objectid, type, and bodyview" name="parseFU_objectid_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/displayBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/displayBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -614,7 +614,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/bodyalias" hint="Checks that this friendly URL is parsed as objectid, type, and bodyview" name="parseFU_objectid_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-body-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/test-body-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -655,7 +655,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/bodyalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as objectid, type, bodyview, and two parameters" name="parseFU_objectid_bodyalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-body-default/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/test-body-default/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,param1,param2,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -688,7 +688,7 @@
 	
 	<!--- Constructed FU: objectid, view, bodyview --->
 	<cffunction displayname="Parse: /objectid/viewname/bodyname" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_objectid_viewname_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/displayPageTest/displayBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/displayPageTest/displayBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -698,7 +698,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/viewname/bodyalias" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_objectid_viewname_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/displayPageTest/test-body-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/displayPageTest/test-body-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -708,7 +708,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/viewalias/bodyname" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_objectid_viewalias_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-page-default/displayBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/test-page-default/displayBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -718,7 +718,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/viewalias/bodyalias" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_objectid_viewalias_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-page-default/test-body-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/test-page-default/test-body-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -746,7 +746,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/viewalias/bodyalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as objectid, type, view, body, and two parameters" name="parseFU_objectid_viewalias_bodyalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-page-default/test-body-default/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/#this.testFU.objectid#/test-page-default/test-body-default/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,param1,param2,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -759,7 +759,7 @@
 	
 	<!--- Normal FU: only FU --->
 	<cffunction displayname="Parse: /fu" hint="Checks that this friendly URL is parsed as object and type" name="parseFU_fu" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu") />
 		
 		<cfset assertEquals(structkeylist(stResult),"objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -767,7 +767,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /fu/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as objectid, type, and two parameters" name="parseFU_fu_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,param1,param2,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -778,7 +778,7 @@
 	
 	<!--- Normal FU: FU and view --->
 	<cffunction displayname="Parse: /fu/viewname" hint="Checks that this friendly URL is parsed as objectid, type, and view" name="parseFU_fu_viewname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/displayPageTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/displayPageTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -787,7 +787,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /fu/viewalias" hint="Checks that this friendly URL is parsed as objectid, type, and view" name="parseFU_fu_viewalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/test-page-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/test-page-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -796,7 +796,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /fu/viewalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as fu, type, view, and two parameters" name="parseFU_fu_viewalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/test-page-default/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/test-page-default/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,param1,param2,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -823,7 +823,7 @@
 	
 	<!--- Normal FU: FU, view, bodyview --->
 	<cffunction displayname="Parse: /fu/viewname/bodyname" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_fu_viewname_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/displayPageTest/displayBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/displayPageTest/displayBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -833,7 +833,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /fu/viewname/bodyalias" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_fu_viewname_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/displayPageTest/test-body-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/displayPageTest/test-body-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -843,7 +843,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /fu/viewalias/bodyname" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_fu_viewalias_bodyname" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/test-page-default/displayBodyTest") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/test-page-default/displayBodyTest") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -853,7 +853,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /fu/viewalias/bodyalias" hint="Checks that this friendly URL is parsed as objectid, type, view and body" name="parseFU_fu_viewalias_bodyalias" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/test-page-default/test-body-default") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/test-page-default/test-body-default") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
@@ -878,7 +878,7 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /fu/viewalias/bodyalias/param1/value1/param2/value2" hint="Checks that this friendly URL is parsed as objectid, type, view, body, and two parameters" name="parseFU_fu_viewalias_bodyalias_parameters" access="public">
-		<cfset var stResult = this.farFU.getFUData(friendlyURL="/test/fu/test-page-default/test-body-default/param1/value1/param2/value2") />
+		<cfset var stResult = this.farFU.getURLStructByURL(friendlyURL="/test/fu/test-page-default/test-body-default/param1/value1/param2/value2") />
 		
 		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,param1,param2,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
