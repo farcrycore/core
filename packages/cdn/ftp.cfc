@@ -283,6 +283,7 @@
 	<cffunction name="getURLPath" output="false" access="public" returntype="string" hint="Returns full internal path. Works for files and directories.">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
+		<cfargument name="protocol" type="string" require="false" />
 		
 		<cfset var urlpath = arguments.file />
 		
@@ -292,6 +293,10 @@
 		
 		<cfset urlpath = arguments.config.urlPathPrefix & urlpath />
 		
+		<cfif structkeyexists(arguments,"protocol") and refind("^//",urlpath)>
+			<cfset urlpath = arguments.protocol & ":" & urlpath />
+		</cfif>
+
 		<cfreturn urlpath />
 	</cffunction>
 	
@@ -351,11 +356,12 @@
 	<cffunction name="ioGetFileLocation" returntype="struct" output="false" hint="Returns serving information for the file - either method=redirect + path=URL OR method=stream + path=local path">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
+		<cfargument name="protocol" type="string" require="false" />
 		
 		<cfset var stResult = structnew() />
 		
 		<cfset stResult["method"] = "redirect" />
-		<cfset stResult["path"] = getURLPath(config=arguments.config,file=arguments.file) />
+		<cfset stResult["path"] = getURLPath(argumentCollection=arguments) />
 		<cfset stResult["mimetype"] = getPageContext().getServletContext().getMimeType(arguments.file) />
 		
 		<cfreturn stResult />

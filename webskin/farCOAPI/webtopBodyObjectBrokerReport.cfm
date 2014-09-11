@@ -93,30 +93,37 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		</cfif>
 		<td>
 			<cfif structKeyExists(form, "selectedObjectID") AND form.selectedObjectID EQ key>
+				<cfset stCount = {} />
+				<cfset totalObjects = arrayLen(application.objectbroker[key].aobjects) />
 				<cfset maxSkins = 0 />
 				<cfset minSkins = 0 />
-				<cfset totalObjects = arrayLen(application.objectbroker[key].aobjects) />
 				<cfset totalSkins = 0 />
 				<cfset maxSkinsObjectID = "">
+
 				<cfloop collection="#application.objectbroker[key]#" item="obj">
 					<cfif obj NEQ "MAXOBJECTS" AND obj NEQ "AOBJECTS">
-						<cfset stCacheEntry = application.fc.lib.objectbroker.GetObjectCacheEntry(objectid=obj,typename=key) />
-						<cfif structKeyExists(stCacheEntry, "stWebskins")>
-							<cfloop collection="#stCacheEntry.stWebskins#" item="webskinName">
-								<cfset currentSkins  = StructCount(stCacheEntry.stWebskins[webskinName]) />
-								<cfset totalSkins = totalSkins + currentSkins />
-								<cfif currentSkins LT minSkins OR minSkins EQ 0>
-									<cfset minSkins = currentSkins />
-								</cfif>
-								<cfif currentSkins GT maxSkins>
-									<cfset maxSkins = currentSkins />
-									<cfset maxSkinsObjectID = obj />
-								</cfif>
-							</cfloop>
+						<cfif refind("^#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#key#_[^_]+_[^_]+_[^_]+",obj)>
+							<cfif not structkeyexists(stCount,listGetAt(obj,3,"_"))>
+								<cfset stCount[listGetAt(obj,3,"_")] = 0 />
+							</cfif>
+
+							<cfset stCount[listGetAt(obj,3,"_")] = stCount[listGetAt(obj,3,"_")] + 1 />
 						</cfif>
 					</cfif>
 				</cfloop>
-				
+
+				<cfloop collection="#stCount#" item="obj">
+					<cfset currentSkins  = stCount[obj] />
+					<cfset totalSkins = totalSkins + currentSkins />
+					<cfif currentSkins LT minSkins OR minSkins EQ 0>
+						<cfset minSkins = currentSkins />
+					</cfif>
+					<cfif currentSkins GT maxSkins>
+						<cfset maxSkins = currentSkins />
+						<cfset maxSkinsObjectID = obj />
+					</cfif>
+				</cfloop>
+
 				<strong>Minimum Skins:</strong> #minSkins#<br />
 				<strong>Max Skins:</strong> #maxSkins# <cfif len(maxSkinsObjectID)>(<a href="#application.url.webroot#/index.cfm?objectid=#maxSkinsObjectID#">#maxSkinsObjectID#</a>)</cfif><br />
 				<strong>Total Skins:</strong> #totalSkins#<br />

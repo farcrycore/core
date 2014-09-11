@@ -34,7 +34,6 @@
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="objectid" type="string" required="true" />
 		
-		<!---<cflog file="broker" type="information" text="Event:#arguments.eventname# Type:#arguments.typename# OID:#arguments.objectid#" />--->		
 		<cfset application.fcstats.objectbroker.trackObjectEvent(argumentCollection=arguments) />
 	</cffunction>
 	
@@ -58,89 +57,35 @@
 		<cfargument name="ObjectID" required="yes" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		
-		<!---
-			This method returns one of three different kinds of structures:
-				- On a live entry cache hit, it returns a reference to the cache entry struct with "stobj" and "stWebskins" keys
-				- On a dead entry cache hit, it returns a new struct with a "bDead" key  
-				- On a cache miss, it returns a new empty struct  
-		 --->
-		
-		<cfset var objRef = structNew()>
-		<cfset var stCacheEntry = structNew()>
-		
-		<!--- If the type is stored in the objectBroker and the Object is currently in the ObjectBroker --->
-		<cfif structkeyexists(application.objectbroker, arguments.typename)
-			 	AND structkeyexists(application.objectbroker[arguments.typename], arguments.objectid)>
-			<!--- Try to dereference the soft object reference in the broker --->
-			<cftry>
-				<cfset objRef = application.objectbroker[arguments.typename][arguments.objectid] />
-				<cfset stCacheEntry = objRef.get() />
-				<cfcatch />
-			</cftry>
-			<cfif not isDefined("stCacheEntry")>
-				<!--- Soft reference is empty: cache entry must have been recycled --->
-				<cfset stCacheEntry.bDead = true />
-				<cfset trackObjectEvent(eventname="nullhit",typename=arguments.typename,objectid=arguments.objectid) /> 
-				<!--- <cftrace type="warning" category="coapi" var="arguments.typename" text="Broker recycled reference hit."> --->
-			<cfelseif structKeyExists(stCacheEntry,"stobj")>
-				<!--- Cache hit --->
-				<cfset trackObjectEvent(eventname="hit",typename=arguments.typename,objectid=arguments.objectid) />
-				<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="Broker object cache hit."> --->
-			<cfelse>
-				<!--- Cache miss: entry was snatched from right under our nose!--->
-				<cfset trackObjectEvent(eventname="miss",typename=arguments.typename,objectid=arguments.objectid) />
-			</cfif>
+		<cfif isCacheable(typename=arguments.typename,action="read")>
+			<cfreturn cachePull("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.objectid#") />
 		<cfelse>
-			<!--- Cache miss --->
-			<cfset trackObjectEvent(eventname="miss",typename=arguments.typename,objectid=arguments.objectid) />
+			<cfreturn structnew() />
 		</cfif>
-		<cfreturn stCacheEntry>
 	</cffunction>
-		
+			
 	<cffunction name="GetFromObjectBroker" access="public" output="false" returntype="struct">
 		<cfargument name="ObjectID" required="yes" type="UUID">
 		<cfargument name="typename" required="true" type="string">
-		
-		<cfset var stobj = structNew()>
-		<cfset var stCacheEntry = structNew()>
-		
-		<cfif application.bObjectBroker>
-			<cfset stCacheEntry = GetObjectCacheEntry(objectId=arguments.objectId,typename=arguments.typename)>
-			<cfif StructKeyExists(stCacheEntry,"stobj")>
-				<cfset stObj = duplicate(stCacheEntry.stobj) />
-			<cfelseif StructKeyExists(stCacheEntry,"bDead")>
-				<!--- "Bring out your dead!" --->
-				<cfset reapDeadEntriesFromBroker() />
-			</cfif>
-		</cfif>
-		
-		<cfreturn stobj>
+
+		<cfreturn GetObjectCacheEntry(objectId=arguments.objectId,typename=arguments.typename)>
 	</cffunction>
-		
+
 	<cffunction name="getWebskin" access="public" output="true" returntype="struct" hint="Searches the object broker in an attempt to locate the requested webskin template. Returns a struct containing the webskinCacheID and the html.">
 		<cfargument name="ObjectID" required="false" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
 		<cfargument name="hashKey" required="true" type="string">
+		<cfargument name="datetimeLastUpdated" required="true" type="date" />
 		
 		<cfset var stResult = structNew() />
 		<cfset var i = "" />
 		<cfset var j = "" />
 		<cfset var k = "" />
 		<cfset var bFlushCache = 0 />
-		<cfset var bForceFlush = false />
 		<cfset var stCacheWebskin = structNew() />
 		<cfset var webskinTypename = arguments.typename /><!--- Default to the typename passed in --->
 		<cfset var stCoapi = structNew() />
-		<cfset var hashRolesString = "" />
-		<cfset var bCacheByURL = false />
-		<cfset var bCacheByForm = false />
-		<cfset var bCacheByRoles = false />
-		<cfset var lCcacheByVars= "" />
-		<cfset var hashString = "" />
-		<cfset var iViewState = "" />
-		<cfset var stCacheEntry = structNew() />
-		
 		
 		<cfset stResult.webskinCacheID = "" />
 		<cfset stResult.webskinHTML = "" />
@@ -151,170 +96,130 @@
 			<cfset webskinTypename = stCoapi.name />
 		</cfif>
 
-		
-		
-		<cfif application.bObjectBroker>
+		<cfif isCacheable(typename=webskinTypename,template=arguments.template,action="read")>
+				
+			<cfset stResult.webskinCacheID = generateWebskinCacheID(
+					typename="#webskinTypename#", 
+					template="#arguments.template#",
+					hashKey="#arguments.hashKey#"
+			) />
 			
-			<!--------------------------------------------------------------------------------------------------- 
-			IF WE HAVE A FORM POST AND THE WEBSKIN IS SUPPOSED TO FLUSH ON FORM POST THEN FORCE A FLUSH CACHE
-			 --------------------------------------------------------------------------------------------------->
-			<cfif isDefined("form") AND not structIsEmpty(form)>
-				<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=webskinTypename, template=arguments.template)>
-					<cfset bForceFlush = true />
+			<cfset stCacheWebskin = cachePull("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#webskinTypename#_#arguments.objectid#_#dateformat(arguments.datetimeLastUpdated,'yyyymmdd')##timeformat(arguments.datetimeLastUpdated,'hhmmss')#_#arguments.template#_#hash(stResult.webskinCacheID)#") />
+			
+			<cfif not structisempty(stCacheWebskin) AND 
+				structKeyExists(stCacheWebskin, "datetimecreated") AND
+				structKeyExists(stCacheWebskin, "webskinHTML") AND
+				DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.cacheTimeout >
+				
+				<cfset stResult.webskinHTML = stCacheWebskin.webskinHTML />
+				
+				<!--- Update request browser timeout --->
+				<cfif stCacheWebskin.browserCacheTimeout neq -1 and (not structkeyexists(request.fc,"browserCacheTimeout") or stCacheWebskin.browserCacheTimeout lt request.fc.browserCacheTimeout)>
+					<cfset request.fc.browserCacheTimeout = stCacheWebskin.browserCacheTimeout />
 				</cfif>
-			</cfif>
-			
-			<cfif bForceFlush OR (structKeyExists(request,"mode") AND request.mode.flushcache EQ 1 AND structKeyExists(arguments, "objectid"))>
-				<cfset bFlushCache = removeWebskin(objectid=arguments.objectid, typename=arguments.typename, template=template) />
-			</cfif>
-		
-			<cfif structKeyExists(request,"mode") AND (request.mode.flushcache EQ 1 OR request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
-				<!--- DO NOT USE CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
-			<cfelse>
-					<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template)>
-						<cfif application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
-							<cfif structkeyexists(arguments,"objectid")>
-								<cfset stCacheEntry = GetObjectCacheEntry(objectID=arguments.objectID,typename=arguments.typename)>
-								<cfif structKeyExists(stCacheEntry,"stWebskins")
-									AND 	structKeyExists(stCacheEntry.stWebskins, arguments.template)>
-								
-									<cfset stResult.webskinCacheID = generateWebskinCacheID(
-											typename="#webskinTypename#", 
-											template="#arguments.template#",
-											hashKey="#arguments.hashKey#"
-									) />
-									
-	
-									<cfif structKeyExists(stCacheEntry.stWebskins[arguments.template], hash("#stResult.webskinCacheID#"))>
-										<cfset stCacheWebskin = stCacheEntry.stWebskins[arguments.template]["#hash('#stResult.webskinCacheID#')#"] />
-									</cfif>								
-									
+				
+				<!--- Update request proxy timeout --->
+				<cfif stCacheWebskin.proxyCacheTimeout neq -1 and (not structkeyexists(request.fc,"proxyCacheTimeout") or stCacheWebskin.proxyCacheTimeout lt request.fc.proxyCacheTimeout)>
+					<cfset request.fc.proxyCacheTimeout = stCacheWebskin.proxyCacheTimeout />
+				</cfif>
+				
+				<!--- Place any request.inHead variables back into the request scope from which it came. --->
+				<cfparam name="request.inHead" default="#structNew()#" />
+				<cfparam name="request.inhead.stCustom" default="#structNew()#" />
+				<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
+				<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
+				<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
+				
+				<!--- CSS --->
+				<cfparam name="request.inhead.stCSSLibraries" default="#structNew()#" />
+				<cfparam name="request.inhead.aCSSLibraries" default="#arrayNew(1)#" />
+				
+				<!--- JS --->
+				<cfparam name="request.inhead.stJSLibraries" default="#structNew()#" />
+				<cfparam name="request.inhead.aJSLibraries" default="#arrayNew(1)#" />
+				
+				<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
+					<cfswitch expression="#i#">
+						<cfcase value="stCustom">
+							<cfloop list="#structKeyList(stCacheWebskin.inHead.stCustom)#" index="j">
+								<cfif not structKeyExists(request.inHead.stCustom, j)>
+									<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
 								</cfif>
-							</cfif>
 								
-	
-							<cfif not structisempty(stCacheWebskin)>
-									
-								<cfif structKeyExists(stCacheWebskin, "datetimecreated")
-									AND structKeyExists(stCacheWebskin, "webskinHTML") >
-									
-									<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.cacheTimeout >
-										<cfset stResult.webskinHTML = stCacheWebskin.webskinHTML />
-										
-										<!--- Update request browser timeout --->
-										<cfif stCacheWebskin.browserCacheTimeout neq -1 and (not structkeyexists(request.fc,"browserCacheTimeout") or stCacheWebskin.browserCacheTimeout lt request.fc.browserCacheTimeout)>
-											<cfset request.fc.browserCacheTimeout = stCacheWebskin.browserCacheTimeout />
-										</cfif>
-										
-										<!--- Update request proxy timeout --->
-										<cfif stCacheWebskin.proxyCacheTimeout neq -1 and (not structkeyexists(request.fc,"proxyCacheTimeout") or stCacheWebskin.proxyCacheTimeout lt request.fc.proxyCacheTimeout)>
-											<cfset request.fc.proxyCacheTimeout = stCacheWebskin.proxyCacheTimeout />
-										</cfif>
-										
-										<!--- Place any request.inHead variables back into the request scope from which it came. --->
-										<cfparam name="request.inHead" default="#structNew()#" />
-										<cfparam name="request.inhead.stCustom" default="#structNew()#" />
-										<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
-										<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
-										<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
-										
-										<!--- CSS --->
-										<cfparam name="request.inhead.stCSSLibraries" default="#structNew()#" />
-										<cfparam name="request.inhead.aCSSLibraries" default="#arrayNew(1)#" />
-										
-										<!--- JS --->
-										<cfparam name="request.inhead.stJSLibraries" default="#structNew()#" />
-										<cfparam name="request.inhead.aJSLibraries" default="#arrayNew(1)#" />
-										
-										<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
-											<cfswitch expression="#i#">
-												<cfcase value="stCustom">
-													<cfloop list="#structKeyList(stCacheWebskin.inHead.stCustom)#" index="j">
-														<cfif not structKeyExists(request.inHead.stCustom, j)>
-															<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
-														</cfif>
-														
-														<cfset addhtmlHeadToWebskins(id="#j#", text="#stCacheWebskin.inHead.stCustom[j]#") />
-			
-													</cfloop>
-												</cfcase>
-												<cfcase value="aCustomIDs">
-													<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCustomIDs)#" index="k">
-														<cfif NOT listFindNoCase(arrayToList(request.inHead.aCustomIDs), stCacheWebskin.inHead.aCustomIDs[k])>
-															<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
-														</cfif>
-													</cfloop>
-												</cfcase>
-												<cfcase value="stOnReady">
-													<cfloop list="#structKeyList(stCacheWebskin.inHead.stOnReady)#" index="j">
-														<cfif not structKeyExists(request.inHead.stOnReady, j)>
-															<cfset request.inHead.stOnReady[j] = stCacheWebskin.inHead.stOnReady[j] />
-														</cfif>
-														
-														<cfset addhtmlHeadToWebskins(id="#j#", onReady="#stCacheWebskin.inHead.stOnReady[j]#") />
-			
-													</cfloop>
-												</cfcase>
-												<cfcase value="aOnReadyIDs">
-													<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aOnReadyIDs)#" index="k">
-														<cfif NOT listFindNoCase(arrayToList(request.inHead.aOnReadyIDs), stCacheWebskin.inHead.aOnReadyIDs[k])>
-															<cfset arrayAppend(request.inHead.aOnReadyIDs,stCacheWebskin.inHead.aOnReadyIDs[k]) />
-														</cfif>
-													</cfloop>
-												</cfcase>
-												
-												<!--- CSS LIBRARIES --->
-												
-												<cfcase value="stCSSLibraries">
-													<cfloop list="#structKeyList(stCacheWebskin.inHead.stCSSLibraries)#" index="j">
-														<cfif not structKeyExists(request.inHead.stCSSLibraries, j)>
-															<cfset request.inHead.stCSSLibraries[j] = stCacheWebskin.inHead.stCSSLibraries[j] />
-														</cfif>			
-													</cfloop>
-												</cfcase>
-												<cfcase value="aCSSLibraries">
-													<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCSSLibraries)#" index="k">
-														<cfif NOT listFindNoCase(arrayToList(request.inHead.aCSSLibraries), stCacheWebskin.inHead.aCSSLibraries[k])>
-															<cfset arrayAppend(request.inHead.aCSSLibraries,stCacheWebskin.inHead.aCSSLibraries[k]) />
-														</cfif>														
-														<cfset addCSSHeadToWebskins(stCacheWebskin.inHead.stCSSLibraries[stCacheWebskin.inHead.aCSSLibraries[k]]) />
-													</cfloop>
-												</cfcase>
-												
-	
-												<!--- JS LIBRARIES --->
-												
-												<cfcase value="stJSLibraries">
-													<cfloop list="#structKeyList(stCacheWebskin.inHead.stJSLibraries)#" index="j">
-														<cfif not structKeyExists(request.inHead.stJSLibraries, j)>
-															<cfset request.inHead.stJSLibraries[j] = stCacheWebskin.inHead.stJSLibraries[j] />
-														</cfif>																	
-													</cfloop>
-												</cfcase>
-												<cfcase value="aJSLibraries">
-													<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aJSLibraries)#" index="k">
-														<cfif NOT listFindNoCase(arrayToList(request.inHead.aJSLibraries), stCacheWebskin.inHead.aJSLibraries[k])>
-															<cfset arrayAppend(request.inHead.aJSLibraries,stCacheWebskin.inHead.aJSLibraries[k]) />
-														</cfif>														
-														<cfset addJSHeadToWebskins(stCacheWebskin.inHead.stJSLibraries[stCacheWebskin.inHead.aJSLibraries[k]]) />
-													</cfloop>
-												</cfcase>
-																							
-												<cfdefaultcase>
-													<cfset addhtmlHeadToWebskins(library=i) />
-													<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
-												</cfdefaultcase>
-											</cfswitch>
+								<cfset addhtmlHeadToWebskins(id="#j#", text="#stCacheWebskin.inHead.stCustom[j]#") />
+
+							</cfloop>
+						</cfcase>
+						<cfcase value="aCustomIDs">
+							<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCustomIDs)#" index="k">
+								<cfif NOT listFindNoCase(arrayToList(request.inHead.aCustomIDs), stCacheWebskin.inHead.aCustomIDs[k])>
+									<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
+								</cfif>
+							</cfloop>
+						</cfcase>
+						<cfcase value="stOnReady">
+							<cfloop list="#structKeyList(stCacheWebskin.inHead.stOnReady)#" index="j">
+								<cfif not structKeyExists(request.inHead.stOnReady, j)>
+									<cfset request.inHead.stOnReady[j] = stCacheWebskin.inHead.stOnReady[j] />
+								</cfif>
 								
-										</cfloop>
+								<cfset addhtmlHeadToWebskins(id="#j#", onReady="#stCacheWebskin.inHead.stOnReady[j]#") />
+
+							</cfloop>
+						</cfcase>
+						<cfcase value="aOnReadyIDs">
+							<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aOnReadyIDs)#" index="k">
+								<cfif NOT listFindNoCase(arrayToList(request.inHead.aOnReadyIDs), stCacheWebskin.inHead.aOnReadyIDs[k])>
+									<cfset arrayAppend(request.inHead.aOnReadyIDs,stCacheWebskin.inHead.aOnReadyIDs[k]) />
+								</cfif>
+							</cfloop>
+						</cfcase>
+						
+						<!--- CSS LIBRARIES --->
+						
+						<cfcase value="stCSSLibraries">
+							<cfloop list="#structKeyList(stCacheWebskin.inHead.stCSSLibraries)#" index="j">
+								<cfif not structKeyExists(request.inHead.stCSSLibraries, j)>
+									<cfset request.inHead.stCSSLibraries[j] = stCacheWebskin.inHead.stCSSLibraries[j] />
+								</cfif>			
+							</cfloop>
+						</cfcase>
+						<cfcase value="aCSSLibraries">
+							<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCSSLibraries)#" index="k">
+								<cfif NOT listFindNoCase(arrayToList(request.inHead.aCSSLibraries), stCacheWebskin.inHead.aCSSLibraries[k])>
+									<cfset arrayAppend(request.inHead.aCSSLibraries,stCacheWebskin.inHead.aCSSLibraries[k]) />
+								</cfif>														
+								<cfset addCSSHeadToWebskins(stCacheWebskin.inHead.stCSSLibraries[stCacheWebskin.inHead.aCSSLibraries[k]]) />
+							</cfloop>
+						</cfcase>
+						
+
+						<!--- JS LIBRARIES --->
+						
+						<cfcase value="stJSLibraries">
+							<cfloop list="#structKeyList(stCacheWebskin.inHead.stJSLibraries)#" index="j">
+								<cfif not structKeyExists(request.inHead.stJSLibraries, j)>
+									<cfset request.inHead.stJSLibraries[j] = stCacheWebskin.inHead.stJSLibraries[j] />
+								</cfif>																	
+							</cfloop>
+						</cfcase>
+						<cfcase value="aJSLibraries">
+							<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aJSLibraries)#" index="k">
+								<cfif NOT listFindNoCase(arrayToList(request.inHead.aJSLibraries), stCacheWebskin.inHead.aJSLibraries[k])>
+									<cfset arrayAppend(request.inHead.aJSLibraries,stCacheWebskin.inHead.aJSLibraries[k]) />
+								</cfif>														
+								<cfset addJSHeadToWebskins(stCacheWebskin.inHead.stJSLibraries[stCacheWebskin.inHead.aJSLibraries[k]]) />
+							</cfloop>
+						</cfcase>
+																	
+						<cfdefaultcase>
+							<cfset addhtmlHeadToWebskins(library=i) />
+							<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
+						</cfdefaultcase>
+					</cfswitch>
 		
-									</cfif>	
-									
-								</cfif>	
-							</cfif>
-						</cfif>
-					</cfif>
-			
+				</cfloop>
+
 			</cfif>
 			
 		</cfif>
@@ -334,7 +239,6 @@
 		<cfset var WebskinCacheID = "" />
 		<cfset var iFormField = "" />
 		<cfset var iViewState = "" />
-		<cfset var varname = "" />
 	
 		
 		<!--- Always prefixed with the hash key. This can be overridden in the webskin call. It will include any cfparam attributes. --->
@@ -470,6 +374,213 @@
 		</cfif>	
 	</cffunction>
 	
+	<cffunction name="countUncacheable" access="private" output="false" returntype="void" hint="Keeps track of what is deemed uncacheable">
+		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="template" type="string" required="false" />
+		<cfargument name="reason" type="string" required="true" />
+
+		<cfset var stUncacheable = "" />
+
+		<cfif structkeyexists(arguments,"action") and arguments.action eq "read">
+			<cfreturn>
+		</cfif>
+
+		<cfif not structkeyexists(application,"stCOAPI")>
+			<!--- application not initialized --->
+			<cfreturn>
+		</cfif>
+
+		<cfif not structkeyexists(application.stCOAPI,arguments.typename)>
+			<!--- invalid typename --->
+			<cfreturn>
+		</cfif>
+
+		<cfif structkeyexists(arguments,"template") and not structkeyexists(application.stCOAPI[arguments.typename].stWebskins,arguments.template)>
+			<!--- invalid webskin --->
+			<cfreturn>
+		</cfif>
+
+		<cfif structkeyexists(arguments,"template")>
+			<cfif not structkeyexists(application.stCOAPI[arguments.typename].stWebskins[arguments.template],"stUncacheable")>
+				<cfset application.stCOAPI[arguments.typename].stWebskins[arguments.template]["stUncacheable"] = structnew() />
+				<cfset application.stCOAPI[arguments.typename].stWebskins[arguments.template]["stUncacheable"]["mode"] = 0 />
+				<cfset application.stCOAPI[arguments.typename].stWebskins[arguments.template]["stUncacheable"]["settings"] = 0 />
+				<cfset application.stCOAPI[arguments.typename].stWebskins[arguments.template]["stUncacheable"]["post"] = 0 />
+			</cfif>
+
+			<cfset stUncacheable = application.stCOAPI[arguments.typename].stWebskins[arguments.template]["stUncacheable"] />
+		<cfelse>
+			<cfif not structkeyexists(application.stCOAPI[arguments.typename],"stUncacheable")>
+				<cfset application.stCOAPI[arguments.typename]["stUncacheable"] = structnew() />
+				<cfset application.stCOAPI[arguments.typename]["stUncacheable"]["mode"] = 0 />
+				<cfset application.stCOAPI[arguments.typename]["stUncacheable"]["settings"] = 0 />
+				<cfset application.stCOAPI[arguments.typename]["stUncacheable"]["post"] = 0 />
+			</cfif>
+
+			<cfset stUncacheable = application.stCOAPI[arguments.typename]["stUncacheable"] />
+		</cfif>
+
+		<cfset stUncacheable[arguments.reason] = stUncacheable[arguments.reason] + 1 />
+	</cffunction>
+
+	<cffunction name="getTypeUncacheableStats" returntype="struct" output="false">
+		
+		<cfset var q = querynew("typename,bObjectBroker,modenum,settingsnum","varchar,bit,bigint,bigint")>
+		<cfset var webskinTypename = "" />
+		<cfset var stResult = {} />
+
+		<cfloop collection="#application.stCOAPI#" item="webskinTypename">
+			<cfset queryaddrow(q) />
+			<cfset querysetcell(q,"typename",webskinTypename) />
+			<cfset querysetcell(q,"typename",application.stCOAPI[webskinTypename].bObjectBroker) />
+			<cfif structkeyexists(application.stCOAPI[webskinTypename],"stUncacheable")>
+				<cfset querysetcell(q,"modenum",application.stCOAPI[webskinTypename].stUncacheable["mode"]) />
+				<cfset querysetcell(q,"settingsnum",application.stCOAPI[webskinTypename].stUncacheable["settings"]) />
+			<cfelse>
+				<cfset querysetcell(q,"modenum",0) />
+				<cfset querysetcell(q,"settingsnum",0) />
+			</cfif>
+		</cfloop>
+		
+		<cfquery dbtype="query" name="q">select * from q order by typename asc</cfquery>
+		<cfset stResult.stats = q />
+
+		<cfquery dbtype="query" name="q">
+			select 	sum(modenum) as summodenum, 
+					max(modenum) as maxmodenum, 
+					sum(settingsnum) as sumsettingsnum, 
+					max(settingsnum) as maxsettingsnum, 
+			from 	q
+		</cfquery>
+		<cfset stResult.summodenum = q.summodenum />
+		<cfset stResult.maxmodenum = q.maxmodenum />
+		<cfset stResult.sumsettingsnum = q.sumsettingsnum />
+		<cfset stResult.maxsettingsnum = q.maxsettingsnum />
+		
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getTypeWebskinUncacheableStats" returntype="struct" output="false">
+		<cfargument name="typename" type="string" required="false" />
+		
+		<cfset var q = querynew("typename,webskin,bObjectBroker,modenum,settingsnum","varchar,varchar,bit,bigint,bigint")>
+		<cfset var webskinTypename = "" />
+		<cfset var webskins = "" />
+		<cfset var stResult = {} />
+
+		<cfloop collection="#application.stCOAPI#" item="webskinTypename">
+			<cfif not structkeyexists(arguments,"typename") or arguments.typename eq webskinTypename>
+				<cfloop collection="#application.stCOAPI[webskinTypename].stWebskins#" item="webskin">
+					<cfset queryaddrow(q) />
+					<cfset querysetcell(q,"typename",webskinTypename) />
+					<cfset querysetcell(q,"webskin",webskin) />
+					<cfset querysetcell(q,"bObjectBroker",application.stCOAPI[webskinTypename].stWebskins[webskin].cacheStatus eq 1) />
+
+					<cfif structkeyexists(application.stCOAPI[webskinTypename].stWebskins[webskin],"stUncacheable")>
+						<cfset querysetcell(q,"modenum",application.stCOAPI[webskinTypename].stWebskins[webskin].stUncacheable.mode) />
+						<cfset querysetcell(q,"settingsnum",application.stCOAPI[webskinTypename].stWebskins[webskin].stUncacheable.settings) />
+					<cfelse>
+						<cfset querysetcell(q,"modenum",0) />
+						<cfset querysetcell(q,"settingsnum",0) />
+					</cfif>
+				</cfloop>
+			</cfif>
+		</cfloop>
+		
+		<cfquery dbtype="query" name="q">select * from q order by typename asc, webskin asc</cfquery>
+		<cfset stResult.stats = q />
+
+		<cfquery dbtype="query" name="q">
+			select 	sum(modenum) as summodenum, 
+					max(modenum) as maxmodenum, 
+					sum(settingsnum) as sumsettingsnum, 
+					max(settingsnum) as maxsettingsnum
+			from 	q
+		</cfquery>
+		<cfset stResult.summodenum = q.summodenum />
+		<cfset stResult.maxmodenum = q.maxmodenum />
+		<cfset stResult.sumsettingsnum = q.sumsettingsnum />
+		<cfset stResult.maxsettingsnum = q.maxsettingsnum />
+		
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="isCacheable" access="public" output="false" returntype="boolean" hint="Utility function for addWebskin - returns true if the conditions for caching are met">
+		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="template" type="string" required="false" />
+		<cfargument name="action" type="string" required="false" default="read" />
+		
+		<cfset var baseCheck = true />
+
+		<cfparam name="request.mode.flushcache" default="0">
+		<cfparam name="request.mode.showdraft" default="0">
+		<cfparam name="request.mode.lvalidstatus" default="approved">
+		<cfparam name="request.mode.tracewebskins" default="0">
+		<cfparam name="request.mode.design" default="0">
+		
+		<!--- Mode --->
+		<cfset baseCheck = baseCheck and application.bObjectBroker and
+				  not (
+				  	structKeyExists(request,"mode") AND 
+				  	(
+				  		(arguments.action eq "read" and request.mode.flushcache EQ 1) OR 
+				  		request.mode.showdraft EQ 1 OR 
+				  		request.mode.lvalidstatus NEQ "approved" OR
+				  		request.mode.tracewebskins EQ 1 OR 
+				  		request.mode.design EQ 1
+				  	) 
+				  ) />
+		<cfif baseCheck eq false>
+			<cfset countUncacheable(argumentCollection=arguments,reason="mode") />
+			<cfreturn false />
+		</cfif>
+
+		<!--- Cache settings --->
+		<cfset baseCheck = baseCheck and not (structKeyExists(url, "updateapp") AND url.updateapp EQ 1) and
+		  (
+		  	isdefined("application.stCOAPI.#arguments.typename#.bObjectBroker") and 
+		  	application.stcoapi[arguments.typename].bObjectBroker
+		  ) />
+		<cfif baseCheck eq false>
+			<cfset countUncacheable(argumentCollection=arguments,reason="settings") />
+			<cfreturn false />
+		</cfif>
+		
+		<cfif structkeyexists(arguments,"template")>
+			<!--- Form post --->
+			<cfset baseCheck = baseCheck and not (
+			  	isDefined("form") AND 
+			  	not structIsEmpty(form) and 
+			  	application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=arguments.typename,template=arguments.template)
+			  ) />
+			<cfif baseCheck eq false>
+				<cfset countUncacheable(argumentCollection=arguments,reason="post") />
+				<cfreturn false />
+			</cfif>
+			
+			<cfset baseCheck = baseCheck and not (
+			  	structKeyExists(request,"mode") AND 
+			  	(
+			  		request.mode.tracewebskins eq 1 OR 
+			  		request.mode.design eq 1
+			  	) 
+			  ) />
+			<cfif baseCheck eq false>
+				<cfset countUncacheable(argumentCollection=arguments,reason="mode") />
+				<cfreturn false />
+			</cfif>
+
+			<cfset baseCheck = baseCheck and structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			  and application.stcoapi[arguments.typename].stWebskins[arguments.template].cacheStatus EQ 1 />
+			<cfif baseCheck eq false>
+				<cfset countUncacheable(argumentCollection=arguments,reason="settings") />
+				<cfreturn false />
+			</cfif>
+		</cfif>
+		
+		<cfreturn baseCheck />
+	</cffunction>
+	
 	<cffunction name="addWebskin" access="public" output="true" returntype="boolean" hint="Adds webskin to object broker if all conditions are met">
 		<cfargument name="ObjectID" required="false" type="UUID">
 		<cfargument name="typename" required="true" type="string">
@@ -477,74 +588,44 @@
 		<cfargument name="webskinCacheID" required="true" type="string">
 		<cfargument name="HTML" required="true" type="string">
 		<cfargument name="stCurrentView" required="true" type="struct">
+		<cfargument name="datetimeLastUpdated" required="true" type="date" />
 		
-		<cfset var webskinHTML = "" />
-		<cfset var stCacheEntry = structNew() />
-		<cfset var bAdded = "false" />
 		<cfset var stCacheWebskin = structNew() />
-		<cfset var hashString = "" />
 		<cfset var webskinTypename = arguments.typename /><!--- Default to the typename passed in --->
 		<cfset var stCoapi = structNew() />
-		<cfset var iViewState = "" />
-		<cfset var bForceFlush = false />
 		
 		<cfif arguments.typename EQ "farCoapi">
 			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->		
-			<cfset stCoapi = application.fc.factory['farCoapi'].getData(typename="farCoapi", objectid="#arguments.objectid#") />
+			<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#arguments.objectid#") />
 			<cfset webskinTypename = stCoapi.name />
 		</cfif>
 		
-		<cfif application.bObjectBroker>
+		<cfif isCacheable(typename=webskinTypename,template=arguments.template,action="write")>
 			
-			<cfif isDefined("form") AND not structIsEmpty(form)>
-				<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=webskinTypename, template=arguments.template)>
-					<cfset bForceFlush = true />
-				</cfif>
-			</cfif>
+			<!--- Add the current State of the request.inHead scope into the broker --->
+			<cfparam name="request.inHead" default="#structNew()#">
 			
-		
-			<cfif bForceFlush OR (structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)))>
-				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
-			<cfelseif len(arguments.HTML)>
-				<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template) >
-					<cfif application.stcoapi[webskinTypename].bObjectBroker AND application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
-						<cfset stCacheEntry = GetObjectCacheEntry(ObjectID=arguments.objectid,typename=arguments.typename)>
-						<cfif structKeyExists(stCacheEntry, "stobj")>
-							<!--- Cache hit --->
-								<cfif not structKeyExists(stCacheEntry, "stWebskins")>
-									<cfset stCacheEntry.stWebskins = structNew() />
-								</cfif>			
-								
-								<!--- Add the current State of the request.inHead scope into the broker --->
-								<cfparam name="request.inHead" default="#structNew()#">
-								
-								<cfset stCacheWebskin.datetimecreated = now() />
-								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
-								<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
-								<cfset stCacheWebskin.cacheStatus = arguments.stCurrentView.cacheStatus />
-								<cfset stCacheWebskin.cacheTimeout = arguments.stCurrentView.cacheTimeout />
-								<cfset stCacheWebskin.browserCacheTimeout = arguments.stCurrentView.browserCacheTimeout />
-								<cfset stCacheWebskin.proxyCacheTimeout = arguments.stCurrentView.proxyCacheTimeout />
-	
-								<cfset stCacheWebskin.webskinCacheID = generateWebskinCacheID(
-																		typename="#webskinTypename#", 
-																		template="#arguments.template#",
-																		hashKey="#arguments.stCurrentView.hashKey#"
-															) />
-								
-																
-								<cfset stCacheEntry.stWebskins[arguments.template][hash("#stCacheWebskin.webskinCacheID#")] = stCacheWebskin />
+			<cfset stCacheWebskin.datetimecreated = now() />
+			<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
+			<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
+			<cfset stCacheWebskin.cacheStatus = arguments.stCurrentView.cacheStatus />
+			<cfset stCacheWebskin.cacheTimeout = arguments.stCurrentView.cacheTimeout />
+			<cfset stCacheWebskin.browserCacheTimeout = arguments.stCurrentView.browserCacheTimeout />
+			<cfset stCacheWebskin.proxyCacheTimeout = arguments.stCurrentView.proxyCacheTimeout />
 
-																
-								<cfset bAdded = true />
-						</cfif>
-					</cfif>
-				</cfif>
-			</cfif>
+			<cfset stCacheWebskin.webskinCacheID = generateWebskinCacheID(
+													typename="#webskinTypename#", 
+													template="#arguments.template#",
+													hashKey="#arguments.stCurrentView.hashKey#"
+										) />
+			
+			<cfset cacheAdd("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.objectid#_#dateformat(arguments.datetimeLastUpdated,'yyyymmdd')##timeformat(arguments.datetimeLastUpdated,'hhmmss')#_#arguments.template#_#hash(stCacheWebskin.webskinCacheID)#",stCacheWebskin,stCacheWebskin.cacheTimeout*60) />
+			
+			<cfreturn true />
+				
 		</cfif>
 		
-		<cfreturn bAdded />
-		
+		<cfreturn false />
 	</cffunction>
 	
 	<cffunction name="removeWebskin" access="public" output="false" returntype="boolean" hint="Searches the object broker in an attempt to locate the requested webskin template">
@@ -552,94 +633,34 @@
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="template" required="true" type="string">
 		
-		<cfset var bSuccess = "true" />
-		<cfset var stCacheEntry = structNew() />
-		
-		
-		<cfif application.bObjectBroker>
-		
-			<cfif len(arguments.typename) AND structKeyExists(application.objectbroker, arguments.typename)>
-				<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-					<cfset stCacheEntry = GetObjectCacheEntry(ObjectID=arguments.objectid,typename=arguments.typename)>
-					<cfif structKeyExists(stCacheEntry, "stWebskins")>
-						<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
-							<cfset structDelete(stCacheEntry.stWebskins, arguments.template) />
-						</cflock>
-					</cfif>
-				</cfif>
+		<cfset var i = "" />
+		<cfset var regex = "^#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.objectid#_[^_]+_#arguments.template#" />
+		<cfset var aRemove = arraynew(1) />
+
+		<cfif not isdefined("application.objectbroker.#arguments.typename#")>
+			<cfreturn />
+		</cfif>
+
+		<cfloop collection="#application.objectbroker[arguments.typename]#" index="i">
+			<cfif refind(regex,i)>
+				<cfset cacheFlush(i) />
 			</cfif>
-		</cfif>
-	
-		
-		<cfreturn bSuccess />
-		
+		</cfloop>
+
+		<cfreturn true />
 	</cffunction>
-	
-	<cffunction name="putObjectCacheEntry" access="public" output="true" returntype="boolean">
-		<cfargument name="stCacheEntry" required="true" type="struct">
-		<cfargument name="objectid" required="true" type="UUID">
-		<cfargument name="typename" required="true" type="string">
-				
-		<cfif structkeyexists(application.objectbroker, arguments.typename)>	
-			<!--- Create a soft reference to the cache entry and put it in the object broker --->
-			<cftry>
-				<cfset application.objectbroker[arguments.typename][arguments.objectid] =
-						createObject("java", "java.lang.ref.SoftReference").init(arguments.stCacheEntry, application.objectrecycler) />
-				<cfreturn true />
-				<!--- An expression error likely a race condition (ie. not structkeyexists(application.objectbroker, arguments.typename)) --->
-				<cfcatch type="expression" />
-			</cftry>
-		</cfif>
-		<cfreturn false />
-	</cffunction>
-	
 	
 	<cffunction name="AddToObjectBroker" access="public" output="true" returntype="boolean">
 		<cfargument name="stObj" required="yes" type="struct">
 		<cfargument name="typename" required="true" type="string">
 		
-		<cfset var bSuccess = false />
-		<cfset var stCacheEntry = structNew() />
-		<cfset var aObjectIds = arrayNew(1) />
-		<cfset var oCaster	= '' />
-		
-		<cfif application.bObjectBroker>
-			<!--- if the type is to be stored in the objectBroker --->
-			<cfif structkeyexists(arguments.stObj, "objectid") AND structkeyexists(application.objectbroker, arguments.typename)>
-				<!--- Prepare a cache entry --->
-				<cfset stCacheEntry.stObj = duplicate(arguments.stObj) /> 
-				<cfset stCacheEntry.stWebskins = structNew() />
-				
-				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
-					<cfif putObjectCacheEntry(stCacheEntry=stCacheEntry, objectid=arguments.stObj.objectid, typename=arguments.typename)>
-						
-						<!--- Remove it first in case we are here because of a missing soft reference object --->
-						<cfset aObjectIds = ListToArray(arguments.stObj.ObjectID)>				
-						
-						<cfswitch expression="#server.coldfusion.productname#">
-							<cfcase value="Railo">
-								<cfset oCaster = createObject('java','railo.runtime.op.Caster') />
-								<cfset application.objectBroker[arguments.typename].aObjects.removeAll(oCaster.toList(aObjectIds)) />
-							</cfcase>
-							<cfdefaultcase>
-								<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
-							</cfdefaultcase>
-						</cfswitch>		
-						
-						<!--- Add the objectid to the end of the FIFO array so we know its the latest to be added --->						
-						<cfset arrayappend(application.objectbroker[arguments.typename].aObjects,arguments.stObj.ObjectID)>
-						<cfset bSuccess = true />
-					</cfif>
-				</cflock>
-				
-				<cfif bSuccess>
-					<cfset trackObjectEvent(eventname="add",typename=arguments.typename,objectid=arguments.stObj.objectid) />
-					<!--- Cleanup the object broker just in case we have reached our limit of objects as defined by the metadata. --->
-					<cfset cleanupObjectBroker(typename=arguments.typename)>
-				</cfif>
-			</cfif>
+		<cfif isCacheable(typename=arguments.typename,action="write") and structkeyexists(arguments.stObj, "objectid")>
+			<cfset cacheAdd("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.stObj.objectid#",arguments.stObj,24*60*60) />
+			<cfset cleanupObjectBroker(typename=arguments.typename)>
+			<cfreturn true />
 		</cfif>
-		<cfreturn bSuccess />
+		
+		<cfreturn false />
 	</cffunction>
 	
 	<cffunction name="reapDeadEntriesFromBroker" access="public" output="false" returntype="void" hint="Cleans out soft references to recycled objects in the object broker.">
@@ -655,10 +676,9 @@
 				<!--- We got a soft reference: try to grab the contained object --->
 				<cfset stCacheEntry = objRef.get() />
 				<!--- Is the inner object still available with objectid and typename values? --->
-				<cfif IsDefined("stCacheEntry") and StructKeyExists(stCacheEntry,"stobj")
-						and StructKeyExists(stCacheEntry.stobj,"objectid") and StructKeyExists(stCacheEntry.stObj,"typename")>
+				<cfif IsDefined("stCacheEntry") and StructKeyExists(stCacheEntry,"key") and StructKeyExists(stCacheEntry.stObj,"typename")>
 					<!--- Delete any references to the object in the broker --->
-					<cfset RemoveFromObjectBroker(lObjectIDs=stObj.objectID, typename=stObj.typename, eventName="reap") />
+					<cfset cacheFlush(stCacheEntry.key) />
 				</cfif>
 				
 				<!--- Poll the object recycler for another soft reference --->
@@ -689,71 +709,39 @@
 					
 					<cfset removeFromObjectBroker(lObjectIDs=lRemoveObjectIDs, typename=arguments.typename, eventName="evict") />
 				</cfif>
-				
-				
-				<!--- <cftrace type="information" category="coapi" text="ObjectBroker Removed #numberToRemove# objects from FIFO #arguments.typename# stack."> --->
 			</cfif>
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="RemoveFromObjectBroker" access="public" output="true" returntype="void">
 		<cfargument name="lObjectIDs" required="true" type="string">
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="eventName" required="false" type="string" default="flush" hint="Name of event that triggered the removal {flush,reap,evict}">
 			
-		<cfset var aObjectIds = arrayNew(1) />
 		<cfset var oWebskinAncestor = application.fapi.getContentType("dmWebskinAncestor") />						
 		<cfset var qWebskinAncestors = queryNew("blah") />
 		<cfset var i = "" />
-		<cfset var bSuccess = "" />
-		<cfset var stResult = structNew() />
-		<cfset var pos = "" />
-		<cfset var arrayList = "" />
-		<cfset var deleted = "" />
-		<cfset var oCaster = "" />
+		<cfset var j = "" />
+		<cfset var regexString = "" />
+		
+		<cfif application.bObjectBroker and len(arguments.typename) and application.stcoapi[arguments.typename].bObjectBroker>
+			<cfloop list="#arguments.lObjectIDs#" index="i">
 
-		<cfif application.bObjectBroker and len(arguments.typename)>
-			
-			<!--- Remove any ancestor webskins that include a fragment of this object --->
-			<cfloop list="#arguments.lObjectIDs#" index="i">				
-			
 				<!--- Find any ancestor webskins and delete them as well --->
 				<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
-				
-				<cfif qWebskinAncestors.recordCount>
-					<cfloop query="qWebskinAncestors">
-						<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
-					</cfloop>
-				</cfif>
+				<cfloop query="qWebskinAncestors">
+					<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
+				</cfloop>
+
+				<!--- Remove the object itself and it's webskins --->
+				<cfset regexString = "^#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#i#" />
+				<cfloop collection="#application.objectbroker[arguments.typename]#" item="j">
+					<cfif refind(regexString,j)>
+						<cfset cacheFlush(j) />
+					</cfif>
+				</cfloop>
 				
 			</cfloop>
-			
-			<cfif structkeyexists(application.objectbroker, arguments.typename)>	
-				<!--- Remove all references to these objects --->
-				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
-					
-					<cfloop list="#arguments.lObjectIDs#" index="i">
-						<cfset StructDelete(application.objectbroker[arguments.typename], i)>
-					</cfloop>
-					
-					<cfset aObjectIds = ListToArray(arguments.lObjectIDs)>				
-					
-					<cfswitch expression="#server.coldfusion.productname#">
-						<cfcase value="Railo">
-							<cfset oCaster = createObject('java','railo.runtime.op.Caster') />
-							<cfset application.objectBroker[arguments.typename].aObjects.removeAll(oCaster.toList(aObjectIds)) />
-						</cfcase>
-						<cfdefaultcase>
-							<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
-						</cfdefaultcase>
-					</cfswitch>					
-				</cflock>
-				
-				<!--- Track the trigger event for each object ID passed in --->
-				<cfloop list="#arguments.lObjectIDs#" index="i">
-					<cfset trackObjectEvent(eventname=arguments.eventName,typename=arguments.typename,objectid=i) />	
-				</cfloop>
-			</cfif>
 		</cfif>
 	</cffunction>
 	
@@ -823,5 +811,85 @@
 		</cfif>
 		<cfreturn true />
 	 </cffunction>
-	 
+	
+	<!--- Cache replacement functions --->
+	
+	<cffunction name="cachePull" access="public" output="false" returntype="struct" hint="Returns an object from cache if it is there, an empty struct if not. Note that garbage collected data counts as a miss.">
+		<cfargument name="key" type="string" required="true" />
+
+		<!---
+			This method returns one of three different kinds of structures:
+				- On a live entry cache hit, it returns a reference to the cache entry struct with "stobj" and "stWebskins" keys
+				- On a dead entry cache hit, it returns a new struct with a "bDead" key  
+				- On a cache miss, it returns a new empty struct  
+		 --->
+		
+		<cfset var stCacheEntry = structnew() />
+		<cfset var section = listgetat(arguments.key,2,"_") />
+		<cfset var objRef = structNew()>
+		
+		<cfset arguments.key = listDeleteAt(listDeleteAt(arguments.key,1,"_"),1,"_") />
+		
+		<!--- If the type is stored in the objectBroker and the Object is currently in the ObjectBroker --->
+		<cfif structkeyexists(application.objectbroker, section) AND structkeyexists(application.objectbroker[section], arguments.key)>
+			<!--- Try to dereference the soft object reference in the broker --->
+			<cftry>
+				<cfset objRef = application.objectbroker[section][arguments.key] />
+				<cfset stCacheEntry = objRef.get() />
+				<cfcatch />
+			</cftry>
+
+			<cfif isDefined("stCacheEntry") and structkeyexists(stCacheEntry,"value")>
+				<cfreturn duplicate(stCacheEntry.value) />
+			<cfelse>
+				<!--- Soft reference is empty: cache entry must have been recycled --->
+				<!--- "Bring out your dead!" --->
+				<cfset reapDeadEntriesFromBroker() />
+			</cfif>
+		</cfif>
+
+		<cfreturn structnew() />
+	</cffunction>
+	
+	<cffunction name="cacheAdd" access="public" output="false" returntype="void" hint="Puts the specified key in the cache. Note that if the key IS in cache or the data is deliberately empty, the cache is updated but cache queuing is not effected.">
+		<cfargument name="key" type="string" required="true" />
+		<cfargument name="data" type="struct" required="true" />
+		<cfargument name="timeout" type="numeric" required="false" default="3600" hint="Number of seconds until this item should timeout" />
+		
+		<cfset var section = listgetat(arguments.key,2,"_") />
+		<cfset var objectid = listgetat(arguments.key,3,"_") />
+		<cfset var oldobject = "" />
+		<cfset var i = "" />
+		<cfset var stCacheEntry = { value=arguments.data, key=arguments.key } />
+
+		<cfset arguments.key = listDeleteAt(listDeleteAt(arguments.key,1,"_"),1,"_") />
+		
+		<cfif structkeyexists(application.objectbroker, section)>
+			<cfif not arrayfind(application.objectBroker[section].aobjects,objectid)>
+				<cfset arrayappend(application.objectBroker[section].aobjects,objectid) />
+			</cfif>
+
+			<!--- Create a soft reference to the cache entry and put it in the object broker --->
+			<cftry>
+				<cfset application.objectbroker[section][arguments.key] =
+					createObject("java", "java.lang.ref.SoftReference").init(stCacheEntry, application.objectrecycler) />
+				
+				<!--- An expression error likely a race condition (ie. not structkeyexists(application.objectbroker, arguments.typename)) --->
+				<cfcatch type="expression" />
+			</cftry>
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="cacheFlush" access="public" output="false" returntype="void" hint="Removes items from the cache that match the specified regex. Does NOT change the cache management stats.">
+		<cfargument name="key" type="string" required="false" default="" />
+		
+		<cfset var section = listgetat(arguments.key,2,"_") />
+
+		<cfset arguments.key = listDeleteAt(listDeleteAt(arguments.key,1,"_"),1,"_") />
+		
+		<cfif isdefined("application.objectbroker.#section#.#arguments.key#")>
+			<cfset structDelete(application.objectbroker[section],arguments.key) />
+		</cfif>
+	</cffunction>
+	
 </cfcomponent>
