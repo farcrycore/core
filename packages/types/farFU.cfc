@@ -1539,7 +1539,7 @@
 		<cfset var qLookup = "" />
 
 		<cfif not arguments.bIgnoreCache>
-			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker("exists_"&arguments.typename,"fuLookup") />
+			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker("exists-"&arguments.typename,"fuLookup") />
 		</cfif>
 
 		<cfif structIsEmpty(stResult)>
@@ -1565,7 +1565,7 @@
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="data" type="boolean" required="true" />
 		
-		<cfset application.fc.lib.objectBroker.AddToObjectBroker({ exists=arguments.data },"fuLookup","exists_"&arguments.typename) />
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker({ exists=arguments.data },"fuLookup","exists-"&arguments.typename) />
 
 		<cfreturn arguments.data />
 	</cffunction>
@@ -1578,7 +1578,7 @@
 		<cfset var qLookup = "" />
 
 		<cfif not arguments.bIgnoreCache>
-			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker("fu_"&arguments.objectid,"fuLookup") />
+			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker("fu-"&arguments.objectid,"fuLookup") />
 		</cfif>
 
 		<cfif structIsEmpty(stResult)>
@@ -1600,7 +1600,7 @@
 		<cfargument name="objectid" type="uuid" required="true" />
 		<cfargument name="data" type="struct" required="true" />
 		
-		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","fu_"&arguments.objectid) />
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","fu-"&arguments.objectid) />
 
 		<cfreturn duplicate(arguments.data) />
 	</cffunction>
@@ -1619,7 +1619,7 @@
 		<cfset var stReturnFU = {} />
 
 		<cfif not arguments.bIgnoreCache>
-			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us_"&arguments.friendlyURL,"fuLookup") />
+			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us-"&arguments.friendlyURL,"fuLookup") />
 		</cfif>
 		
 		<cfif structIsEmpty(stReturnFU)>
@@ -1684,7 +1684,7 @@
 		<cfargument name="friendlyURL" type="string" required="true" />
 		<cfargument name="data" type="struct" required="true" />
 		
-		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","us_"&arguments.friendlyURL) />
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","us-"&arguments.friendlyURL) />
 
 		<cfreturn duplicate(arguments.data) />
 	</cffunction>
