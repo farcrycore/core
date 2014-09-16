@@ -108,12 +108,12 @@ object methods
 							<cfloop query="qFieldset">
 
 								<cfset propertyFormat = "edit">
-								<cfif isDefined("application.config._readonly.#arguments.stObject.configkey#.#qFieldset.propertyname#")>
+								<cfif isDefined("application.config_readonly.#arguments.stObject.configkey#.#qFieldset.propertyname#")>
 									<cfset propertyFormat = "display">
 									<cfset stMeta = structNew()>
 									<cfset stMeta[qFieldset.propertyname] = structNew()>
 									<cfset stMeta[qFieldset.propertyname].ftHint = "This field is read only and cannot be edited via the webtop">
-									<cfset stMeta[qFieldset.propertyname].value = application.config._readonly[arguments.stObject.configkey][qFieldset.propertyname]>
+									<cfset stMeta[qFieldset.propertyname].value = application.config_readonly[arguments.stObject.configkey][qFieldset.propertyname]>
 								</cfif>
 
 								<ft:object stObject="#stObj#" format="#propertyFormat#" lExcludeFields="label" lFields="#qFieldset.propertyname#" stPropMetadata="#stMeta#" inTable="false" IncludeFieldSet="false" />
