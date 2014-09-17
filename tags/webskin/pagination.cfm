@@ -105,7 +105,7 @@ START WEBSKIN
 		
 	<cfif len(attributes.r_pageLinksHtml)>
 		<!--- Save page links html to a variable so we can return it to the caller --->
-		<cfset pageLinksHtml = oPagination.getView(template="#attributes.linksWebskin#", position="top" ) /> 
+		<cfset pageLinksHtml = oPagination.getView(template="#attributes.linksWebskin#", position="top", stparam=attributes ) /> 
 		<cfset caller[attributes.r_pageLinksHtml] = pageLinksHtml />
 	</cfif>
 	
