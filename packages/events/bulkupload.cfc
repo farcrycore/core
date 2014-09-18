@@ -21,7 +21,11 @@
 			dest_file=application.stCOAPI[arguments.details.typename].stProps[arguments.details.targetfield].metadata.ftDestination & "/" & listlast(arguments.details.tempfile,"/"),
 			nameconflict="makeunique"
 		) />
-		
+
+		<!--- call additional function to support cloudinary plugin --->
+		<cfset arguments.details.stObject = stObject />
+		<cfset application.fc.lib.events.announce(component="bulkupload",eventName="uploadfilecopied",stParams=arguments) />
+
 		<!--- set defaults --->
 		<cfloop collection="#arguments.details.defaults#" item="thisfield">
 			<cfset stObject[thisfield] = arguments.details.defaults[thisfield] />
