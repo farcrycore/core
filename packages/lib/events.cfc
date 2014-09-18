@@ -100,7 +100,7 @@
 		<cfloop list="#component#" index="thiscomponent">
 			<cfset lPaths = application.fc.utils.getPath(package="events",component=thiscomponent,scope="ALL")>
 			<cfloop index="componentPath" list="#lPaths#">
-				<cfset o = createobject("component",thispath) />
+				<cfset o = createobject("component",componentPath) />
 				<cfset stMeta = getMetadata(o) />
 				
 				<cfif thiscomponent eq arguments.component or (structkeyexists(stMeta,"component") and stMeta.component eq arguments.component)>
