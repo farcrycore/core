@@ -1,10 +1,12 @@
 <cfcomponent displayname="S3" hint="Encapsulates file persistence functionality" output="false" persistent="false">
 	
 	<cffunction name="init" returntype="any">
+		<cfargument name="cdn" type="any" required="true" />
 		<cfargument name="engine" type="string" required="true" />
 
 		<cfset var qLeftovers = queryNew("")>
 
+		<cfset this.cdn = arguments.cdn />
 		<cfset this.engine = arguments.engine />
 		
 		<cfset this.cacheMap = structnew() />
@@ -211,6 +213,39 @@
 		<cfreturn toBase64(mac.doFinal()) />
 	</cffunction>
 
+	<cffunction name="HMAC_SHA256" access="public" returntype="binary" output="false"> 
+	    <cfargument name="signKey" type="binary" required="true" />
+	    <cfargument name="signMessage" type="string" required="true" />
+	    
+	    <cfset var jMsg = JavaCast("string",arguments.signMessage).getBytes("UTF8") /> 
+	    <cfset var jKey = arguments.signKey />
+	    
+	    <cfset var key = createObject("java","javax.crypto.spec.SecretKeySpec") /> 
+	    <cfset var mac = createObject("java","javax.crypto.Mac") /> 
+	    
+	    <cfset key = key.init(jKey,"HmacSHA256") /> 
+	    
+	    <cfset mac = mac.getInstance(key.getAlgorithm()) /> 
+	    <cfset mac.init(key) /> 
+	    <cfset mac.update(jMsg) /> 
+	    
+	    <cfreturn mac.doFinal() />
+	</cffunction>
+
+	<cffunction name="getSigningKey" access="public" returntype="string" output="false">
+		<cfargument name="secret" type="string" required="true" />
+		<cfargument name="date" type="datetime" required="true" />
+		<cfargument name="region" type="string" required="true" />
+		<cfargument name="service" type="string" required="true" />
+
+	    <cfset var k_date = HMAC_SHA256(JavaCast("string","AWS4" & arguments.secret).getBytes("UTF8"), dateformat(arguments.date,"YYYYmmdd")) />
+	    <cfset var k_region = HMAC_SHA256(k_date, arguments.region) />
+	    <cfset var k_service = HMAC_SHA256(k_region, arguments.service) />
+	    <cfset var k_signing = HMAC_SHA256(k_service, "aws4_request") />
+
+	    <cfreturn lcase(binaryEncode(k_signing, 'hex')) />
+	</cffunction>
+
 	
 	<cffunction name="getS3Path" output="false" access="public" returntype="string" hint="Returns path to use for all S3 requests">
 		<cfargument name="config" type="struct" required="true" />
@@ -277,25 +312,14 @@
 
 		<cfreturn urlpath />
 	</cffunction>
-	
+
 	<cffunction name="getMeta" output="false" access="public" returntype="struct" hint="Returns a metadata struct for setting S3 metadata">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		
 		<cfset var stResult = structnew() />
 		
-		<cfset stResult["content_type"] = getPageContext().getServletContext().getMimeType(arguments.file) />
-		
-		<cfif not isdefined("stResult.content_type")>
-			<cfif listfindnocase("jpg,jpeg",listlast(arguments.file,"."))>
-				<cfset stResult["content_type"] = "image/jpeg" />
-			</cfif>
-		</cfif>
-		
-		<!--- corrections --->
-		<cfif stResult.content_type eq "application/javascript">
-			<cfset stResult.content_type = "text/javascript" />
-		</cfif>
+		<cfset stResult["content_type"] = this.cdn.getMimeType(arguments.file) />
 		
 		<cfif structkeyexists(arguments.config,"maxAge")>
 			<cfparam name="stResult.cache_control" default="" />
