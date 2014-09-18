@@ -125,6 +125,27 @@
 		<cfreturn arguments.filename />
 	</cffunction>
 
+	<cffunction name="getMimeType" output="false" access="public" returntype="string" hint="Returns a mime type string for a file">
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset var stLocals = structnew() />
+
+		<cfset stLocals.content_type = getPageContext().getServletContext().getMimeType(arguments.file) />
+		
+		<cfif not isdefined("stLocals.content_type")>
+			<cfif listfindnocase("jpg,jpeg",listlast(arguments.file,"."))>
+				<cfset stLocals["content_type"] = "image/jpeg" />
+			</cfif>
+		</cfif>
+		
+		<!--- corrections --->
+		<cfif stLocals.content_type eq "application/javascript">
+			<cfset stLocals.content_type = "text/javascript" />
+		</cfif>
+		
+		<cfreturn stLocals.content_type />
+	</cffunction>
+
 	
 	<!--- @@description: 
 		<p>Does what it says on the box. Checks a single location to see if a file exists.</p>
