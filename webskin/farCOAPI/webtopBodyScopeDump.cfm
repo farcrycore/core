@@ -31,20 +31,16 @@
 	<p>
 </cfoutput>
 
-<cfswitch expression="#listfirst(url.var,'.')#">
-	<cfcase value="server">
-		<cfoutput>[ <a href="#application.fapi.fixURL(addvalues='var=request')#">request</a> | <a href="#application.fapi.fixURL(addvalues='var=session')#">session</a> | <a href="#application.fapi.fixURL(addvalues='var=application')#">application</a> ] </cfoutput>
-	</cfcase>
-	<cfcase value="application">
-		<cfoutput>[ <a href="#application.fapi.fixURL(addvalues='var=request')#">request</a> | <a href="#application.fapi.fixURL(addvalues='var=session')#">session</a> | <a href="#application.fapi.fixURL(addvalues='var=server')#">server</a> ] </cfoutput>
-	</cfcase>
-	<cfcase value="session">
-		<cfoutput>[ <a href="#application.fapi.fixURL(addvalues='var=request')#">request</a> | <a href="#application.fapi.fixURL(addvalues='var=application')#">application</a> | <a href="#application.fapi.fixURL(addvalues='var=server')#">server</a> ] </cfoutput>
-	</cfcase>
-	<cfcase value="request">
-		<cfoutput>[ <a href="#application.fapi.fixURL(addvalues='var=session')#">session</a> | <a href="#application.fapi.fixURL(addvalues='var=application')#">application</a> | <a href="#application.fapi.fixURL(addvalues='var=server')#">server</a> ] </cfoutput>
-	</cfcase>
-</cfswitch>
+<cfset scopes = 'cgi,server,application,session,request' />
+<cfset scopes = listdeleteat(scopes,listfindnocase(scopes,listfirst(url.var,'.'))) />
+<cfoutput>[ </cfoutput>
+<cfloop list="#scopes#" index="thisscope">
+	<cfoutput><a href="#application.fapi.fixURL(addvalues='var=#thisscope#')#">#thisscope#</a></cfoutput>
+	<cfif thisscope neq listlast(scopes)>
+		<cfoutput> | </cfoutput>
+	</cfif>
+</cfloop>
+<cfoutput> ]</cfoutput>
 
 <cfset selectedvar = 0 />
 <cfset selectedtype = "N/A" />
@@ -52,8 +48,11 @@
 <cfloop list="#url.var#" index="i" delimiters=".">
 	<cfset varsofar = listappend(varsofar,i,".") />
 	
-	<cfif issimplevalue(selectedvar) and selectedvar eq 0 and listfindnocase("server,application,request,session",i)>
+	<cfif issimplevalue(selectedvar) and selectedvar eq 0 and listfindnocase("cgi,server,application,request,session",i)>
 		<cfswitch expression="#i#">
+			<cfcase value="cgi">
+				<cfset selectedvar = cgi />
+			</cfcase>
 			<cfcase value="server">
 				<cfset selectedvar = server />
 			</cfcase>
@@ -75,7 +74,7 @@
 		<cfset selectedvar = "#varsofar# is not valid" />
 	</cfif>
 	
-	<cfif listfindnocase("server,application,request,session",i)>
+	<cfif listfindnocase("cgi,server,application,request,session",i)>
 		<cfset selectedtype = "SCOPE" />
 	<cfelseif isarray(selectedvar)>
 		<cfset selectedtype = "ARRAY" />
