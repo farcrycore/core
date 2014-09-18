@@ -427,7 +427,8 @@
 			<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
 			<cfcatch type="any">
 				<cfoutput><p>#getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#")#</p></cfoutput>
-				<cfdump var="#stLocal#" expand="false" label="stLocal" /><cfabort showerror="debugging" />
+				<cfdump var="#stLocal#" expand="false" label="stLocal" />
+				<cfdump var="#cfcatch#"><cfabort />
 			</cfcatch>
 			</cftry>
 		<cfelse>
@@ -1524,7 +1525,7 @@
 		
 		<!--- We need to make sure we update our stDBLookup anytime we save an FU --->
 		<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND listlen(arguments.stProperties.friendlyURL) eq 1>
-			<cfset cacheExistsTypeFU(listgetat(arguments.stProperties.friendlyURL,1,"/"), { exists=true }) />
+			<cfset cacheExistsTypeFU(listgetat(arguments.stProperties.friendlyURL,1,"/"), true) />
 		</cfif>
 		
 		<cfreturn super.setData(argumentCollection="#arguments#") />
