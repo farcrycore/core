@@ -27,6 +27,8 @@
 		<cfargument name="config" type="struct" required="true" />
 		
 		<cfset var st = duplicate(arguments.config) />
+		<cfset var stACL = structnew() />
+		<cfset var i = 0 />
 		
 		<cfif not structkeyexists(st,"accessKeyId")>
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'accessKeyId' ]) />
@@ -55,10 +57,21 @@
 			<cfset st.domainType = "custom" />
 		</cfif>
 		
+		<cfif structkeyexists(st,"acl") and not isarray(arguments.config.acl)>
+			<cfset application.fapi.throw(message="the 'acl' value must be an array of ACL structs - group | email | id + permission and ",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+		<cfelseif not structkeyexists(st,"acl")>
+			<cfset st.acl = arraynew(1) />
+		</cfif>
+		
 		<cfif structkeyexists(st,"security") and not listfindnocase("public,private",arguments.config.security)>
 			<cfset application.fapi.throw(message="the '{1}' value must be one of ({2})",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'security', 'public|private' ]) />
-		<cfelseif not structkeyexists(st,"security")>
+		<cfelseif not structkeyexists(st,"security") or st.security eq "public">
 			<cfset st.security = "public" />
+
+			<cfset stACL = structnew() />
+			<cfset stACL["group"] = "all" />
+			<cfset stACL["permission"] = "read" />
+			<cfset arrayappend(st.acl,stACL) />
 		</cfif>
 		
 		<cfif structkeyexists(st,"pathPrefix")>
@@ -78,10 +91,38 @@
 			<cfset application.fapi.throw(message="the 'urlExpiry' value must be a positive integer",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
 		</cfif>
 		
-		<cfif structkeyexists(st,"admins") and not isarray(arguments.config.admins)>
-			<cfset application.fapi.throw(message="the 'admins' value must be an array of canonical user ids and email addresses",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+		<cfif structkeyexists(st,"readers") and not isarray(st.readers)>
+			<cfset application.fapi.throw(message="the 'readers' value must be an array of canonical user ids or email addresses",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+		<cfelseif not structkeyexists(st,"readers")>
+			<cfset st.readers = arraynew(1) />
+		<cfelse>
+			<cfloop from="1" to="#arraylen(st.readers)#" index="i">
+				<cfset stACL = structnew() />
+				<cfif isvalid("email",st.readers[i])>
+					<cfset stACL["email"] = st.readers[i] />
+				<cfelse>
+					<cfset stACL["id"] = st.readers[i] />
+				</cfif>
+				<cfset stACL["permission"] = "read" />
+				<cfset arrayappend(st.acl,stACL) />
+			</cfloop>
+		</cfif>
+
+		<cfif structkeyexists(st,"admins") and not isarray(st.admins)>
+			<cfset application.fapi.throw(message="the 'admins' value must be an array of canonical user ids or email addresses",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
 		<cfelseif not structkeyexists(st,"admins")>
 			<cfset st.admins = arraynew(1) />
+		<cfelse>
+			<cfloop from="1" to="#arraylen(st.admins)#" index="i">
+				<cfset stACL = structnew() />
+				<cfif isvalid("email",st.admins[i])>
+					<cfset stACL["email"] = st.admins[i] />
+				<cfelse>
+					<cfset stACL["id"] = st.admins[i] />
+				</cfif>
+				<cfset stACL["permission"] = "full_control" />
+				<cfset arrayappend(st.acl,stACL) />
+			</cfloop>
 		</cfif>
 		
 		<cfif not structkeyexists(st,"localCacheSize")>
@@ -334,34 +375,6 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="getACL" returntype="array" access="public" output="false">
-		<cfargument name="config" type="struct" required="true" />
-		
-		<cfset var aACL = arraynew(1) />
-		<cfset var stACL = "" />
-		<cfset var i = 0 />
-		
-		<cfif arguments.config.security eq "public">
-			<cfset stACL = structnew() />
-			<cfset stACL["group"] = "all" />
-			<cfset stACL["permission"] = "read" />
-			<cfset arrayappend(aACL,stACL) />
-		</cfif>
-		
-		<cfloop from="1" to="#arraylen(arguments.config.admins)#" index="i">
-			<cfset stACL = structnew() />
-			<cfif isvalid("email",arguments.config.admins[i])>
-				<cfset stACL["email"] = arguments.config.admins[i] />
-			<cfelse>
-				<cfset stACL["id"] = arguments.config.admins[i] />
-			</cfif>
-			<cfset stACL["permission"] = "full_control" />
-			<cfset arrayappend(aACL,stACL) />
-		</cfloop>
-		
-		<cfreturn aACL />
-	</cffunction>
-	
 	
 	<cffunction name="ioFileExists" returntype="boolean" access="public" output="false" hint="Checks that a specified path exists">
 		<cfargument name="config" type="struct" required="true" />
@@ -555,6 +568,7 @@
 			
 			<cftry>
 				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
+				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
 					<cflog file="#application.applicationname#_s3" text="Error moving #arguments.source_localpath# to [#arguments.dest_config.name#] #arguments.dest_file#: #cfcatch.message#" />
@@ -639,27 +653,24 @@
 			</cfif>
 			
 		<cfelseif structkeyexists(arguments,"dest_config")>
-			<cflog file="debug" text="a. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
 			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
 				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
 			</cfif>
-			<cflog file="debug" text="b. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
+			
 			<cftry>
 				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
-				<cflog file="debug" text="c. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
+				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
+				
 				<cfcatch>
 					<cflog file="#application.applicationname#_s3" text="Error copying #arguments.source_localpath# to [#arguments.source_config.name#] #arguments.source_file#: #cfcatch.message#" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
-			<cflog file="debug" text="d. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
+			
 			<cfif arguments.dest_config.localCacheSize>
 				<cfset tmpfile = getTemporaryFile(config=arguments.dest_config,file=arguments.dest_file) />
-				<cflog file="debug" text="e. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
 				<cffile action="copy" source="#arguments.source_localpath#" destination="#tmpfile#" mode="664" nameconflict="overwrite" />
-				<cflog file="debug" text="f. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
 				<cfset addCachedFile(config=arguments.dest_config,file=arguments.dest_file,path=tmpfile) />
-				<cflog file="debug" text="g. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
 			</cfif>
 			
 			<cflog file="#application.applicationname#_s3" text="Copied #arguments.source_localpath# to [#arguments.dest_config.name#] #arguments.dest_file#" />
@@ -702,7 +713,7 @@
 		<cfif this.engine eq "railo" AND listFirst(server.railo.version, ".") lt 4>
 			<cfset s3path = getS3Path(config=arguments.config,file=arguments.dir) />
 			<cfdirectory action="create" directory="#s3path#" mode="777" />
-			<cfset storeSetACL(s3path, getACL(arguments.config)) />
+			<cfset updateACL(config=arguments.config, file=arguments.dir) />
 		</cfif>
 	</cffunction>
 	
@@ -776,10 +787,6 @@
 			</cfif>
 		</cfloop>
 		
-		<cfif arguments.config.security eq "public">
-			<cfset stAMZHeaders["x-amz-grant-read"] = 'uri="http://acs.amazonaws.com/groups/global/AllUsers"' />
-		</cfif>
-		
 		<!--- add content type --->
 		<cfset stHeaders["content-type"] = stMeta.content_type />
 		
@@ -834,6 +841,13 @@
 			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
+	</cffunction>
+
+	<cffunction name="updateACL" access="public" output="false" returntype="void">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset storeSetACL(getS3Path(config=arguments.config,file=file), arguments.config.acl) />
 	</cffunction>
 	
 </cfcomponent>
