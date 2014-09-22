@@ -1,4 +1,4 @@
-
+﻿
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 
@@ -45,7 +45,12 @@
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="fc-bootstrap-tray" />
 		<skin:loadCSS id="farcry-form" />
-		<skin:loadCSS id="farcry-tray" />	
+		<skin:loadCSS id="farcry-tray" />
+		
+		<cfset oCharset = createObject("java","java.nio.charset.Charset") />
+		<cfset fromCharSet = oCharset.forName('iso-8859-1') />
+		<cfset toCharSet = oCharset.forName('utf-8') />
+		<cfset queryString = toCharSet.decode(fromCharSet.encode(cgi.query_string)).ToString() />
 
 		<cfoutput>	
 		<skin:onReady>
@@ -61,7 +66,7 @@
 					$j('##farcryTray').html(data.responseText);					
 				},
 				data:{
-					refererURL:'#cgi.script_name#?#cgi.query_string#'
+					refererURL:'#cgi.script_name#?#queryString#'
 					<cfloop collection="#request.fc.trayData#" item="thistag.traydatakey">
 						<cfif issimplevalue(request.fc.trayData[thistag.traydatakey])>
 							, '#thistag.traydatakey#':'#jsstringformat(request.fc.trayData[thistag.traydatakey])#'

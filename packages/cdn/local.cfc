@@ -49,21 +49,38 @@
 	<cffunction name="getURLPath" output="false" access="public" returntype="string" hint="Returns full internal path. Works for files and directories.">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
-		
+
 		<cfset var urlpath = "" />
+		<cfset var filename = listLast(arguments.file, "/") />
+		<cfset var fileLastname = "" />
+		<cfset var fileFirstname = "" />
+		<cfset var filePath = "" />
+		<cfset var urlEncodedFilename = "" />
 		
 		<cfif not structkeyexists(arguments.config,"urlPath")>
 			<cfset application.fapi.throw(message="no URL is available for CDN location [{1}]",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ arguments.config.name ]) />
 		</cfif>
-		
-		<cfif left(arguments.file,1) eq "/">
-			<cfset urlpath = arguments.config.urlpath & arguments.file />
+
+		<!--- Get filename --->
+		<cfif listLen(filename, ".") GTE 2>
+			<cfset fileLastname = listLast(filename, ".") />
+			<cfset fileFirstname = left(filename, len(filename) - len(fileLastname) - 1) />
+			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) & "." & urlEncodedFormat(fileLastname) />
 		<cfelse>
-			<cfset urlpath = arguments.config.urlpath & "/" & arguments.file />
+			<cfset fileFirstname = filename />
+			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) />
 		</cfif>
 		
-		<!--- URL encode the filename --->
-		<cfset urlpath = rereplace(urlpath,"[^/]+\.\w+$",urlencodedformat(listfirst(listlast(urlpath,"/"),".")) & "." & listlast(urlpath,"."))>
+		<!--- Get file path if exist --->
+		<cfif find("/", arguments.file) GT 0>
+			<cfset filePath = left(arguments.file, len(arguments.file) - len(filename)) />
+		</cfif>
+		
+		<cfif left(arguments.file,1) eq "/">
+			<cfset urlpath = arguments.config.urlpath & filePath & urlEncodedFilename />
+		<cfelse>
+			<cfset urlpath = arguments.config.urlpath & "/" & filePath & urlEncodedFilename />
+		</cfif>
 		
 		<cfreturn urlpath />
 	</cffunction>
