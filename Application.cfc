@@ -32,7 +32,7 @@
 	<!--- run the active project's constructor --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 	<cfinclude template="#this.projectConstructorLocation#" />
-	<cfset loadProjectOverride() />
+
 
 	<cfparam name="this.botDetection" default="true" />
 	<cfif this.botDetection>
@@ -700,18 +700,7 @@
 	
 		<cfreturn loc />
 	</cffunction>
-	
-	<cffunction name="loadProjectOverride" access="private" output="false" returntype="void" hint="Loads the project override XML (if there is one)">
-		<cfset var filename = getProjectConstructorLocation(plugin="webtop",fileExtension="xml") />
-		<cfset var xmlOverride = "" />
-		
-		<cfif len(filename)>
-			<cfset xmlOverride = xmlparse(expandpath(filename)) />
-			<cfif isdefined("xmlOverride.FarcryConstructor.plugins")>
-				<cfset this.plugins = xmlOverride.FarcryConstructor.plugins.xmlText />
-			</cfif>
-		</cfif>
-	</cffunction>
+
 
 	<cffunction name="getPluginName" access="public" output="false" hint="Returns the name of this plugin; core returns 'farcry'." returntype="string">
 		<cfreturn "farcry" />
