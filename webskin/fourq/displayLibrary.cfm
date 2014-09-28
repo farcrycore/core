@@ -171,7 +171,7 @@
 						</cfif>
 					</td>
 					<td style="padding:3px;">
-						<skin:view objectid="#stCurrentRow.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
+						<skin:view typename="#url.filterTypename#" objectid="#stCurrentRow.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
 					</td>					
 				</tr>
 			</cfoutput>
