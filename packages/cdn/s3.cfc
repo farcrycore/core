@@ -280,6 +280,7 @@
 		<cfset stResult["content_type"] = getPageContext().getServletContext().getMimeType(arguments.file) />
 		
 		<cfif not isdefined("stResult.content_type")>
+			<cfset stResult["content_type"] =  "application/octet-stream" />
 			<cfif listfindnocase("jpg,jpeg",listlast(arguments.file,"."))>
 				<cfset stResult["content_type"] = "image/jpeg" />
 			</cfif>
