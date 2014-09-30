@@ -454,7 +454,7 @@
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
 		
-		<cfif not structkeyexists(application,"stCOAPI")>
+		<cfif not structkeyexists(application,"stCOAPI") or not structkeyexists(application,"rb")>
 			<cfdump var="#arguments.exception#">
 			<cfabort>
 		</cfif>
