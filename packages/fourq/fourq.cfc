@@ -430,6 +430,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset request.currentViewTypename = "#stCurrentView.typename#" />
 		<cfset request.currentViewTemplate = "#stCurrentView.template#" />
 		
+        <cfset stCurrentView.contentList = StructNew() />
+        <cfset stCurrentView.contentList[arguments.stobj.objectid] = True />
+        <cfloop list="#stCurrentView.cacheTypeWatch#" index="i">
+            <cfset stCurrentView.contentList[i] = True />
+        </cfloop>
+            
 		<cfset application.fapi.addProfilePoint("View","#stCurrentView.template# [#stCurrentView.typename#:#stObj.objectid#]") />
 		
 		<!--- Include the View --->
@@ -511,7 +517,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfif stCurrentView.proxyCacheTimeout gt -1 and (request.aAncestorWebskins[i].proxyCacheTimeout eq -1 or stCurrentView.proxyCacheTimeout lt request.aAncestorWebskins[i].proxyCacheTimeout)>
 						<cfset request.aAncestorWebskins[i].proxyCacheTimeout = stCurrentView.proxyCacheTimeout />
 					</cfif>
-				</cfloop>
+                    <cfset >
+				    <cfset StructAppend(request.aAncestorWebskins[i].contentList, stCurrentView.contentList)>
+                </cfloop>
 				
 				<!--- WE NEED TO CASCADE UP THE ANCESTRY PATH SOME OF THE CACHE SETTINGS OF DESCENDENT WEBSKINS --->
 				<cfif listLen(stCurrentView.cacheByVars)>
@@ -556,7 +564,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif structkeyexists(request,"fc")>
 			<cfset request.fc.okToCache = request.aAncestorWebskins[1].okToCache />
 		</cfif>
-		
+		<cfset request.contentList = StructKeyList(stCurrentView.contentList) />
+        
 		<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
 		<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />
 		

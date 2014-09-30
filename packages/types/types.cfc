@@ -243,7 +243,8 @@ default handlers
 													user = arguments.user,
 													auditNote = arguments.auditNote,
 													bSessionOnly = false,
-													bAfterSave = false ) />
+													bAfterSave = false,
+                                                    bAudit = arguments.bAudit ) />
 				
 		<cfreturn stNewObject>
 	</cffunction>
@@ -366,7 +367,8 @@ default handlers
 													user = arguments.user,
 													auditNote = arguments.auditNote,
 													bSessionOnly = arguments.bSessionOnly,
-													bAfterSave = arguments.bAfterSave) />
+													bAfterSave = arguments.bAfterSave,
+                                                    bAudit = arguments.bAudit) />
 
 		<cfreturn stresult>
 	</cffunction>

@@ -27,8 +27,8 @@
 	<cfparam name="attributes.bAllowTrace" default="true" /><!--- Is the outputting of the wrapping trace div allowed? --->
 	
 	
-
-	<cfif isdefined("request.mode.tracewebskins") AND request.mode.traceWebskins EQ true AND (not isdefined("request.mode.ajax") or not request.mode.ajax)>		
+    <cftry>
+	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true AND not request.mode.ajax>				
 		<cfset stTrace = structNew() />
 		<cfset stTrace.traceID = application.fapi.getUUID() />
 		<cfset stTrace.objectid = attributes.objectid />
@@ -81,15 +81,9 @@
 								</cfloop>
 							</td>
 						</tr>
-						<cfif structkeyexists(application.stCOAPI[stTrace.typename].stWebskins[stTrace.template],"postprocess") and len(application.stCOAPI[stTrace.typename].stWebskins[stTrace.template].postprocess)>
-							<tr>
-								<th>Post-processing</th>
-								<td>#application.stCOAPI[stTrace.typename].stWebskins[stTrace.template].postprocess#</td>
-							</tr>
-						</cfif>
 					
 						<cfif stTrace.cacheStatus EQ 1>
-							<cfif structKeyExists(application.stcoapi, stTrace.typename) AND application.stcoapi[stTrace.typename].bObjectBroker>										
+							<cfif structKeyExists(application.stcoapi, stTrace.typename) AND isDefined("application.stcoapi[stTrace.typename].bObjectBroker") AND application.stcoapi[stTrace.typename].bObjectBroker>										
 								<tr>
 									<th style="color:green;border-top:1px solid green;">Caching</th>
 									<td style="border-top:1px solid green;">
@@ -153,10 +147,12 @@
 			</cfoutput>
 		</cfif>
 	</cfif>
+    <cfcatch></cfcatch>
+</cftry>
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-	<cfif isdefined("request.mode.tracewebskins") AND request.mode.traceWebskins EQ true AND (not isdefined("request.mode.ajax") or not request.mode.ajax)>
+	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true AND not request.mode.ajax>			
 		<cfif attributes.bAllowTrace>
 			<cfoutput></webskin></cfoutput>
 		</cfif>
