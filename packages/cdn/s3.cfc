@@ -254,9 +254,9 @@
 		<cfreturn toBase64(mac.doFinal()) />
 	</cffunction>
 
-	<cffunction name="HMAC_SHA256" access="public" returntype="binary" output="false"> 
-	    <cfargument name="signKey" type="binary" required="true" />
+	<cffunction name="HMAC_SHA256" access="public" returntype="binary" output="false">
 	    <cfargument name="signMessage" type="string" required="true" />
+	    <cfargument name="signKey" type="binary" required="true" />
 	    
 	    <cfset var jMsg = JavaCast("string",arguments.signMessage).getBytes("UTF8") /> 
 	    <cfset var jKey = arguments.signKey />
@@ -273,18 +273,19 @@
 	    <cfreturn mac.doFinal() />
 	</cffunction>
 
-	<cffunction name="getSigningKey" access="public" returntype="string" output="false">
+	<cffunction name="getSigningKey" access="public" returntype="binary" output="false">
 		<cfargument name="secret" type="string" required="true" />
 		<cfargument name="date" type="datetime" required="true" />
 		<cfargument name="region" type="string" required="true" />
 		<cfargument name="service" type="string" required="true" />
 
-	    <cfset var k_date = HMAC_SHA256(JavaCast("string","AWS4" & arguments.secret).getBytes("UTF8"), dateformat(arguments.date,"YYYYmmdd")) />
-	    <cfset var k_region = HMAC_SHA256(k_date, arguments.region) />
-	    <cfset var k_service = HMAC_SHA256(k_region, arguments.service) />
-	    <cfset var k_signing = HMAC_SHA256(k_service, "aws4_request") />
+		<cfset var k_secret = JavaCast("string","AWS4" & arguments.secret).getBytes("UTF8") />
+	    <cfset var k_date = HMAC_SHA256(dateformat(arguments.date,"YYYYmmdd"), k_secret) />
+	    <cfset var k_region = HMAC_SHA256(arguments.region, k_date) />
+	    <cfset var k_service = HMAC_SHA256(arguments.service, k_region) />
+	    <cfset var k_signing = HMAC_SHA256("aws4_request", k_service) />
 
-	    <cfreturn lcase(binaryEncode(k_signing, 'hex')) />
+	    <cfreturn k_signing />
 	</cffunction>
 
 	
