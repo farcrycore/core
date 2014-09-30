@@ -1250,7 +1250,7 @@
 				<cfset result = request.cache.config[arguments.key][arguments.name] />
 			<cfelseif structKeyExists(arguments, "default")>
 				<cfset result = arguments.default />
-			<cfelse><cfdump var="#request.cache.config#"><cfdump var="#arguments#"><cfabort>
+			<cfelse>
 				<cfthrow message="The config item [#arguments.key#:#arguments.name#] was not found and no default value was passed." />
 			</cfif>
 			
@@ -1491,6 +1491,10 @@
 				</cfif>
 			<cfelse>
 				<cfif arguments.includeDomain>
+					<cfif not listfindnocase("80,443",CGI.SERVER_PORT)>
+						<cfset arguments.Domain = "#arguments.domain#:#CGI.SERVER_PORT#" />
+					</cfif>
+
 					<cfif CGI.SERVER_PORT_SECURE>
 						<cfset returnURL = "https://#arguments.Domain##application.url.webroot#">
 					<cfelse>

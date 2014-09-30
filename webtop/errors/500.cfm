@@ -28,7 +28,63 @@
 				h1 {
 					margin-top: 0;
 				}
+				
+				.formatjson .key {
+					color:##a020f0;
+				}
+				.formatjson .number {
+					color:##ff0000;
+				}
+				.formatjson .string {
+					color:##000000;
+				}
+				.formatjson .boolean {
+					color:##ffa500;
+				}
+				.formatjson .null {
+					color:##0000ff;
+				}
 			</style>
+			<script type="text/javascript" src="#application.url.webtop#/thirdparty/jquery/js/jquery-1.9.1.min.js"></script>
+			<script type="text/javascript">
+				window.$fc = window.$fc || {};
+				
+				$fc.syntaxHighlight = function(json) {
+					if (typeof json != 'string')
+						json = JSON.stringify(json, undefined, 2);
+					
+					json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+					return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+						var cls = 'number';
+						if (/^"/.test(match)) {
+							if (/:$/.test(match)) {
+								cls = 'key';
+							} else {
+								cls = 'string';
+							}
+						} else if (/true|false/.test(match)) {
+							cls = 'boolean';
+						} else if (/null/.test(match)) {
+							cls = 'null';
+						}
+						return '<span class="' + cls + '">' + match + '</span>';
+					});
+				}
+				
+				if (jQuery){
+					jQuery.fn.formatJSON = function(){
+						return this.each(function(){
+							var el = jQuery(this);
+							
+							el.html($fc.syntaxHighlight(el.html()));
+						});
+					}
+					
+					jQuery(function(){
+						jQuery(".formatjson").formatJSON();
+					});
+				}
+			</script>
 		</head>
 		<body>
 			<cfif isdefined("application.fapi") and isdefined("application.rb")>

@@ -348,7 +348,9 @@
 				<cfif structKeyExists(arguments.exception, "type") and len(arguments.exception.type)>
 					<cfset output.append("<tr><th>#padResource('error.details.exceptiontype@label','Exception Type')#:</th><td>#arguments.exception.type#</td></tr>") />
 				</cfif>
-				<cfif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail)>
+				<cfif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail) and isJSON(arguments.exception.detail) and structkeyexists(application,"fapi")>
+					<cfset output.append("<tr><th>#padResource('error.details.detail@label','Detail')#:</th><td><pre class='formatjson'>#application.fapi.formatJSON(arguments.exception.detail)#</pre></td></tr>") />
+				<cfelseif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail)>
 					<cfset output.append("<tr><th>#padResource('error.details.detail@label','Detail')#:</th><td>#arguments.exception.detail#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "extended_info") and len(arguments.exception.extended_info)>
