@@ -278,14 +278,36 @@
 		<cfargument name="date" type="datetime" required="true" />
 		<cfargument name="region" type="string" required="true" />
 		<cfargument name="service" type="string" required="true" />
+		<cfargument name="validate" type="struct" required="false" />
 
 		<cfset var k_secret = JavaCast("string","AWS4" & arguments.secret).getBytes("UTF8") />
-	    <cfset var k_date = HMAC_SHA256(dateformat(arguments.date,"YYYYmmdd"), k_secret) />
-	    <cfset var k_region = HMAC_SHA256(arguments.region, k_date) />
-	    <cfset var k_service = HMAC_SHA256(arguments.service, k_region) />
-	    <cfset var k_signing = HMAC_SHA256("aws4_request", k_service) />
+	    <cfset var k_key = "" />
 
-	    <cfreturn k_signing />
+	    <cfif isdefined("arguments.validate.secret") and lcase(binaryEncode(k_secret, 'hex')) neq arguments.validate.secret>
+		    <cfthrow message="Secret stage did not match" detail='{ "expected":"#arguments.validate.secret#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
+	    </cfif>
+
+	    <cfset k_key = HMAC_SHA256(dateformat(arguments.date,"YYYYmmdd"), k_secret) />
+	    <cfif isdefined("arguments.validate.date") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.date>
+		    <cfthrow message="Date stage [#dateformat(arguments.date,"YYYYmmdd")#] did not match" detail='{ "expected":"#arguments.validate.secret#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
+	    </cfif>
+
+	    <cfset k_key = HMAC_SHA256(arguments.region, k_key) />
+	    <cfif isdefined("arguments.validate.region") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.region>
+		    <cfthrow message="Region stage [#arguments.region#] did not match" detail='{ "expected":"#arguments.validate.region#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
+	    </cfif>
+
+	    <cfset k_key = HMAC_SHA256(arguments.service, k_key) />
+	    <cfif isdefined("arguments.validate.service") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.service>
+		    <cfthrow message="Region stage [#arguments.service#] did not match" detail='{ "expected":"#arguments.validate.service#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
+	    </cfif>
+
+	    <cfset k_key = HMAC_SHA256("aws4_request", k_key) />
+	    <cfif isdefined("arguments.validate.signing") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.signing>
+		    <cfthrow message="Signing stage [#aws4_request#] did not match" detail='{ "expected":"#arguments.validate.signing#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
+	    </cfif>
+
+	    <cfreturn k_key />
 	</cffunction>
 
 	
