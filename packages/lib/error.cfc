@@ -151,7 +151,7 @@
 		
 		<!--- Normalize the stack trace --->
 		<cfset stResult["stack"] = arraynew(1) />
-		<cfloop from="1" to="#arraylen(stException.TagContext)#" index="i">
+		<cfloop from="1" to="#max(arraylen(stException.TagContext),20)#" index="i">
 			<cfset stLine = structnew() />
 			<cfset stLine["template"] = stException.TagContext[i].template />
 			<cfset stLine["line"] = stException.TagContext[i].line />
