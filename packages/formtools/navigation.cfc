@@ -146,21 +146,13 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfif listLen(stFieldPost.value)>
-			<!--- Remove any leading or trailing empty list items --->
-			<cfif stFieldPost.value EQ ",">
-				<cfset stFieldPost.value = "" />
-			</cfif>
-			<cfif left(stFieldPost.value,1) EQ ",">
-				<cfset stFieldPost.value = right(stFieldPost.value,len(stFieldPost.value)-1) />
-			</cfif>
-			<cfif right(stFieldPost.value,1) EQ ",">
-				<cfset stFieldPost.value = left(stFieldPost.value,len(stFieldPost.value)-1) />
-			</cfif>	
+		<cfif listLen(arguments.stFieldPost.value)>
+			<!--- Remove any empty list items --->
+			<cfset arguments.stFieldPost.value = arrayToList(listToArray(arguments.stFieldPost.value, ","), ",") />
 		</cfif>
-		<cfset stResult.value = stFieldPost.Value>
+		<cfset stResult.value = arguments.stFieldPost.value />
 
-		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
+		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(arguments.stFieldPost.value)>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
 		</cfif>
 		
