@@ -1,3 +1,14 @@
+<!--- 	
+	@@examples:
+	<p>Basic</p>
+	<code>
+		<cfproperty
+			name="basicUUID" type="UUID" hint="something meaningful" required="no" default=""
+			ftseq="1" ftfieldset="General" ftwizardStep="General Details"
+			ftType="UUID" ftlabel="Basic UUID" ftJoin="dmHTML" />
+	</code>
+ --->
+ 
 <cfcomponent extends="join" name="UUID" displayname="UUID" hint="Used to liase with UUID type fields"> 
 
 	<cfproperty name="ftSelectMultiple" default="false" type="boolean" />
@@ -54,24 +65,28 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stResult = structNew()>		
-		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = "">
-		<cfset stResult.stError = StructNew()>
+		<cfset var stResult = structNew() />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.value = "" />
+		<cfset stResult.stError = StructNew() />
 		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfset stResult.value = stFieldPost.Value>
-		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
+		<cfif listLen(arguments.stFieldPost.value)>
+			<!--- Remove any empty list items --->
+			<cfset arguments.stFieldPost.value = arrayToList(listToArray(arguments.stFieldPost.value, ","), ",") />
+		</cfif>
+		<cfset stResult.value = arguments.stFieldPost.value />
+
+		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(arguments.stFieldPost.value)>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
 		</cfif>
-		
 		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
-		<cfreturn stResult>
+		<cfreturn stResult />
 		
 	</cffunction>
 	

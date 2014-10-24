@@ -279,17 +279,27 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stResult = structNew()>		
-		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = "#arguments.stFieldPost.Value#">
-		<cfset stResult.stError = StructNew()>
+		<cfset var stResult = structNew() />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.value = "#arguments.stFieldPost.Value#" />
+		<cfset stResult.stError = StructNew() />
 		
-		<cfparam name="arguments.stMetadata.ftAlias" default="">
+		<cfparam name="arguments.stMetadata.ftAlias" default="" />
 		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfinvoke  component="#application.packagepath#.farcry.category" method="assignCategories" returnvariable="stStatus">
+		<cfif listLen(arguments.stFieldPost.value)>
+			<!--- Remove any empty list items --->
+			<cfset arguments.stFieldPost.value = arrayToList(listToArray(arguments.stFieldPost.value, ","), ",") />
+		</cfif>
+		<cfset stResult.value = arguments.stFieldPost.value />
+
+		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(arguments.stFieldPost.value)>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
+		</cfif>
+		
+		<cfinvoke  component="#application.fapi.getContentType('dmCategory')#" method="assignCategories" returnvariable="stStatus">
 			<cfinvokeargument name="objectID" value="#arguments.ObjectID#"/>
 			<cfinvokeargument name="lCategoryIDs" value="#arguments.stFieldPost.Value#"/>
 			<cfinvokeargument name="alias" value="#arguments.stMetadata.ftAlias#"/>
@@ -299,8 +309,7 @@
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
-		<cfreturn stResult>
-		
+		<cfreturn stResult />
 	</cffunction>
 
 
