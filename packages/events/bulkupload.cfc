@@ -12,12 +12,23 @@
 		<cfset var o = application.fapi.getContentType(typename=arguments.details.typename,singleton=true) />
 		<cfset var stObject = o.getData(objectid=arguments.taskID) />
 		<cfset var thisfield = "" />
-		
+		<cfset var securefile = false />
+		<cfset var destinationLocation = "images">
+
+		<cfif application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftType", default="image") eq "file">
+			<cfset securefile = application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftSecure", default=false)>
+			<cfif isBoolean(securefile) AND securefile eq true>
+				<cfset destinationLocation = "privatefiles">
+			<cfelse>
+				<cfset destinationLocation = "publicfiles">
+			</cfif>
+		</cfif>
+
 		<!--- copy file up --->
 		<cfset stObject[arguments.details.targetfield] = application.fc.lib.cdn.ioMoveFile(
 			source_location="temp",
 			source_file=arguments.details.tempfile,
-			dest_location="images",
+			dest_location=destinationLocation,
 			dest_file=application.stCOAPI[arguments.details.typename].stProps[arguments.details.targetfield].metadata.ftDestination & "/" & listlast(arguments.details.tempfile,"/"),
 			nameconflict="makeunique"
 		) />
