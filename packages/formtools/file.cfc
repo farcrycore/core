@@ -821,7 +821,8 @@
 		
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		<cfargument name="firstLook" type="string" required="false" hint="Where should we look for the file first. The default is to look based on permissions and status" />
-		
+		<cfargument name="bRetrieve" type="boolean" required="false" default="true" />
+
 		<cfset var stResult = structnew() />
 		
 		<!--- Throw an error if the field is empty --->
@@ -834,9 +835,9 @@
 		</cfif>
 		
 		<cfif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
-			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name], bRetrieve=arguments.bRetrieve) />
 		<cfelse>
-			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name], bRetrieve=arguments.bRetrieve) />
 		</cfif>
 		
 		<cfreturn stResult />
