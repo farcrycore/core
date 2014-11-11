@@ -614,7 +614,7 @@
 				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
 				<cflog file="debug" text="c. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error copying #arguments.source_localpath# to [#arguments.source_config.name#] #arguments.source_file#: #cfcatch.message#" />
+					<cflog file="#application.applicationname#_s3" text="Error copying #arguments.source_localpath# to [#arguments.dest_config.name#] #arguments.source_file#: #cfcatch.message#" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
