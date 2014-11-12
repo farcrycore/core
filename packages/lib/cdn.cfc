@@ -443,7 +443,7 @@
 		<!--- Prepare source information --->
 		<cfif structkeyexists(arguments,"source_location") and structkeyexists(arguments,"source_file")>
 			<cfset stArgs.source_config = this.locations[arguments.source_location] />
-			<cfset stArgs.source_file = normalizePath(arguments.source_file) />
+			<cfset stArgs.source_file = normalizePath(path=arguments.source_file, bRetrieve=true) />
 		<cfelseif structkeyexists(arguments,"source_localpath")>
 			<cfset stArgs.source_localpath = arguments.source_localpath />
 		<cfelse>
