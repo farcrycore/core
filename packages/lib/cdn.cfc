@@ -135,6 +135,8 @@
 		<cfif not isdefined("stLocals.content_type")>
 			<cfif listfindnocase("jpg,jpeg",listlast(arguments.file,"."))>
 				<cfset stLocals["content_type"] = "image/jpeg" />
+			<cfelseif listfindnocase("mov",listlast(arguments.file,"."))>
+				<cfset stLocals["content_type"] = "video/quicktime" />
 			</cfif>
 		</cfif>
 		

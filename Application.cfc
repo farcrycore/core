@@ -626,6 +626,7 @@
 		----------------------------------------->
 		<cfif isDefined("url.logout") and url.logout eq 1>
 			<cfset application.security.logout() />
+			<cflocation url="#application.fapi.fixURL(removevalues='logout')#" addtoken="false" />
 		</cfif>
 		
 		

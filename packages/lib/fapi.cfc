@@ -770,7 +770,8 @@
 		<cfargument name="type" type="string" required="true" />
 		<cfargument name="filename" type="string" required="false" />
 		<cfargument name="ccToWords" type="boolean" required="false" default="false" hint="Used for csv types. If set to true, column names in camel case are converted to separate words. e.g. SomeCol => Some Col" />
-		
+		<cfargument name="status" type="string" required="false" default="200 OK" hint="Use to override response status code." />
+
 		<cfset var tmp = "" />
 		<cfset var field = "" />
 		<cfset var fields = "" />
@@ -892,6 +893,7 @@
 		</cfif>
 		
 		<!--- stream the content --->
+		<cfheader statuscode="#listfirst(arguments.status,' ')#" statustext="#listrest(arguments.status,' ')#" />
 		<cfif isSimpleValue(arguments.content)>
 			<cfcontent type="#arguments.type#" variable="#ToBinary( ToBase64( trim(arguments.content) ) )#" reset="Yes" />
 		<cfelse>
