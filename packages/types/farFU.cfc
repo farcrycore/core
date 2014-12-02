@@ -1137,7 +1137,7 @@
 		WHERE	friendlyURL = <cfqueryparam value="#arguments.alias#" cfsqltype="cf_sql_varchar">
 		</cfquery>
 		
-		<cfset cacheURLStructByURL(stFU.friendlyURL,structnew()) />
+		<cfset cacheURLStructByURL(arguments.alias,structnew()) />
 
 		<cfreturn true>
 	</cffunction>
