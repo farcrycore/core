@@ -228,7 +228,12 @@
 	</cfif>
 
 	<!--- either stream the webskin result with an appropriate mime type, or output it normally --->
+	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax">
+		<cfset request.mode.ajax = true />
+	</cfif>
 	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
+		<cfset request.mode.ajax = true />
+
 		<cfinvoke component="#application.fapi#" method="stream">
 			<cfinvokeargument name="content" value="#result#" />
 			<cfinvokeargument name="type" value="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#" />
@@ -295,7 +300,12 @@
 			<!--- Call the view on the types coapi object --->
 			<skin:view typename="#url.type#" webskin="#url.view#" r_html="result" />
 			
+			<cfif application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax">
+				<cfset request.mode.ajax = true />
+			</cfif>
 			<cfif application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" and structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
+				<cfset request.mode.ajax = true />
+
 				<cfinvoke component="#application.fapi#" method="stream">
 					<cfinvokeargument name="content" value="#result#" />
 					<cfinvokeargument name="type" value="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#" />
@@ -314,7 +324,11 @@
 		</cfif>	
 		
 	<cfelse>
-		<skin:location url="#attributes.loginpath#" urlParameters="error=restricted" />
+
+		<skin:view typename="#url.type#" webskin="deniedaccess" loginpath="#attributes.loginpath#" />
+		<cfsetting enablecfoutputonly="false" />
+		<cfexit method="exittag" />
+
 	</cfif>
 	
 </cfif>
