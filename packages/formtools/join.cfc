@@ -117,7 +117,7 @@
 				</cfif>
 		
 				<cfsavecontent variable="returnHTML">
-				<cfif qLibraryList.recordcount>
+				<cfif isQuery(qLibraryList) AND qLibraryList.recordcount>
 					<!--- If they didn't pass in ftStyle, use the old hard coded
 						value for backwards compatibility  --->
 					<cfif structKeyExists(arguments, "stMetadata") 
