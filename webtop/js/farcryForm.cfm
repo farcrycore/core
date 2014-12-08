@@ -355,7 +355,7 @@
 			url: url
 		}, settings);
 
-		var fcTrayModalTPL = $j("<div class='fc-tray'><div id='fcModal' class='modal hide fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div></div>");
+		var fcTrayModalTPL = $j("<div class='fc-tray'><div id='fcModal' class='modal hide fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;-webkit-overflow-scrolling:touch;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div></div>");
 		$j("body").append(fcTrayModalTPL);
 
 		return $fc.openBootstrapModal(settings);		
@@ -386,7 +386,7 @@
 		}, $settings);
 
 		var modalLeftPos = 0;
-		var fcModalTPL = $j("<div id='fcModal' class='modal hide fade fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div>");
+		var fcModalTPL = $j("<div id='fcModal' class='modal hide fade fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;-webkit-overflow-scrolling:touch;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div>");
 
 		var $fcModal = $j("##fcModal");
 
