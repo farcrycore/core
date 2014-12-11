@@ -133,11 +133,17 @@
 		<cfset stLocals.content_type = getPageContext().getServletContext().getMimeType(arguments.file) />
 		
 		<cfif not isdefined("stLocals.content_type")>
-			<cfif listfindnocase("jpg,jpeg",listlast(arguments.file,"."))>
-				<cfset stLocals["content_type"] = "image/jpeg" />
-			<cfelseif listfindnocase("mov",listlast(arguments.file,"."))>
-				<cfset stLocals["content_type"] = "video/quicktime" />
-			</cfif>
+			<cfswitch expression="#listlast(arguments.file,".")#">
+				<cfcase value="jpg,jpeg" delimiters=",">
+					<cfset stLocals["content_type"] = "image/jpeg" />
+				</cfcase>
+				<cfcase value="mov" delimiters=",">
+					<cfset stLocals["content_type"] = "video/quicktime" />
+				</cfcase>
+				<cfcase value="vtt" delimiters=",">
+					<cfset stLocals["content_type"] = "text/vtt" />
+				</cfcase>
+			</cfswitch>
 		</cfif>
 		
 		<!--- corrections --->
