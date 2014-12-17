@@ -5,7 +5,7 @@
 	If this is the case, then we only want to delete any categories that have been selected from this point only.
  --->
 <cfif isDefined("arguments.Alias") and len(arguments.Alias) and application.fapi.checkCatID(arguments.Alias)>
-	<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.fapi.getCatID(arguments.Alias) />
+	<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.fapi.getCatID(arguments.Alias)) />
 </cfif>
 
 <cfquery datasource="#arguments.dsn#">
