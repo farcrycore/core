@@ -461,7 +461,7 @@
 		<cfelseif stDefaultProfile.override>
 			<cfset structappend(session.dmProfile,stDefaultProfile,true) />
 		</cfif>
-		<cfset oProfile.setData(stProperties=session.dmProfile) />
+		<cfset oProfile.setData(stProperties=session.dmProfile, bAudit=false) />
 	
 		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
         <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
