@@ -324,7 +324,7 @@
 		<cfset fullpath = arguments.config.pathPrefix & fullpath />
 		
 		<!--- URL encode the filename --->
-		<cfset fullpath = replacelist(urlencodedformat(fullpath),"%2F,%20,%2D,%2E,%5F","/, ,-,.,_")>
+		<cfset fullpath = replacelist(urlencodedformat(fullpath),"%2F,%20,%2D,%2E,%5F,%27,%28,%29,%26","/, ,-,.,_,',(,),&")>
 		
 		<cfset fullpath = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##fullpath#" />
 		
