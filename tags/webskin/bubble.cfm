@@ -95,14 +95,7 @@ FARCRY IMPORT FILES
 			
 	<cfelse>
 		<cfparam name="session.aGritterMessages" default="#arrayNew(1)#" />
-		<cfset stMessage = structNew() />
-		<cfset stMessage.title = attributes.title />
-		<cfset stMessage.message = attributes.message />
-		<cfset stMessage.image = attributes.image />
-		<cfset stMessage.pause = attributes.pause />
-		<cfset stMessage.sticky = attributes.sticky />
-		<cfset stMessage.tags = attributes.tags />
-		<cfset arrayAppend(session.aGritterMessages, stMessage) />
+		<cfset arrayAppend(session.aGritterMessages, duplicate(attributes)) />
 	</cfif>
 
 	
