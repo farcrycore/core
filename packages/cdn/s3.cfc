@@ -97,11 +97,15 @@
 			<cfset st.readers = arraynew(1) />
 		<cfelse>
 			<cfloop from="1" to="#arraylen(st.readers)#" index="i">
-				<cfset stACL = structnew() />
-				<cfif isvalid("email",st.readers[i])>
-					<cfset stACL["email"] = st.readers[i] />
+				<cfif isStruct(st.readers[i])>
+					<cfset stACL = duplicate(st.readers[i]) />
 				<cfelse>
-					<cfset stACL["id"] = st.readers[i] />
+					<cfset stACL = structnew() />
+					<cfif isvalid("email",st.readers[i])>
+						<cfset stACL["email"] = st.readers[i] />
+					<cfelse>
+						<cfset stACL["id"] = st.readers[i] />
+					</cfif>
 				</cfif>
 				<cfset stACL["permission"] = "read" />
 				<cfset arrayappend(st.acl,stACL) />
