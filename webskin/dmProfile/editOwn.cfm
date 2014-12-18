@@ -6,7 +6,7 @@
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<cfset stProfile = getData(objectid=session.dmProfile.objectid) />
+<cfset stProfile = getData(objectid=session.dmProfile.objectid, bUseInstanceCache=false) />
 <cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
 	<cfset stObj = stProfile />
 </cfif>
