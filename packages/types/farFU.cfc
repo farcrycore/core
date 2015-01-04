@@ -1620,7 +1620,7 @@
 		<cfset var stReturnFU = {} />
 
 		<cfif not arguments.bIgnoreCache>
-			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us-"&arguments.friendlyURL,"fuLookup") />
+			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us-" & hash(lcase(arguments.friendlyURL)),"fuLookup") />
 		</cfif>
 		
 		<cfif structIsEmpty(stReturnFU)>
@@ -1685,7 +1685,7 @@
 		<cfargument name="friendlyURL" type="string" required="true" />
 		<cfargument name="data" type="struct" required="true" />
 		
-		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","us-"&arguments.friendlyURL) />
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","us-" & hash(lcase(arguments.friendlyURL))) />
 
 		<cfreturn duplicate(arguments.data) />
 	</cffunction>
