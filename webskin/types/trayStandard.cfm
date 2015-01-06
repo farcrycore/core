@@ -46,11 +46,11 @@
 	</tr>
 	<tr>
 		<th><admin:resource key='tray.summary.pageview@label'>Page View</admin:resource></th>
-		<td>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.view)# (#arguments.stParam.view#)</td>
+		<td>#application.fc.lib.esapi.encodeForHTML(application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.view))# (#application.fc.lib.esapi.encodeForHTML(arguments.stParam.view)#)</td>
 	</tr>
 	<tr>
 		<th><admin:resource key='tray.summary.bodyview@label'>Body View</admin:resource></th>
-		<td>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.bodyView)# (#arguments.stParam.bodyView#)</td>
+		<td>#application.fc.lib.esapi.encodeForHTML(application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.bodyView))# (#application.fc.lib.esapi.encodeForHTML(arguments.stParam.bodyView)#)</td>
 	</tr>
 	</table>
 
