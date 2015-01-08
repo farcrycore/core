@@ -202,7 +202,6 @@
 	</cfif>
 	
 	
-	
 	<ft:processform action="delete" url="refresh">
 		<cfif isDefined("form.objectid") and len(form.objectID)>
 			
@@ -232,22 +231,34 @@
 		</cfif>
 		
 	</ft:processForm>
-	
-	
-	
-	
+
+
 	<cfparam name="session.objectadminFilterObjects" default="#structNew()#" />
 	<cfif not structKeyExists(session.objectadminFilterObjects, attributes.typename)>
 		<cfset session.objectadminFilterObjects[attributes.typename] = structNew() />
 	</cfif>
-	
-	
-	<cfif len(attributes.lFilterFields) OR len(form.q)>
-	
+
+	<!--- set the quick filter in the session and always start at page 1 for new searches --->
+	<cfif isDefined("form.btnsearch") and form.btnsearch eq 1>
+		<cfset session.objectadminFilterObjects[attributes.typename].q = form.q />
+		<cfset session.ftpagination[attributes.typename] = 1 />
+	</cfif>
+
+	<!--- clear the quick filter from the session and reset the pagingation --->
+	<cfif isDefined("form.clearfilter") and form.clearfilter eq 1>
+		<cfset form.q = "">
+		<cfset session.objectadminFilterObjects[attributes.typename] = structNew() />
+		<cfset session.objectadminFilterObjects[attributes.typename].q = "" />
+		<cfset session.ftpagination[attributes.typename] = 1 />
+	</cfif>
+
+	<cfparam name="session.objectadminFilterObjects.#attributes.typename#.q" default="" />
+
+
+	<cfif len(attributes.lFilterFields) OR len(session.objectadminFilterObjects[attributes.typename].q)>
+
 			<cfset oFilterType = createObject("component", PrimaryPackagePath) />
-		
-	
-		
+
 			<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
 				
 				<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#application.fc.utils.createJavaUUID()#") />
@@ -346,11 +357,11 @@
 
 				<!--- simple search --->
 				<cfoutput>
-					<cfif len(form.q) AND (listLen(attributes.lFilterFields) OR structKeyExists(PrimaryPackage.stProps, "label") OR structKeyExists(PrimaryPackage.stProps, "title") OR structKeyExists(PrimaryPackage.stProps, "name"))>
+					<cfif len(session.objectadminFilterObjects[attributes.typename].q) AND (listLen(attributes.lFilterFields) OR structKeyExists(PrimaryPackage.stProps, "label") OR structKeyExists(PrimaryPackage.stProps, "title") OR structKeyExists(PrimaryPackage.stProps, "name"))>
 						AND ( 1=2
 							<cfloop list="#listPrepend(attributes.lFilterFields, "label,title,name")#" index="i">
 								<cfif structKeyExists(PrimaryPackage.stProps, i) AND listFindNoCase("string,nstring,list,uuid", PrimaryPackage.stProps[i].metadata.ftType)>
-									<cfset whereValue = replaceNoCase(trim(lcase(form.q)),"'", "''", "all") />
+									<cfset whereValue = replaceNoCase(trim(lcase(session.objectadminFilterObjects[attributes.typename].q)),"'", "''", "all") />
 									OR lower(#i#) LIKE '%#whereValue#%'
 								</cfif>
 							</cfloop>
@@ -404,7 +415,7 @@
 		<cfif len(attributes.columnlist)>
 			<cfset sqlColumns = listAppend(sqlColumns, attributes.columnlist) />
 		</cfif>
-		
+
 		<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
 	</cfif>
 
@@ -716,11 +727,12 @@
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="#application.rb.getResource('objectadmin.filtering.heading@title','Advanced Filtering')#"><b class="fa fa-filter only-icon"></b></button>
 				</cfif>
-				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="#application.rb.getResource('objectadmin.filtering.search@placeholder','Search...')#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(form.q)#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
-				<cfif len(form.q)>
-					<button type="button" class="btn" onclick="$j('##farcry-objectadmin-q').val(''); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
+				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="#application.rb.getResource('objectadmin.filtering.search@placeholder','Search...')#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(session.objectadminFilterObjects[attributes.typename].q)#" style="width: 240px;"data-intro="Quick search field" data-position="bottom">
+				<cfif len(session.objectadminFilterObjects[attributes.typename].q)>
+					<button type="button" class="btn" onclick="$j('##farcry-objectadmin-q').val(''); $j('##clearfilter').val('1'); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
+					<input type="hidden" id="clearfilter" name="clearfilter" value="0">
 				</cfif>
-				<button type="submit" class="btn btn-primary" style="height: 30px; border-radius:0"><b class="fa fa-search only-icon"></b></button>
+				<button type="submit" class="btn btn-primary" name="btnsearch" value="1" style="height: 30px; border-radius:0"><b class="fa fa-search only-icon"></b></button>
 			</form>				
 		</cfoutput>
 	</cfif>
@@ -804,7 +816,8 @@
 				<cfif len(trim(message.message))>#message.message#</cfif>
 			</div>
 		</cfoutput></skin:pop>
-		
+
+
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination
 				paginationID="#attributes.typename#"
@@ -827,6 +840,9 @@
 			<cfif st.bFirst>
 				<cfif len(attributes.SortableColumns)>
 					<cfoutput><input type="hidden" id="sqlOrderBy" name="sqlOrderBy" value="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#"></cfoutput>
+				</cfif>
+				<cfif len(session.objectadminFilterObjects[attributes.typename].q)>
+					<cfoutput><input type="hidden" name="q" value="#application.fc.lib.esapi.encodeForHTMLAttribute(session.objectadminFilterObjects[attributes.typename].q)#"></cfoutput>
 				</cfif>
 				
 				<cfoutput>
@@ -1118,13 +1134,12 @@
 				<cfoutput></table></cfoutput>
 			</cfif>
 		
-		
 		<!--- </ft:pagination>  --->
 		</skin:pagination>
 		
 	
 	<cfelse>
-		<cfif listLen(HTMLfiltersAttributes) OR len(form.q)>
+		<cfif listLen(HTMLfiltersAttributes) OR len(session.objectadminFilterObjects[attributes.typename].q)>
 			<cfoutput><div class="alert alert-error">No results matched your filter</div></cfoutput>
 		<cfelse>
 			<cfoutput><div class="alert alert-info"><admin:resource key="#attributes.rbkey#.emptymessage@text" var1="#typelabel#">#attributes.emptymessage#</admin:resource></div></cfoutput>
