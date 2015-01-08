@@ -273,12 +273,10 @@
 			
 			<ft:processform action="clear filter" url="refresh">
 				<cfset structDelete(session.objectadminFilterObjects, attributes.typename) />
+				<cfset session.ftpagination[attributes.typename] = 1 />
 			</ft:processForm>
-			
-			
-		
-		
-	
+
+
 			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 	
 	
