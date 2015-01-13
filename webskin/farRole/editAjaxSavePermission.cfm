@@ -28,7 +28,7 @@
 	<cfcontent 	
 		reset="true"
 		type="application/json"
-		variable="#toBinary( toBase64( serializeJSON( application.fapi.success('#session.CFToken# - permission set to #form.barnaclevalue#') ) ) )#"
+		variable="#toBinary( toBase64( serializeJSON( application.fapi.success('permission set to #form.barnaclevalue#') ) ) )#"
 		/>
 	
 <cfelse>
