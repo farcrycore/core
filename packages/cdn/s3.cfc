@@ -225,7 +225,7 @@
 		<cfset fullpath = arguments.config.pathPrefix & fullpath />
 		
 		<!--- URL encode the filename --->
-		<cfset fullpath = replacelist(urlencodedformat(fullpath),"%2F,%20,%2D,%2E,%5F,%27,%28,%29,%26,%5B,%5D,%21,%25","/, ,-,.,_,',(,),&,[,],!,%")>
+		<cfset fullpath = replacelist(urlencodedformat(fullpath),"%2F,%20,%2D,%2E,%5F,%27,%28,%29,%26,%5B,%5D,%21,%25,%40","/, ,-,.,_,',(,),&,[,],!,%,@")>
 		<cfset fullpath = replaceNoCase(fullpath, "%2C", ",", "all")>
 
 		<cfset fullpath = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##fullpath#" />
