@@ -92,20 +92,17 @@
 		</cfif>
 		
 		<cfif structkeyexists(st,"readers") and not isarray(st.readers)>
-			<cfset application.fapi.throw(message="the 'readers' value must be an array of canonical user ids or email addresses",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+			<cfset application.fapi.throw(message="the 'readers' value must be an array of canonical user ids or email addresses or ACL structs",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
 		<cfelseif not structkeyexists(st,"readers")>
 			<cfset st.readers = arraynew(1) />
 		<cfelse>
 			<cfloop from="1" to="#arraylen(st.readers)#" index="i">
 				<cfif isStruct(st.readers[i])>
 					<cfset stACL = duplicate(st.readers[i]) />
+				<cfelseif isvalid("email",st.readers[i])>
+					<cfset stACL = { "email" = st.readers[i] } />
 				<cfelse>
-					<cfset stACL = structnew() />
-					<cfif isvalid("email",st.readers[i])>
-						<cfset stACL["email"] = st.readers[i] />
-					<cfelse>
-						<cfset stACL["id"] = st.readers[i] />
-					</cfif>
+					<cfset stACL = { "id" = st.readers[i] } />
 				</cfif>
 				<cfset stACL["permission"] = "read" />
 				<cfset arrayappend(st.acl,stACL) />
@@ -113,16 +110,17 @@
 		</cfif>
 
 		<cfif structkeyexists(st,"admins") and not isarray(st.admins)>
-			<cfset application.fapi.throw(message="the 'admins' value must be an array of canonical user ids or email addresses",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+			<cfset application.fapi.throw(message="the 'admins' value must be an array of canonical user ids or email addresses or ACL structs",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
 		<cfelseif not structkeyexists(st,"admins")>
 			<cfset st.admins = arraynew(1) />
 		<cfelse>
 			<cfloop from="1" to="#arraylen(st.admins)#" index="i">
-				<cfset stACL = structnew() />
-				<cfif isvalid("email",st.admins[i])>
-					<cfset stACL["email"] = st.admins[i] />
+				<cfif isStruct(st.admins[i])>
+					<cfset stACL = duplicate(st.admins[i]) />
+				<cfelseif isvalid("email",st.admins[i])>
+					<cfset stACL = { "email" = st.admins[i] } />
 				<cfelse>
-					<cfset stACL["id"] = st.admins[i] />
+					<cfset stACL = { "id" = st.admins[i] } />
 				</cfif>
 				<cfset stACL["permission"] = "full_control" />
 				<cfset arrayappend(st.acl,stACL) />
