@@ -731,15 +731,15 @@
 		<cfargument name="lObjectIDs" required="true" type="string">
 		<cfargument name="typename" required="true" type="string">
 		<cfargument name="eventName" required="false" type="string" default="flush" hint="Name of event that triggered the removal {flush,reap,evict}">
-			
+
 		<cfset var oWebskinAncestor = application.fapi.getContentType("dmWebskinAncestor") />						
 		<cfset var qWebskinAncestors = queryNew("blah") />
 		<cfset var i = "" />
-		<cfset var j = "" />
-		<cfset var regexString = "" />
-		
+		<cfset var key = "" />
+
 		<cfif application.bObjectBroker and len(arguments.typename) and application.stcoapi[arguments.typename].bObjectBroker>
 			<cfloop list="#arguments.lObjectIDs#" index="i">
+
 				<cfif isvalid("uuid",i)>
 					<!--- Find any ancestor webskins and delete them as well --->
 					<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
@@ -749,17 +749,13 @@
 				</cfif>
 
 				<!--- Remove the object itself and it's webskins --->
-				<cfset regexString = "^#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#i#" />
-				<cfloop collection="#application.objectbroker[arguments.typename]#" item="j">
-					<cfif refind(regexString,j)>
-						<cfset cacheFlush(j) />
-					</cfif>
-				</cfloop>
-				
+				<cfset key = "#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#i#" />
+				<cfset cacheFlush(key) />
+
 			</cfloop>
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="flushTypeWatchWebskins" access="public" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
 	 	<cfargument name="objectID" required="false" hint="The typename that the CRUD function was performed on." />
 	 	<cfargument name="typename" required="false" hint="" />
@@ -899,11 +895,10 @@
 		<cfargument name="key" type="string" required="false" default="" />
 		
 		<cfset var section = listgetat(arguments.key,2,"_") />
-
-		<cfset arguments.key = listDeleteAt(listDeleteAt(arguments.key,1,"_"),1,"_") />
+		<cfset var objectid = listgetat(arguments.key,3,"_") />
 		
-		<cfif isdefined("application.objectbroker.#section#.#arguments.key#")>
-			<cfset structDelete(application.objectbroker[section],arguments.key) />
+		<cfif structKeyExists(application.objectbroker, section) AND structKeyExists(application.objectbroker[section], objectid)>
+			<cfset structDelete(application.objectbroker[section],objectid) />
 		</cfif>
 	</cffunction>
 	
