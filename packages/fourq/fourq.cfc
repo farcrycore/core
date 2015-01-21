@@ -517,7 +517,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfif stCurrentView.proxyCacheTimeout gt -1 and (request.aAncestorWebskins[i].proxyCacheTimeout eq -1 or stCurrentView.proxyCacheTimeout lt request.aAncestorWebskins[i].proxyCacheTimeout)>
 						<cfset request.aAncestorWebskins[i].proxyCacheTimeout = stCurrentView.proxyCacheTimeout />
 					</cfif>
-                    <cfset >
+                    
 				    <cfset StructAppend(request.aAncestorWebskins[i].contentList, stCurrentView.contentList)>
                 </cfloop>
 				

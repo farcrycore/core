@@ -650,7 +650,7 @@
 			<cfreturn />
 		</cfif>
 
-		<cfloop collection="#application.objectbroker[arguments.typename]#" index="i">
+		<cfloop collection="#application.objectbroker[arguments.typename]#" item="i">
 			<cfif refind(regex,i)>
 				<cfset cacheFlush(i) />
 			</cfif>
