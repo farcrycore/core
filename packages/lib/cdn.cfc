@@ -143,6 +143,9 @@
 				<cfcase value="vtt" delimiters=",">
 					<cfset stLocals["content_type"] = "text/vtt" />
 				</cfcase>
+				<cfcase value="mp3" delimiters=",">
+					<cfset stLocals["content_type"] = "audio/mpeg" />
+				</cfcase>
 			</cfswitch>
 		</cfif>
 		
