@@ -405,7 +405,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
+	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles file post and returns standard formtool result struct">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
 		<cfargument name="typename" type="string" required="true" hint="The type of the edited object" />
 		<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
@@ -491,7 +491,7 @@
 						<cffile action="delete" file="-#archivedFile#" />
 					</cfif>
 				<cfelse>
-					<!--- There is no image currently so we simply upload the image and make it unique  --->
+					<!--- There is no file currently so we simply upload the file and make it unique  --->
 					<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
 						location=fileLocation,
 						destination=arguments.destination,
@@ -532,7 +532,7 @@
 		
 	</cffunction>
 	
-	<cffunction name="handleFileLocal" access="public" output="false" returntype="struct" hint="Handles using a local file as the new image and returns standard formtool result struct">
+	<cffunction name="handleFileLocal" access="public" output="false" returntype="struct" hint="Handles using a local file as the new file and returns standard formtool result struct">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
 		<cfargument name="typename" type="string" required="true" hint="The type of the edited object" />
 		<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
@@ -608,7 +608,7 @@
 					<cffile action="delete" file="#archivedFile#" />
 				</cfif>
 			<cfelse>
-				<!--- There is no image currently so we simply copy the image and make it unique  --->
+				<!--- There is no file currently so we simply copy the file and make it unique  --->
 				<cfset stResult.value = application.fc.lib.cdn.ioCopyFile(
 					source_localpath=arguments.localfile,
 					dest_location=fileLocation,
@@ -765,7 +765,7 @@
 					( changetype eq "type" and arguments.farPermissionID eq application.security.factory.permission.getTypePermission(arguments.stObject.typename,"View") )
 				)>
 				
-				<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location=newpath) />
+				<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location=newLocation) />
 			</cfif>
 		</cfif>
 	</cffunction>
@@ -821,7 +821,8 @@
 		
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		<cfargument name="firstLook" type="string" required="false" hint="Where should we look for the file first. The default is to look based on permissions and status" />
-		
+		<cfargument name="bRetrieve" type="boolean" required="false" default="true" />
+
 		<cfset var stResult = structnew() />
 		
 		<!--- Throw an error if the field is empty --->
@@ -834,9 +835,9 @@
 		</cfif>
 		
 		<cfif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
-			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name], bRetrieve=arguments.bRetrieve) />
 		<cfelse>
-			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name], bRetrieve=arguments.bRetrieve) />
 		</cfif>
 		
 		<cfreturn stResult />

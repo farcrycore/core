@@ -103,8 +103,10 @@
 											<option value="">-- select --</option>
 											<cfloop collection="#stDiff.tables[thistable].fields#" item="otherfield">
 												<cfif structkeyexists(stDiff.tables[thistable].fields[otherfield],"resolution") and stDiff.tables[thistable].fields[thisfield].resolution eq "-">
-													<option value="#otherfield#">#otherfield#</option>
-													<cfset foundoption = true />
+													<cfif otherfield neq thisfield>
+														<option value="#otherfield#">#otherfield#</option>
+														<cfset foundoption = true />
+													</cfif>
 												</cfif>
 											</cfloop>
 										</select>

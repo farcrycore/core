@@ -239,7 +239,7 @@ OBJECT METHODS
 		
 		<!--- Get profiles --->
 		<cfif len(arguments.permissionID)>
-			<cfset arguments.permissionanme = arguments.permissionid />
+			<cfset arguments.permissionName = arguments.permissionid />
 		</cfif>
 		<cfset lProfiles = application.security.factory.role.getAuthenticatedProfiles(roles=application.security.factory.role.getRolesWithPermission(permission=arguments.permissionname)) />
 		

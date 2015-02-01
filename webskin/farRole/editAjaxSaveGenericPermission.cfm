@@ -1,10 +1,6 @@
-
-
 <cfparam name="form.permissionID" default="">
 <cfparam name="form.barnaclevalue" default="">
 
-			
-					
 <cfif len(form.permissionID) AND len(form.barnaclevalue)>
 	
 	<cfif form.barnaclevalue EQ -1>
@@ -41,28 +37,3 @@
 		/>
 		
 </cfif>
-
-<!--- 
-<cfif len(form.referenceid) AND  len(form.permissionID) AND  len(form.objecttype) AND  len(form.barnaclevalue)>
-	<cfparam name="session.fc.stRolePermissions" default="#structNew()#">
-	<cfparam name="session.fc.stRolePermissions['#stobj.objectid#']" default="#structNew()#">
-	<cfparam name="session.fc.stRolePermissions['#stobj.objectid#']['#form.objecttype#']" default="#structNew()#">
-	<cfparam name="session.fc.stRolePermissions['#stobj.objectid#']['#form.objecttype#']['#form.permissionID#']" default="#structNew()#">
-	
-	<cfset session.fc.stRolePermissions[stobj.objectid][form.objecttype][form.permissionID][form.referenceid] = form.barnaclevalue />
-	
-	<cfcontent 	
-		reset="true"
-		type="application/json"
-		variable="#toBinary( toBase64( serializeJSON( application.fapi.success('permission set') ) ) )#"
-		/>
-	
-<cfelse>
-
-	<cfcontent 	
-		reset="true"
-		type="application/json"
-		variable="#toBinary( toBase64( serializeJSON( application.fapi.fail('permission not set') ) ) )#"
-		/>
-		
-</cfif> --->

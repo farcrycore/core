@@ -52,15 +52,35 @@
 		<cfargument name="protocol" type="string" require="false" />
 		
 		<cfset var urlpath = "" />
+		<cfset var filename = listLast(arguments.file, "/") />
+		<cfset var fileLastname = "" />
+		<cfset var fileFirstname = "" />
+		<cfset var filePath = "" />
+		<cfset var urlEncodedFilename = "" />
 		
 		<cfif not structkeyexists(arguments.config,"urlPath")>
 			<cfset application.fapi.throw(message="no URL is available for CDN location [{1}]",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ arguments.config.name ]) />
 		</cfif>
+
+		<!--- Get filename --->
+		<cfif listLen(filename, ".") GTE 2>
+			<cfset fileLastname = listLast(filename, ".") />
+			<cfset fileFirstname = left(filename, len(filename) - len(fileLastname) - 1) />
+			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) & "." & urlEncodedFormat(fileLastname) />
+		<cfelse>
+			<cfset fileFirstname = filename />
+			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) />
+		</cfif>
+		
+		<!--- Get file path if exist --->
+		<cfif find("/", arguments.file) GT 0>
+			<cfset filePath = left(arguments.file, len(arguments.file) - len(filename)) />
+		</cfif>
 		
 		<cfif left(arguments.file,1) eq "/">
-			<cfset urlpath = arguments.config.urlpath & arguments.file />
+			<cfset urlpath = arguments.config.urlpath & filePath & urlEncodedFilename />
 		<cfelse>
-			<cfset urlpath = arguments.config.urlpath & "/" & arguments.file />
+			<cfset urlpath = arguments.config.urlpath & "/" & filePath & urlEncodedFilename />
 		</cfif>
 		
 		<!--- URL encode the filename --->

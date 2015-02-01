@@ -136,24 +136,28 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stResult = structNew()>		
-		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = "">
-		<cfset stResult.stError = StructNew()>
+		<cfset var stResult = structNew() />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.value = "" />
+		<cfset stResult.stError = StructNew() />
 		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfset stResult.value = stFieldPost.Value>
+		<cfif listLen(arguments.stFieldPost.value)>
+			<!--- Remove any empty list items --->
+			<cfset arguments.stFieldPost.value = arrayToList(listToArray(arguments.stFieldPost.value, ","), ",") />
+		</cfif>
+		<cfset stResult.value = arguments.stFieldPost.value />
 
+		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(arguments.stFieldPost.value)>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
+		</cfif>
+		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
-		<cfreturn stResult>
-		
+		<cfreturn stResult />
 	</cffunction>
 
-</cfcomponent> 
-
-
-
+</cfcomponent>

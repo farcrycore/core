@@ -19,32 +19,33 @@ $fc.getDeviceType = function() {
 	return result;
 }
 
+if (document.addEventListener) {
+	document.addEventListener("DOMContentLoaded", function(event) {
 
-document.addEventListener("DOMContentLoaded", function(event) {
+		var arr = document.querySelectorAll(".fc-switch-device-desktop");
+		for (var i=0; i<arr.length; i++) {
+			arr[i].addEventListener("click", function(event){
+				event.preventDefault(true);
+				$fc.switchDeviceType("desktop");
+				return false;
+			}, true);
+		}
+		var arr = document.querySelectorAll(".fc-switch-device-mobile");
+		for (var i=0; i<arr.length; i++) {
+			arr[i].addEventListener("click", function(event){
+				event.preventDefault(true);
+				$fc.switchDeviceType("mobile");
+				return false;
+			}, true);
+		}
+		var arr = document.querySelectorAll(".fc-switch-device-tablet");
+		for (var i=0; i<arr.length; i++) {
+			arr[i].addEventListener("click", function(event){
+				event.preventDefault(true);
+				$fc.switchDeviceType("tablet");
+				return false;
+			}, true);
+		}	
 
-	var arr = document.querySelectorAll(".fc-switch-device-desktop");
-	for (var i=0; i<arr.length; i++) {
-		arr[i].addEventListener("click", function(event){
-			event.preventDefault(true);
-			$fc.switchDeviceType("desktop");
-			return false;
-		}, true);
-	}
-	var arr = document.querySelectorAll(".fc-switch-device-mobile");
-	for (var i=0; i<arr.length; i++) {
-		arr[i].addEventListener("click", function(event){
-			event.preventDefault(true);
-			$fc.switchDeviceType("mobile");
-			return false;
-		}, true);
-	}
-	var arr = document.querySelectorAll(".fc-switch-device-tablet");
-	for (var i=0; i<arr.length; i++) {
-		arr[i].addEventListener("click", function(event){
-			event.preventDefault(true);
-			$fc.switchDeviceType("tablet");
-			return false;
-		}, true);
-	}	
-
-});
+	});
+}

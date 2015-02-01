@@ -40,7 +40,7 @@
 
 	<cfproperty name="aGroups" type="array" default="" 
 		ftSeq="4" ftFieldset="User" ftLabel="Groups" 
-		ftType="array" ftJoin="farGroup"
+		ftType="array" ftJoin="farGroup" ftLibraryDataSQLOrderBy="title ASC"
 		hint="The groups this member is a member of">
 
 	<cfproperty name="lGroups" type="longchar" default="" 

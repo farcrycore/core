@@ -318,12 +318,16 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 
 		<cfset var webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
 		<cfset var currentRoles = application.security.getCurrentRoles()>
+		<cfset var iRole = "">
 		<cfset var rolesHash = hash("webtop-#currentRoles#")>
 		<cfset var oBarnacle = application.fapi.getContentType("farBarnacle")>
 		<cfset var stResult = structNew()>
 
 		<cfif NOT structKeyExists(application.security.stPermissions, rolesHash)>
-			<cfset application.security.stPermissions[rolesHash] = getItem(webtopPermissionID=webtopPermissionID, currentRoles=currentRoles, oBarnacle=oBarnacle)>
+			<cfloop list="#currentRoles#" index="iRole">
+				<cfset stResult = mergeWebtopRoleStruct(stResult, getItem(webtopPermissionID=webtopPermissionID, currentRoles=iRole, oBarnacle=oBarnacle)) />
+			</cfloop>
+			<cfset application.security.stPermissions[rolesHash] = stResult>
 		</cfif>
 		<cfset stResult = application.security.stPermissions[rolesHash]>
 
@@ -560,5 +564,41 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 
 		<cfreturn stResult>
 	</cffunction>
+
+
+	<cffunction name="mergeWebtopRoleStruct" access="public" output="false" returntype="struct" hint="A customised structMerge that will merge two webtop role structs and maintain the webtop childorder key">
+		<cfargument name="struct1" type="struct" required="true" />
+		<cfargument name="struct2" type="struct" required="true" />
+		<cfargument name="overwrite" type="boolean" required="false" default="true" />
+
+		<cfset var key = "">
+		
+		<!--- Loop Keys --->
+		<cfloop collection="#arguments.struct2#" item="key">
+			<!--- Find if the new key from struct2 Exists in struct1 --->
+			<cfif StructKeyExists(arguments.struct1, key)>
+				<!--- If they are both structs, we need to merge those structs, too --->
+				<cfif IsStruct(arguments.struct1[key]) AND IsStruct(arguments.struct2[key])>
+					<!--- Recursively call mergeWebtopRoleStruct to merge those structs --->
+					<cfset mergeWebtopRoleStruct(arguments.struct1[key], arguments.struct2[key], arguments.overwrite) />
+				<!--- We already checked that the key existed, now we just check if we can overwrite it --->
+				<cfelseif arguments.overwrite>
+					<cfset arguments.struct1[key] = arguments.struct2[key] />
+				<!--- The unused case here is if overwrite is false, in which case struct1 is not changed --->
+				</cfif>
+			<!--- If it doesn't exist, you're free to merge --->
+			<cfelse>
+				<cfset arguments.struct1[key] = arguments.struct2[key] />
+			</cfif>
+		</cfloop>
+
+		<!--- Update child order based on sequence values of filtered children --->
+		<cfif structKeyExists(arguments.struct1, "childorder")>
+			<cfset arguments.struct1.childorder = arraytolist(structsort(arguments.struct1.children,"numeric","asc","sequence")) />
+		</cfif>
+
+		<cfreturn arguments.struct1 />
+	</cffunction>
+
 
 </cfcomponent>
