@@ -66,10 +66,10 @@
 		<cfif listLen(filename, ".") GTE 2>
 			<cfset fileLastname = listLast(filename, ".") />
 			<cfset fileFirstname = left(filename, len(filename) - len(fileLastname) - 1) />
-			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) & "." & urlEncodedFormat(fileLastname) />
+			<cfset urlEncodedFilename = application.fc.lib.esapi.encodeForURL(fileFirstname) & "." & application.fc.lib.esapi.encodeForURL(fileLastname) />
 		<cfelse>
 			<cfset fileFirstname = filename />
-			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) />
+			<cfset urlEncodedFilename = application.fc.lib.esapi.encodeForURL(fileFirstname) />
 		</cfif>
 		
 		<!--- Get file path if exist --->
@@ -82,9 +82,6 @@
 		<cfelse>
 			<cfset urlpath = arguments.config.urlpath & "/" & filePath & urlEncodedFilename />
 		</cfif>
-		
-		<!--- URL encode the filename --->
-		<cfset urlpath = rereplace(urlpath,"[^/]+\.\w+$",urlencodedformat(listfirst(listlast(urlpath,"/"),".")) & "." & listlast(urlpath,"."))>
 		
 		<cfif structkeyexists(arguments,"protocol")>
 			<cfif refindnocase("^//",urlpath)>
