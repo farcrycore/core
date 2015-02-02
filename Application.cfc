@@ -365,7 +365,10 @@
 
 		<!--- Setup FarCry Namespace in the request scope --->
 		<cfparam name="request.fc" default="#structNew()#" />
-		<cfparam name="session.fc" default="#structNew()#" />
+
+		<cfif isdefined("session")>
+			<cfparam name="session.fc" default="#structNew()#" />
+		</cfif>
 		
 		<!--- Update the farcry application if instructed --->
 		<cfset farcryUpdateApp() />		
@@ -403,10 +406,12 @@
 					<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
 		</cfif>
 		
-		<cfparam name="session.loginReturnURL" default="#application.url.webroot#" />
-		
-		<cfif structKeyExists(url, "returnURL") AND len(url.returnURL)>
-			<cfset session.loginReturnURL = application.fapi.fixURL(url.returnURL) />
+		<cfif isdefined("session")>
+			<cfparam name="session.loginReturnURL" default="#application.url.webroot#" />
+			
+			<cfif structKeyExists(url, "returnURL") AND len(url.returnURL)>
+				<cfset session.loginReturnURL = application.fapi.fixURL(url.returnURL) />
+			</cfif>
 		</cfif>
 		
 		<!--- Hookup any functions here we want available to Farcry. --->

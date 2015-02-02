@@ -784,8 +784,10 @@
 		<cfset request.fc.bShowTray = true />
 		<cfset request.fc.okToCache = true />
 		
-		<!--- init session.fc.mode with defaults --->
-		<cfparam name="session.fc" default="#structnew()#" />
+		<cfif isdefined("session")>
+			<!--- init session.fc.mode with defaults --->
+			<cfparam name="session.fc" default="#structnew()#" />
+		</cfif>
 		
 		<!--- admin options visible in page --->
 		<cfif  IsDefined("session.dmSec.Authentication.bAdmin")>
@@ -797,23 +799,25 @@
 			<cfset arguments.stURL.debug = arguments.stURL.bDebug />
 		</cfif>
 		
-		<!--- session modes --->
-		<cfloop list="#sessionmodes#" index="thisvar">
-			<cfset urlvar = listfirst(thisvar,":") />
-			<cfset thisvar = listlast(thisvar,":") />
-			
-			<cfparam name="session.fc.mode.#thisvar#" default="0" />
-			
-			<cfif structkeyexists(arguments.stURL,urlvar) and arguments.stURL[urlvar] eq 0>
-				<cfset request.mode[thisvar] = 0 />
-				<cfset session.fc.mode[thisvar] = 0 />
-			<cfelseif structkeyexists(arguments.stURL,urlvar) and ((arguments.stURL[urlvar] eq application.updateappkey AND application.updateappkey neq 1) or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1))>
-				<cfset request.mode[thisvar] = 1 />
-				<cfset session.fc.mode[thisvar] = 1 />
-			<cfelseif isdefined("session.fc.mode.#thisvar#")>
-				<cfset request.mode[thisvar] = session.fc.mode[thisvar] />
-			</cfif>
-		</cfloop>
+		<cfif isdefined("session")>
+			<!--- session modes --->
+			<cfloop list="#sessionmodes#" index="thisvar">
+				<cfset urlvar = listfirst(thisvar,":") />
+				<cfset thisvar = listlast(thisvar,":") />
+				
+				<cfparam name="session.fc.mode.#thisvar#" default="0" />
+				
+				<cfif structkeyexists(arguments.stURL,urlvar) and arguments.stURL[urlvar] eq 0>
+					<cfset request.mode[thisvar] = 0 />
+					<cfset session.fc.mode[thisvar] = 0 />
+				<cfelseif structkeyexists(arguments.stURL,urlvar) and ((arguments.stURL[urlvar] eq application.updateappkey AND application.updateappkey neq 1) or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1))>
+					<cfset request.mode[thisvar] = 1 />
+					<cfset session.fc.mode[thisvar] = 1 />
+				<cfelseif isdefined("session.fc.mode.#thisvar#")>
+					<cfset request.mode[thisvar] = session.fc.mode[thisvar] />
+				</cfif>
+			</cfloop>
+		</cfif>
 		
 		<!--- request only modes --->
 		<cfloop list="#requestmodes#" index="thisvar">
