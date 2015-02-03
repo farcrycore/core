@@ -130,10 +130,10 @@
 
 		<cfset var stLocals = structnew() />
 
-		<cfset stLocals.content_type = getPageContext().getServletContext().getMimeType(arguments.file) />
+		<cfset stLocals.content_type = getPageContext().getServletContext().getMimeType(lcase(arguments.file)) />
 		
 		<cfif not isdefined("stLocals.content_type")>
-			<cfswitch expression="#listlast(arguments.file,".")#">
+			<cfswitch expression="#listlast(lcase(arguments.file),".")#">
 				<cfcase value="jpg,jpeg" delimiters=",">
 					<cfset stLocals["content_type"] = "image/jpeg" />
 				</cfcase>
