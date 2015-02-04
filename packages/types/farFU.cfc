@@ -186,6 +186,7 @@
 		<cfargument name="refObjectID" required="yes" hint="Objectid of the RefObject to retrieve the default" />
 		<cfargument name="bIgnoreCache" required="false" type="boolean" default="false" />
 			
+		<cfset var stLocal = structNew() />
 		<cfset var stDefaultFU = structNew() />
 		
 		<cfif not arguments.bIgnoreCache>
