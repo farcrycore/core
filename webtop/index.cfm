@@ -19,13 +19,18 @@
 <cfprocessingdirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin">
+<cfimport taglib="/farcry/core/tags/core/" prefix="core">
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
 <cfset request.fc.inWebtop = 1>
 
+<cfparam name="request.fc.startTickCount" default="#getTickCount()#" />
+<cfset application.fapi.addProfilePoint("Webtop","Controller Start") />
+
 
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems()>
+<cfset application.fapi.addProfilePoint("Webtop","getAllItems()") />
 
 <!--- init variables from id --->
 <cfif structKeyExists(url, "id")>
@@ -114,9 +119,12 @@
 <cfparam name="stItem.bodyInclude" default="" />
 <cfparam name="request.fc.webtopPageTitle" default="" />
 
+<cfset application.fapi.addProfilePoint("Webtop","Controller Complete") />
 
 <!--- execute the view on the type / object --->
 <skin:view objectid="#url.objectid#" typename="#url.typename#" webskin="#url.view#" bodyInclude="#stItem.bodyInclude#" />
 
+<cfparam name="url.bHideContextMenu" default="true">
+<core:displayTray />
 
 <cfsetting enablecfoutputonly="false">
