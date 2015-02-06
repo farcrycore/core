@@ -54,7 +54,7 @@ input, button, select, textarea {
   text-indent:-99999px;
 }
 #header h1 .webtop-logo {
-  width: 180px
+  width: auto;
 }
 
 
