@@ -1289,7 +1289,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
  		<cfparam name="stReturnMetadata.fuAlias" default="#componentname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
 		<cfparam name="stReturnMetadata.bSystem" default="false" />
-		<cfparam name="stReturnMetadata.bUseInTree"default="false" />
+		<cfparam name="stReturnMetadata.bUseInTree" default="false" />
+		<cfparam name="stReturnMetadata.bWorkflow" default="false" />
 		
 		<cfif refindnocase("\.types\.",stReturnMetadata.fullname)>
 			<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" />

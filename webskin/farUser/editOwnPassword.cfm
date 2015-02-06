@@ -10,9 +10,7 @@
 <ft:serverSideValidation />
 
 <cfset stUser = getByUserId(application.factory.oUtils.listSlice(session.security.userid,1,-2,"_")) />
-<cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
-	<cfset stObj = stUser />
-</cfif>
+<cfset stObj = stUser />
 
 <!--- user can only update their own password --->	
 <cfif NOT application.factory.oUtils.listSlice(application.security.getCurrentUserID(),1,-2,"_") eq stObj.userid>

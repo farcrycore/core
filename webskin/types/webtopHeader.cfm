@@ -72,11 +72,7 @@
 			<div class="farcry-header-top-row">
 				<div class="farcry-header-brand">
 					<a target="_blank" href="/" data-intro="Preview your site in a new tab" data-position="right">
-						<cfif len(application.fapi.getConfig("general", "webtoplogopath"))>
-							<img src="#application.fapi.getConfig("general", "webtoplogopath")#" alt="#application.fapi.getConfig("general","sitetitle")#"><!--- fit inside 180x60 --->
-						<cfelse>
-							#application.fapi.getConfig("general", "sitetitle")#
-						</cfif>
+						<skin:view typename="configGeneral" webskin="webtopHeaderLogo" />
 					</a>
 				</div>
 				<div class="farcry-header-utility">
@@ -100,7 +96,7 @@
 						<ul class="dropdown-menu pull-right">
 							<li><a href="#application.url.webtop#?id=dashboard&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
 							</cfoutput>
-								<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />
+								<skin:view typename="dmProfile" stObject="#session.dmProfile#" webskin="displaySummaryOptions#session.dmProfile.userdirectory#" alternateHTML="" />
 							<cfoutput>
 							<cfif application.security.checkPermission(permission="developer")>
 								<li class="divider"></li>

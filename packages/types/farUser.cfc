@@ -17,8 +17,8 @@
 --->
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
 <cfcomponent 
-	extends="types" displayname="FarCry User" 
-	hint="User model for the FarCry User Directory." output="false" 
+	extends="types" displayname="FarCry User" output="false" 
+	hint="User model for the FarCry User Directory."
 	fuAlias="user" bSystem="true" ud="CLIENTUD">
 
 	<cfproperty name="userid" type="string" default="" 
@@ -63,7 +63,7 @@
 		<cfset var qUser = "" />
 		
 		<cfquery datasource="#application.dsn#" name="qUser">
-			select	*
+			select	objectid
 			from	#application.dbowner#farUser
 			where	lower(userid)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.userid)#" />
 		</cfquery>

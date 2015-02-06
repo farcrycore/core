@@ -1204,7 +1204,7 @@
 	<cfset var stObjectAdminData = structNew() />
 	<cfset var lWorkflowTypenames = "" />
 
-	<cfif len(arguments.typename)>
+	<cfif len(arguments.typename) AND application.stcoapi[arguments.typename].bWorkflow>
 		<cfset lWorkflowTypenames = application.fapi.getContentType("farWorkflow").getWorkflowList(arguments.typename) />
 	</cfif>
 
