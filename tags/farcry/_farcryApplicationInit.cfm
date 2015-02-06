@@ -76,7 +76,7 @@ test for the existance of each and act accordingly
 	
 	//initialise factory objects 
 	application.factory.oAlterType = createobject("component","#application.packagepath#.farcry.alterType");
-	application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init();
+	application.factory.oWebtop = createObject("component", application.fc.utils.getPath(package="farcry", component="webtop")).init();
 	application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils");
 	application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree");
 	application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache");
