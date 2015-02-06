@@ -90,9 +90,9 @@ if (attributes.displayStyle EQ "aLink") {
 			homeURL = "/";
 		}
 		// write the link
-		writeOutput('<a href="#homeURL#" title="#trim(qNav.ObjectName[i])#">');
+		writeOutput('<a href="#homeURL#" title="#trim(homeNode.objectName)#">');
 		if(attributes.bSpan) writeOutput("<span>");
-		writeOutput(trim(qNav.ObjectName[i]));
+		writeOutput(trim(homeNode.objectName));
 		if(attributes.bSpan) writeOutput("</span>");
 		writeOutput("</a>");
 		
