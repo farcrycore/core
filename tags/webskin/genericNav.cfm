@@ -76,16 +76,78 @@
 	</cfquery>
 </cfif>
 
-<cfif attributes.displayStyle EQ "aLink">
-	<cfloop query="qNav">
-		<cfif qNav.currentRow GT 1>
-			<cfoutput> | </cfoutput>		
-		</cfif>
-		<cfoutput><a href="#application.fapi.getlink(objectid=qNav.objectid)#" title="#qNav.objectName#" target="#qNav.target#">#qNav.objectName#</a></cfoutput>
-	</cfloop>
-<cfelse>
-
 <cfscript>
+
+if (attributes.displayStyle EQ "aLink") {
+	
+	// Flag used to track when separators should be included
+	includeSeparator = false;
+	//include home if requested
+	if(attributes.bIncludeHome){
+		
+		homeURL = application.fapi.getLink(alias=attributes.homeAlias);
+		if (not len(homeURL)){
+			homeURL = "/";
+		}
+		// write the link
+		writeOutput('<a href="#homeURL#" title="#trim(qNav.ObjectName[i])#">');
+		if(attributes.bSpan) writeOutput("<span>");
+		writeOutput(trim(qNav.ObjectName[i]));
+		if(attributes.bSpan) writeOutput("</span>");
+		writeOutput("</a>");
+		
+		// Don't just output a separator as there may be no other links to output
+		includeSeparator = true;
+	}
+	
+		
+	// build menu [bb: this relies on nLevels, starting from nLevel 2]
+	for(i=1; i lt incrementvalue(qNav.recordcount); i=i+1){
+		
+		
+		if (attributes.bHideSecuredNodes EQ 0) {
+			iHasViewPermission = 1;
+		}
+		else{
+			iHasViewPermission = application.security.checkPermission(object=qNav.ObjectID[i],permission="View");
+		}
+		
+		// Should we display the link?
+		if (iHasViewPermission EQ 1 and qNav.nLevel[i] gte attributes.startLevel){
+			if((structkeyexists(qNav,"navType") and qNav.navType[i] eq "externallink") or ((not structkeyexists(qNav,"navType") or qNav.navType[i] eq "") and structkeyexists(qNav,'externallink') and len(qNav.externallink[i]))){
+				href = application.fapi.getLink(objectid=trim(qNav.ObjectID[i]));
+			}
+			else if (structkeyexists(qNav,"navType") and qNav.navType[i] eq "internalRedirectID"){
+				href = application.fapi.getLink(objectid=qNav.internalRedirectID[i]);
+			}
+			else if (structkeyexists(qNav,"navType") and qNav.navType[i] eq "externalRedirectURL"){
+				href = qNav.externalRedirectURL[i];
+			}
+			else{
+				href = application.fapi.getLink(objectid=trim(qNav.ObjectID[i]));
+			}
+			
+			// Only display a separator if the link
+			if(includeSeparator) {
+				writeOutput(" | ");
+			}
+			else{
+				// Ensure a separator is displayed before future links
+				includeSeparator = true;
+			}
+			// write the link
+			writeOutput('<a href="#href#" title="#trim(qNav.ObjectName[i])#"');
+			if (structkeyexists(qNav,"target") and len(trim(qNav.target[i]))) writeOutput(' target="#qNav.target[i]#"');
+			writeOutput(">");
+			if(attributes.bSpan) writeOutput("<span>");
+			writeOutput(trim(qNav.ObjectName[i]));
+			if(attributes.bSpan) writeOutput("</span>");
+			writeOutput("</a>");
+		}
+	}
+}
+else {
+
 	// initialise counters
 	currentlevel=0; // nLevel counter
 	ul=0; // nested list counter
@@ -256,7 +318,7 @@
 			}
 			writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li></ul>");
 		}
-			
+		
+}	
 </cfscript>
-</cfif>
 <cfsetting enablecfoutputonly="no" />
