@@ -81,7 +81,7 @@
 if (attributes.displayStyle EQ "aLink") {
 	
 	// Flag used to track when separators should be included
-	includeSeparator = false;
+	bIncludeSeparator = false;
 	//include home if requested
 	if(attributes.bIncludeHome){
 		
@@ -97,7 +97,7 @@ if (attributes.displayStyle EQ "aLink") {
 		writeOutput("</a>");
 		
 		// Don't just output a separator as there may be no other links to output
-		includeSeparator = true;
+		bIncludeSeparator = true;
 	}
 	
 		
@@ -128,12 +128,12 @@ if (attributes.displayStyle EQ "aLink") {
 			}
 			
 			// Only display a separator if the link
-			if(includeSeparator) {
+			if(bIncludeSeparator) {
 				writeOutput(" | ");
 			}
 			else{
 				// Ensure a separator is displayed before future links
-				includeSeparator = true;
+				bIncludeSeparator = true;
 			}
 			// write the link
 			writeOutput('<a href="#href#" title="#trim(qNav.ObjectName[i])#"');
