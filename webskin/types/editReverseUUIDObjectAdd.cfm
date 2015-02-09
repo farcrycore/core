@@ -15,7 +15,7 @@
 <cfset stProperties.objectid = application.fapi.getUUID() />
 <cfset stProperties[stPropMetadata.ftJoinProperty] = stobj.objectid />
 
-<cfset stResult = application.fapi.setData(stProperties="#stProperties#") />
+<cfset stResult = application.fapi.setData(stProperties="#stProperties#", bSessionOnly="true") />
 
 
 <skin:location 	type="#stProperties.typename#" 
