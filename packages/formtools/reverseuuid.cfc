@@ -11,11 +11,11 @@
 	<cfproperty name="ftManageInOverview" default="false" type="boolean" hint="Should the relationship be managed in the overview tab?" />
 	<cfproperty name="ftLibraryDataSQLOrderBy" required="false" default="datetimecreated" hint="Nominate a specific property to order library results by."/>
 
-
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.reverseuuid" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
+
 
 	<cffunction name="edit" access="public" output="false" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
@@ -30,9 +30,9 @@
 		<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-
 		<skin:loadJS id="jquery-ajaxq" />
 		<skin:loadJS id="fc-jquery-ui" />
+		<skin:loadJS id="reverseUUID" />
 		<skin:loadCSS id="jquery-ui" />
 
 		<cfquery name="q" datasource="#application.dsn#">
@@ -47,14 +47,7 @@
 		</cfquery>
 
 
-
-		<skin:loadJS id="reverseUUID" />
-
-
 		<cfsavecontent variable="returnHTML">
-
-
-
 			<cfoutput>
 			<div 	id="reverseuuid-#arguments.stObject.objectid#" 
 					class="reverseuuid-wrap" 
@@ -84,12 +77,9 @@
 			<cfoutput>
 			</div>
 			</cfoutput>	
-
-
-
-
 		</cfsavecontent>
 
 		<cfreturn returnHTML />
 	</cffunction>
+
 </cfcomponent> 

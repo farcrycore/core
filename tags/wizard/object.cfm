@@ -425,7 +425,14 @@
 				</cfsavecontent>
 				
 				 --->
-				
+
+				<cfsavecontent variable="variables.returnHTML">
+					<cfoutput>
+					<span id="wrap-#variables.prefix##ftFieldMetadata.Name#" class="propertyRefreshWrap" ft:format="#attributes.format#" ft:type="#stObj.typename#" ft:objectid="#stObj.objectid#" ft:property="#ftFieldMetadata.Name#" ft:prefix="#variables.prefix#" ft:watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:reloadOnAutoSave="#yesNoFormat(ftFieldMetadata.ftReloadOnAutoSave)#" ft:refreshPropertyOnAutoSave="#yesNoFormat(ftFieldMetadata.ftRefreshPropertyOnAutoSave)#" watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:watchingFields="<cfif structKeyExists(FTFIELDMETADATA, "ftWatchingFields")>#ftFieldMetadata.ftWatchingFields#</cfif>" >
+						#variables.returnHTML#
+					</span>
+					</cfoutput>
+				</cfsavecontent>				
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = variables.returnHTML>
 			
