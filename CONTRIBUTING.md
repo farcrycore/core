@@ -4,6 +4,8 @@ Third-party patches are essential for keeping FarCry great. There are a few guid
 
 To get started, sign the [Contributor License Agreement](https://www.clahub.com/agreements/farcrycore/core)
 
+(tldr; we use a standard [harmonyagreements.org](http://harmonyagreements.org) copyright assignment agreement. we ask contributors to assign copyright to Daemon Pty Limited, the custodian of the current FarCry code base. this allows us to modify the license in the future should it be necessary; for example, FarCry moved from CPL to GPL license at version 4.0)
+
 ## FarCry Core vs Plugins
 
 New functionality is often directed toward plugins to provide a slimmer
