@@ -100,8 +100,9 @@ $fc.reloadContainer = function(containerID,containerURL){
 	   }
 	 });
 };
-$j('a.con-refresh').on(
+$j('body').on(
 	"click",
+	'a.con-refresh',
 	function( event ){
 		$fc.reloadContainer(
 			$j(this).attr('con:id'), 
@@ -110,8 +111,9 @@ $j('a.con-refresh').on(
 		return false;
 	}
 );	
-$j('a.con-delete').on(
+$j('body').on(
 	"click",
+	'a.con-delete',
 	function( event ){
 		if (confirm('Are you sure you want to DELETE this rule?')) {
 			$fc.reloadContainer(
@@ -122,8 +124,9 @@ $j('a.con-delete').on(
 		return false;
 	}
 );
-$j('a.con-admin').on(
+$j('body').on(
 	"click",
+	'a.con-admin',
 	function( event ){
 		$fc.objectAdminTrayAction($j(this).attr('rule:title'), $j(this).attr('href'), null, null, {
 			onHidden: function() {
