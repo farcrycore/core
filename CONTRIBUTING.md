@@ -40,7 +40,7 @@ plugin or part of FarCry Core, ask on the [FarCry Discourse Forum](http://discou
 * Make sure your commit messages are in the proper format.
 
 ````
-    (FC-1234) Make the example in CONTRIBUTING imperative and concrete
+    FC-1234: Make the example in CONTRIBUTING imperative and concrete
 
     Without this patch applied the example commit message in the CONTRIBUTING
     document is not a concrete example.  This is a problem because the
@@ -58,12 +58,10 @@ plugin or part of FarCry Core, ask on the [FarCry Discourse Forum](http://discou
 ### Documentation
 
 For changes of a trivial nature to comments and documentation, it is not
-always necessary to create a new ticket in Jira. In this case, it is
-appropriate to start the first line of a commit with '(doc)' instead of
-a ticket number. 
+always necessary to create a new ticket in Jira. In this case, it's ok to omit the ticket number. 
 
 ````
-    (doc) Add documentation commit example to CONTRIBUTING
+    Add documentation commit example to CONTRIBUTING
 
     There is no example for contributing a documentation commit
     to the FarCry Core repository. This is a problem because the contributor
@@ -85,7 +83,7 @@ a ticket number.
 * The core team looks at Pull Requests on a regular basis in a weekly triage
   meeting
 * After feedback has been given we expect responses within two weeks. After two
-  weeks will may close the pull request if it isn't showing any activity.
+  weeks we may close the pull request if it isn't showing any activity.
 
 # Additional Resources
 
