@@ -396,9 +396,6 @@
 	 ------------------------>
 	<cfif isQuery(attributes.qRecordSet)>
 		<cfset stRecordSet.q = attributes.qRecordSet>
-		<cfset stRecordSet.countAll = attributes.qRecordSet.recordCount />
-		<cfset stRecordSet.currentPage = 0 />
-		<cfset stRecordSet.recordsPerPage = attributes.numitems />
 		
 		<cfquery dbtype="query" name="stRecordset.q">
 			select		*
@@ -406,6 +403,11 @@
 			where		#preservesinglequotes(attributes.sqlWhere)#
 			<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy neq "datetimelastupdated desc">order by	#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#</cfif>
 		</cfquery>
+
+		<cfset stRecordSet.countAll = stRecordset.q.recordCount />
+		<cfset stRecordSet.currentPage = 0 />
+		<cfset stRecordSet.recordsPerPage = attributes.numitems />
+
 	<cfelse>
 
 		<cfset oFormtoolUtil = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools")) />
