@@ -164,7 +164,11 @@
 			and structkeyexists(this.cacheMap[arguments.config.name],arguments.file)>
 			
 			<cfif fileexists(this.cacheMap[arguments.config.name][arguments.file].path)>
-				<cffile action="delete" file="#this.cacheMap[arguments.config.name][arguments.file].path#" />
+				<cftry>
+					<cffile action="delete" file="#this.cacheMap[arguments.config.name][arguments.file].path#" />
+					<cfcatch>
+					</cfcatch>
+				</cftry>
 			</cfif>
 			
 			<cfset structdelete(this.cacheMap[arguments.config.name],arguments.file) />
