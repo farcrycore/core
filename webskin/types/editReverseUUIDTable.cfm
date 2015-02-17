@@ -33,7 +33,9 @@
 					<cfif listFindNoCase(stParam.q.columnList, "seq")>
 						<td class="reverseuuid-gripper" style="cursor:move"><i class="fa fa-sort"></i></td>
 					</cfif>
-					<td>#stParam.q.label#</td>
+					<td>
+						<skin:view objectid="#stParam.q.objectid#" webskin="librarySelected" />
+					</td>
 					<td>
 						<ft:button type="button" value="edit" class="reverseuuid-edit btn-small" icon="fa-pencil" text="" />
 						<ft:button type="button" value="delete" class="reverseuuid-delete btn-small" icon="fa-trash-o" text="" />
