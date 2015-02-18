@@ -97,6 +97,7 @@ input, button, select, textarea {
 }
 
 .content-main form input[type="text"],
+.content-main form input[type="email"],
 .content-main form input[type="password"] {
   font-size:19px;
   height:26px;
