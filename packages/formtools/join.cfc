@@ -377,15 +377,13 @@
 						
 					</cfoutput>
 					</ft:buttonPanel>
-					<cfif listLen(joinItems) GT 1>
-						<cfoutput>
-							<script type="text/javascript">
-							$j(function() {
-								fcForm.initSortable('#arguments.stobject.typename#','#arguments.stobject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
-							});
-							</script>
-						</cfoutput>
-					</cfif>
+					<cfoutput>
+						<script type="text/javascript">
+						$j(function() {
+							fcForm.initSortable('#arguments.stobject.typename#','#arguments.stobject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
+						});
+						</script>
+					</cfoutput>
 					</grid:div>
 				</cfsavecontent>
 			</cfdefaultcase>
