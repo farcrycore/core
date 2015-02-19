@@ -1,6 +1,7 @@
 $j(document).ready(function(){ 
 	$j(document).on("click",".reverseuuid-add", function(e) {
-		var $formtoolWrap = $j(this).parents('.reverseuuid-wrap');
+		var $formtoolWrap = $j(this).closest('.reverseuuid-wrap');
+		var $formtoolWrapFieldname = $formtoolWrap.attr('formtoolWrapFieldname');
 		var $formtoolWrapTypename = $formtoolWrap.attr('formtoolWrapTypename');
 		var $formtoolWrapObjectID = $formtoolWrap.attr('formtoolWrapObjectID');
 		var $formtoolWrapProperty = $formtoolWrap.attr('formtoolWrapProperty');
@@ -22,8 +23,9 @@ $j(document).ready(function(){
 	});
 
 	$j(document).on("click",".reverseuuid-edit", function(e) {
-		var $objectid = $j(this).parents('[objectid]').attr('objectid');
-		var $formtoolWrap = $j(this).parents('.reverseuuid-wrap');
+		var $objectid = $j(this).closest('[objectid]').attr('objectid');
+		var $formtoolWrap = $j(this).closest('.reverseuuid-wrap');
+		var $formtoolWrapFieldname = $formtoolWrap.attr('formtoolWrapFieldname');
 		var $formtoolWrapTypename = $formtoolWrap.attr('formtoolWrapTypename');
 		var $formtoolWrapObjectID = $formtoolWrap.attr('formtoolWrapObjectID');
 		var $formtoolWrapProperty = $formtoolWrap.attr('formtoolWrapProperty');
@@ -45,9 +47,10 @@ $j(document).ready(function(){
 
 
 	$j(document).on("click",".reverseuuid-delete", function(e) {
-		var $row = $j(this).parents('[objectid]');
+		var $row = $j(this).closest('[objectid]');
 		var $objectid = $row.attr('objectid');
-		var $formtoolWrap = $j(this).parents('.reverseuuid-wrap');
+		var $formtoolWrap = $j(this).closest('.reverseuuid-wrap');
+		var $formtoolWrapFieldname = $formtoolWrap.attr('formtoolWrapFieldname');
 		var $formtoolWrapTypename = $formtoolWrap.attr('formtoolWrapTypename');
 		var $formtoolWrapObjectID = $formtoolWrap.attr('formtoolWrapObjectID');
 		var $formtoolWrapProperty = $formtoolWrap.attr('formtoolWrapProperty');
@@ -60,7 +63,6 @@ $j(document).ready(function(){
 			return false;
 		}
 
-	
 		$j.ajax({
 			cache: false,
 			type: "POST",
@@ -68,44 +70,12 @@ $j(document).ready(function(){
 			data: {},
 			dataType: "html",
 			complete: function(data){
-				$j($row).hide('fast');
+				$j($row).remove();
+				var $lSortOrder = $formtoolWrap.find('.reverseuuid-sortable').sortable('toArray',{'attribute':'objectid'}).join(",") ;
+				$j('#' + $formtoolWrapFieldname).attr('value', $lSortOrder).trigger('change');
 			}
 		});	
 		
 	});
 
-	$j('.reverseuuid-sortable').sortable({
-		items: 'tbody tr[objectid],li[objectid]',
-		handle: '.reverseuuid-gripper',
-		axis: 'y',
-		stop: function(event,ui){
-			var $formtoolWrap = $j(this).parents('.reverseuuid-wrap');
-			var $formtoolWrapTypename = $formtoolWrap.attr('formtoolWrapTypename');
-			var $formtoolWrapObjectID = $formtoolWrap.attr('formtoolWrapObjectID');
-			var $formtoolWrapProperty = $formtoolWrap.attr('formtoolWrapProperty');
-
-			var $lSortOrder = $j(this).sortable('toArray',{'attribute':'objectid'}).join(",") ;
-
-			$j.ajax({
-				cache: false,
-				type: "POST",
-	 			url: '/index.cfm?ajaxmode=1&type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=editReverseUUIDObjectSort&reverseUUIDProperty=' + $formtoolWrapProperty,
-				data: {'lSortOrderIDs':$lSortOrder},
-				dataType: "html",
-				complete: function(data){
-					
-				}
-			});
-		},
-		helper: function(e, tr) {
-		    var $originals = tr.children();
-		    var $helper = tr.clone();
-		    $helper.children().each(function(index)
-		    {
-		      // Set helper cell sizes to match the original sizes
-		      $j(this).width($originals.eq(index).width());
-		    });
-		    return $helper;
-		}
-	});
 });

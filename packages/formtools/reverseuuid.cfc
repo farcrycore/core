@@ -51,6 +51,7 @@
 			<cfoutput>
 			<div 	id="reverseuuid-#arguments.stObject.objectid#" 
 					class="reverseuuid-wrap" 
+					formtoolWrapFieldname="#arguments.fieldname#" 
 					formtoolWrapTypename="#arguments.stObject.typename#" 
 					formtoolWrapObjectID="#arguments.stObject.objectid#" 
 					formtoolWrapProperty="#arguments.stMetadata.name#" 
@@ -75,6 +76,52 @@
 			</cfif>	
 		
 			<cfoutput>
+				<input type="hidden" id="#arguments.fieldname#" value="#valueList(q.objectid)#">
+				<script type="text/javascript">
+					$j(function() {
+
+						// enabled sortable
+						$j('.reverseuuid-sortable').sortable({
+							items: 'tbody tr[objectid],li[objectid]',
+							handle: '.reverseuuid-gripper',
+							axis: 'y',
+							stop: function(event,ui){
+								var $formtoolWrap = $j(this).closest('.reverseuuid-wrap');
+								var $formtoolWrapFieldname = $formtoolWrap.attr('formtoolWrapFieldname');
+								var $formtoolWrapTypename = $formtoolWrap.attr('formtoolWrapTypename');
+								var $formtoolWrapObjectID = $formtoolWrap.attr('formtoolWrapObjectID');
+								var $formtoolWrapProperty = $formtoolWrap.attr('formtoolWrapProperty');
+
+								var $lSortOrder = $j(this).sortable('toArray',{'attribute':'objectid'}).join(",") ;
+								$j('##' + $formtoolWrapFieldname).attr('value', $lSortOrder).trigger('change');
+
+								$j.ajax({
+									cache: false,
+									type: "POST",
+						 			url: '/index.cfm?ajaxmode=1&type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=editReverseUUIDObjectSort&reverseUUIDProperty=' + $formtoolWrapProperty,
+									data: {'lSortOrderIDs':$lSortOrder},
+									dataType: "html",
+									complete: function(data){
+										
+									}
+								});
+							},
+							helper: function(e, tr) {
+								var $originals = tr.children();
+								var $helper = tr.clone();
+								$helper.children().each(function(index)
+								{
+									// Set helper cell sizes to match the original sizes
+									$j(this).width($originals.eq(index).width());
+							    });
+							    return $helper;
+							}
+						});
+
+						// trigger change on ajax refresh
+						$j("###arguments.fieldname#").trigger("change");
+					});
+				</script>				
 			</div>
 			</cfoutput>	
 		</cfsavecontent>
@@ -82,4 +129,4 @@
 		<cfreturn returnHTML />
 	</cffunction>
 
-</cfcomponent> 
+</cfcomponent>
