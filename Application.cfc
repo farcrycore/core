@@ -718,19 +718,60 @@
 	</cffunction>
 
 
+	<cffunction name="detectDBType" access="private" output="false" hint="Detect the DB type of the available datasource">
+		<cfargument name="dsn" type="string" required="false" default="#this.dsn#">
+
+		<cfset var dbType = "">
+		<cfset var stInfo = structNew()>
+
+		<cfdbinfo name="stInfo" datasource="#arguments.dsn#" type="version">
+
+		<cfswitch expression="#stInfo.database_productname#">
+			<cfcase value="MySQL">
+				<cfset dbType = "mysql">
+			</cfcase>
+			<cfcase value="Microsoft SQL Server">
+				<cfif listFirst(stInfo.database_version, ".") gte 9>
+					<cfset dbType = "mssql2005">
+				<cfelse>
+					<cfset dbType = "mssql">
+				</cfif>
+			</cfcase>
+			<cfcase value="H2">
+				<cfset dbType = "h2">
+			</cfcase>
+<!--- 
+			<cfcase value="Oracle">
+				<cfset dbType = "oracle">
+			</cfcase>
+			<cfcase value="PostgreSQL">
+				<cfset dbType = "oracle">
+			</cfcase>
+ --->
+		</cfswitch>
+
+		<cfreturn dbType>
+	</cffunction>
+
+
 	<cffunction name="initApplicationScope" access="private" output="false" hint="Sets up the main farcry application scope variables." returntype="void">
 
 		<!--- REQUIRED VARIABLES SETUP IN THE FARCRYCONSTRUCTOR --->
 		<cfif not isDefined("this.name")>
 			<cfabort showerror="this.name not defined in your projects farcryConstructor.">
 		</cfif>
+
+		<cfparam name="this.dsn" default="#this.name#" />
+
 		<cfif not isDefined("this.dbtype")>
-			<cfabort showerror="this.dbtype not defined in your projects farcryConstructor.">
+			<cfset this.dbType = detectDBType()>
+			<cfif NOT len(this.dbType)>
+				<cfabort showerror="this.dbtype not defined in your projects farcryConstructor or could not be auto-detected.">
+			</cfif>
 		</cfif>
 		
 		<cfparam name="this.displayName" default="#this.name#" />
 		
-		<cfparam name="this.dsn" default="#this.name#" />
 		<cfparam name="this.dbowner" default="" />
 		<cfparam name="this.locales" default="en_AU,en_US" />
 		
