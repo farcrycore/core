@@ -491,7 +491,10 @@
 		<!--- /DEPRECATED --->
 		
 		<!--- First login flag --->
-		<cfif structkeyexists(session.dmProfile,"bDefaultObject") and session.dmProfile.bDefaultObject>
+		<cfif (structkeyexists(session.dmProfile,"bDefaultObject") and session.dmProfile.bDefaultObject) 
+			or (structkeyexists(session.dmProfile,"bInDB") and not session.dmProfile.bInDB) 
+			or session.dmProfile.datetimeCreated eq session.dmProfile.datetimeLastUpdated>
+			
 			<cfset session.security.firstlogin = true />
 			
 			<!--- DEPRECATED --->
