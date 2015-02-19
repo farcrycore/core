@@ -491,7 +491,7 @@
 		<!--- /DEPRECATED --->
 		
 		<!--- First login flag --->
-		<cfif structkeyexists(session.security,"bDefaultObject") and session.security.bDefaultObject>
+		<cfif structkeyexists(session.dmProfile,"bDefaultObject") and session.dmProfile.bDefaultObject>
 			<cfset session.security.firstlogin = true />
 			
 			<!--- DEPRECATED --->
