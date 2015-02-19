@@ -6,7 +6,7 @@
 		hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'">
 
 	<cfproperty name="ftJoin" required="true" default="" 
-		options="comma seperated list of types"
+		options="comma separated list of types"
 		hint="A single related content type e.g 'dmImage'">
 
 	<cfproperty name="ftAllowCreate" required="false" default="true" 
