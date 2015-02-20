@@ -237,6 +237,7 @@
 			<cfset stAttributes.errorVariable = "outputError">
 			<cftry>
 				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+				<cfparam name="outputError" default="">
 				<cfcatch>
 					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
 				</cfcatch>
@@ -257,6 +258,7 @@
 		<cfargument name="path" required="true">
 
 		<cfset var stResult = structNew()>
+		<cfset var cfcatch = structNew()>
 		<cfset var output = "">
 		<cfset var outputError = "">
 		<cfset var pathSVNDir = arguments.path & "/.svn">
@@ -284,6 +286,7 @@
 			<cfset stAttributes.errorVariable = "outputError">
 			<cftry>
 				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+				<cfparam name="outputError" default="">
 				<cfcatch>
 					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
 				</cfcatch>
