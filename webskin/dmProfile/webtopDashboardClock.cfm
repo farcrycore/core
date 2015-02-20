@@ -20,12 +20,12 @@
 	<cfset shortTime = timeFormat(now(), "h:mm")>
 </cfif>
 
-	
+
 <cfoutput>
 
 <div style="padding: 0 6px; color: ##999;">
 	<i id="fc-clock-utc" class="fa fa-clock-o" data-serverdatetime="#utcDateTime#"></i>
-	<span id="fc-clock-day">#dateFormat(now(), "dddd")#</span>,
+	<span id="fc-clock-day">#dateFormat(now(), "ddd")#</span>,
 	<span id="fc-clock-date">#dateFormat(now(), "d mmmm yyyy")#</span>
 </div>
 <div style="padding: 40px 4px 20px 4px; font-size: 56px; line-height: 1;">
@@ -41,7 +41,7 @@
 		};
 		var updateClock = function() {
 			moment.lang(['#session.dmProfile.locale#', 'en']);
-			$j("##fc-clock-day").html(moment().format("dddd"));
+			$j("##fc-clock-day").html(moment().format("ddd"));
 			<cfif b12Hour>
 				$j("##fc-clock-time").html(moment().startOf("minute").format("h:mm"));
 			<cfelse>
