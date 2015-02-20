@@ -804,6 +804,9 @@ $(function(){
 		<cfset stResult.updateappKey = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.updateappKey\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
 		<cfset stResult.projectDirectoryName = reReplaceNoCase(farcryConstructor,'.*<cfset\s*?THIS.projectDirectoryName\s*?=\s*?["''](.*?)["''].*', '\1', 'all')>
 
+		<!--- detect the databse type if it is missing from the constructor --->
+		<cfset stResult.dbtype = detectDBType(stResult.dsn)>
+
 		<!--- set defaults in the form if they aren't already set--->
 		<cfparam name="form.name" default="#stResult.name#">
 		<cfparam name="form.displayName" default="#stResult.displayName#">
@@ -1158,6 +1161,40 @@ $(function(){
 
 </cffunction>
 
+<cffunction name="detectDBType" access="public" output="false" hint="Detect the DB type of the available datasource">
+	<cfargument name="dsn" type="string" required="true">
+
+	<cfset var dbType = "">
+	<cfset var stInfo = structNew()>
+
+	<cfdbinfo name="stInfo" datasource="#arguments.dsn#" type="version">
+
+	<cfswitch expression="#stInfo.database_productname#">
+		<cfcase value="MySQL">
+			<cfset dbType = "mysql">
+		</cfcase>
+		<cfcase value="Microsoft SQL Server">
+			<cfif listFirst(stInfo.database_version, ".") gte 9>
+				<cfset dbType = "mssql2005">
+			<cfelse>
+				<cfset dbType = "mssql">
+			</cfif>
+		</cfcase>
+		<cfcase value="H2">
+			<cfset dbType = "h2">
+		</cfcase>
+<!--- 
+		<cfcase value="Oracle">
+			<cfset dbType = "oracle">
+		</cfcase>
+		<cfcase value="PostgreSQL">
+			<cfset dbType = "oracle">
+		</cfcase>
+--->
+	</cfswitch>
+
+	<cfreturn dbType>
+</cffunction>
 
 <cffunction name="checkDBType" access="public" returntype="struct" output="false" hint="Check to see whether the database is Oracle">
 	<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
@@ -1172,54 +1209,10 @@ $(function(){
 	<cfset stResult.errorTitle = "" />
 	<cfset stResult.errorDescription = "" />
 
-	<cftry>
-		<cfswitch expression="#arguments.DBType#">
-		<cfcase value="ora">
-			<cfset databaseTypeName = "Oracle" />
-			<!--- run an oracle specific query --->
-			<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
-			SELECT 'aj' AS theMAN from dual
-			</cfquery>
-		</cfcase>
-		<cfcase value="MSSQL,MSSQL2005" delimiters=",">
-			<cfset databaseTypeName = arguments.DBType />
-			<!--- run an MSSQL specific query --->
-			<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
-			SELECT	count(*) AS theCount
-			FROM	#arguments.DBOwner#sysobjects
-			</cfquery>
-		</cfcase>
-		<cfcase value="MySQL">
-			<cfset databaseTypeName = "MySQL" />
-			<!--- test temp table creation --->
-			<cfquery name="qTestPrivledges" datasource="#arguments.dsn#">
-				create temporary table tblTemp1
-				(
-				test  VARCHAR(255) NOT NULL
-				)
-			</cfquery>
-			<!--- delete temp table --->
-			<cfquery name="qDeleteTemp" datasource="#arguments.dsn#">
-				DROP TABLE IF EXISTS tblTemp1
-			</cfquery>
-		</cfcase>
-		<cfcase value="Postgres">
-			<cfset databaseTypeName = "Postgres" />
-			<!--- TODO: perform test to validate dbtype is postgres --->
-		</cfcase>
-
-		<cfcase value="HSQLDB">
-			<cfset databaseTypeName = "HSQLDB" />
-			<!--- TODO: perform test to validate dbtype is HSQLDB --->
-		</cfcase>
-
-		</cfswitch>
-
-		<cfcatch type="database">
-			<cfset bCorrectDB = false />
-		</cfcatch>
-
-	</cftry>
+	<cfset databaseTypeName = detectDBType(arguments.dsn)>
+	<cfif databaseTypeName neq arguments.dbType>
+		<cfset bCorrectDB = false />
+	</cfif>
 
 	<cfif NOT bCorrectDB>
 
