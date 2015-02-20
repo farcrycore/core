@@ -293,9 +293,6 @@
 				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
 				<cfparam name="outputError" default="">
 				<cfcatch>
-				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
-				<cfparam name="outputError" default="">
-				<cfcatch>
 					<cfif IsDefined("cfcatch") AND IsStruct(cfcatch) >
 						<cfset stCfCatch = Duplicate(cfcatch) >
 					</cfif>
