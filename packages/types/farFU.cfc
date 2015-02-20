@@ -1525,7 +1525,7 @@
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
 		
 		<!--- We need to make sure we update our stDBLookup anytime we save an FU --->
-		<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND listlen(arguments.stProperties.friendlyURL) eq 1>
+		<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND listlen(arguments.stProperties.friendlyURL, "/") eq 1>
 			<cfset cacheExistsTypeFU(listgetat(arguments.stProperties.friendlyURL,1,"/"), true) />
 		</cfif>
 		
