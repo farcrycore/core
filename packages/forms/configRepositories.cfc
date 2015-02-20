@@ -208,7 +208,7 @@
 		<cfargument name="path" required="true">
 
 		<cfset var stResult = structNew()>
-		<cfset var cfcatch = structNew()>
+		<cfset var stCfCatch = structNew()>
 		<cfset var output = "">
 		<cfset var outputError = "">
 		<cfset var pathWorkTree = arguments.path>
@@ -239,7 +239,12 @@
 				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
 				<cfparam name="outputError" default="">
 				<cfcatch>
-					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
+					<cfif IsDefined("cfcatch") AND IsStruct(cfcatch) >
+						<cfset stCfCatch = Duplicate(cfcatch) >
+					</cfif>
+					<cfparam name="stCfCatch.message" type="string" default="An error has occurred while executing a git command:" >
+					<cfparam name="stCfCatch.detail" type="string" default="execName: '#execName#' execArgs: '#execArgs#' " >
+					<cfset outputError = "#stCfCatch.message# #stCfCatch.detail#">
 				</cfcatch>
 			</cftry>
 		</cfif>
@@ -258,7 +263,7 @@
 		<cfargument name="path" required="true">
 
 		<cfset var stResult = structNew()>
-		<cfset var cfcatch = structNew()>
+		<cfset var stCfCatch = structNew()>
 		<cfset var output = "">
 		<cfset var outputError = "">
 		<cfset var pathSVNDir = arguments.path & "/.svn">
@@ -288,7 +293,12 @@
 				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
 				<cfparam name="outputError" default="">
 				<cfcatch>
-					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
+					<cfif IsDefined("cfcatch") AND IsStruct(cfcatch) >
+						<cfset stCfCatch = Duplicate(cfcatch) >
+					</cfif>
+					<cfparam name="stCfCatch.message" type="string" default="An error has occurred while executing an svn command:" >
+					<cfparam name="stCfCatch.detail" type="string" default="execName: '#execName#' execArgs: '#execArgs#' " >
+					<cfset outputError = "#stCfCatch.message# #stCfCatch.detail#">
 				</cfcatch>
 			</cftry>
 		</cfif>
