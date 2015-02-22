@@ -435,30 +435,39 @@
 	<cfset count = 0 />
 	<cfloop query="qTypes">
 		<cfif listcontains(qTypes.locationids,thislocation)>
-			<cfset count = count+1 />
-			<cfoutput>
-				<tr class="#qTypes.class#">
-					<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-					<td class="name"><i class="fa #getIcon(qtypes.typename)# fa-fw" style="color:##777"></i> #qTypes.label#</td>
-					<td class="location">
-						<cfloop list="#qTypes.locations#" index="thispath">
-							<span title="#listlast(thispath,':')#">#listfirst(thispath,':')#</span><cfif thispath neq listlast(qTypes.locations)>, </cfif>
-						</cfloop>
-					</td>
-					<td class="actions">
-						<cfif listcontains(application.plugins,"farcrydoc") and listcontains("rule,type",qTypes.class)>
-							<a href="#application.fapi.getLink(type=qTypes.typename,view='webtopPageModal',bodyview='docAll',urlParameters='ajaxmode=1')#" class="openindialog" data-title="FarCry Documentation">Docs</a>
-						<cfelse>
-							<a href="/CFIDE/componentutils/componentdetail.cfm?COMPONENT=#packagepath#" class="openindialog" data-title="ColdFusion Documentation">Docs</a>
-						</cfif>
-						<cfif listcontains("rule,type",qTypes.class)>
-							&middot;
-							<a href="#application.url.webtop#/index.cfm?typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyScaffold&scaffoldtypename=#qTypes.typename#&iframe=1" class="openindialog" data-title="Scaffold">Scaffold</a>
-						</cfif>
-					</td>
-					<td class="logchanges"><input type="checkbox" name="logchanges" value="#qTypes.typename#" title="Log changes on THIS type" <cfif listfindnocase(lLogChangeFlags,qTypes.typename)>checked</cfif> /></td>
-				</tr>
-			</cfoutput>
+			<cfset bShow = false>
+			<cfloop list="#qTypes.locations#" index="l">
+				<cfif listFirst(l, ":") eq #stLocations[thislocation]# AND listLast(l, ".") eq qTypes.typename>
+					<cfset bShow = true>
+				</cfif>
+			</cfloop>
+			<cfif bShow>
+				<cfset count = count+1 />
+				<cfoutput>
+					<tr class="#qTypes.class#">
+						<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
+						<td class="name">
+							<i class="fa #getIcon(qtypes.typename)# fa-fw" style="color:##777"></i> #qTypes.label#</td>
+						<td class="location">
+							<cfloop list="#qTypes.locations#" index="thispath">
+								<span title="#listlast(thispath,':')#">#listfirst(thispath,':')#</span><cfif thispath neq listlast(qTypes.locations)>, </cfif>
+							</cfloop>
+						</td>
+						<td class="actions">
+							<cfif listcontains(application.plugins,"farcrydoc") and listcontains("rule,type",qTypes.class)>
+								<a href="#application.fapi.getLink(type=qTypes.typename,view='webtopPageModal',bodyview='docAll',urlParameters='ajaxmode=1')#" class="openindialog" data-title="FarCry Documentation">Docs</a>
+							<cfelse>
+								<a href="/CFIDE/componentutils/componentdetail.cfm?COMPONENT=#packagepath#" class="openindialog" data-title="ColdFusion Documentation">Docs</a>
+							</cfif>
+							<cfif listcontains("rule,type",qTypes.class)>
+								&middot;
+								<a href="#application.url.webtop#/index.cfm?typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyScaffold&scaffoldtypename=#qTypes.typename#&iframe=1" class="openindialog" data-title="Scaffold">Scaffold</a>
+							</cfif>
+						</td>
+						<td class="logchanges"><input type="checkbox" name="logchanges" value="#qTypes.typename#" title="Log changes on THIS type" <cfif listfindnocase(lLogChangeFlags,qTypes.typename)>checked</cfif> /></td>
+					</tr>
+				</cfoutput>
+			</cfif>
 		</cfif>
 	</cfloop>
 	<cfif not count>
