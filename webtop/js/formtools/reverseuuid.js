@@ -16,7 +16,7 @@ $j(document).ready(function(){
 
 		$fc.openBootstrapModal({	title: 'Edit ' + $formtoolWrapJoinDisplayname, 
 									onHidden:$onHidden, 
-									url: '/index.cfm?type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=' + $formtoolWrapEditView + '&bodyView=' + $formtoolWrapAddBodyView + '&reverseUUIDProperty=' + $formtoolWrapProperty
+									url: '/index.cfm?type=' + $formtoolWrapTypename + '&objectid=' + $formtoolWrapObjectID + '&view=' + $formtoolWrapEditView + '&bodyView=' + $formtoolWrapAddBodyView + '&reverseUUIDProperty=' + $formtoolWrapProperty + '&iframe=1'
 		});
 
 	});
@@ -38,7 +38,7 @@ $j(document).ready(function(){
 
 		$fc.openBootstrapModal({	title: 'Edit ' + $formtoolWrapJoinDisplayname, 
 									onHidden:$onHidden, 
-									url: '/index.cfm?type=' + $formtoolWrapJoinTypename + '&objectid=' + $objectid + '&view=' + $formtoolWrapEditView + '&bodyView=' + $formtoolWrapEditBodyView
+									url: '/index.cfm?type=' + $formtoolWrapJoinTypename + '&objectid=' + $objectid + '&view=' + $formtoolWrapEditView + '&bodyView=' + $formtoolWrapEditBodyView + '&iframe=1'
 		});
 
 	});

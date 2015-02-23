@@ -22,4 +22,4 @@
 				objectid="#stProperties.objectid#" 
 				view="#stPropMetadata.ftEditView#" 
 				bodyView="#stPropMetadata.ftEditBodyView#"
-				urlParameters="dialogID=#url.dialogID#" />
+				urlParameters="dialogID=#url.dialogID#&iframe=1" />
