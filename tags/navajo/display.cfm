@@ -272,14 +272,20 @@
 	
 	<cfif bView>
 		<cfif not structKeyExists(request, "navID")>
-			<cfset request.navid = application.fapi.getContentType("#url.type#").getNavID(typename="#url.type#") />
-			<cfif not len(request.navID)>
-				<cfif application.fapi.checkNavID("home")>
-					<cfset request.navID = application.fapi.getNavID("home") />
-				<cfelse>
-					<cfthrow type="FarCry Controller" message="No Navigation ID can be found. Please see administrator." />
+			<cftry>
+				<cfset request.navid = application.fapi.getContentType("#url.type#").getNavID(typename="#url.type#") />
+				<cfif not len(request.navID)>
+					<cfif application.fapi.checkNavID("home")>
+						<cfset request.navID = application.fapi.getNavID("home") />
+					<cfelse>
+						<cfthrow type="FarCry Controller" message="No Navigation ID can be found. Please see administrator." />
+					</cfif>
 				</cfif>
-			</cfif>
+				<cfcatch>
+					<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error(message=cfcatch.message)) />
+					<cfexit method="exittag">
+				</cfcatch>
+			</cftry>
 		</cfif>
 
 		<!--- check if webskin(s) exist --->
