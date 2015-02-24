@@ -1481,10 +1481,10 @@
 				</cfif>
 			</cfif>
 		</cfif>
-		
+
 		<cfif application.fc.factory.farFU.isUsingFU()>
 			
-			<cfif len(arguments.objectid)>
+			<cfif len(arguments.objectid) AND len(thistype)>
 
 				<cfif StructKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
 						
