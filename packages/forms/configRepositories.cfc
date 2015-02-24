@@ -257,7 +257,6 @@
 		<cfargument name="path" required="true">
 
 		<cfset var stResult = structNew()>
-		<cfset var cfcatch = structNew()>
 		<cfset var output = "">
 		<cfset var outputError = "">
 		<cfset var pathSVNDir = arguments.path & "/.svn">
