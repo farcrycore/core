@@ -285,7 +285,7 @@
 		
 		<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
 		<cfloop collection="#arguments.schema.fields#" item="thisfield">
-			<cfif structkeyexists(arguments.schema.fields,thisfield) and  structkeyexists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield)>
+			<cfif structkeyexists(arguments.schema.fields,thisfield) and  structkeyexists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].savable>
 				<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
 			</cfif>
 		</cfloop>
@@ -377,7 +377,7 @@
 			
 			<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
 			<cfloop collection="#arguments.schema.fields#" item="thisfield">
-				<cfif arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield)>
+				<cfif arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].savable>
 					<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
 				</cfif>
 			</cfloop>
