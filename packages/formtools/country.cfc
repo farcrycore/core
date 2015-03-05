@@ -289,7 +289,7 @@
 			</cfif>
 			
 			<cfoutput query="qAll">
-				<option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#"<cfif arguments.stMetadata.value eq qCommon[arguments.stMetadata.ftValue][qCommon.currentrow] and not selectedItem> selected="selected"</cfif>>#qAll.name[qAll.currentrow]#</option>
+				<option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#"<cfif arguments.stMetadata.value eq qAll[arguments.stMetadata.ftValue][qCommon.currentrow] and not selectedItem> selected="selected"</cfif>>#qAll.name[qAll.currentrow]#</option>
 				
 			</cfoutput>
 			
