@@ -34,7 +34,11 @@
 <cfelse>
 	<cfset stMetadata.value = "" />
 </cfif>
-<cfset stMetadata.FormFieldPrefix = left(url.fieldname,len(url.fieldname)-len(url.property)) />
+<cfif len(url.fieldname)>
+	<cfset stMetadata.FormFieldPrefix = left(url.fieldname,len(url.fieldname)-len(url.property)) />
+<cfelse>
+	<cfset stMetadata.FormFieldPrefix = "" />
+</cfif>
 
 <cfif structkeyexists(url,"objectid")>
 	<cfset stObj = oType.getData(objectid=url.objectid) />
