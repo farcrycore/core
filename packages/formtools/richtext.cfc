@@ -209,15 +209,25 @@
 		</cfif>
 
 		<cfif url.action eq "templatehtml">
-			<cfparam name="url.relatedtypename" />
-			<cfparam name="url.relatedobjectid" />
-			<cfparam name="url.relatedwebskin" />
+			<cfif url.relatedtypename eq "richtextSnippet">
+				<cfparam name="url.relatedtypename" />
+				<cfparam name="url.relatedwebskin" />
 
-			<cfreturn application.fapi.getContentType(url.relatedtypename).getView(
-				typename=url.relatedtypename,
-				objectid=url.relatedobjectid, 
-				template=url.relatedwebskin
-			) />	
+				<cfreturn application.fapi.getContentType(url.relatedtypename).getView(
+					typename=url.relatedtypename,
+					template=url.relatedwebskin
+				) />	
+			<cfelse>
+				<cfparam name="url.relatedtypename" />
+				<cfparam name="url.relatedobjectid" />
+				<cfparam name="url.relatedwebskin" />
+
+				<cfreturn application.fapi.getContentType(url.relatedtypename).getView(
+					typename=url.relatedtypename,
+					objectid=url.relatedobjectid, 
+					template=url.relatedwebskin
+				) />	
+			</cfif>
 		</cfif>
 
 		<cfif url.action eq "imageoptions">
@@ -288,18 +298,13 @@
 		<cfset var lRelated = "" />
 		<cfset var fieldname = "" />
 		<cfset var templateWebskinPrefix = "" />
+		<cfset var templateSnippetWebskinPrefix = "" />
 		<cfset var stResult = structnew() />
 		<cfset var qRelated = "" />
 		<cfset var qWebskins = "" />
 		<cfset var stItem = structnew() />
-		
 
-		<cfif listfind(stProps[arguments.stMetadata.name].metadata.ftTemplateTypeList,url.relatedtypename) LTE listLen(arguments.stMetadata.ftTemplateWebskinPrefixList)>
-			<cfset templateWebskinPrefix = listgetat(arguments.stMetadata.ftTemplateWebskinPrefixList,listfind(arguments.stMetadata.ftTemplateTypeList,arguments.relatedtypename)) />
-		<cfelse>
-			<cfset templateWebskinPrefix = listLast(arguments.stMetadata.ftTemplateWebskinPrefixList) />
-		</cfif>
-		
+
 		<cfloop collection="#stProps#" item="fieldname">
 			<cfif (stProps[fieldname].metadata.type EQ "array" OR stProps[fieldname].metadata.type EQ "UUID" AND structKeyExists(stProps[fieldname].metadata, "ftJoin"))
 				AND listContainsNoCase(stProps[fieldname].metadata.ftJoin,arguments.relatedtypename)>
@@ -311,32 +316,47 @@
 				</cfif>
 			</cfif>
 		</cfloop>
-		
 
 		<!--- items --->
 		<cfset stResult["items"] = arraynew(1) />
-		
-		<cfquery datasource="#application.dsn#" name="qRelated">
-			select 	* 
-			from 	#arguments.relatedtypename#
-			where 	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRelated#" />)
-		</cfquery>
-		
-		<cfloop query="qRelated">
-			<cfset stItem = structnew() />
-			<cfset stItem["value"] = qRelated.objectid />
-			<cfset stItem["text"] = qRelated.label />
-			<cfset arrayappend(stResult["items"],stItem) />
-		</cfloop>
+		<cfset stResult["showitems"] = true>
 
+		<cfif arguments.relatedtypename eq "richtextSnippet">
+			<cfset stResult["showitems"] = false>
+		<cfelse>
+			<cfset qRelated = application.fapi.getContentObjects(typename=arguments.relatedtypename, lProperties="objectid,label", objectid_IN=lRelated)>
+			
+			<cfloop query="qRelated">
+				<cfset stItem = structnew() />
+				<cfset stItem["value"] = qRelated.objectid />
+				<cfset stItem["text"] = qRelated.label />
+				<cfset arrayappend(stResult["items"],stItem) />
+			</cfloop>
+
+		</cfif>
 
 		<!--- webskins --->
 		<cfset stResult["webskins"] = arraynew(1) />
-		<cfset qWebskins = application.fapi.getContentType(arguments.relatedtypename).getWebskins(
-			typename=arguments.relatedtypename, 
-			prefix=templateWebskinPrefix
-		) />
-		
+		<cfif arguments.relatedtypename eq "richtextSnippet">
+			<cfset templateSnippetWebskinPrefix = arguments.stMetadata.ftTemplateSnippetWebskinPrefix>
+
+			<cfset qWebskins = application.fapi.getContentType(arguments.relatedtypename).getWebskins(
+				typename=arguments.relatedtypename, 
+				prefix=templateSnippetWebskinPrefix
+			) />
+		<cfelse>
+			<cfif listfind(stProps[arguments.stMetadata.name].metadata.ftTemplateTypeList,url.relatedtypename) LTE listLen(arguments.stMetadata.ftTemplateWebskinPrefixList)>
+				<cfset templateWebskinPrefix = listgetat(arguments.stMetadata.ftTemplateWebskinPrefixList,listfind(arguments.stMetadata.ftTemplateTypeList,arguments.relatedtypename)) />
+			<cfelse>
+				<cfset templateWebskinPrefix = listLast(arguments.stMetadata.ftTemplateWebskinPrefixList) />
+			</cfif>
+
+			<cfset qWebskins = application.fapi.getContentType(arguments.relatedtypename).getWebskins(
+				typename=arguments.relatedtypename, 
+				prefix=templateWebskinPrefix
+			) />
+		</cfif>
+
 		<cfloop query="qWebskins">
 			<cfset stItem = structnew() />
 			<cfset stItem["value"] = listfirst(qWebskins.name,".") />
@@ -508,7 +528,7 @@
 				plugins : "farcrycontenttemplates,layer,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,code,textcolor",
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 				menubar : false,
-				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table farcryuploadcontent farcrycontenttemplates | code | fullscreen",
+				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
 				relative_urls : false,

@@ -25,6 +25,37 @@
 							},function(data){
 								if (typeof(data)==="string")
 									data = $j.parseJSON(data);
+
+								var items = [];
+								if (data.showitems) {
+									items.push({
+										type: 'listbox',
+										name: 'item',
+										label: 'Item',
+										text: 'None',
+										maxWidth: null,
+										values: data.items,
+										onSelect: function(ev){
+											updatePreview("item",ev.control.value());
+										}
+									});
+								}
+								items.push({
+									type: 'listbox',
+									name: 'webskin',
+									label: 'Template',
+									text: 'None',
+									maxWidth: null,
+									values: data.webskins,
+									onSelect: function(ev){
+										updatePreview("webskin",ev.control.value());
+									}
+								},{
+									type: 'container',
+									minHeight: 290,
+									html: '<iframe id="farcry-template-preview" src=""></iframe>'
+								});
+
 								
 								editor.windowManager.open({
 									width : 700 + parseInt(editor.getLang('farcrycontenttemplates.delta_width', 0)),
@@ -36,31 +67,7 @@
 										defaults: {
 											type: 'textbox'
 										},
-										items: [{
-											type: 'listbox',
-											name: 'item',
-											label: 'Item',
-											text: 'None',
-											maxWidth: null,
-											values: data.items,
-											onSelect: function(ev){
-												updatePreview("item",ev.control.value());
-											}
-										},{
-											type: 'listbox',
-											name: 'webskin',
-											label: 'Template',
-											text: 'None',
-											maxWidth: null,
-											values: data.webskins,
-											onSelect: function(ev){
-												updatePreview("webskin",ev.control.value());
-											}
-										},{
-											type: 'container',
-											minHeight: 290,
-											html: '<iframe id="farcry-template-preview" src=""></iframe>'
-										}]
+										items: items
 									},
 									buttons: [{ 
 										name : "farcrytemplateok",
@@ -93,7 +100,7 @@
 								},{
 									plugin_url : url
 								});
-								
+
 								updatePreview("typename",stType.id);
 							});
 						}
@@ -134,7 +141,11 @@
 		function updatePreview(key,value){
 			selection[key] = value;
 
-			if (selection.item && selection.item.length && selection.webskin && selection.webskin.length){
+			if (selection.typename == "richtextSnippet" && selection.webskin && selection.webskin.length) {
+				$j('#farcry-template-preview').attr('src', params.previewURL + '&relatedtypename=' + selection.typename + '&relatedwebskin=' + selection.webskin);
+				okbtn.disabled(false);
+			}
+			else if (selection.item && selection.item.length && selection.webskin && selection.webskin.length){
 				$j('#farcry-template-preview').attr('src', params.previewURL + '&relatedobjectid=' + selection.item + '&relatedtypename=' + selection.typename + '&relatedwebskin=' + selection.webskin);
 				okbtn.disabled(false);
 			}
