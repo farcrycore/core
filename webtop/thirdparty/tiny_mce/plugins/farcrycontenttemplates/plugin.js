@@ -32,7 +32,6 @@
 									title : "Insert Template: "+stType.label,
 									items: {
 										type: 'form',
-										data: data,
 										columns: 2,
 										defaults: {
 											type: 'textbox'
@@ -71,7 +70,7 @@
 										onclick : function(){
 											$j.ajax({
 												type: "POST",
-												url: params.previewURL + '&objectID=' + selection.item + '&Typename=' + selection.typename + '&webskin=' + selection.webskin,
+												url: params.previewURL + '&relatedobjectid=' + selection.item + '&relatedtypename=' + selection.typename + '&relatedwebskin=' + selection.webskin,
 												cache: false,
 												timeout: 2000,
 												success: function(msg){
@@ -110,6 +109,25 @@
 				icon : "template",
 				menu: menuItems
 			});
+
+
+			if (editor.settings.imageUploadField && editor.settings.imageUploadField.length && $j("#"+editor.settings.imageUploadField).size()){
+				editor.addButton("farcryuploadcontent", {
+					type: "button",
+					title: 'Upload images',
+					image: url + '/img/upload-alt.png',
+					onclick : function(){
+						var field = $j("#"+editor.settings.imageUploadField+"-bulkupload-type");
+
+						field.val(editor.settings.imageUploadType);
+
+						if (field.is("select"))
+							field.trigger("change");
+						else 
+							$j("#"+editor.settings.imageUploadField+"-bulkupload-btn").trigger("click");
+					}
+				});
+			}
 		}
 
 		var selection = {};
@@ -117,7 +135,7 @@
 			selection[key] = value;
 
 			if (selection.item && selection.item.length && selection.webskin && selection.webskin.length){
-				$j('#farcry-template-preview').attr('src', params.previewURL + '&objectID=' + selection.item + '&Typename=' + selection.typename + '&webskin=' + selection.webskin);
+				$j('#farcry-template-preview').attr('src', params.previewURL + '&relatedobjectid=' + selection.item + '&relatedtypename=' + selection.typename + '&relatedwebskin=' + selection.webskin);
 				okbtn.disabled(false);
 			}
 			else {
