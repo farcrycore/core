@@ -299,6 +299,8 @@
 				
 				
 		<cftry>
+
+		<cfparam name="ftFieldMetadata.ftShowLabel" default="true" />	
 		
 		<cfset tFieldType = application.fapi.getFormtool(ftFieldMetadata.ftType) />
 		
