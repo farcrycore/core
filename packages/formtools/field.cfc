@@ -6,6 +6,7 @@
 	<cfproperty name="ftType" required="false" hint="Tells the framework which of the formtool ui components to use when rendering your form. This will default to the [type]." />
 	<cfproperty name="ftLabel" required="false" hint="Used by the FarCry form layout as the label of the form field. This will default to the [name]." />
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+	<cfproperty name="ftShowLabel" required="false" default="true" hint="Set this to false to hide the label when rendering the field." />
 	<cfproperty name="ftMultiField" required="false" default="false" hint="add wrapper div with class of multiField for extra styling." />
 	<cfproperty name="ftClass" required="false" default="" hint="CSS Class that can be used on the formtool input" />
 	<cfproperty name="ftStyle" required="false" default="" hint="CSS Style that can be used on the formtool input" />

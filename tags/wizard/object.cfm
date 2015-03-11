@@ -501,6 +501,10 @@
 						<skin:view stObject="#stObj#" webskin="#ftFieldMetadata.ftRenderWebskinBefore#" />
 					</cfif>
 
+					<cfif not ftFieldMetadata.ftShowLabel>
+						<cfset ftFieldMetadata.ftLabel = "">
+					</cfif>
+
 					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
 								label="#ftFieldMetadata.ftLabel#" 
 								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
