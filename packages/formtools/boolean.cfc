@@ -19,7 +19,9 @@
  --->
 
 <cfcomponent extends="field" name="boolean" displayname="boolean" bDocument="true" hint="Used to liase with boolean type fields"> 
-		
+
+	<cfproperty name="ftInlineLabel" type="boolean" required="false" options="true,false" default="false" hint="Set this attribute to true to rendering the ftLabel inline next to the checkbox" />
+
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.boolean" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
@@ -35,12 +37,17 @@
 		
 		<cfparam name="arguments.stMetadata.ftclass" default="">
 		<cfparam name="arguments.stMetadata.ftstyle" default="">
+		<cfparam name="arguments.stMetadata.ftInlineLabel" default="false">
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
 			<div class="multiField">
 				<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="1" class="checkboxInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif arguments.stMetadata.value EQ 1>checked</cfif> />
 				<input type="hidden" name="#arguments.fieldname#" value="0" />
+				<cfif arguments.stMetadata.ftInlineLabel>
+					&nbsp;
+					<label style="display:inline" for="#arguments.fieldname#">#arguments.stMetadata.ftLabel#</label>
+				</cfif>
 			</div>
 			</cfoutput>
 		
