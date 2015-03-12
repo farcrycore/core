@@ -76,7 +76,8 @@ VIEW
 	bShowActionList="false"
 	lfilterfields="label"
 	aButtons="#aButtons#"
-	lButtons="Delete / Reset,Reload configuration" />
+	lButtons="Delete / Reset,Reload configuration"
+	numitems="50" />
 
 
 <cfsetting enablecfoutputonly="true">
