@@ -321,9 +321,9 @@
 			
 		td.class, th.class { width:8em; }
 		td.name, th.name {  }
-		td.location, th.location { width:12em; }
-		td.conflicts, th.conflicts { width:12em; }
-		td.actions, th.actions { width:12em; }
+		td.location, th.location { width:16em; }
+		td.conflicts, th.conflicts { width:18.5em; }
+		td.actions, th.actions { width:10em; }
 		td.logchanges, th.logchanges { width:1.5em; }
 	</style>
 </cfoutput></skin:htmlHead>
@@ -379,7 +379,7 @@
 						<th class="class">Class</th>
 						<th class="name">Name</th>
 						<th class="conflicts">Conflict</th>
-						<th class="actions"><input id="applydefaults" type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').prop('checked',$j(this).prop('checked'));" /> <label style="display:inline" for="applydefaults">Apply Defaults</label></th>
+						<th class="actions"><input id="applydefaults" type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').prop('checked',$j(this).prop('checked'));" /><label style="display:inline" for="applydefaults">&nbsp;&nbsp;Apply Defaults</label></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -406,8 +406,8 @@
 		<ft:buttonPanel>
 			<cfoutput>
 				<div class="pull-right">
-					<input id="showdebug" type="checkbox" name="debug" style="margin:0" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>> <label for="showdebug">Show debug output</label>&nbsp;
-					<input id="showsql" type="checkbox" name="sql" style="margin:0" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>> <label for="showsql">Show SQL</label>&nbsp;
+					<input id="showdebug" type="checkbox" name="debug" style="margin:0" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>><label for="showdebug">&nbsp;&nbsp;Show debug output</label>&nbsp;&nbsp;&nbsp;
+					<input id="showsql" type="checkbox" name="sql" style="margin:0" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>><label for="showsql">&nbsp;&nbsp;Show SQL</label>&nbsp;&nbsp;
 					<ft:button value="Apply Default Resolutions" />
 				</div>
 			</cfoutput>
