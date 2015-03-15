@@ -244,7 +244,7 @@
 								<cftry>
 									<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 									<cfcatch type="any">
-										<cfset htmlLabel = "OBJECT NO LONGER EXISTS" />
+										<cfset htmlLabel = "<span title='#application.fc.lib.esapi.encodeForHTMLAttribute(cfcatch.message)#'>OBJECT NO LONGER EXISTS</span>" />
 									</cfcatch>
 								</cftry>
 								<cfoutput>
