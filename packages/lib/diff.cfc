@@ -282,7 +282,7 @@
 					<cfset stResult.leftHighlighted = "" />
 					<cfloop from="1" to="#arraylen(stResult.left)#" index="i">
 						<cfset thistype = application.fapi.findType(stResult.left[i]) />
-						<cfif len(thistype)>
+						<cfif len(thistype) AND structKeyExists(application.stCOAPI, thistype)>
 							<cfset stTemp = application.fapi.getContentObject(typename=thistype,objectid=stResult.left[i]) />
 							<cfset stResult.leftHighlighted = stResult.leftHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 						<cfelse>
