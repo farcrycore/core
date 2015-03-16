@@ -214,7 +214,7 @@
 									<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 									#ListLast(i , ":")#
 									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
-								</label />
+								</label>
 							</cfloop>
 							<input type="hidden" name="#arguments.fieldname#" value="">	
 						</div>																		
