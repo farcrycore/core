@@ -885,11 +885,44 @@
 									
 								<cfelse><!--- Normal field --->
 									
-									<cfif isDefined("PrimaryPackage.stProps.#trim(attributes.aCustomColumns[i])#.metadata.ftLabel")>
-										<cfoutput><th>#o.getI18Property(attributes.aCustomColumns[i],"label")#</th></cfoutput>
-									<cfelse>
-										<cfoutput><th>#attributes.aCustomColumns[i]#</th></cfoutput>
+									<cfset headerColumnStyle = "">
+									<cfif isDefined("PrimaryPackage.stProps.#attributes.aCustomColumns[i]#.metadata.ftType") AND PrimaryPackage.stProps[#attributes.aCustomColumns[i]#].metadata.ftType eq "datetime">
+										<cfset headerColumnStyle = "width: 8em;">
 									</cfif>
+
+									<cfset orderField = listFirst(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
+									<cfset orderDirection = listLast(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
+
+									<cfset sortableClass = "">
+									<cfset sortableDirection = "">
+									<cfif listFindNoCase(attributes.sortableColumns, attributes.aCustomColumns[i])>
+										<cfset sortableClass = "objectadmin-sortable">
+										<cfif orderField eq attributes.aCustomColumns[i]>
+											<cfset sortableDirection = orderDirection>
+										<cfelse>
+											<cfset sortableDirection = "DESC">
+										</cfif>
+									</cfif>
+
+									<cfoutput>
+										<th class="#sortableClass#" data-field="#attributes.aCustomColumns[i]#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
+											<span>
+												<cfif isDefined("PrimaryPackage.stProps.#trim(attributes.aCustomColumns[i])#.metadata.ftLabel")>
+													#o.getI18Property(attributes.aCustomColumns[i],"label")#
+												<cfelse>
+													#attributes.aCustomColumns[i]#
+												</cfif>
+
+												<cfif orderField eq attributes.aCustomColumns[i]>
+													<cfif orderDirection eq "ASC">
+														<i class="fa fa-caret-up"></i>
+													<cfelseif orderDirection eq "DESC">
+														<i class="fa fa-caret-down"></i>
+													</cfif>
+												</cfif>
+											</span>
+										</th>
+									</cfoutput>
 									
 									<!--- If this field is in the column list (and it should be) remove it so it won't get displayed elsewhere --->
 									<cfif listcontainsnocase(attributes.columnlist,attributes.aCustomColumns[i])>
