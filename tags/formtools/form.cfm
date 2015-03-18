@@ -70,6 +70,20 @@ It just ignores the inner ones.
 		<cfset Request.farcryFormList = listAppend(Request.farcryFormList,attributes.Name) />
 		
 		
+		<!--- If we have not received an action url, get the default cgi.script_name?cgi.query_string --->
+        <cfif not len(attributes.action)>
+            <cfif request.mode.ajax>
+                <cfset attributes.Action = "#cgi.HTTP_REFERER#" />
+            <cfelse>
+                <cfset attributes.Action = "#application.fapi.fixURL()#" />
+            </cfif>
+            
+        </cfif>
+        
+        
+
+
+		
 		<cfif attributes.autoSaveToSessionOnly>
 			<cfset attributes.class = listAppend(attributes.class,"autoSaveToSessionOnly"," ") />
 		</cfif>
