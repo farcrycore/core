@@ -5,6 +5,8 @@
 <cfparam name="request.mode.ajax" default="0">
 <cfparam name="request.mode.flushcache" default="0">
 <cfif thistag.executionMode eq "Start">
+	<cfparam name="attributes.inline" default="false" />
+	<cfparam name="attributes.r_html" default="" />
 
 	<cfparam name="request.mode.flushcache" default="0">
 	<cfparam name="request.mode.livecombine" default="0">
@@ -40,7 +42,7 @@
 		</cfif>
 	</cfloop>
 	
-	<cfif structkeyexists(attributes,"r_html")>
+	<cfif len(attributes.r_html)>
 		<cfparam name="caller.#attributes.r_html#" default="#arraynew(1)#" />
 	</cfif>
 	
@@ -149,14 +151,26 @@ FILES: #stCSS.lFullFilebaseHREFs#
 			<cfoutput>#CRLF#</cfoutput>
 		</cfsavecontent>
 		
-		<cfif structkeyexists(attributes,"r_html")>
+		<cfif len(attributes.r_html)>
 			<cfset st = structnew() />
 			<cfset st["id"] = "stylesheet-#stCSS.id#" />
 			<cfset st["html"] = css />
 			<cfset arrayappend(caller[attributes.r_html],st) />
+		<cfelseif attributes.inline>
+			<cfoutput>#css#</cfoutput>
 		<cfelse>
 			<cfhtmlhead text="#css#" />
 		</cfif>
 	
 	</cfloop>
+
+	<cfif attributes.inline>
+		<!--- MJB: clear out css libraries --->
+		<cfset request.inHead.aCSSLibraries = arrayNew(1) />
+	</cfif>
+
+
+
+
+
 </cfif>
