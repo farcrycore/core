@@ -10,9 +10,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title></title>
-	<script language="javascript" type="text/javascript" src="../../tiny_mce_popup.js"></script>
-	<script language="javascript" type="text/javascript" src="../../utils/mctabs.js"></script>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+	<script type="text/javascript" src="../../utils/mctabs.js"></script>
+	<script type="text/javascript">
 	
 		var r_objectid = '';
 		var r_typename = '';
@@ -34,7 +34,7 @@
 			//tinyMCEPopup.execCommand('mceTemplate');
 			
 			url = '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxSetTemplatePreview&ajaxmode=1';
-			//alert('<sc'+'ript language="javascript" type="text/javascript" src="#application.url.farcry#/facade/tinyMCE.cfm?objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '"></sc'+'ript>');
+			//alert('<sc'+'ript type="text/javascript" src="#application.url.farcry#/facade/tinyMCE.cfm?objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '"></sc'+'ript>');
 			
 			$j.ajax({
 			   type: "POST",

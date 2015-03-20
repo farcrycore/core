@@ -96,7 +96,7 @@ $out:$
 		
 		<!--- reload overview page --->
 		<cfoutput>
-			<script language="JavaScript">
+			<script type="text/javascript">
 				parent['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?typename=#url.typename#&objectid=#url.ObjectID#';
 			</script>
 		</cfoutput>
