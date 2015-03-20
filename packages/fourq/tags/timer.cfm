@@ -65,7 +65,7 @@
 			<!--- //	Add fieldset logic for IE	//--->
 			<cfif attributes.bBox and cgi.HTTP_User_Agent contains "MSIE">
 				<cfoutput>
-					<script language="JavaScript">
+					<script type="text/javascript">
 						document.all.cftimer#timerid#.innerText = "#attributes.Label#: #evaluate(endTime - startTime)#ms";
 					</script>
 					</fieldset>

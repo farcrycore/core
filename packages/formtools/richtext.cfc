@@ -102,7 +102,7 @@
 		<cfsavecontent variable="html">
 			
 			<cfoutput>
-				<script language="javascript" type="text/javascript">
+				<script type="text/javascript">
 				$j(function() {
 					tinymce.init({
 					selector: '###arguments.fieldname#',

@@ -5,7 +5,7 @@
 <link rel="stylesheet" type="text/css" href="css/checkboxtree.css" charset="utf-8">
 
 <script src="js/jquery-latest.js" type="text/javascript"></script>
-<script src="js/jquery.checkboxtree.js" type="text/javascript" language="JavaScript"></script>
+<script src="js/jquery.checkboxtree.js" type="text/javascript"></script>
 <script>
 jQuery(document).ready(function(){
 	jQuery("#checkchildren").checkboxTree({

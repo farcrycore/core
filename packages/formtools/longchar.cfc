@@ -106,7 +106,7 @@
 		<cfif isNumeric(arguments.stMetadata.ftLimit)>
 			<cfset arguments.stMetadata.ftRangeLength = "0,#arguments.stMetadata.ftLimit#" />
 			<skin:loadJS id="fc-jquery" />
-			<skin:htmlHead id="long-char"><cfoutput><script language="javascript"><!--
+			<skin:htmlHead id="long-char"><cfoutput><script type="text/javascript"><!--
 				function updateLoncharCounter(FieldName, limit, overage, key) {
 					var field = $j("##"+FieldName);
 					var counter = $j("##"+FieldName).val().length;

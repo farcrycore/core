@@ -43,7 +43,7 @@ $DEVELOPER: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" />
 
 <cfoutput>
-<script language="JavaScript">
+<script type="text/javascript">
 function executeRuleUpdate(typename,ruleid)
 {  
 	//collapse the rule listings

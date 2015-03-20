@@ -504,7 +504,7 @@
 		<!--- TODO: Check Permissions. --->
 		<cfif structkeyexists(form,"objectid")>
 		<cfoutput>
-			<script language="javascript">
+			<script type="text/javascript">
 				var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,scrollbars=yes,width=800,height=600,location=yes");
 			</script>
 		</cfoutput>
@@ -513,7 +513,7 @@
 		</cfif>
 		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
 	</ft:processForm>
-	
+
 	<cfif structKeyExists(application.stPlugins, "flow")>
 		<ft:processForm action="flow">
 			<!--- TODO: Check Permissions. --->
