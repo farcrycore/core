@@ -1,9 +1,9 @@
 FarCry Core Framework
 ====
 
-FarCry Core is a web application framework based on the ColdFusion language (supporting Adobe ColdFusion and Railo engines). FarCry Core comes with FarCry CMS, a popular content management solution built with FarCry Core.
+FarCry Core: a web app framework for the ColdFusion language (supporting Lucee, Railo & Adobe ColdFusion engines). An ideal platform for building bespoke or tailor made solutions.
 
-It's the ideal platform for building bespoke or tailor made online publishing solutions.
+FarCry Core comes with a range of plugins including FarCry CMS, a popular content management solution built with FarCry Core.
 
 ## Installation
 
