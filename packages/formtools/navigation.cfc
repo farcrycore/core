@@ -146,7 +146,7 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfif listLen(arguments.stFieldPost.value)>
+		<cfif len(arguments.stFieldPost.value)>
 			<!--- Remove any empty list items --->
 			<cfset arguments.stFieldPost.value = arrayToList(listToArray(arguments.stFieldPost.value, ","), ",") />
 		</cfif>
