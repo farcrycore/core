@@ -123,10 +123,10 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfif listLen(arguments.stFieldPost.value)>
-			<!--- Remove any empty list items --->
-			<cfset arguments.stFieldPost.value = arrayToList(listToArray(arguments.stFieldPost.value, ","), ",") />
-		</cfif>
+
+		<!--- Remove any empty list items --->
+		<cfset arguments.stFieldPost.value = arrayToList(listToArray(arguments.stFieldPost.value, ","), ",") />
+
 		<cfset stResult.value = arguments.stFieldPost.value />
 
 		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(arguments.stFieldPost.value)>
