@@ -41,7 +41,7 @@
 		<cfparam name="this.botIPs" default="*" />
 		
 		
-		<cfset this.defaultAgents = "bot\b,\brss,slurp,mediapartners-google,googlebot,zyborg,emonitor,jeeves,sbider,findlinks,yahooseeker,mmcrawler,jbrowser,java,pmafind,blogbeat,converacrawler,ocelli,labhoo,validator,sproose,ia_archiver,larbin,psycheclone,arachmo" />
+		<cfset this.defaultAgents = "bot\b,\brss,slurp,mediapartners-google,googlebot,bingbot,zyborg,emonitor,jeeves,sbider,findlinks,yahooseeker,mmcrawler,jbrowser,java,pmafind,blogbeat,converacrawler,ocelli,labhoo,validator,sproose,ia_archiver,larbin,psycheclone,arachmo" />
 		<cfset this.botAgents = __plusMinusStateMachine(this.defaultAgents, this.botagents) />
 		
 		<cfset this.defaultIPs = "" />
