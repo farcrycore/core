@@ -45,7 +45,7 @@
 		<cfset this.botAgents = __plusMinusStateMachine(this.defaultAgents, this.botagents) />
 		
 		<cfset this.defaultIPs = "" />
-		<cfset this.botAgents = __plusMinusStateMachine(this.defaultIPs, this.botIPs) />
+		<cfset this.botIPs = __plusMinusStateMachine(this.defaultIPs, this.botIPs) />
 		
 		<cfparam name="cookie.sessionScopeTested" default="false" />
 		<cfparam name="cookie.hasSessionScope" default="false" />
