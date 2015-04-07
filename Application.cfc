@@ -49,7 +49,7 @@
 		
 		<cfparam name="cookie.sessionScopeTested" default="false" />
 		<cfparam name="cookie.hasSessionScope" default="false" />
-		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or listcontains(this.botIPs,cgi.remote_addr)>
+		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or arrayFind(this.botIPs,cgi.remote_addr)>
 			<cfset THIS.sessiontimeout = createTimeSpan(0,0,0,2) />
 			<cfset request.fc.hasSessionScope = false />
 			
