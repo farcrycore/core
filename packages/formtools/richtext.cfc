@@ -420,7 +420,8 @@
 			<cfset stImage["url"] = application.fc.lib.cdn.ioGetFileLocation(
 				location="images",
 				file=qImages.image,
-				admin=true
+				admin=true,
+				bRetrieve=true
 			).path />
 			<cfset arrayappend(stResult["images"],stImage) />
 		</cfloop>
