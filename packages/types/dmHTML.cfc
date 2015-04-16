@@ -51,7 +51,7 @@ type properties
 	ftType="richtext" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
-	ftLinkListFilterRelatedTypenames="dmFile,dmNavigation,dmHTML"
+	ftLinkListFilterTypenames="dmFile,dmNavigation,dmHTML"
 	ftTemplateSnippetWebskinPrefix="insertSnippet">
 
 <cfproperty 

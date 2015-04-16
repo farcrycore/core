@@ -10,7 +10,7 @@
 		ftType="richtext" 
 		ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 		ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
-		ftLinkListFilterRelatedTypenames="dmFile,dmNavigation,dmHTML"
+		ftLinkListFilterTypenames="dmFile,dmNavigation,dmHTML"
 		ftTemplateSnippetWebskinPrefix="insertSnippet">
 	</code>
 --->
