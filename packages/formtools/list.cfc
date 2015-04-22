@@ -197,9 +197,9 @@
 				
 				<cfcase value="checkbox">
 					<cfsavecontent variable="html">
-						
+
 						<cfoutput>
-						<div class="multiField">	
+						<div class="multiField">
 							<cfset tmpCount=0>
 							<cfloop list="#lData#" index="i">
 								<cfset tmpCount=tmpCount + 1>
@@ -209,46 +209,41 @@
 									<cfset optionValue = ListFirst(i,":") />
 								</cfif>
 								<label>
-									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(listLen(lData) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
-									<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
-									<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(listLen(lData) eq tmpCount, DE(" #arguments.stMetadata.ftClass#"), DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
 									#ListLast(i , ":")#
 									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 								</label>
 							</cfloop>
-							<input type="hidden" name="#arguments.fieldname#" value="">	
-						</div>																		
+							<input type="hidden" name="#arguments.fieldname#" value="">
+						</div>
 						</cfoutput>
-									
+
 					</cfsavecontent>
 				</cfcase>
 				
 				<cfcase value="radio">
 					<cfsavecontent variable="html">
-						
+
 						<cfoutput>
-							<div class="multiField">	
-								<cfset tmpCount=0>
-								<cfloop list="#lData#" index="i">
-									<cfset tmpCount=tmpCount + 1>
-									<cfif Left(i, 1) EQ ":">
-										<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
-									<cfelse>
-										<cfset optionValue = ListFirst(i,":") />
-									</cfif>
-									<label>
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="required #IIF(listLen(lData) eq tmpCount,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
-										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
-										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
-										#ListLast(i , ":")#
-										<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
-									</label>
-								</cfloop>
-								<input type="hidden" name="#arguments.fieldname#" value="">
-							
-							</div>
+						<div class="multiField">
+							<cfset tmpCount=0>
+							<cfloop list="#lData#" index="i">
+								<cfset tmpCount=tmpCount + 1>
+								<cfif Left(i, 1) EQ ":">
+									<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
+								<cfelse>
+									<cfset optionValue = ListFirst(i,":") />
+								</cfif>
+								<label>
+									<input type="radio" name="#arguments.fieldname#" class="required #IIF(listLen(lData) eq tmpCount, DE(" #arguments.stMetadata.ftClass#"), DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
+									#ListLast(i , ":")#
+									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
+								</label>
+							</cfloop>
+							<input type="hidden" name="#arguments.fieldname#" value="">
+						</div>
 						</cfoutput>
-									
+
 					</cfsavecontent>
 				</cfcase>
 				
