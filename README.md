@@ -27,7 +27,7 @@ Download the latest community build or get a "ready-to-go" express version for a
 ### Code
 - [farcrycore Github](https://github.com/farcrycore)
 - [FarCry Component/Tag Documentation](http://docs.farcrycore.org)
-- [FarCry Plugin Directory](http://discourse.farcrycore.org/category/plugins) (currently being migrated from [The Old Plugin Directory](http://plugins.farcrycore.org))
+- [FarCry Plugin Directory](http://discourse.farcrycore.org/category/plugins)
 - [FarCry Bug Database](https://farcry.jira.com)
 
 
