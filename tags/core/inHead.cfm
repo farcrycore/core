@@ -25,7 +25,7 @@
 				<cfif structKeyExists(request.inHead.stCustom, request.inHead.aCustomIDs[i])>
 					<cfset st = structnew() />
 					<cfset st["id"] = "inhead-#request.inHead.aCustomIDs[i]#" />
-					<cfset st["html"] = chr(13) & '<meta id="inhead-#request.inHead.aCustomIDs[i]#" name="inheadid" content="#request.inHead.aCustomIDs[i]#">' & request.inHead.stCustom[request.inHead.aCustomIDs[i]]>
+					<cfset st["html"] = chr(13) & '<meta id="inhead-#request.inHead.aCustomIDs[i]#" property="inheadid" content="#request.inHead.aCustomIDs[i]#">' & request.inHead.stCustom[request.inHead.aCustomIDs[i]]>
 					<cfset arrayappend(aResult,st) />
 				</cfif>
 			</cfloop>

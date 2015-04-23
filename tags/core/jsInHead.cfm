@@ -137,14 +137,14 @@ FILES: #stJS.lFullFilebaseHREFs#
 				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location='cache',file=sCacheFileName) />
 				<cfoutput><script src="#stLoc.path#" id="javascript-#stJS.id#" type="text/javascript"></script></cfoutput>
 			<cfelseif stJS.bExternal>
-				<cfoutput><meta id="javascript-#stJS.id#" name="jsid" content="#stJS.id#"></cfoutput>
+				<cfoutput><meta id="javascript-#stJS.id#" property="jsid" content="#stJS.id#"></cfoutput>
 				<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
 				<cfloop list="#stJS.lFiles#" index="i">
 					<cfoutput><script src="#i#" type="text/javascript"></script></cfoutput>
 				</cfloop>
 				<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 			<cfelse>
-				<cfoutput><meta id="javascript-#stJS.id#" name="jsid" content="#stJS.id#"></cfoutput>
+				<cfoutput><meta id="javascript-#stJS.id#" property="jsid" content="#stJS.id#"></cfoutput>
 				<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
 				<cfloop list="#stJS.lFiles#" index="i">
 					<cfoutput><script src="#stJS.baseHREF#/#i#" type="text/javascript"></script></cfoutput>
