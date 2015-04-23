@@ -36,18 +36,22 @@
 		<cfelse>
 			<cfset st["href"] = aCurrentStylesheets[i].href />
 		</cfif>
+		<cfset arrayappend(aNewStylesheets,st) />
 	<cfelse>
-		<cfset stAttr = getFileInfo(expandPath(listfirst(aCurrentStylesheets[i].href,"."))) />
-		<cfif refindnocase("(\?|&)modified=",aCurrentStylesheets[i].href)>
-			<cfset st["href"] = rereplacenocase(aCurrentStylesheets[i].href,"(\?|&)modified=[^&]+","\1modified=#dateformat(stAttr.lastmodified,'yyyymmdd')##timeformat(stAttr.lastmodified,'HHmmss')#") />
-		<cfelseif find("?",aCurrentStylesheets[i].href)>
-			<cfset st["href"] = aCurrentStylesheets[i].href & "&modified=#dateformat(stAttr.lastmodified,'yyyymmdd')##timeformat(stAttr.lastmodified,'HHmmss')#" />
-		<cfelse>
-			<cfset st["href"] = aCurrentStylesheets[i].href & "?modified=#dateformat(stAttr.lastmodified,'yyyymmdd')##timeformat(stAttr.lastmodified,'HHmmss')#" />
+		<cfif structKeyExists(aCurrentStylesheets[i], "href") AND fileExists(expandPath(listfirst(aCurrentStylesheets[i].href,".")))>
+			<cfset stAttr = getFileInfo(expandPath(listfirst(aCurrentStylesheets[i].href,"."))) />
+			<cfif refindnocase("(\?|&)modified=",aCurrentStylesheets[i].href)>
+				<cfset st["href"] = rereplacenocase(aCurrentStylesheets[i].href,"(\?|&)modified=[^&]+","\1modified=#dateformat(stAttr.lastmodified,'yyyymmdd')##timeformat(stAttr.lastmodified,'HHmmss')#") />
+			<cfelseif find("?",aCurrentStylesheets[i].href)>
+				<cfset st["href"] = aCurrentStylesheets[i].href & "&modified=#dateformat(stAttr.lastmodified,'yyyymmdd')##timeformat(stAttr.lastmodified,'HHmmss')#" />
+			<cfelse>
+				<cfset st["href"] = aCurrentStylesheets[i].href & "?modified=#dateformat(stAttr.lastmodified,'yyyymmdd')##timeformat(stAttr.lastmodified,'HHmmss')#" />
+			</cfif>
+			<cfset arrayappend(aNewStylesheets,st) />
 		</cfif>
 	</cfif>
-	<cfset arrayappend(aNewStylesheets,st) />
 </cfloop>
+
 
 <cfcontent type="text/json" variable="#ToBinary( ToBase64( serializeJSON(aNewStylesheets) ) )#" reset="Yes" />
 
