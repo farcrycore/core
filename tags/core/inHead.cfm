@@ -50,10 +50,12 @@
 		</cfif>
 	</cfif>
 
-	<cfset st = structnew() />
-	<cfset st["id"] = "CRLF" />
-	<cfset st["html"] = CRLF />
-	<cfset arrayappend(aResult,st) />
+	<cfif arrayLen(aResult)>
+		<cfset st = structnew() />
+		<cfset st["id"] = "CRLF" />
+		<cfset st["html"] = CRLF />
+		<cfset arrayappend(aResult,st) />
+	</cfif>
 	
 	<cfset caller[attributes.variable] = aResult />
 	
