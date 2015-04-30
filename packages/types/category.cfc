@@ -90,19 +90,37 @@
 		<cfargument name="typename" required="false" default="dmCategory" type="string" hint="nested_tree_objects typename to match.">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
 		<cfargument name="dbowner" required="no" default="#application.dbowner#">
+		<cfargument name="alias" required="no" default="">
 
 		<cfset var objectid="">
 		<cfset var qCat="">
-		
-		<cfquery name="qCat" datasource="#arguments.dsn#">
-			SELECT objectid
-			FROM #arguments.dbowner#nested_tree_objects
-			WHERE (objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.categoryname#"> OR objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#replace(arguments.categoryname,"&","&amp;","all")#">) 
-			AND typename = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.typename#">
-		</cfquery>		
+		<cfset var q="">
+		<cfset var rootid="">
+
+		<cfif len(arguments.alias)>
+			<cfset rootid = application.fapi.getCatID(alias=arguments.alias) />
+			<cfset q = application.factory.oTree.getDescendants(objectid=rootid, bIncludeSelf=true)>
+			<cfif q.recordcount>
+				<cfquery name="qCat" dbtype="query" datasource="#arguments.dsn#">
+					SELECT objectid
+					FROM q
+					WHERE (objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.categoryname#"> OR objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#replace(arguments.categoryname,"&","&amp;","all")#">) 
+					AND typename = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.typename#">
+				</cfquery>		
+			</cfif>
+		<cfelse>
+			<cfquery name="qCat" datasource="#arguments.dsn#">
+				SELECT objectid
+				FROM #arguments.dbowner#nested_tree_objects
+				WHERE (objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.categoryname#"> OR objectname = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#replace(arguments.categoryname,"&","&amp;","all")#">) 
+				AND typename = <cfqueryparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.typename#">
+			</cfquery>		
+		</cfif>
+	
 		<cfif qCat.recordcount>
 			<cfset objectid=qCat.Objectid>
 		</cfif>
+
 		<cfreturn objectid>
 	</cffunction>
 
