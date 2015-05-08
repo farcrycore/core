@@ -9,14 +9,7 @@
 		
 		<cfloop list="#libraries#" index="libraryname">
 			<cfif not refindnocase("(^|,)#libraryname#(,|$)","fapi,lib")>
-				<cftry>
 				<cfset this[libraryname] = createobject("component",oUtils.getPath("lib",libraryname)) />
-					
-					<cfcatch> 
-						<cfdump var="#libraryname#"><cfdump var="#cfcatch#"><cfabort>
-					
-					</cfcatch>
-				</cftry>
 				<cfif structkeyexists(this[libraryname],"init")>
 					<cfset this[libraryname].init() />
 				</cfif>

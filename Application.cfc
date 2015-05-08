@@ -453,7 +453,13 @@
 		
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
-		
+
+		<cfif not structkeyexists(application,"stCOAPI") or not structkeyexists(application,"rb")>
+			<cfheader statuscode="500" statustext="Internal Server Error">
+			<cfdump var="#arguments.exception#">
+			<cfabort>
+		</cfif>
+
 		<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
 		<cfif structkeyexists(server,"railo")>
 			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 10000#" />
