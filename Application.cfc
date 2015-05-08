@@ -458,8 +458,9 @@
 		
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
-		
+
 		<cfif not structkeyexists(application,"stCOAPI") or not structkeyexists(application,"rb")>
+			<cfheader statuscode="500" statustext="Internal Server Error">
 			<cfdump var="#arguments.exception#">
 			<cfabort>
 		</cfif>
