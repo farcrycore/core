@@ -152,10 +152,10 @@
 			
 			<skin:onReady>
 			<cfoutput>	
-
-			$j("###arguments.fieldname#-wrap").hide();
-				
-			<cfif NOT application.fapi.showFarcryDate(arguments.stMetadata.value) >
+			<cfif application.fapi.showFarcryDate(arguments.stMetadata.value) >
+				$j("###arguments.fieldname#include").prop('checked', true);
+			<cfelse>
+				$j("###arguments.fieldname#-wrap").hide();
 				$j("###arguments.fieldname#").val('');
 			</cfif>
 			
