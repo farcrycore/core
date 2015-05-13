@@ -562,7 +562,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfif isdefined("url.debug") and url.debug EQ 1>
 						<cfset request.cfdumpinited = false>
 						
-						<skin:bubble title="Error with rule '#application.stcoapi[rule].displayName#'" bAutoHide="false" tags="rule,error">
+						<skin:bubble title="Error with rule '#application.fapi.getContentTypeMetadata(rule, 'displayName', rule)#'" bAutoHide="false" tags="rule,error">
 							<cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput>
 						</skin:bubble>							
 						
