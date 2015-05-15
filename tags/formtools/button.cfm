@@ -29,6 +29,7 @@
 <cfparam name="attributes.textOnSubmit" default="" /><!--- what should the text change to when the button is submitted.  --->
 <cfparam name="attributes.disableOnSubmit" default="true" /><!--- should the button be disabled when the form is submitted --->
 <cfparam name="attributes.dropdownToggle" default="false" /><!--- used in combination with dropdownMenu to open the menu --->
+<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
 <cfif not thistag.HasEndTag>
@@ -189,13 +190,9 @@
 			</cfif>
 			
 		
-			<cfset formtheme = application.fapi.getDefaultFormTheme()>
-			
-			
-			
 			<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-			<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Button') >
-				<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Button'].path>
+			<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Button') >
+				<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Button'].path>
 			<cfelse>
 				<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapButton'].path>
 			</cfif>

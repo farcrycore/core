@@ -60,6 +60,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->
 		<cfparam name="attributes.autoSave" default="false" /><!--- Enter boolean to toggle default autosave values on properties --->
 		<cfparam name="attributes.autoSaveToSessionOnly" default="false" /><!--- If there are any autosave fields, should they save to the session only? --->
+		<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
@@ -134,14 +135,10 @@ It just ignores the inner ones.
 			<cfset thisTag.generatedContent = "" />
 		</cfif>
 		
-	
-		<cfset formtheme = application.fapi.getDefaultFormTheme()>
-		
-		
-		
+
 		<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-		<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Form') >
-			<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Form'].path>
+		<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Form') >
+			<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Form'].path>
 		<cfelse>
 			<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapForm'].path>
 		</cfif>
@@ -185,7 +182,7 @@ It just ignores the inner ones.
 
 			<!--- set up validation selectors and classes based on the form theme --->
 			<cfset stValConfig = structNew()>
-			<cfif formtheme eq "bootstrap">
+			<cfif attributes.formtheme eq "bootstrap">
 				<cfset stValConfig.wrapper = "">
 				<cfset stValConfig.errorElement = "p">
 				<cfset stValConfig.errorElementClass = "text-error">

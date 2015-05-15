@@ -73,6 +73,7 @@
 	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
 	<cfparam name="attributes.focusField" default="" /><!--- Enter the name of the field to focus on when rendering the form. --->
 	<cfparam name="attributes.autosave" default="" /><!--- Enter boolean to toggle default autosave values on properties --->
+	<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 	
 	
 	<cfset variables.stReturnFields = structNew()>
@@ -619,8 +620,6 @@
 <cfif thistag.ExecutionMode EQ "End">
 
 	<cfif not len(Attributes.r_stFields)>
-		
-		<cfset attributes.formtheme = application.fapi.getConfig('formTheme','webtop')>
 		
 		<cfsavecontent variable="fieldsHTML">
 			

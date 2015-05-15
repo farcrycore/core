@@ -32,6 +32,7 @@
 <cfparam name="attributes.hint" default=""><!--- This will place a hint below the field --->
 <cfparam name="attributes.errorMessage" default=""><!--- This will place an errormessage above the field --->
 <cfparam name="attributes.rbkey" default="coapi.field.#rereplace(attributes.label,'[^\w]','','ALL')#" /><!--- The resource path for this field. --->
+<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 <cfif thistag.ExecutionMode eq "start">
 	<!--- DO NOTHING --->
@@ -47,14 +48,10 @@
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
 	
-
-	<cfset formtheme = application.fapi.getDefaultFormTheme()>
-	
-	
 	
 	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Field') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Field'].path>
+	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Field') >
+		<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Field'].path>
 	<cfelse>
 		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapField'].path>
 	</cfif>

@@ -91,6 +91,7 @@
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 		<cfparam name="attributes.bFocusFirstField" default="true" /><!--- Focus on first wizard element. --->
+		<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 		
 		
@@ -174,13 +175,9 @@
 	</cfif>
 	
 
-	<cfset formtheme = application.fapi.getDefaultFormTheme()>
-	
-	
-	
 	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Form') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Form'].path>
+	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Form') >
+		<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Form'].path>
 	<cfelse>
 		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapForm'].path>
 	</cfif>

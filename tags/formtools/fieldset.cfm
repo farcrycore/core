@@ -28,6 +28,7 @@
 <cfparam name="attributes.style" default=""><!--- The style to apply to the fieldset. --->
 <cfparam name="attributes.helpTitle" default=""><!--- The helping title for the fieldset. --->
 <cfparam name="attributes.helpSection" default=""><!--- The helping text for the fieldset. --->
+<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
 <cfif thistag.ExecutionMode eq "start">
@@ -44,12 +45,10 @@
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
 
-	<cfset formtheme = application.fapi.getDefaultFormTheme()>
-	
 	
 	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Fieldset') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Fieldset'].path>
+	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Fieldset') >
+		<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Fieldset'].path>
 	<cfelse>
 		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapFieldset'].path>
 	</cfif>

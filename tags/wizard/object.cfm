@@ -41,7 +41,9 @@
 	<cfparam name="attributes.r_stwizard" default="stwizard"><!--- The name of the CALLER variable that contains the stwizard structure --->
 	<cfparam name="attributes.bShowFieldHints" default="true" type="boolean"><!--- Flag to determine if the field hints are display. --->
 	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
-	
+	<cfparam name="attributes.formtheme" default="#application.fapi.getConfig('formTheme','webtop')#"><!--- The form theme to use --->
+
+
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
 	
@@ -485,8 +487,6 @@
 <cfif thistag.ExecutionMode EQ "End">
 
 	<cfif not len(Attributes.r_stFields)>
-		
-		<cfset attributes.formtheme = application.fapi.getConfig('formTheme','webtop')>
 		
 		<cfsavecontent variable="fieldsHTML">
 			
