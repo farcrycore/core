@@ -291,6 +291,7 @@
 			<cfif attributes.validation>
 				<skin:loadJS id="fc-jquery-validate" />
 
+<!--- TODO: rip out --->
 				<!--- set up validation selectors and classes based on the form theme --->
 				<cfset stValConfig = structNew()>
 				<cfif formtheme eq "bootstrap">
