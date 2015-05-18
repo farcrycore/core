@@ -40,7 +40,7 @@
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin" description="Configure and secure your website">
 		<subsection id="general" sequence="10" label="General Admin" permission="AdminGeneralTab">
 			<menu id="settings" sequence="10" label="Application Settings">
-				<menuitem id="listfarconfig" sequence="1" label="Config Files" typename="farConfig" />
+				<menuitem id="listfarconfig" sequence="1" label="Configuration" typename="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" typename="dmCron" />
 				<menuitem id="webtopDashboards" sequence="20" label="Webtop Dashboards" type="farWebtopDashboard" bodyview="webtopBodyAdmin" />
 			</menu>
