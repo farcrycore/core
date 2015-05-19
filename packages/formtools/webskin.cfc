@@ -32,7 +32,8 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-		
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
+
 		<cfset var html = "" />
 		<cfset var oType = "" />
 		<cfset var qWebskins = "*" />
@@ -84,7 +85,7 @@
 
 			<cfoutput>
 			<cfif isDefined("qWebskins") AND qWebskins.RecordCount>
-				<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#">
+				<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.inputClass# #arguments.stMetadata.ftClass#">
 					<cfloop query="qWebskins">						
 						<option value="#ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')#"<cfif ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')  eq arguments.stMetadata.value> selected="selected"</cfif>>#qWebskins.displayname#</option>
 					</cfloop>

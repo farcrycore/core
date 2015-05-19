@@ -15,6 +15,7 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 
 		<cfset var html = "" />
 		
@@ -30,7 +31,7 @@
 		
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
-				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" maxLength="4" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
+				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" maxLength="4" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
 				&nbsp;&nbsp;<a href="http://www.cvvnumber.com/cvv.html" target="_blank">what is this?</a>
 			</div>
 		</cfoutput></cfsavecontent>

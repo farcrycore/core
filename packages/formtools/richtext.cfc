@@ -40,7 +40,8 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-				
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
+
 		<cfset var html = "" />	
 		<cfset var configJS = "" />
 		<cfset var external_image_list_url = "#application.url.webtop#/facade/TinyMCEImageList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftImageListFilterTypename=#arguments.stMetadata.ftImageListFilterTypename#&ftImageListFilterProperty=#arguments.stMetadata.ftImageListFilterProperty#&ajaxMode=1" />
@@ -141,7 +142,7 @@
 				.richtext .formHint {float:left;}
 				</style>
 
-				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftClass#" style="width: 100%; #arguments.stMetadata.ftStyle#">#arguments.stMetadata.value#</textarea>
+				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.inputClass# #arguments.stMetadata.ftClass#" style="width: 100%; #arguments.stMetadata.ftStyle#">#arguments.stMetadata.value#</textarea>
 
 			</cfoutput>
 		</cfsavecontent>
