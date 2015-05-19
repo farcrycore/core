@@ -173,15 +173,14 @@
 		<cfset innerHTML = thisTag.generatedContent />
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
-	
 
 	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Form') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Form'].path>
+	<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'form') >
+		<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['form'].path>
 	<cfelse>
-		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapForm'].path>
+		<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['form'].path>
 	</cfif>
-	
+
 	<cfmodule template="#modulePath#" attributecollection="#attributes#">
 		
 		<cfoutput>#innerHTML#</cfoutput>
@@ -288,25 +287,9 @@
 			<cfif attributes.validation>
 				<skin:loadJS id="fc-jquery-validate" />
 
-<!--- TODO: rip out --->
 				<!--- set up validation selectors and classes based on the form theme --->
-				<cfset stValConfig = structNew()>
-				<cfif formtheme eq "bootstrap">
-					<cfset stValConfig.wrapper = "">
-					<cfset stValConfig.errorElement = "p">
-					<cfset stValConfig.errorElementClass = "text-error">
-					<cfset stValConfig.errorPlacementSelector = "div.control-group">
-					<cfset stValConfig.fieldContainerSelector = "div.control-group">
-					<cfset stValConfig.fieldContainerClass = "error">
-				<cfelse>
-					<cfset stValConfig.wrapper = "">
-					<cfset stValConfig.errorElement = "p">
-					<cfset stValConfig.errorElementClass = "errorField">
-					<cfset stValConfig.errorPlacementSelector = "div.ctrlHolder">
-					<cfset stValConfig.fieldContainerSelector = "div.ctrlHolder">
-					<cfset stValConfig.fieldContainerClass = "error">
-				</cfif>
-				
+				<cfset stValConfig = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getValidationConfig()>
+
 				<!--- Setup farcry form validation (fv) --->
 				<skin:onReady>
 					<cfoutput>

@@ -380,17 +380,19 @@
 		
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
-			
-				
-					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
-						<cfinvokeargument name="typename" value="#typename#">
-						<cfinvokeargument name="stObject" value="#stObj#">
-						<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
-						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
-						<cfinvokeargument name="stPackage" value="#stPackage#">
-					</cfinvoke>
-					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
-				
+
+				<cfset inputClass = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getFormtoolInputClass(ftFieldMetadata.ftType)>
+
+				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
+					<cfinvokeargument name="typename" value="#typename#">
+					<cfinvokeargument name="stObject" value="#stObj#">
+					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
+					<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
+					<cfinvokeargument name="stPackage" value="#stPackage#">
+					<cfinvokeargument name="inputClass" value="#inputClass#">
+				</cfinvoke>
+				<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
+
 			</cfif>
 				
 						

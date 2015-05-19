@@ -476,10 +476,10 @@
 
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
-				
 
 				<cftry>				
-					
+					<cfset inputClass = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getFormtoolInputClass(ftFieldMetadata.ftType)>
+
 					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
 						<cfinvokeargument name="typename" value="#typename#">
 						<cfinvokeargument name="stObject" value="#stObj#">
@@ -487,6 +487,7 @@
 						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
 						<cfinvokeargument name="stPackage" value="#stPackage#">
 						<cfinvokeargument name="prefix" value="#variables.prefix#">
+						<cfinvokeargument name="inputClass" value="#inputClass#">
 					</cfinvoke>
 					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
 										

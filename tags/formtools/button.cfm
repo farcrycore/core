@@ -180,27 +180,22 @@
 		
 		<!--- Default FarcryButton based on form theme --->
 		<cfdefaultcase>
-			
-			
 
 			<cfset innerHTML = "" />
 			<cfif len(thisTag.generatedContent)>
 				<cfset innerHTML = thisTag.generatedContent />
 				<cfset thisTag.generatedContent = "" />
 			</cfif>
-			
-		
+
 			<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-			<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Button') >
-				<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Button'].path>
+			<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'button') >
+				<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['button'].path>
 			<cfelse>
-				<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapButton'].path>
+				<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['button'].path>
 			</cfif>
 
-			
 			<cfmodule template="#modulePath#" attributecollection="#attributes#"></cfmodule>
-			
-			
+
 		</cfdefaultcase>
 		</cfswitch>
 	

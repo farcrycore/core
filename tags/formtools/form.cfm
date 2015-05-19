@@ -134,16 +134,14 @@ It just ignores the inner ones.
 			<cfset innerHTML = thisTag.generatedContent />
 			<cfset thisTag.generatedContent = "" />
 		</cfif>
-		
 
 		<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-		<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Form') >
-			<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Form'].path>
+		<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'form') >
+			<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['form'].path>
 		<cfelse>
-			<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapForm'].path>
+			<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['form'].path>
 		</cfif>
-		
-		
+
 		<!--- Setup the ajax wrapper if this is the first render of the form. When the ajax submission is made, the returned HTML is placed in this div. --->
 		<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
 			<cfoutput><div id="#attributes.Name#formwrap" class="ajaxformwrap"></cfoutput>				
@@ -181,23 +179,8 @@ It just ignores the inner ones.
 			<skin:loadJS id="fc-jquery-validate" />
 
 			<!--- set up validation selectors and classes based on the form theme --->
-			<cfset stValConfig = structNew()>
-			<cfif attributes.formtheme eq "bootstrap">
-				<cfset stValConfig.wrapper = "">
-				<cfset stValConfig.errorElement = "p">
-				<cfset stValConfig.errorElementClass = "text-error">
-				<cfset stValConfig.errorPlacementSelector = "div.control-group">
-				<cfset stValConfig.fieldContainerSelector = "div.control-group">
-				<cfset stValConfig.fieldContainerClass = "error">
-			<cfelse>
-				<cfset stValConfig.wrapper = "">
-				<cfset stValConfig.errorElement = "p">
-				<cfset stValConfig.errorElementClass = "errorField">
-				<cfset stValConfig.errorPlacementSelector = "div.ctrlHolder">
-				<cfset stValConfig.fieldContainerSelector = "div.ctrlHolder">
-				<cfset stValConfig.fieldContainerClass = "error">
-			</cfif>
-			
+			<cfset stValConfig = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getValidationConfig()>
+
 			<!--- Setup farcry form validation (fv) --->
 			<skin:onReady>
 				<cfoutput>

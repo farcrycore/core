@@ -47,15 +47,14 @@
 		<cfset innerHTML = thisTag.generatedContent />
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
-	
-	
+
 	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#attributes.formtheme#Field') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#attributes.formtheme#Field'].path>
+	<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'field') >
+		<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['field'].path>
 	<cfelse>
-		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapField'].path>
+		<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['field'].path>
 	</cfif>
-		
+
 	<cfmodule template="#modulePath#" attributecollection="#attributes#">
 		<cfoutput>#innerHTML#</cfoutput>
 	</cfmodule>
