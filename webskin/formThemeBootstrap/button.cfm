@@ -28,6 +28,7 @@
 <cfparam name="attributes.textOnClick" default="" /><!--- what should the text change to when the button is clicked.  --->
 <cfparam name="attributes.textOnSubmit" default="" /><!--- what should the text change to when the button is submitted.  --->
 <cfparam name="attributes.disableOnSubmit" default="true" /><!--- should the button be disabled when the form is submitted --->
+<cfparam name="attributes.stButtonAttributes" default="#structNew()#" /><!--- button attributes sent through from object.cfm --->
 
 
 <cfif thistag.executionMode eq "End">
@@ -77,6 +78,17 @@
 		</cfif>
 	</button>
 	</cfoutput>
+
+
+
+	<cfset fcSettings = SerializeJSON(attributes.stButtonAttributes)>
+	<skin:onReady>
+		<cfoutput>
+		$j('###attributes.id#').data('fcSettings', #fcSettings#);</cfoutput>
+	</skin:onReady>
+	
+
+
 </cfif>
 
 <cfsetting enablecfoutputonly="false">

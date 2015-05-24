@@ -161,8 +161,9 @@
 	<cfif len(attributes.onClick)>
 		<cfset stButtonAttributes.onclick = attributes.onClick>
 	</cfif>
-	<!--- 
-	<cfwddx input="#stButtonAttributes#" output="fcSettings" action="cfml2js" topLevelVariable="fcSettings" /> --->
+	
+	<!--- Need to put stButtonAttributes into attributes scope so that it is passed into formTheme renderer --->
+	<cfset attributes.stButtonAttributes = stButtonAttributes />
 
 	<cfif attributes.dropdownToggle>
 		<cfset attributes.class = listAppend(attributes.class, "dropdown-toggle", " ") />
@@ -198,14 +199,6 @@
 
 		</cfdefaultcase>
 		</cfswitch>
-	
-	
-		<cfset fcSettings = SerializeJSON(stButtonAttributes)>
-		<skin:onReady>
-			<cfoutput>
-			$j('###attributes.id#').data('fcSettings', #fcSettings#);</cfoutput>
-		</skin:onReady>
-		
 		
 		
 		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>
