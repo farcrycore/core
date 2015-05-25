@@ -40,6 +40,7 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 				
 		<cfset var htmlLabel = "" />
 		<cfset var joinItems = "" />
@@ -125,7 +126,7 @@
 					</cfif>
 					
 					<cfoutput>
-					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="#arguments.stMetadata.ftStyle#" class="selectInput #arguments.stMetadata.ftClass#">
+					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="#arguments.stMetadata.ftStyle#" class="selectInput #arguments.inputClass# #arguments.stMetadata.ftClass#">
 					<cfif len(arguments.stMetadata.ftFirstListLabel) AND NOT arguments.stMetadata.ftSelectMultiple>
 						<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 					</cfif>
