@@ -365,7 +365,7 @@
 				<cfset epochTime = DateDiff("s", DateConvert("utc2Local", "January 1 1970 00:00"), now()) + arguments.config.urlExpiry />
 				
 				<!--- Create a canonical string to send --->
-				<cfset signature = "#arguments.method#\n\n\n#epochTime#\n#urlpath#" />
+				<cfset signature = "#arguments.method#\n\n\n#epochTime#\n/#arguments.config.bucket##urlpath#" />
 				
 				<!--- Replace "\n" with "chr(10) to get a correct digest --->
 				<cfset signature = replace(signature,"\n","#chr(10)#","all") />
