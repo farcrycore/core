@@ -17,6 +17,8 @@
 </cfif>
 
 
+<!--- The highrachy of formthemes requires this to be in all nested ft:forms --->
+<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
 <!--- MJB
@@ -60,7 +62,6 @@ It just ignores the inner ones.
 		<cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->
 		<cfparam name="attributes.autoSave" default="false" /><!--- Enter boolean to toggle default autosave values on properties --->
 		<cfparam name="attributes.autoSaveToSessionOnly" default="false" /><!--- If there are any autosave fields, should they save to the session only? --->
-		<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
