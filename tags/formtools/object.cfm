@@ -73,8 +73,30 @@
 	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
 	<cfparam name="attributes.focusField" default="" /><!--- Enter the name of the field to focus on when rendering the form. --->
 	<cfparam name="attributes.autosave" default="" /><!--- Enter boolean to toggle default autosave values on properties --->
-	<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
+	<cfparam name="attributes.formtheme" default=""><!--- The form theme to use --->
 	
+
+	<cfif not len(attributes.formtheme)>
+
+		<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+			<cfset baseTagData = getBaseTagData("cf_form")>
+
+			<cfif len(baseTagData.attributes.formtheme)>
+				<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+			</cfif>
+		 </cfif>
+	</cfif>
+
+	<cfif not len(attributes.formtheme)>
+
+		<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+			<cfset baseTagData = getBaseTagData("cf_form")>
+
+			<cfif len(baseTagData.attributes.formtheme)>
+				<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+			</cfif>
+		 </cfif>
+	</cfif>
 	
 	<cfset variables.stReturnFields = structNew()>
 
@@ -644,7 +666,8 @@
 								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
 								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
 								errorMessage="#ftFieldMetadata.errorMessage#"
-								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
+								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
+								formTheme="#attributes.formTheme#">
 
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
 						

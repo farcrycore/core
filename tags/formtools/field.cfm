@@ -32,7 +32,32 @@
 <cfparam name="attributes.hint" default=""><!--- This will place a hint below the field --->
 <cfparam name="attributes.errorMessage" default=""><!--- This will place an errormessage above the field --->
 <cfparam name="attributes.rbkey" default="coapi.field.#rereplace(attributes.label,'[^\w]','','ALL')#" /><!--- The resource path for this field. --->
-<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
+<cfparam name="attributes.formtheme" default=""><!--- The form theme to use --->
+
+
+<cfif not len(attributes.formtheme)>
+
+	<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+		<cfset baseTagData = getBaseTagData("cf_form")>
+
+		<cfif len(baseTagData.attributes.formtheme)>
+			<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+		</cfif>
+	 </cfif>
+</cfif>
+
+<cfif not len(attributes.formtheme)>
+
+	<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+		<cfset baseTagData = getBaseTagData("cf_form")>
+
+		<cfif len(baseTagData.attributes.formtheme)>
+			<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+		</cfif>
+	 </cfif>
+</cfif>
+
+
 
 <cfif thistag.ExecutionMode eq "start">
 	<!--- DO NOTHING --->
