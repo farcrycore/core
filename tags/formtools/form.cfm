@@ -17,7 +17,7 @@
 </cfif>
 
 
-<!--- The highrachy of formthemes requires this to be in all nested ft:forms --->
+<!--- The hierarchy of formthemes requires this to be in all nested ft:forms --->
 <cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
