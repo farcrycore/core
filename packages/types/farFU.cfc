@@ -817,7 +817,7 @@
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
 					<cfheader statuscode="301" /><!--- statustext="Moved permanently" --->
-					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#" charset="utf-8" />
+					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string), ampDelim="&")#" charset="utf-8" />
 					<cfabort />
 				</cfif>
 			</cfif>
