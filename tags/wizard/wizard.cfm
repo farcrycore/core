@@ -91,6 +91,7 @@
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 		<cfparam name="attributes.bFocusFirstField" default="true" /><!--- Focus on first wizard element. --->
+		<cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->
 		<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 		
