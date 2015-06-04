@@ -282,67 +282,13 @@
 				<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.name#" class="fc-server-side-validation" value="#attributes.validation#" /><!--- Let the form submission know if it to perform serverside validation --->
 			</cfoutput>
 			
-			
-			<!--- If we are validating this form, load and initialise the validation engine.  --->
-			<cfif attributes.validation>
-				<skin:loadJS id="fc-jquery-validate" />
-
-				<!--- set up validation selectors and classes based on the form theme --->
-				<cfset stValConfig = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getValidationConfig()>
-
-				<!--- Setup farcry form validation (fv) --->
-				<skin:onReady>
-					<cfoutput>
-					if(typeof $j('###attributes.Name#').validate != "undefined") {
-						$fc.fv#attributes.Name# = $j("###attributes.Name#").validate({
-							onsubmit: false, // let the onsubmit function handle the validation
-							errorElement: "#stValConfig.errorElement#",
-							errorClass: "#stValConfig.errorElementClass#",
-							<cfif len(stValConfig.wrapper)>
-								wrapper: "#stValConfig.wrapper#",  // a wrapper around the error message					   
-							</cfif>					   
-							errorPlacement: function(error, element) {
-						  		error.prependTo( element.closest("#stValConfig.errorPlacementSelector#") );
-					        },
-							highlight: function(element, errorClass) {
-							   $j(element).closest("#stValConfig.fieldContainerSelector#").addClass('#stValConfig.fieldContainerClass#');
-							},
-							unhighlight: function(element, errorClass) {
-							   $j(element).closest("#stValConfig.fieldContainerSelector#").removeClass('#stValConfig.fieldContainerClass#');
-							}
-						});
-					}
-					
-					</cfoutput>
-				</skin:onReady>
-			</cfif>
-			
-			<!--- If we have anything in the onsubmit, use jquery to run it --->
-			<skin:onReady>
-				<cfoutput>
-				$j('###attributes.name#').submit(function(){
-					var valid = true;			
-					<cfif attributes.validation EQ 1>
-						if ( $j("###attributes.name#").attr('fc:validate') == 'false' ) {
-							$j("###attributes.name#").attr('fc:validate',true);					
-						} else {
-							valid = $j('###attributes.name#').valid();
-						}
-					</cfif>			
-						 
-					if(valid){
-						#attributes.onSubmit#;
-					} else {
-						$fc.fv#attributes.name#.focusInvalid();
-						return false;
-					}
-			    });
-				</cfoutput>				
-			</skin:onReady>
-			
-			
-			<cfset dummy = structdelete(request,"farcryForm")>	
+				
 		</cfif>
 	
 	</cfmodule>
+
+
+	<cfif isDefined("Variables.CorrectForm")>		
+		<cfset dummy = structdelete(request,"farcryForm")>
+	</cfif>
 </cfif>
