@@ -124,6 +124,7 @@
 		<cfset Request.farcryForm.Method = attributes.Method>
 		<cfset Request.farcryForm.onSubmit = attributes.onSubmit />
 		<cfset Request.farcryForm.Validation = attributes.Validation>
+		<cfset Request.farcryForm.defaultAction = attributes.defaultAction>	
 		<cfset Request.farcryForm.stObjects = StructNew()>		
 	<!--- 
 		<cfoutput>		
