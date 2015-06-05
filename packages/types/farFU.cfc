@@ -1361,7 +1361,7 @@
 			
 			<cfif len(arguments.objectid) AND len(thistype)>
 
-				<cfif StructKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
+				<cfif structKeyExists(application.stcoapi, thistype) AND structKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
 					
 					<cfset stFUObject = getFUStructByObjectID(arguments.objectid) />
 
