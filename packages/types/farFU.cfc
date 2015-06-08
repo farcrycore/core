@@ -633,7 +633,7 @@
 		<cfif not application.fc.lib.db.isDeployed(typename="farFU",dsn=application.dsn)>
 			<cflock name="deployFarFUTable" timeout="30">
 				<!--- The table has not been deployed. We need to deploy it now --->
-				<cfset application.fc.lib.db.deployType(typename="farFU",dsn=application.dsn) />
+				<cfset application.fc.lib.db.deployType(typename="farFU",dsn=application.dsn,bDropTable=false) />
 				<cfset migrate() />
 			</cflock>
 		</cfif>
