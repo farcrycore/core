@@ -630,7 +630,7 @@
 		<cfif not application.fc.lib.db.isDeployed(typename="farFU",dsn=application.dsn)>
 			<cflock name="deployFarFUTable" timeout="30">
 				<!--- The table has not been deployed. We need to deploy it now --->
-				<cfset application.fc.lib.db.deployType(typename="farFU",dsn=application.dsn) />
+				<cfset application.fc.lib.db.deployType(typename="farFU",dsn=application.dsn,bDropTable=false) />
 				<cfset migrate() />
 			</cflock>		
 		</cfif>
@@ -778,14 +778,12 @@
 			<cfif structkeyexists(stResult,"__redirectionURL") and not structKeyExists(stResult, "ajaxmode")>
 				<!--- Don't want to resend the furl --->
 				<cfset structdelete(stLocalURL,"furl") />
-				<cftry>
 				<cfif not isvalid("integer",stResult.__redirectionType)>
 					<cfset stResult.__redirectionType = 301>
 				</cfif>
-				<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
-				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#">
-				<cfabort>
-				<cfcatch><cfdump var="##"></cfcatch></cftry>
+				<cfheader statuscode="#stResult['__redirectionType']#" /><!--- statustext="Moved permanently" --->
+				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#" charset="utf-8" />
+				<cfabort />
 			</cfif>
 			
 			<!--- If the user went to an objectid=xyz URL, but should be using a friendly URL, redirect them --->
@@ -802,9 +800,9 @@
 					<cfset structdelete(stLocalURL,"objectid") />
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
-					<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
-					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#">
-					<cfabort>		
+					<cfheader statuscode="301" /><!--- statustext="Moved permanently" --->
+					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string), ampDelim="&")#" charset="utf-8" />
+					<cfabort />
 				</cfif>
 			</cfif>
 		</cfif>
@@ -1363,7 +1361,7 @@
 			
 			<cfif len(arguments.objectid) AND len(thistype)>
 
-				<cfif StructKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
+				<cfif structKeyExists(application.stcoapi, thistype) AND structKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
 					
 					<cfset stFUObject = getFUStructByObjectID(arguments.objectid) />
 

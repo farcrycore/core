@@ -2,7 +2,7 @@
 
 <cfif len(application.fapi.getConfig("general", "webtoplogopath"))>
 	<!--- fit inside 180x60 --->
-	<cfoutput><img src="#application.fapi.getConfig("general", "webtoplogopath")#" alt="#application.fapi.getConfig("general","sitetitle")#"></cfoutput>
+	<cfoutput><img src="#application.fapi.getConfig("general", "webtoplogopath")#" alt="#application.fapi.getConfig("general","sitetitle")#" style="max-width:180px"></cfoutput>
 <cfelse>
 	<cfoutput>#application.fapi.getConfig("general", "sitetitle")#</cfoutput>
 </cfif>

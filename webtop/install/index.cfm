@@ -1167,31 +1167,36 @@ $(function(){
 	<cfset var dbType = "">
 	<cfset var stInfo = structNew()>
 
-	<cfdbinfo name="stInfo" datasource="#arguments.dsn#" type="version">
+	<cftry>
+		<cfdbinfo name="stInfo" datasource="#arguments.dsn#" type="version">
+		<cfcatch></cfcatch>
+	</cftry>
 
-	<cfswitch expression="#stInfo.database_productname#">
-		<cfcase value="MySQL">
-			<cfset dbType = "mysql">
-		</cfcase>
-		<cfcase value="Microsoft SQL Server">
-			<cfif listFirst(stInfo.database_version, ".") gte 9>
-				<cfset dbType = "mssql2005">
-			<cfelse>
-				<cfset dbType = "mssql">
-			</cfif>
-		</cfcase>
-		<cfcase value="H2">
-			<cfset dbType = "h2">
-		</cfcase>
-<!--- 
-		<cfcase value="Oracle">
-			<cfset dbType = "oracle">
-		</cfcase>
-		<cfcase value="PostgreSQL">
-			<cfset dbType = "oracle">
-		</cfcase>
---->
-	</cfswitch>
+	<cfif NOT structIsEmpty(stInfo)>
+		<cfswitch expression="#stInfo.database_productname#">
+			<cfcase value="MySQL">
+				<cfset dbType = "mysql">
+			</cfcase>
+			<cfcase value="Microsoft SQL Server">
+				<cfif listFirst(stInfo.database_version, ".") gte 9>
+					<cfset dbType = "mssql2005">
+				<cfelse>
+					<cfset dbType = "mssql">
+				</cfif>
+			</cfcase>
+			<cfcase value="H2">
+				<cfset dbType = "h2">
+			</cfcase>
+	<!--- 
+			<cfcase value="Oracle">
+				<cfset dbType = "oracle">
+			</cfcase>
+			<cfcase value="PostgreSQL">
+				<cfset dbType = "oracle">
+			</cfcase>
+	--->
+		</cfswitch>
+	</cfif>
 
 	<cfreturn dbType>
 </cffunction>

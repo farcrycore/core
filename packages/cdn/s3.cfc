@@ -353,30 +353,34 @@
 			<cfset urlpath = "/" & urlpath />
 		</cfif>
 		
-		<!--- Prepend bucket and pathPrefix --->
-		<cfset urlpath = "#arguments.config.pathPrefix##urlpath#" />
+		<cfif NOT left(urlpath,2) eq "//">
+	
+			<!--- Prepend bucket and pathPrefix --->
+			<cfset urlpath = "#arguments.config.pathPrefix##urlpath#" />
 		
-		<!--- URL encode the filename --->
-		<cfset urlpath = replacelist(urlencodedformat(urlpath),"%2F,%20,%2D,%2E,%5F,%27","/, ,-,.,_,'")>
-		
-		<cfif structkeyexists(arguments.config,"security") and arguments.config.security eq "private">
-			<cfset epochTime = DateDiff("s", DateConvert("utc2Local", "January 1 1970 00:00"), now()) + arguments.config.urlExpiry />
+			<!--- URL encode the filename --->
+			<cfset urlpath = replacelist(urlencodedformat(urlpath),"%2F,%20,%2D,%2E,%5F,%27","/, ,-,.,_,'")>
 			
-			<!--- Create a canonical string to send --->
-			<cfset signature = "#arguments.method#\n\n\n#epochTime#\n#urlpath#" />
+			<cfif structkeyexists(arguments.config,"security") and arguments.config.security eq "private">
+				<cfset epochTime = DateDiff("s", DateConvert("utc2Local", "January 1 1970 00:00"), now()) + arguments.config.urlExpiry />
+				
+				<!--- Create a canonical string to send --->
+				<cfset signature = "#arguments.method#\n\n\n#epochTime#\n#urlpath#" />
+				
+				<!--- Replace "\n" with "chr(10) to get a correct digest --->
+				<cfset signature = replace(signature,"\n","#chr(10)#","all") />
+				
+				<cfset urlpath = urlpath & "?AWSAccessKeyId=#arguments.config.accessKeyId#&Expires=#epochTime#&Signature=#urlencodedformat(HMAC_SHA1(signature,arguments.config.awsSecretKey))#" />
+			</cfif>
 			
-			<!--- Replace "\n" with "chr(10) to get a correct digest --->
-			<cfset signature = replace(signature,"\n","#chr(10)#","all") />
-			
-			<cfset urlpath = urlpath & "?AWSAccessKeyId=#arguments.config.accessKeyId#&Expires=#epochTime#&Signature=#urlencodedformat(HMAC_SHA1(signature,arguments.config.awsSecretKey))#" />
-		</cfif>
-		
-		<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
-			<cfset urlpath = "//#arguments.config.bucket#.s3.amazonaws.com" & urlpath />
-		<cfelse>
-			<cfset urlpath = "//" & arguments.config.domain & urlpath />
-		</cfif>
+			<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
+				<cfset urlpath = "//#arguments.config.bucket#.s3.amazonaws.com" & urlpath />
+			<cfelse>
+				<cfset urlpath = "//" & arguments.config.domain & urlpath />
+			</cfif>
 
+		</cfif>
+			
 		<cfif structkeyexists(arguments,"protocol")>
 			<cfset urlpath = arguments.protocol & ":" & urlpath />
 		</cfif>

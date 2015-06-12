@@ -925,6 +925,137 @@
 
 		$j(propertyWrap).unmask('');			
 	};	
+
+
+
+	$fc.reloadWebskinWrap = function($webskinWrap,focusFieldID) {
+		
+		focusFieldID = focusFieldID ? focusFieldID : '';
+		
+		
+		var $webskinTypename = $webskinWrap.attr('ft:typename');
+		var $webskinObjectID = $webskinWrap.attr('ft:objectid');
+		var $webskinView = $webskinWrap.attr('ft:webskin');
+		
+		$j( $webskinWrap ).mask('&nbsp;');
+		$j( $webskinWrap ).load('/index.cfm?ajaxmode=1&type=' + $webskinTypename + '&objectid=' + $webskinObjectID + '&view=' + $webskinView, function(){
+			$j( $webskinWrap ).unmask('');
+			if (focusFieldID.length){ $j('##' + focusFieldID).focus(); }
+		});
+	}
+	
+	$j(document).on('change', '.wrap-save-on-change input:not(.helper),.wrap-save-on-change textarea:not(.helper),.wrap-save-on-change select:not(.helper)', function() {	
+		
+		
+		var $propertyWrap = $j(this).closest('.propertyRefreshWrap');
+		var propertyPrefix = $propertyWrap.attr('ft:prefix');
+		var propertyType = $propertyWrap.attr('ft:type');
+		var propertyObjectID = $propertyWrap.attr('ft:objectid');
+		var propertyName = $propertyWrap.attr('ft:property');
+		var propertyWatchingFields = $propertyWrap.attr('ft:watchingFields');
+		var reloadOnAutoSave = $propertyWrap.attr('ft:reloadOnAutoSave');
+		var autoSaveToSessionOnly = $j(this).closest('form').hasClass('autoSaveToSessionOnly');
+		
+		var $webskinWrap = $j(this).closest('.webskin-wrap');
+		var webskinType = $webskinWrap.attr('ft:typename');
+		var webskinObjectID = $webskinWrap.attr('ft:objectid');
+		var webskinView = $webskinWrap.attr('ft:webskin');
+		
+		lData = $propertyWrap.find("input,textarea,select").serialize();
+		lData = lData.replace(new RegExp( propertyPrefix, "gi" ),"");
+		
+		$j.ajaxq('AutoSave',{
+		
+			type: "POST",
+			cache: false,
+			url: '/index.cfm?ajaxmode=1&type=' + propertyType + '&objectid=' + propertyObjectID + '&view=ajaxSaveProperty&bSessionOnly=' + autoSaveToSessionOnly + '&propertyName=' + propertyName, 
+			context: $j(this),
+			success: function(data){
+				
+				$j('.webskin-wrap').each(function(index) {
+					var $currentWebskinWrap = $j(this);
+					
+					var $webskinWatchFields = $j(this).attr("ft:watchFields");
+					
+					if ($webskinWatchFields.length){
+						var valueArray = $webskinWatchFields.split(",");
+																
+						for(var i=0; i<valueArray.length; i++){
+							if (valueArray[i] == (propertyPrefix + propertyName) ){
+								// refresh the webskin wrap
+								$fc.reloadWebskinWrap( $currentWebskinWrap );	
+							} else if(valueArray[i] == (propertyName) ){
+								// refresh the webskin wrap
+								$fc.reloadWebskinWrap( $currentWebskinWrap );	
+							}
+						}
+								
+					}						
+				});
+				
+				var $propertyRefreshWrap = $j(this).closest('.propertyRefreshWrap');
+
+				if(data['BSUCCESS'] == 1) {
+					var focusFieldID = '';
+					if ($webskinWrap.length) {
+						var focusFieldID = $(':focus').attr('id');
+						$fc.reloadWebskinWrap($webskinWrap, focusFieldID);
+						
+					} else {
+						
+						if (reloadOnAutoSave == 'Yes'){
+							location=location;
+						} else {
+							
+							if ($propertyRefreshWrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
+								$fc.refreshProperty( $propertyRefreshWrap );
+							}
+							
+							if (propertyWatchingFields.length){
+								var valueArray = propertyWatchingFields.split(",");
+																		
+								for(var i=0; i<valueArray.length; i++){
+									if (valueArray[i].indexOf('.') !== -1) {
+										// refresh all properties regardless of object
+										var elSelector = "span.propertyRefreshWrap[ft\\:watchFieldname='" + valueArray[i] + "']";
+										
+										$j(elSelector).each(function(index) {
+											$fc.refreshProperty( $j(this) );
+										});
+												
+									} else {			
+										// only refresh the current objects property
+										if ($j('##' + propertyPrefix + valueArray[i]).is(":focus")){
+											focusFieldID = $j('##' + propertyPrefix + valueArray[i]).attr('id');
+										}
+										
+										$fc.refreshProperty( $j('##wrap-' + propertyPrefix + valueArray[i]), focusFieldID );
+									}
+								}
+							}
+						}
+					}
+				} else {
+					$fc.refreshProperty( $propertyRefreshWrap );
+					if (data['MESSAGE'].length){
+						alert(data['MESSAGE']);
+					} else {
+						alert('Field [' + propertyName + '] was not saved');
+					}
+				}
+				
+			}, 
+			error: function(data){	
+			},
+			complete: function(){
+			},
+			data: lData,
+			
+			timeout: 15000
+		});
+					
+								
+	});
 <cfsilent></script></cfsilent><!--- /trick editor to highlight syntax --->
 </cfoutput>
 

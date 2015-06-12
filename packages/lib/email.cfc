@@ -59,8 +59,10 @@
 				<cfif len(stSend.bodyPlain) and len(stSend.bodyHTML)>
 					<cfmailpart type="plain" wraptext="74"><cfoutput>#stSend.bodyPlain#</cfoutput></cfmailpart>
 					<cfmailpart type="html"><cfoutput>#stSend.bodyHTML#</cfoutput></cfmailpart>
-				<cfelse>
-					<cfoutput>#stSend.bodyPlain# #stSend.bodyHTML#</cfoutput>
+				<cfelseif len(stSend.bodyPlain)>
+					<cfmailpart type="plain" wraptext="74"><cfoutput>#stSend.bodyPlain#</cfoutput></cfmailpart>
+				<cfelseif len(stSend.bodyHTML)>
+					<cfmailpart type="html"><cfoutput>#stSend.bodyHTML#</cfoutput></cfmailpart>
 				</cfif>
 			</cfmail>
 

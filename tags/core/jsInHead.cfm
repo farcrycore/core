@@ -4,7 +4,9 @@
 </cfif>
 
 <cfif thistag.executionMode eq "Start">
-	
+	<cfparam name="attributes.inline" default="false" />
+	<cfparam name="attributes.r_html" default="" />
+
 	<cfparam name="request.mode.ajax" default="0">
 	<cfparam name="request.mode.flushcache" default="0">
 	<cfparam name="request.mode.livecombine" default="0">
@@ -47,7 +49,7 @@
 		</cfif>
 	</cfloop>
 	
-	<cfif structkeyexists(attributes,"r_html")>
+	<cfif len(attributes.r_html)>
 		<cfparam name="caller.#attributes.r_html#" default="#arraynew(1)#" />
 	</cfif>
 	
@@ -135,14 +137,14 @@ FILES: #stJS.lFullFilebaseHREFs#
 				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location='cache',file=sCacheFileName) />
 				<cfoutput><script src="#stLoc.path#" id="javascript-#stJS.id#" type="text/javascript"></script></cfoutput>
 			<cfelseif stJS.bExternal>
-				<cfoutput><meta id="javascript-#stJS.id#" name="jsid" content="#stJS.id#"></cfoutput>
+				<cfoutput><meta id="javascript-#stJS.id#" property="jsid" content="#stJS.id#"></cfoutput>
 				<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
 				<cfloop list="#stJS.lFiles#" index="i">
 					<cfoutput><script src="#i#" type="text/javascript"></script></cfoutput>
 				</cfloop>
 				<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 			<cfelse>
-				<cfoutput><meta id="javascript-#stJS.id#" name="jsid" content="#stJS.id#"></cfoutput>
+				<cfoutput><meta id="javascript-#stJS.id#" property="jsid" content="#stJS.id#"></cfoutput>
 				<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
 				<cfloop list="#stJS.lFiles#" index="i">
 					<cfoutput><script src="#stJS.baseHREF#/#i#" type="text/javascript"></script></cfoutput>
@@ -156,14 +158,23 @@ FILES: #stJS.lFullFilebaseHREFs#
 			<cfoutput>#CRLF#</cfoutput>
 		</cfsavecontent>
 		
-		<cfif structkeyexists(attributes,"r_html")>
+		<cfif len(attributes.r_html)>
 			<cfset st = structnew() />
 			<cfset st["id"] = "javascript-#stJS.id#" />
 			<cfset st["html"] = js />
 			<cfset arrayappend(caller[attributes.r_html],st) />
+		<cfelseif attributes.inline>
+			<cfoutput>#JS#</cfoutput>
 		<cfelse>
 			<cfhtmlhead text="#JS#" />
 		</cfif>
 
 	</cfloop>
+
+	<cfif attributes.inline>
+		<!--- MJB: clear out js libraries --->
+		<cfset request.inHead.aJSLibraries = arrayNew(1) />
+	</cfif>
+
+
 </cfif>

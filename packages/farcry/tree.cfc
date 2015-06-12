@@ -494,10 +494,10 @@ $out:$
 		SELECT data AS objectid, typename
 		FROM
 			#arguments.dbOwner#dmNavigation_aObjectIDs o 
-		WHERE o.parentid IN ('#ListChangeDelims(arguments.lNodeIds,"','",",")#')
+		WHERE o.parentid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lNodeIds#">)
 		ORDER BY seq
 	</cfquery>
-	
+
 	<cfloop query="q">
 		<cfset stObj = application.fapi.getContentObject(objectid="#q.objectID#", typename="#q.Typename#") />
 		<cfset arrayappend(aObjs,stObj)>

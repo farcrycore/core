@@ -29,14 +29,14 @@ $in: flexAssetsPath -- Location of the flex assets : optional $
 
 <cfsavecontent variable="flexInHead">
 <cfoutput>
-<script src="#attributes.flexAssetsPath#/AC_OETags.js" language="javascript"></script>
+<script src="#attributes.flexAssetsPath#/AC_OETags.js" type="text/javascript"></script>
 <cfif attributes.FAbridgeJS neq "">
-	<script src="#attributes.flexAssetsPath#/FABridge.js" language="javascript"></script>
-	<script language="javascript">
+	<script src="#attributes.flexAssetsPath#/FABridge.js" type="text/javascript"></script>
+	<script type="text/javascript">
 	#attributes.FAbridgeJS#
 	</script>
 </cfif>
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 <!--
 // -----------------------------------------------------------------------------
 // Globals
@@ -53,9 +53,9 @@ var requiredRevision = 0;
 </cfsavecontent>
 <cfhtmlHead text="#flexInHead#">
 <cfoutput>
-<script language="JavaScript" type="text/javascript" src="#attributes.flexAssetsPath#/history.js"></script>
+<script type="text/javascript" src="#attributes.flexAssetsPath#/history.js"></script>
 
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 <!--
 // Version check for the Flash Player that has the ability to start Player Product Install (6.0r65)
 var hasProductInstall = DetectFlashVer(6, 0, 65);

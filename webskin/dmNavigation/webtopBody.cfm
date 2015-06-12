@@ -130,6 +130,12 @@
 </ft:processForm>
 
 
+<!--- get root tree data --->
+<cfsavecontent variable="jsonData">
+	<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" bLoadRoot="true" responsetype="json" bBubbleErrors="true" />
+</cfsavecontent>
+
+
 <cfoutput>
 
 	<h1><i class="fa fa-sitemap"></i> #navTitle#</h1>
@@ -183,12 +189,6 @@
 	</table>
 
 	</ft:form>
-
-
-	<!--- get root tree data --->
-	<cfsavecontent variable="jsonData">
-		<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" bLoadRoot="true" responsetype="json" />
-	</cfsavecontent>
 
 
 	<skin:htmlHead>

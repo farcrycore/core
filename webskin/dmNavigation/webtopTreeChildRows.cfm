@@ -23,6 +23,7 @@
 <cfparam name="stParam.disableNode" default="#url.disableNode#">
 <cfparam name="stParam.expandedNodes" default="#url.expandedNodes#">
 <cfparam name="stParam.bLoadLeafNodes" default="#url.bLoadLeafNodes#">
+<cfparam name="stParam.bBubbleErrors" default="false">
 
 
 <cfset oTree = createObject("component","farcry.core.packages.farcry.tree")>
@@ -99,6 +100,7 @@
 <cfset stResponse = structNew()>
 <cfset stResponse["success"] = true>
 <cfset stResponse["rows"] = arrayNew(1)>
+<cfset stResponse["errors"] = arrayNew(1)>
 
 
 
@@ -129,7 +131,16 @@
 		<cfif arrayLen(stNav.aObjectIDs) gt 0>
 			<cfset expandable = 1>
 			<cfif qTree.nlevel lt treeMaxLevel>
-				<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
+				<cftry>
+					<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
+					<cfcatch>
+						<cfset aLeafNodes = arrayNew(1)>
+						<cfif stParam.bBubbleErrors>
+							<skin:bubble tags="error" message="Error loading leaf node #qTree.objectid# - #cfcatch.message#" />
+						</cfif>
+						<cfset arrayAppend(stResponse["errors"], "Error loading leaf node #qTree.objectid# - #cfcatch.message#")>
+					</cfcatch>					
+				</cftry>
 				<cfset childrenLoaded = true>	
 			</cfif>
 		</cfif>

@@ -10,7 +10,7 @@
 		ftType="richtext" 
 		ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 		ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
-		ftLinkListFilterRelatedTypenames="dmFile,dmNavigation,dmHTML"
+		ftLinkListFilterTypenames="dmFile,dmNavigation,dmHTML"
 		ftTemplateSnippetWebskinPrefix="insertSnippet">
 	</code>
 --->
@@ -102,7 +102,7 @@
 		<cfsavecontent variable="html">
 			
 			<cfoutput>
-				<script language="javascript" type="text/javascript">
+				<script type="text/javascript">
 				$j(function() {
 					tinymce.init({
 					selector: '###arguments.fieldname#',
@@ -420,7 +420,8 @@
 			<cfset stImage["url"] = application.fc.lib.cdn.ioGetFileLocation(
 				location="images",
 				file=qImages.image,
-				admin=true
+				admin=true,
+				bRetrieve=true
 			).path />
 			<cfset arrayappend(stResult["images"],stImage) />
 		</cfloop>

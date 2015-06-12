@@ -41,15 +41,15 @@
 		<cfparam name="this.botIPs" default="*" />
 		
 		
-		<cfset this.defaultAgents = "bot\b,\brss,slurp,mediapartners-google,googlebot,zyborg,emonitor,jeeves,sbider,findlinks,yahooseeker,mmcrawler,jbrowser,java,pmafind,blogbeat,converacrawler,ocelli,labhoo,validator,sproose,ia_archiver,larbin,psycheclone,arachmo" />
+		<cfset this.defaultAgents = "bot\b,\brss,slurp,mediapartners-google,googlebot,bingbot,zyborg,emonitor,jeeves,sbider,findlinks,yahooseeker,mmcrawler,jbrowser,java,pmafind,blogbeat,converacrawler,ocelli,labhoo,validator,sproose,ia_archiver,larbin,psycheclone,arachmo" />
 		<cfset this.botAgents = __plusMinusStateMachine(this.defaultAgents, this.botagents) />
 		
 		<cfset this.defaultIPs = "" />
-		<cfset this.botAgents = __plusMinusStateMachine(this.defaultIPs, this.botIPs) />
+		<cfset this.botIPs = __plusMinusStateMachine(this.defaultIPs, this.botIPs) />
 		
 		<cfparam name="cookie.sessionScopeTested" default="false" />
 		<cfparam name="cookie.hasSessionScope" default="false" />
-		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or listcontains(this.botIPs,cgi.remote_addr)>
+		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or arrayFind(this.botIPs,cgi.remote_addr)>
 			<cfset THIS.sessiontimeout = createTimeSpan(0,0,0,2) />
 			<cfset request.fc.hasSessionScope = false />
 			
@@ -458,8 +458,9 @@
 		
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
-		
+
 		<cfif not structkeyexists(application,"stCOAPI") or not structkeyexists(application,"rb")>
+			<cfheader statuscode="500" statustext="Internal Server Error">
 			<cfdump var="#arguments.exception#">
 			<cfabort>
 		</cfif>

@@ -150,7 +150,7 @@
     </cfscript>
 		
 	<cfoutput>
-	<script language="JavaScript">
+	<script type="text/javascript">
 	    function updateDisplayBox()
 	    {
 	        document.theForm.displayMethod.disabled = !document.theForm.makehtml.checked;

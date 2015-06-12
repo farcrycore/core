@@ -737,7 +737,8 @@
 		<cfset var i = "" />
 		<cfset var key = "" />
 
-		<cfif application.bObjectBroker and len(arguments.typename) and application.stcoapi[arguments.typename].bObjectBroker>
+		<cfif application.bObjectBroker and (listfindnocase("fulookup,config,navid,catid",arguments.typename) OR (len(arguments.typename) and structKeyExists(application.stcoapi, arguments.typename) and application.stcoapi[arguments.typename].bObjectBroker))>
+
 			<cfloop list="#arguments.lObjectIDs#" index="i">
 
 				<cfif isvalid("uuid",i)>

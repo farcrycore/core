@@ -2,9 +2,9 @@
 /* WIZARD WRAP */
 
 #wizard-wrap {background: transparent url("images/plp_wrap_bg.gif") no-repeat 100% 100%;margin-right:20px;padding-bottom: 2.5em; overflow:visible;}
-#wizard-wrap .wizard-pagination {float:right; margin-right: -20px; margin-top: 10px;}
+#wizard-wrap .wizard-pagination {float:right; margin-right: -20px; margin-top: 10px; width: 140px;}
 #wizard-wrap .pg-bot {clear:both; margin-top: 5px;}
-#wizard-wrap .wizard-pagination ul {padding:0;margin: 0;list-style-type:none;width:120px;position:relative;height:2.5em;}
+#wizard-wrap .wizard-pagination ul {padding:0;margin: 0;list-style-type:none; width: 100%; position:relative;height:2.5em;}
 #wizard-wrap .wizard-pagination li {padding:0;margin:0;display:inline}
 
 #wizard-wrap .wizard-pagination li.li-prev {position:absolute;top:0;left:0;list-style-type:none;}
