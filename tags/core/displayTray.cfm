@@ -57,11 +57,11 @@
 
 		$fc.loadTray = function(){
 		    $j('##farcryTray').html('');
-					    
+
 			$j.ajax({
 				type: "POST",
 				cache: false,
-				url: '#application.fapi.getLink(type=url.type, view="trayContainer", objectid=url.objectid, urlParameters="ajaxmode=1&totalTickCount=#request.fc.totalTickCount#")#', 
+				url: '#application.url.webroot#/index.cfm?typename=#urlEncodedFormat(url.type)#&objectid=#urlEncodedFormat(url.objectid)#&view=trayContainer&ajaxmode=1&totalTickCount=#request.fc.totalTickCount#',
 				complete: function(data){
 					$j('##farcryTray').html(data.responseText);					
 				},

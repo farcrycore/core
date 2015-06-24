@@ -10,6 +10,8 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfparam name="arguments.stParam" default="#url#">
+<cfparam name="arguments.stParam.view" default="">
+<cfparam name="arguments.stParam.bodyView" default="">
 
 
 <!--- If the url points to a type webskin, we need to determine the content type. --->
