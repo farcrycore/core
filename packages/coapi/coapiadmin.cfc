@@ -496,9 +496,9 @@
 			
 			<!--- If it hasnt been found yet, check in core. --->
 			<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
-				
 				<cfset webskinPath = "/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm" />
-				
+			<cfelse>
+				<cflog file="coapi" text="Unable to locate webskin [#arguments.template#] for typename [#arguments.typename#]">
 			</cfif>
 		</cfif>
 		
