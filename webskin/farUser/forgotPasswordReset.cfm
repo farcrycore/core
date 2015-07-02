@@ -71,7 +71,10 @@
 			</p>
 		<cfelse>
 			<cfif structKeyExists(session,"resetPWUserID")> <!--- typed in a wrong password --->
-				<ft:object typename="farUser" objectid="#session.resetPWUserID#" lfields="password" />
+				<ft:object typename="farUser" objectid="#session.resetPWUserID#" lfields="password" r_stFields="stFields" />
+				
+				<cfoutput>#stFields.password.html#</cfoutput>
+
 				<ft:buttonPanel>
 					<ft:button value="Reset Password" />
 				</ft:buttonPanel>
@@ -87,8 +90,10 @@
 					<!--- Set reset hash into session to make sure it is still the same user when updating --->
 					<cfset session.resetPWUserID = qFarUser.objectid>
 					
-					<ft:object typename="farUser" objectid="#qFarUser.objectid#" lfields="password" />
+					<ft:object typename="farUser" objectid="#qFarUser.objectid#" lfields="password" r_stFields="stFields" />
 	
+					<cfoutput>#stFields.password.html#</cfoutput>
+
 					<ft:buttonPanel>
 						<ft:button value="Reset Password" />
 					</ft:buttonPanel>
