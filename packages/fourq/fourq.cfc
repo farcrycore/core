@@ -1498,4 +1498,70 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="getLibraryRecordset" access="public" output="false" returntype="query" description="Overridable function to return data displayed in library picker. Expects typical join formtool properties.">
+		<cfargument name="primaryID" type="uuid" required="true" hint="ID of object being attached to" />
+		<cfargument name="primaryTypename" type="string" required="true" hint="Type of object being attached to" />
+		<cfargument name="stMetadata" type="struct" required="true" hint="Metadata of join property" />
+		<cfargument name="filterType" type="string" required="true" hint="Content type being attached" />
+		<cfargument name="filter" type="string" required="false" default="User entered search string" />
+
+		<cfset var qFiltered = querynew("key") />
+		<cfset var oLibraryData = "" />
+		<cfset var bLibraryFoundData = false />
+		<cfset var libraryDataResult = "" />
+		<cfset var qAll = "" />
+		<cfset var sqlWhere = "1=1" />
+		<cfset var sqlOrderBy = "" />
+		<cfset var oFormtools = "" />
+		<cfset var stLibraryData = {} />
+
+		<cfif len(arguments.filter)>
+			<cfquery datasource="#application.dsn#" name="qFiltered">
+				SELECT objectid AS "key"
+				FROM #arguments.filterType#
+				WHERE LOWER(label) LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter)#%" />
+			</cfquery>
+		</cfif>
+		
+		<cfif structKeyExists(arguments.stMetadata, "ftLibraryData") AND len(arguments.stMetadata.ftLibraryData) AND structkeyexists(this, arguments.stMetadata.ftLibraryData)>
+			<cfif qFiltered.recordcount>
+				<cfinvoke component="#this#" method="#arguments.stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
+					<cfinvokeargument name="primaryID" value="#arguments.primaryID#" />
+					<cfinvokeargument name="qFilter" value="#qFiltered#" />
+				</cfinvoke>
+			<cfelse>
+				<cfinvoke component="#this#" method="#arguments.stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
+					<cfinvokeargument name="primaryID" value="#arguments.primaryID#" />
+				</cfinvoke>
+			</cfif>
+			
+			<cfif isStruct(libraryDataResult)>
+				<cfreturn libraryDataResult.q />
+			<cfelse>
+				<cfreturn libraryDataResult />
+			</cfif>
+		</cfif>
+		
+		<!--- if nothing exists to generate library data then cobble something together --->
+		<cfif structKeyExists(arguments.stMetadata, "ftLibraryDataSQLWhere") and len(arguments.stMetadata.ftLibraryDataSQLWhere)>
+			<cfset SQLWhere = "#SQLWhere# AND (#arguments.stMetadata.ftLibraryDataSQLWhere#)" />
+		</cfif>
+		
+		<cfif qFiltered.recordcount>
+			<cfset SQLWhere = "#SQLWhere# AND objectid in ('#listchangedelims(valuelist(qFiltered.key),"','")#')" />
+		<cfelseif len(arguments.filter)>
+			<cfset SQLWhere = "#SQLWhere# AND 0=1" />
+		</cfif>
+
+		<cfset SQLOrderBy = "datetimelastupdated desc" />
+		<cfif structKeyExists(arguments.stMetadata, "ftLibraryDataSQLOrderBy")>
+			<cfset SQLOrderBy = arguments.stMetadata.ftLibraryDataSQLOrderBy />
+		</cfif>
+		
+		<cfset oFormTools = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools"))>
+		<cfset stLibraryData = oFormTools.getRecordset(typename="#url.filterTypename#", sqlColumns="objectid", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="0") />
+		
+		<cfreturn stLibraryData.q />
+	</cffunction>
+
 </cfcomponent>

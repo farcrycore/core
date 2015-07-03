@@ -33,7 +33,7 @@
 	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 	
 	<!--- FILTERING SETUP --->
-	<cfif not len(url.filterTypename)>		
+	<cfif not len(url.filterTypename)>
 		<cfset url.filterTypename = listFirst(stMetadata.ftJoin) />
 	</cfif>
 	
@@ -42,78 +42,11 @@
 	</cfif>
 	
 	<cfparam name="form.searchTypename" default="" />
-	
-	<cfif len(form.searchTypename)>
-		<cfquery datasource="#application.dsn#" name="qFiltered">
-			SELECT objectid AS "key"
-			FROM #url.filterTypename#
-			WHERE LOWER(label) LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(form.searchTypename)#%" />
-		</cfquery>
+	<cfif not structkeyexists(stMetadata,"ftLibraryDataTypename") or not len(stMetadata.ftLibraryDataTypename)>
+		<cfset stMetadata.ftLibraryDataTypename = url.filterTypename />
 	</cfif>
-			
-	<!--- SETUP THE QUERY DATA --->
-	<cfset bFoundLibraryData = false />
-		
-	<cfif structKeyExists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>
-		<cfif not structkeyexists(stMetadata,"ftLibraryDataTypename") or not len(stMetadata.ftLibraryDataTypename)>
-			<cfset stMetadata.ftLibraryDataTypename = url.filterTypename />
-		</cfif>
-		
-		<cfset oLibraryData = application.fapi.getContentType("#stMetadata.ftLibraryDataTypename#") />
-			
-		<!--- use ftlibrarydata method from primary content type --->
-		<cfif structkeyexists(oLibraryData, stMetadata.ftLibraryData)>
-			<cfset bFoundLibraryData = true />
-			
-			<cfif isdefined("qFiltered")>
-				<cfinvoke component="#oLibraryData#" method="#stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
-					<cfinvokeargument name="primaryID" value="#stobj.objectid#" />
-					<cfinvokeargument name="qFilter" value="#qFiltered#" />
-				</cfinvoke>
-			<cfelse>
-				<cfinvoke component="#oLibraryData#" method="#stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
-					<cfinvokeargument name="primaryID" value="#stobj.objectid#" />
-				</cfinvoke>
-			</cfif>
-			
-			<cfif isStruct(libraryDataResult)>
-				<cfset qAll = libraryDataResult.q />			
-			<cfelse>
-				<cfset qAll = libraryDataResult />
-			</cfif>								
-		</cfif>		
-	</cfif>
-		
-		
-	<cfif not bFoundLibraryData>
-		<!--- if nothing exists to generate library data then cobble something together --->	
-		<cfset SQLWhere = "1=1" />
 
-
-		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLWhere") and len(stMetadata["ftLibraryDataSQLWhere"])>
-			<cfset SQLWhere = " #SQLWhere# AND (#stMetadata.ftLibraryDataSQLWhere#)" />
-		</cfif>
-		
-		<cfif isdefined("qFiltered")>
-			<cfif qFiltered.recordcount>
-				<cfset SQLWhere = "#SQLWhere# AND objectid in ('#listchangedelims(valuelist(qFiltered.key),"','")#')" />
-			<cfelse>
-				<cfset SQLWhere = "#SQLWhere# AND 0=1" />
-			</cfif>
-		</cfif>
-
-		<cfset SQLOrderBy = "datetimelastupdated desc" />
-		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLOrderBy")>
-			<cfset SQLOrderBy = stMetadata.ftLibraryDataSQLOrderBy />
-		</cfif>
-		
-		<cfset oFormTools = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools"))>
-		<cfset stLibraryData = oFormTools.getRecordset(typename="#url.filterTypename#", sqlColumns="objectid", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="0") />
-		<cfset qAll = stLibraryData.q />		
-		<cfset bFoundLibraryData = true />
-	</cfif>
-	
-	<cfset qResult = qAll />
+	<cfset qResult = application.fapi.getContentType(stMetadata.ftLibraryDataTypename).getLibraryRecordset(primaryID=stObj.objectid, primaryTypename=stObj.typename, stMetadata=stMetadata, filterType=url.filterTypename, filter=form.searchTypename) />
 
 	<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1") />
 	
@@ -132,7 +65,7 @@
 				</div>
 			</cfoutput>
 		</grid:div>
-			
+		
 		<!--- DETERMINE THE SELECTED ITEMS --->
 		<cfif isArray(stobj[url.property])>
 			<cfloop array="#stobj[url.property]#"  index="i">
