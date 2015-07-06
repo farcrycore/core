@@ -32,7 +32,7 @@
 	</cfcase>
 	
 	<cfcase value="externalRedirectURL"><!--- This is a fallback - usually these will be handled in the link --->
-		<cflocation url="#stObj.externalRedirectURL#" statusCode="302" addtoken="false" />
+		<cflocation url="#stObj.externalRedirectURL#" statusCode="301" addtoken="false" />
 	</cfcase>
 	
 	<cfcase value="aObjectIds">

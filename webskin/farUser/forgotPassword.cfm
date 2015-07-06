@@ -26,6 +26,7 @@
 				<cfset request.passwordChanged = true />
 				<cfcatch>
 					<!--- error sending email --->
+					<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
 					<cfset errormsg = "There was an error sending your password reset link by email. Please contact your administrator.">
 				</cfcatch>
 			</cftry>

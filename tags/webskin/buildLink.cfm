@@ -1,5 +1,4 @@
-<cfsetting enablecfoutputonly="Yes">
-<cfsilent>
+<cfsetting enablecfoutputonly="Yes"><cfsilent>
 <!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -126,6 +125,4 @@
 		<cfset thistag.GeneratedContent=tagoutput>
 	</cfif>
 </cfif>
-</cfsilent>
-
-<cfsetting enablecfoutputonly="No">
+</cfsilent><cfsetting enablecfoutputonly="No">

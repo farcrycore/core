@@ -46,6 +46,7 @@
 <cfparam name="attributes.bHideSecuredNodes" default="0"><!--- MJB: check if option to Hide Nav Node Items that user does't have permission to access: default to 0 for backward compatibility --->
 <cfparam name="attributes.afilter" default="#arrayNew(1)#">
 <cfparam name="attributes.bSpan" default="false">
+<cfparam name="attributes.separator" default="|">
 <cfif attributes.functionMethod eq "getDescendants">
 	<cfparam name="attributes.lColumns" default="navType,externallink,lNavIDAlias,internalRedirectID,externalRedirectURL,target" />
 <cfelse>
@@ -129,7 +130,7 @@ if (attributes.displayStyle EQ "aLink") {
 			
 			// Only display a separator if the link
 			if(bIncludeSeparator) {
-				writeOutput(" | ");
+				writeOutput(" #attributes.separator# ");
 			}
 			else{
 				// Ensure a separator is displayed before future links

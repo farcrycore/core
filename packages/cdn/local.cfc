@@ -66,10 +66,10 @@
 		<cfif listLen(filename, ".") GTE 2>
 			<cfset fileLastname = listLast(filename, ".") />
 			<cfset fileFirstname = left(filename, len(filename) - len(fileLastname) - 1) />
-			<cfset urlEncodedFilename = application.fc.lib.esapi.encodeForURL(fileFirstname) & "." & application.fc.lib.esapi.encodeForURL(fileLastname) />
+			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) & "." & urlEncodedFormat(fileLastname) />
 		<cfelse>
 			<cfset fileFirstname = filename />
-			<cfset urlEncodedFilename = application.fc.lib.esapi.encodeForURL(fileFirstname) />
+			<cfset urlEncodedFilename = urlEncodedFormat(fileFirstname) />
 		</cfif>
 		
 		<!--- Get file path if exist --->

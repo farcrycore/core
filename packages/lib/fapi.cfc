@@ -1274,15 +1274,14 @@
 
 			<cfif isDefined("application.config.#arguments.key#.#arguments.name#")>
 				<cfset application.config[arguments.key][arguments.name] = arguments.value />
-				<cfif arguments.bReadOnly>
-					<cfparam name="application.config_readonly" default="#structNew()#">
-					<cfparam name="application.config_readonly.#arguments.key#" default="#structNew()#">
-					<cfset application.config_readonly[arguments.key][arguments.name] = arguments.value>
-				</cfif>
-			<cfelse>
-				<cfthrow message="The config item [#arguments.key#:#arguments.name#] was not found." />
 			</cfif>
 
+			<cfif arguments.bReadOnly>
+				<cfparam name="application.config_readonly" default="#structNew()#">
+				<cfparam name="application.config_readonly.#arguments.key#" default="#structNew()#">
+				<cfset application.config_readonly[arguments.key][arguments.name] = arguments.value>
+			</cfif>
+			
 			<cfreturn />
 		</cffunction>
 

@@ -207,10 +207,9 @@
 										value="#qLibraryList.objectid#" />
 									<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
 								</label>
-								<br class="clear" />
 							</cfloop>
-								<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
-								<br class="clear" />
+							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+
 							</cfoutput>
 							
 						<cfelse>
@@ -808,7 +807,6 @@
 							<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
 						</label>
 					</cfloop>
-						<br class="clear" />
 					</cfoutput>
 					
 				<cfelse>

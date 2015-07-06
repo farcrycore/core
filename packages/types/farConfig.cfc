@@ -298,9 +298,15 @@ object methods
 				<cfset stResult.typename = getForm(arguments.key) />
 				<cfset bChanged = true />
 			</cfif>
-			
+
+			<!--- handle missing configs --->
+			<cfif structIsEmpty(stResult)>
+				<cfset stResult.typename = getForm(arguments.key) />
+				<cfset bChanged = true />
+			</cfif>
+
 			<!--- update with missing values --->
-			<cfif structkeyexists(application.stCOAPI,stResult.typename)>
+			<cfif structkeyexists(stResult, "typename") AND structkeyexists(application.stCOAPI,stResult.typename)>
 				<cfset stDefault = createobject("component",application.stCOAPI[stResult.typename].packagepath).getData(application.fc.utils.createJavaUUID()) />
 				<cfloop collection="#stDefault#" item="formkey">
 					<cfif not structkeyexists(stResult,formkey)>
@@ -308,6 +314,8 @@ object methods
 						<cfset bChanged = true />
 					</cfif>
 				</cfloop>
+			<cfelse>
+				<cfset bChanged = true />
 			</cfif>
 
 			<!--- if the config was updated, save to db --->

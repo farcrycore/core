@@ -11,12 +11,18 @@
 
 <!--- Only show if the user is logged in --->
 <cfif application.fapi.isLoggedIn()>
-	
+
+	<cfparam name="url.totalTickCount" default="--">
+
 	<!--- Need to strip out the domain name from the referer reference --->
 	<cfset refererURL = cgi.http_referer />
 	<cfset domainLoc = findNoCase(cgi.http_host, refererURL) />
 	<cfif domainLoc GT 0>
 		<cfset refererURL = mid(refererURL, find("/",refererURL,domainLoc), len(refererURL) ) />
+	</cfif>
+
+	<cfif NOT structKeyExists(form, "refererURL")>
+		<cfset form.refererURL = refererURL>
 	</cfif>
 	
 	

@@ -630,7 +630,7 @@
 		<cfif not application.fc.lib.db.isDeployed(typename="farFU",dsn=application.dsn)>
 			<cflock name="deployFarFUTable" timeout="30">
 				<!--- The table has not been deployed. We need to deploy it now --->
-				<cfset application.fc.lib.db.deployType(typename="farFU",dsn=application.dsn) />
+				<cfset application.fc.lib.db.deployType(typename="farFU",dsn=application.dsn,bDropTable=false) />
 				<cfset migrate() />
 			</cflock>		
 		</cfif>
@@ -801,7 +801,7 @@
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
 					<cfheader statuscode="301" /><!--- statustext="Moved permanently" --->
-					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#" charset="utf-8" />
+					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string), ampDelim="&")#" charset="utf-8" />
 					<cfabort />
 				</cfif>
 			</cfif>
@@ -1361,7 +1361,7 @@
 			
 			<cfif len(arguments.objectid) AND len(thistype)>
 
-				<cfif StructKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
+				<cfif structKeyExists(application.stcoapi, thistype) AND structKeyExists(application.stcoapi[thistype],"bFriendly") AND application.stcoapi[thistype].bFriendly>
 					
 					<cfset stFUObject = getFUStructByObjectID(arguments.objectid) />
 
