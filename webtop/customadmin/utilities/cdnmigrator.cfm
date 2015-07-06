@@ -17,6 +17,7 @@
 		<cfset stResult["success"] = true />
 		
 		<cfcatch>
+			<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
 			<cfset stResult = structnew() />
 			<cfset stResult["success"] = false />
 			<cfset stResult["error"] = cfcatch.message />
