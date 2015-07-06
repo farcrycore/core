@@ -474,7 +474,7 @@
 		<cfoutput><tr class="none"><td colspan="5">No COAPI types</td></tr></cfoutput>
 	</cfif>
 	<cfoutput>
-			<tbody>
+			</tbody>
 		</table>
 	</cfoutput>
 </cfloop>
