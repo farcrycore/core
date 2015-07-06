@@ -900,6 +900,7 @@
 		
 		<cfif structKeyExists(application.objectbroker, section) AND structKeyExists(application.objectbroker[section], objectid)>
 			<cfset structDelete(application.objectbroker[section],objectid) />
+			<cfset arraydelete(application.objectBroker[section].aobjects,objectid) />
 		</cfif>
 	</cffunction>
 	
