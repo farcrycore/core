@@ -767,7 +767,7 @@
 				<cfelseif nDiff LT 2>
 					<cfset prettyDate = "in #nDiff# minute" />
 				<cfelseif hDiff LT 1>
-					<cfset prettyDate = "in #nDiff# minutes ago" />
+					<cfset prettyDate = "in #nDiff# minutes" />
 				<cfelseif hDiff LT 2>
 					<cfset prettyDate = "in #hDiff# hour" />
 				<cfelseif dDiff LT 1>
