@@ -505,6 +505,7 @@
 	</cfif>
 </cfloop>
 
+<cfif arrayLen(unmatchedTables)>
 <cfoutput>
 <h2>Other Tables</h2>
 <p>The tables below don't match any of the schemas, rules or types known by the FarCry COAPI</p>
@@ -531,6 +532,7 @@
 	</tbody>
 </table>
 </cfoutput>
+</cfif>
 
 
 <cfsetting enablecfoutputonly="false" />
