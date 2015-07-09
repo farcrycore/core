@@ -806,9 +806,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var tempObjectStore = structNew() />
 		<cfset var typename = getTypeName() />
 		
-		<cfif isdefined("application.stCOAPI.#typename#.bArraysAsStructs")>
+		<cfif isdefined("application.stCOAPI.#typename#.bArraysAsStructs") and (not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs))>
 			<cfparam name="arguments.bArraysAsStructs" default="#application.stCOAPI[typename].bArraysAsStructs#" />
-		<cfelse>
+		<cfelseif not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs)>
 			<cfparam name="arguments.bArraysAsStructs" default="false" />
 		</cfif>
 		
