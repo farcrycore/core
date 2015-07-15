@@ -143,6 +143,22 @@ test for the existance of each and act accordingly
 </cfloop>
 <cfset application.fc.lib.db.setLogChangeFlags(application.config.general.logDBChanges) />
 
+<!--- set up the configs from the environment --->
+<cfif structKeyExists(THIS, "bUseEnv") AND THIS.bUseEnv eq "true">
+	<cfset system = createobject("java", "java.lang.System")>
+	<cfset ENV = system.getEnv()>
+	<cfset ENV_ARRAY = ENV.keySet().toArray()>
+	<cfloop from="1" to="#arrayLen(ENV_ARRAY)#" index="i">
+		<cfif findNoCase("FARCRY_CONFIG_", ENV_ARRAY[i]) AND listLen(ENV_ARRAY[i], "_") gte 4>
+			<cfset configKey = listGetAt(ENV_ARRAY[i], 3, "_")>
+			<cfset configProperty = replaceNoCase(ENV_ARRAY[i], "FARCRY_CONFIG_#configKey#_" , "")>
+			<cfset configValue = ENV.get(ENV_ARRAY[i])>
+			<cfset application.fapi.setConfig(configKey, configProperty, configValue, true)>
+		</cfif>
+	</cfloop>
+</cfif>
+
+
 <!--- wrap this in a cftry catch in case the policystore isn't initialised yet  --->
 <!--- <cfif StructKeyExists(request,"init") AND request.init eq 0> --->
 
