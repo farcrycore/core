@@ -257,117 +257,105 @@ $out:$
 		<cfset var tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() /><!--- Table metadata collection --->
 		<cfset var qMetadata = "" />
 		
-		<!--- <cftry> --->
-			<cfset stResult.packagepath = application.factory.oUtils.getPath(arguments.package,arguments.name) />
-			<cfset stResult.package = arguments.package />
-			
-			<cftry>
-				<cfset o = createObject("Component", stResult.packagepath) />		
-				<cfset stMetaData = getMetaData(o) />
-				
-				<cfcatch>
-					<cfthrow message="Error instantiating #stResult.packagepath#: #cfcatch.message# #cfcatch.detail#" />
-				</cfcatch>
-			</cftry>
-			
-			<cfif structKeyExists(stMetaData,"bAbstract") and stMetaData.bAbstract>
-			
-				<cfset stResult = structnew() />
-				
-			<cfelse>
-				
-				<cfset stResult.bCustom = (refindnocase("farcry\.core",stResult.packagepath)) />
-				<cfset stResult.bLibrary = (refindnocase("farcry\.plugins",stResult.packagepath)) />
-				
-				<cfset stResult = o.initmetadata(stResult) />
-				
-				<cfparam name="stResult.icon" default="" />
-				
-				
-				<cfif listcontains("types,rules,forms,schema",arguments.package)>
-					
-					<!--- Query of metadata used for auto generation of HTML forms --->
-					<cfset stResult.qMetadata = setupMetadataQuery(typename=arguments.name,stProps=stResult.stProps) />
-				</cfif>
-				
-				<cfif listcontains("types,rules,schema",arguments.package)>
-					
-					<!--- Update DB metadata --->
-					<cfset application.fc.lib.db.initialiseTableMetadata(stResult.packagepath) />
-					
-				</cfif>
-				
-				<cfparam name="stResult.bObjectBroker" default="false" />
-				
-				<cfswitch expression="#arguments.package#">
-					<cfcase value="types">
-						<cfset stResult.typepath = stResult.packagepath />
-						<cfset stResult.bCustomType = stResult.bCustom />
-						<cfset stResult.bLibraryType = stResult.bLibrary />
-						<cfset stResult.class = "type" />
-					</cfcase>
-					<cfcase value="rules">
-						<cfset stResult.rulepath = stResult.packagepath />
-						<cfset stResult.bCustomRule = stResult.bCustom />
-						<cfset stResult.bLibraryRule = stResult.bLibrary />
-						<cfset stResult.class = "rule" />
-					</cfcase>
-					<cfcase value="forms">
-						<cfset stResult.formpath = stResult.packagepath />
-						<cfset stResult.bCustomForm = stResult.bCustom />
-						<cfset stResult.bLibraryForm = stResult.bLibrary />
-						<cfset stResult.class = "form" />
-					</cfcase>
-					<cfcase value="formtools">
-						<cfset stResult.formtoolpath = stResult.packagepath />
-						<cfset stResult.bCustomFormTool = stResult.bCustom />
-						<cfset stResult.bLibraryFormTool = stResult.bLibrary />
-						<cfset stResult.fuAlias = arguments.name />
-						<cfset stResult.oFactory = o.init() />
-						<cfset stResult.class = "formtool" />
-					</cfcase>
-					<cfcase value="schema">
-						<cfset stResult.class = "schema" />
-					</cfcase>
-				</cfswitch>
-				
-				<!--- get bulk upload info from properties --->
-				<cfparam name="stResult.bBulkUpload" default="false" />
-				<cfif isdefined("stResult.bBulkUpload") and stResult.bBulkUpload>
-					<cfset stResult.bulkUploadDefaultFields = "" />
-					<cfset stResult.bulkUploadEditFields = "" />
-					<cfset stResult.bulkUploadTarget = "" />
-					
-					<cfquery dbtype="query" name="qMetadata">SELECT * FROM stResult.qMetadata ORDER BY ftSeq</cfquery>
-					
-					<cfloop query="qMetadata">
-						<cfif len(qMetadata.ftSeq) 
-							and structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadDefault") 
-							and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadDefault>
-							
-							<cfset stResult.bulkUploadDefaultFields = listappend(stResult.bulkUploadDefaultFields,qMetadata.propertyname) />
-						</cfif>
-						
-						<cfif structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadEdit") 
-							and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadEdit>
-							
-							<cfset stResult.bulkUploadEditFields = listappend(stResult.bulkUploadEditFields,qMetadata.propertyname) />
-						</cfif>
-						
-						<cfif structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadTarget") 
-							and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadTarget>
-							
-							<cfset stResult.bulkUploadTarget = qMetadata.propertyname />
-							<cfset stResult.bBulkUpload = true />
-						</cfif>
-					</cfloop>
-				</cfif>
-			</cfif>
+		<cfset stResult.packagepath = application.factory.oUtils.getPath(arguments.package,arguments.name) />
+		<cfset stResult.package = arguments.package />
 		
-			<!--- <cfcatch>
-				<cflog file="coapi" type="error" text="#application.applicationname#: Failed to initialise core type '#arguments.package#.#arguments.name#'" />
-			</cfcatch>
-		</cftry> --->
+		<cfset o = createObject("Component", stResult.packagepath) />		
+		<cfset stMetaData = getMetaData(o) />
+		
+		<cfif structKeyExists(stMetaData,"bAbstract") and stMetaData.bAbstract>
+		
+			<cfset stResult = structnew() />
+			
+		<cfelse>
+			
+			<cfset stResult.bCustom = (refindnocase("farcry\.core",stResult.packagepath)) />
+			<cfset stResult.bLibrary = (refindnocase("farcry\.plugins",stResult.packagepath)) />
+			
+			<cfset stResult = o.initmetadata(stResult) />
+			
+			<cfparam name="stResult.icon" default="" />
+			
+			
+			<cfif listcontains("types,rules,forms,schema",arguments.package)>
+				
+				<!--- Query of metadata used for auto generation of HTML forms --->
+				<cfset stResult.qMetadata = setupMetadataQuery(typename=arguments.name,stProps=stResult.stProps) />
+			</cfif>
+			
+			<cfif listcontains("types,rules,schema",arguments.package)>
+				
+				<!--- Update DB metadata --->
+				<cfset application.fc.lib.db.initialiseTableMetadata(stResult.packagepath) />
+				
+			</cfif>
+			
+			<cfparam name="stResult.bObjectBroker" default="false" />
+			
+			<cfswitch expression="#arguments.package#">
+				<cfcase value="types">
+					<cfset stResult.typepath = stResult.packagepath />
+					<cfset stResult.bCustomType = stResult.bCustom />
+					<cfset stResult.bLibraryType = stResult.bLibrary />
+					<cfset stResult.class = "type" />
+				</cfcase>
+				<cfcase value="rules">
+					<cfset stResult.rulepath = stResult.packagepath />
+					<cfset stResult.bCustomRule = stResult.bCustom />
+					<cfset stResult.bLibraryRule = stResult.bLibrary />
+					<cfset stResult.class = "rule" />
+				</cfcase>
+				<cfcase value="forms">
+					<cfset stResult.formpath = stResult.packagepath />
+					<cfset stResult.bCustomForm = stResult.bCustom />
+					<cfset stResult.bLibraryForm = stResult.bLibrary />
+					<cfset stResult.class = "form" />
+				</cfcase>
+				<cfcase value="formtools">
+					<cfset stResult.formtoolpath = stResult.packagepath />
+					<cfset stResult.bCustomFormTool = stResult.bCustom />
+					<cfset stResult.bLibraryFormTool = stResult.bLibrary />
+					<cfset stResult.fuAlias = arguments.name />
+					<cfset stResult.oFactory = o.init() />
+					<cfset stResult.class = "formtool" />
+				</cfcase>
+				<cfcase value="schema">
+					<cfset stResult.class = "schema" />
+				</cfcase>
+			</cfswitch>
+			
+			<!--- get bulk upload info from properties --->
+			<cfparam name="stResult.bBulkUpload" default="false" />
+			<cfif isdefined("stResult.bBulkUpload") and stResult.bBulkUpload>
+				<cfset stResult.bulkUploadDefaultFields = "" />
+				<cfset stResult.bulkUploadEditFields = "" />
+				<cfset stResult.bulkUploadTarget = "" />
+				
+				<cfquery dbtype="query" name="qMetadata">SELECT * FROM stResult.qMetadata ORDER BY ftSeq</cfquery>
+				
+				<cfloop query="qMetadata">
+					<cfif len(qMetadata.ftSeq) 
+						and structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadDefault") 
+						and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadDefault>
+						
+						<cfset stResult.bulkUploadDefaultFields = listappend(stResult.bulkUploadDefaultFields,qMetadata.propertyname) />
+					</cfif>
+					
+					<cfif structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadEdit") 
+						and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadEdit>
+						
+						<cfset stResult.bulkUploadEditFields = listappend(stResult.bulkUploadEditFields,qMetadata.propertyname) />
+					</cfif>
+					
+					<cfif structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadTarget") 
+						and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadTarget>
+						
+						<cfset stResult.bulkUploadTarget = qMetadata.propertyname />
+						<cfset stResult.bBulkUpload = true />
+					</cfif>
+				</cfloop>
+			</cfif>
+		</cfif>
 		
 		<cfreturn stResult />
 	</cffunction>

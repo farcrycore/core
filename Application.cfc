@@ -576,6 +576,8 @@
 		<!---------------------------------------- 
 		BEGIN: Application Initialise 
 		----------------------------------------->
+		<cfset var oError = "" />
+
 		<cfparam name="url.updateapp" default="" />
 		
 		<cftry>
@@ -632,21 +634,25 @@
 		</cfif>
 		
 		<cfcatch type="lock">
-			<cfheader statuscode="503" statustext="Service Unavailable" />
-			<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
 			<cfset request.fcInitError = true />
+			<cfset oError = createobject("component", "farcry.core.packages.lib.error") />
+			<cfset request.error = oError.collectRequestInfo() />
+			<cfset request.error.message = "Application Restarting" />
+			<cfset oError.showErrorPage("503 Service Unavailable", request.error) />
 			<cfabort />
 		</cfcatch>
 		
 		<cfcatch type="any">
 			<!--- remove binit to force reinitialisation on next page request --->
 			<cfset structdelete(application,"bInit") />
-			<!--- report error to user --->
-			<cfoutput><h1>Application Failed to Initialise</h1></cfoutput>
 			<cfset request.fcInitError = true />
-			<cfdump var="#cfcatch#" expand="false" />
-			<cfdump var="#createObject("java", "java.net.InetAddress").localhost.getHostName()#" />
-			<cfabort />
+
+			<!--- report error to user --->
+			<cfset oError = createobject("component", "farcry.core.packages.lib.error") />
+			<cfset request.error = oError.normalizeError(cfcatch) />
+			<cfset oError.logData(request.error) />
+			<cfset oError.showErrorPage("500 Internal Server Error", request.error) />
+			<cfabort>
 		</cfcatch>
 		
 		</cftry>
