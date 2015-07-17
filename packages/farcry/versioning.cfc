@@ -374,6 +374,14 @@ Your page "{3}" has been approved.
 {4}
 			</cfoutput></cfsavecontent>
 			
+			<cfsavecontent variable="stEmail.bodyHTML"><cfoutput>
+				<p>Hi {2},</p>
+
+				<p>Your page "{3}" has been approved.</p>
+
+				<p>{4}</p>
+			</cfoutput></cfsavecontent>
+			
 			<cfset returnstruct = application.fc.lib.email.send(argumentCollection=stEmail) />
 		</cfif>
 	</cffunction>
@@ -432,9 +440,9 @@ Your page "{3}" has been approved.
 				<cfset stEmail.variables = arraynew(1) />
 				<cfset stEmail.variables[1] = application.fapi.getConfig("general","sitetitle") />
 				<cfif len(stApprovers[item].firstName) gt 0>
-					<cfset stEmail.variables[2] = stApprovers[item].firstName />
+					<cfset stEmail.variables[2] = trim(stApprovers[item].firstName) />
 				<cfelse>
-					<cfset stEmail.variables[2] = stApprovers[item].userName />
+					<cfset stEmail.variables[2] = trim(stApprovers[item].userName) />
 				</cfif>
 				<cfif isDefined("stObj.title") and len(trim(stObj.title))>
 					<cfset stEmail.variables[3] = stObj.title />
@@ -443,23 +451,38 @@ Your page "{3}" has been approved.
 				<cfelse>
 					<cfset stEmail.variables[3] = "undefined" />
 				</cfif>
-				<cfif len(parentID)>
-					<cfset stEmail.variables[4] = "http://#cgi.http_host##application.url.webtop#/index.cfm?sec=site&rootObjectID=#parentID#" />
+				<cfif len(application.fapi.getConfig('environment','adminServer',''))>
+					<cfset stEmail.variables[4] = application.fapi.getConfig('environment','adminServer','') & application.url.webtop />
 				<cfelse>
-					<cfset stEmail.variables[4] = "http://#cgi.http_host##application.url.webtop#/edittabOverview.cfm?objectid=#arguments.objectID#" />
+					<cfset stEmail.variables[4] = application.fapi.getConfig('environment','canonicalProtocol','http') & "://" & application.fapi.getConfig('environment','canonicalDomain',cgi.http_host) & application.url.webtop />
 				</cfif>
-				<cfset stEmail.variables[5] = application.fapi.getResource("workflow.email.comment@text","Comments added on status change:
-{1}",arguments.comment) />
+				<cfif len(parentID)>
+					<cfset stEmail.variables[4] = stEmail.variables[4] & "/index.cfm?sec=site&rootObjectID=" & parentID />
+				<cfelse>
+					<cfset stEmail.variables[4] = stEmail.variables[4] & "/edittabOverview.cfm?objectid=#arguments.objectID#" />
+				</cfif>
+				<cfset stEmail.variables[5] = arguments.comment />
 				
 				<cfsavecontent variable="stEmail.bodyPlain"><cfoutput>
 Hi {2},
 
-Page "{3}" is awaiting your approval
+Page "{3}" is awaiting your approval.
 
 You may approve/decline this page by browsing to the following location:
 {4}
 
+Comments added on status change:
 {5}
+				</cfoutput></cfsavecontent>
+		
+				<cfsavecontent variable="stEmail.bodyHTML"><cfoutput>
+					<p>Hi {2},</p>
+
+					<p>Page "{3}" is awaiting your approval.</p>
+
+					<p>You may approve/decline this page by browsing to the <a href="{4}">Webtop</a>.</p>
+
+					<p>Comments added on status change:<br>{5}</p>
 				</cfoutput></cfsavecontent>
 		
 				<!--- send email alerting them to object is waiting approval  --->
@@ -518,19 +541,38 @@ You may approve/decline this page by browsing to the following location:
 			<cfelse>
 				<cfset stEmail.variables[3] = "undefined" />
 			</cfif>
-			<cfset stEmail.variables[4] = application.fapi.getResource("workflow.email.comment@text","Comments added on status change:
-{1}",arguments.comment) />
-			<cfset stEmail.variables[5] = "#application.fapi.getConfig("general","adminServer")##application.url.farcry#/index.cfm?sec=site&rootObjectID=#ParentID#" />
+			<cfset stEmail.variables[4] = arguments.comment />
+			<cfif len(application.fapi.getConfig('environment','adminServer',''))>
+				<cfset stEmail.variables[5] = application.fapi.getConfig('environment','adminServer','') & application.url.webtop />
+			<cfelse>
+				<cfset stEmail.variables[5] = application.fapi.getConfig('environment','canonicalProtocol','http') & "://" & application.fapi.getConfig('environment','canonicalDomain',cgi.http_host) & application.url.webtop />
+			</cfif>
+			<cfif len(parentID)>
+				<cfset stEmail.variables[5] = stEmail.variables[4] & "/index.cfm?sec=site&rootObjectID=" & parentID />
+			<cfelse>
+				<cfset stEmail.variables[5] = stEmail.variables[4] & "/edittabOverview.cfm?objectid=#arguments.objectID#" />
+			</cfif>
 			
 			<cfsavecontent variable="stEmail.bodyPlain"><cfoutput>
 Hi {2},
 
 Your page "{3}" has been sent back to draft.
 
+Comments added on status change:
 {4}
 
 You may edit this page by browsing to the following location:
 {5}
+			</cfoutput></cfsavecontent>
+				
+			<cfsavecontent variable="stEmail.bodyHTML"><cfoutput>
+				<p>Hi {2},</p>
+
+				<p>Your page "{3}" has been sent back to draft.</p>
+
+				<p>Comments added on status change:<br>{4}</p>
+
+				<p>You may edit this page by browsing to the <a href="{5}">Webtop</a>.</p>
 			</cfoutput></cfsavecontent>
 				
 			<cfset returnstruct = application.fc.lib.email.send(argumentCollection=stEmail) />
