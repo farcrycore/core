@@ -31,6 +31,7 @@
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 		<skin:loadJS id="jquery-ajaxq" />
+		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadJS id="reverseUUID" />
 		<skin:loadCSS id="jquery-ui" />
