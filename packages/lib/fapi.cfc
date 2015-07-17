@@ -1242,7 +1242,7 @@
 			
 			<cfset var result = "" />
 			
-			<cfif not isdefined("request.cache.config.#arguments.key#")>
+			<cfif not isdefined("request.cache.config.#arguments.key#") AND isDefined("application.stCOAPI.farConfig")>
 				<cfset request.cache.config[arguments.key] = application.fapi.getContentType("farConfig").getConfig(arguments.key) />
 			</cfif>
 
