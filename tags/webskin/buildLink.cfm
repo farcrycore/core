@@ -37,6 +37,7 @@
 	<cfparam name="attributes.r_url" default=""><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
 	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
 	<cfparam name="attributes.includeDomain" default="false">
+	<cfparam name="attributes.bSecure" default="false"> <!--- Return a secure link - ignored when href used --->
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
 	<cfparam name="attributes.urlParameters" default="">
