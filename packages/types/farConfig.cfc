@@ -338,7 +338,9 @@ object methods
 				<cfset stObj.datetimecreated = now() />
 
 				<!--- Save the config data (ensures that new configs and new properties are saved) --->
-				<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
+				<cfif isdefined("application.fc.lib")>
+					<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
+				</cfif>
 			</cfif>
 
 			<cfif structkeyexists(stResult,"typename")>

@@ -142,10 +142,6 @@ test for the existance of each and act accordingly
 	<cfset application.config[configkey] = oConfig.getConfig(key=configkey,bIgnoreCache=true) />
 </cfloop>
 <cfset application.fc.lib.db.setLogChangeFlags(application.fapi.getConfig("general","logDBChanges")) />
-<cfset application.fc.lib.objectbroker.configureType("config",listlen(oConfig.getConfigKeys())) />
-<cfset application.fc.lib.objectbroker.configureType("navid",1) />
-<cfset application.fc.lib.objectbroker.configureType("catid",1) />
-<cfset application.fc.lib.objectbroker.configureType("fuLookup",application.fapi.getConfig("cache","maximumFriendlyURLs")) />
 
 <!--- set up the configs from the environment --->
 <cfif structKeyExists(THIS, "bUseEnv") AND THIS.bUseEnv eq "true">

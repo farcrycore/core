@@ -242,6 +242,7 @@
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
 		<cfset var machineName = "localhost" />
 		<cfset var tickBegin = getTickCount() />
+		<cfset var typename = "" />
 		
 		<cftry>
 			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
@@ -335,7 +336,16 @@
 		 --------------------------------->
 		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
 		
-		<cfset application.fc.lib.objectbroker.init(true) />
+		<cfset application.fc.lib.objectbroker.init() />
+		<cfloop collection="#application.stcoapi#" index="typename">
+			<cfif application.stcoapi[typename].bObjectBroker>
+				<cfset application.fc.lib.objectbroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+			</cfif>
+		</cfloop>
+		<cfset application.fc.lib.objectbroker.configureType("config", 100) />
+		<cfset application.fc.lib.objectbroker.configureType("navid", 1) />
+		<cfset application.fc.lib.objectbroker.configureType("catid", 1) />
+		<cfset application.fc.lib.objectbroker.configureType("fuLookup", 1000) />
 
 		<!----------------------------------- 
 		SETUP CATEGORY APPLICATION STRUCTURE
