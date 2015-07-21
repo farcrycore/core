@@ -337,7 +337,7 @@
 		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
 		
 		<cfset application.fc.lib.objectbroker.init() />
-		<cfloop collection="#application.stcoapi#" index="typename">
+		<cfloop collection="#application.stcoapi#" item="typename">
 			<cfif application.stcoapi[typename].bObjectBroker>
 				<cfset application.fc.lib.objectbroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
 			</cfif>
