@@ -345,7 +345,7 @@
 		<cfset application.fc.lib.objectbroker.configureType("config", 100) />
 		<cfset application.fc.lib.objectbroker.configureType("navid", 1) />
 		<cfset application.fc.lib.objectbroker.configureType("catid", 1) />
-		<cfset application.fc.lib.objectbroker.configureType("fuLookup", 1000) />
+		<cfset application.fc.lib.objectbroker.configureType("fuLookup", 10000) />
 
 		<!----------------------------------- 
 		SETUP CATEGORY APPLICATION STRUCTURE
