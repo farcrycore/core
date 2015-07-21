@@ -493,16 +493,21 @@
  
 
 	<cffunction name="OnRequestEnd" access="public" returntype="void" output="false" hint="Fires after the page processing is complete.">
-		
-		<!--- project and plugin request processing --->
-		<cfif isdefined("application.sysinfo.aOnRequestEnd") and arraylen(application.sysinfo.aOnRequestEnd)>
-			<cfloop from="1" to="#arraylen(application.sysinfo.aOnRequestEnd)#" index="i">
-				<cfinclude template="#application.sysinfo.aOnRequestEnd[i]#" />
-			</cfloop>
+
+		<!--- if we are in the middle of a <skin:location> or we failed to init then we dont want to process onRequestEnd --->
+		<cfif not structKeyExists(request.fc, "bLocating") and not structKeyExists(request,"fcInitError")>
+
+			<!--- project and plugin request processing --->
+			<cfif isdefined("application.sysinfo.aOnRequestEnd") and arraylen(application.sysinfo.aOnRequestEnd)>
+				<cfloop from="1" to="#arraylen(application.sysinfo.aOnRequestEnd)#" index="i">
+					<cfinclude template="#application.sysinfo.aOnRequestEnd[i]#" />
+				</cfloop>
+			</cfif>
+
+			<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
+
 		</cfif>
-		
-		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
-		
+
 		<cfreturn />
 	</cffunction>
 
