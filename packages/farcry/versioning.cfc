@@ -451,10 +451,10 @@ Your page "{3}" has been approved.
 				<cfelse>
 					<cfset stEmail.variables[3] = "undefined" />
 				</cfif>
-				<cfif len(application.fapi.getConfig('environment','adminServer',''))>
-					<cfset stEmail.variables[4] = application.fapi.getConfig('environment','adminServer','') & application.url.webtop />
+				<cfif len(application.fapi.getConfig('general','adminServer',''))>
+					<cfset stEmail.variables[4] = application.fapi.getConfig('general','adminServer','') & application.url.webtop />
 				<cfelse>
-					<cfset stEmail.variables[4] = application.fapi.getConfig('environment','canonicalProtocol','http') & "://" & application.fapi.getConfig('environment','canonicalDomain',cgi.http_host) & application.url.webtop />
+					<cfset stEmail.variables[4] = application.fc.lib.seo.getCanonicalBaseURL() & application.url.webtop />
 				</cfif>
 				<cfif len(parentID)>
 					<cfset stEmail.variables[4] = stEmail.variables[4] & "/index.cfm?sec=site&rootObjectID=" & parentID />
@@ -542,10 +542,10 @@ Comments added on status change:
 				<cfset stEmail.variables[3] = "undefined" />
 			</cfif>
 			<cfset stEmail.variables[4] = arguments.comment />
-			<cfif len(application.fapi.getConfig('environment','adminServer',''))>
-				<cfset stEmail.variables[5] = application.fapi.getConfig('environment','adminServer','') & application.url.webtop />
+			<cfif len(application.fapi.getConfig('general','adminServer',''))>
+				<cfset stEmail.variables[5] = application.fapi.getConfig('general','adminServer','') & application.url.webtop />
 			<cfelse>
-				<cfset stEmail.variables[5] = application.fapi.getConfig('environment','canonicalProtocol','http') & "://" & application.fapi.getConfig('environment','canonicalDomain',cgi.http_host) & application.url.webtop />
+				<cfset stEmail.variables[5] = application.fc.lib.seo.getCanonicalBaseURL() & application.url.webtop />
 			</cfif>
 			<cfif len(parentID)>
 				<cfset stEmail.variables[5] = stEmail.variables[4] & "/index.cfm?sec=site&rootObjectID=" & parentID />
