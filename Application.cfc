@@ -34,6 +34,66 @@
 	<cfinclude template="#this.projectConstructorLocation#" />
 
 
+	<!--- set up the farcry dsn from the environment --->
+	<cfif structKeyExists(THIS, "bUseEnv") AND THIS.bUseEnv eq "true">
+		<cfset system = createObject("java", "java.lang.System")>
+		<cfset FARCRY_DSN = "" & system.getEnv("FARCRY_DSN")>
+
+		<cfif len(FARCRY_DSN)>
+
+			<!--- set the farcry dsn, dbtype and dbowner --->
+			<cfset THIS.dsn = FARCRY_DSN /> 
+			<cfset FARCRY_DBTYPE = system.getEnv("FARCRY_DBTYPE")>
+			<cfif NOT isNull(FARCRY_DBTYPE)>
+				<cfset THIS.dbType = FARCRY_DBTYPE>
+			</cfif>
+			<cfset FARCRY_DBOWNER = system.getEnv("FARCRY_DBOWNER")>
+			<cfif NOT isNull(FARCRY_DBOWNER)>
+				<cfset THIS.dbOwner = FARCRY_DBOWNER>
+			</cfif>
+
+			<!--- set up the datasource settings --->
+			<cfset this.datasources[FARCRY_DSN] = {
+				"class" = system.getEnv("FARCRY_DSN_CLASS"),
+				"connectionString" = system.getEnv("FARCRY_DSN_CONNECTIONSTRING"),
+				"database" = system.getEnv("FARCRY_DSN_DATABASE"),
+				"driver" = system.getEnv("FARCRY_DSN_DRIVER"),
+				"host" = system.getEnv("FARCRY_DSN_HOST"),
+				"port" = system.getEnv("FARCRY_DSN_PORT"),
+				"type" = system.getEnv("FARCRY_DSN_TYPE"),
+				"url" = system.getEnv("FARCRY_DSN_URL"),
+				"username" = system.getEnv("FARCRY_DSN_USERNAME"),
+				"password" = system.getEnv("FARCRY_DSN_PASSWORD")
+			}>
+
+			<!--- set custom options when not using a connection string --->
+			<cfset FARCRY_DSN_CUSTOM = system.getEnv("FARCRY_DSN_CUSTOM")>
+			<cfif NOT isNull(FARCRY_DSN_CUSTOM) AND len(FARCRY_DSN_CUSTOM)>
+				<cfif isJSON(FARCRY_DSN_CUSTOM)>
+					<cfset this.datasources[FARCRY_DSN].custom = deserializeJSON(FARCRY_DSN_CUSTOM)>
+				<cfelse>
+					<cfset stCustom = {}>
+					<cfloop list="#FARCRY_DSN_CUSTOM#" index="item" delimiters="&">
+						<cfset stCustom[listFirst(item, "=")] = listRest(item, "=")>
+					</cfloop>
+					<cfset this.datasources[FARCRY_DSN].custom = stCustom>
+				</cfif>
+			</cfif>
+
+			<!--- set linked db hostname/port using the provided alias --->
+			<cfset FARCRY_DB_LINK_ALIAS = system.getEnv("FARCRY_DB_LINK_ALIAS")>
+			<cfif NOT isNull(FARCRY_DB_LINK_ALIAS) AND len(FARCRY_DB_LINK_ALIAS)>
+				<cfset DB_PORT = system.getEnv(ucase(FARCRY_DB_LINK_ALIAS) & "_PORT")>
+				<cfif NOT isNull(DB_PORT) AND len(DB_PORT)>
+					<cfset this.datasources[FARCRY_DSN].host = listFirst(listLast(DB_PORT, "/"), ":")>
+					<cfset this.datasources[FARCRY_DSN].port = listLast(listLast(DB_PORT, "/"), ":")>
+				</cfif>
+			</cfif>
+
+		</cfif>
+	</cfif>
+
+
 	<cfparam name="this.botDetection" default="true" />
 	<cfif this.botDetection>
 		<!--- Bot detection values --->
@@ -182,6 +242,7 @@
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
 		<cfset var machineName = "localhost" />
 		<cfset var tickBegin = getTickCount() />
+		<cfset var typename = "" />
 		
 		<cftry>
 			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
@@ -275,7 +336,16 @@
 		 --------------------------------->
 		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
 		
-		<cfset application.fc.lib.objectbroker.init(true) />
+		<cfset application.fc.lib.objectbroker.init() />
+		<cfloop collection="#application.stcoapi#" item="typename">
+			<cfif application.stcoapi[typename].bObjectBroker>
+				<cfset application.fc.lib.objectbroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+			</cfif>
+		</cfloop>
+		<cfset application.fc.lib.objectbroker.configureType("config", 100) />
+		<cfset application.fc.lib.objectbroker.configureType("navid", 1) />
+		<cfset application.fc.lib.objectbroker.configureType("catid", 1) />
+		<cfset application.fc.lib.objectbroker.configureType("fuLookup", 10000) />
 
 		<!----------------------------------- 
 		SETUP CATEGORY APPLICATION STRUCTURE
@@ -423,16 +493,21 @@
  
 
 	<cffunction name="OnRequestEnd" access="public" returntype="void" output="false" hint="Fires after the page processing is complete.">
-		
-		<!--- project and plugin request processing --->
-		<cfif isdefined("application.sysinfo.aOnRequestEnd") and arraylen(application.sysinfo.aOnRequestEnd)>
-			<cfloop from="1" to="#arraylen(application.sysinfo.aOnRequestEnd)#" index="i">
-				<cfinclude template="#application.sysinfo.aOnRequestEnd[i]#" />
-			</cfloop>
+
+		<!--- if we are in the middle of a <skin:location> or we failed to init then we dont want to process onRequestEnd --->
+		<cfif not structKeyExists(request.fc, "bLocating") and not structKeyExists(request,"fcInitError")>
+
+			<!--- project and plugin request processing --->
+			<cfif isdefined("application.sysinfo.aOnRequestEnd") and arraylen(application.sysinfo.aOnRequestEnd)>
+				<cfloop from="1" to="#arraylen(application.sysinfo.aOnRequestEnd)#" index="i">
+					<cfinclude template="#application.sysinfo.aOnRequestEnd[i]#" />
+				</cfloop>
+			</cfif>
+
+			<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
+
 		</cfif>
-		
-		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
-		
+
 		<cfreturn />
 	</cffunction>
 
@@ -458,12 +533,6 @@
 		
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
-
-		<cfif not structkeyexists(application,"stCOAPI") or not structkeyexists(application,"rb")>
-			<cfheader statuscode="500" statustext="Internal Server Error">
-			<cfdump var="#arguments.exception#">
-			<cfabort>
-		</cfif>
 
 		<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
 		<cfif structkeyexists(server,"railo")>
@@ -516,6 +585,8 @@
 		<!---------------------------------------- 
 		BEGIN: Application Initialise 
 		----------------------------------------->
+		<cfset var oError = "" />
+
 		<cfparam name="url.updateapp" default="" />
 		
 		<cftry>
@@ -572,21 +643,25 @@
 		</cfif>
 		
 		<cfcatch type="lock">
-			<cfheader statuscode="503" statustext="Service Unavailable" />
-			<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
 			<cfset request.fcInitError = true />
+			<cfset oError = createobject("component", "farcry.core.packages.lib.error") />
+			<cfset request.error = oError.collectRequestInfo() />
+			<cfset request.error.message = "Application Restarting" />
+			<cfset oError.showErrorPage("503 Service Unavailable", request.error) />
 			<cfabort />
 		</cfcatch>
 		
 		<cfcatch type="any">
 			<!--- remove binit to force reinitialisation on next page request --->
 			<cfset structdelete(application,"bInit") />
-			<!--- report error to user --->
-			<cfoutput><h1>Application Failed to Initialise</h1></cfoutput>
 			<cfset request.fcInitError = true />
-			<cfdump var="#cfcatch#" expand="false" />
-			<cfdump var="#createObject("java", "java.net.InetAddress").localhost.getHostName()#" />
-			<cfabort />
+
+			<!--- report error to user --->
+			<cfset oError = createobject("component", "farcry.core.packages.lib.error") />
+			<cfset request.error = oError.normalizeError(cfcatch) />
+			<cfset oError.logData(request.error) />
+			<cfset oError.showErrorPage("500 Internal Server Error", request.error) />
+			<cfabort>
 		</cfcatch>
 		
 		</cftry>
@@ -791,6 +866,9 @@
 		<cfparam name="this.bUseDeviceDetection" default="false" /><!--- Device detection is enabled when this flag is set to true --->
 		<cfparam name="this.bUseMobileWebskins" default="false" /><!--- Mobile webskins are enabled when this flag is set to true --->
 		<cfparam name="this.bUseTabletWebskins" default="false" /><!--- Tablet webskins are enabled when this flag is set to true --->
+
+		<!--- environment configuration --->
+		<cfparam name="this.bUseEnv" default="false" />
 
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />

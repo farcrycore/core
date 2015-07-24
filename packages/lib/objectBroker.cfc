@@ -6,26 +6,16 @@
 		<cfset var typename = "" />
 		<cfset var bSuccess = true />
 		
-		<cfif arguments.bFlush OR NOT structKeyExists(application, "objectBroker") OR NOT structKeyExists(application, "objectrecycler")>
+		<cfif not structKeyExists(application,"bInit") OR not application.bInit OR arguments.bFlush OR NOT structKeyExists(application, "objectBroker") OR NOT structKeyExists(application, "objectrecycler")>
 			<cfset application.objectbroker =  structNew() />
 			
 			<!--- This Java object gathers objects that were put in the broker but marked for garbage collection --->
 			<cfset application.objectrecycler =  createObject("java", "java.lang.ref.ReferenceQueue") />
-			
-			<cfif structkeyexists(application,"stCOAPI")>
-				<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
-					<cfif application.stcoapi[typename].bObjectBroker>
-						<cfset bSuccess = configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
-					</cfif>
-				</cfloop>
-			</cfif>
 
-			<cfif structkeyexists(application,"stCOAPI")>
-				<cfset configureType("config",100) />
-				<cfset configureType("navid",1) />
-				<cfset configureType("catid",1) />
-				<cfset configureType("fuLookup",application.fapi.getConfig("cache","maximumFriendlyURLs")) />
-			</cfif>
+			<!--- Reset existing caches --->
+			<cfloop collection="#application.objectbroker#" item="typename">
+				<cfset configureType(typename, application.objectbroker[typename].maxObjects, application.objectbroker[typename].timeout) />
+			</cfloop>
 		</cfif>
 
 		<cfif not isdefined("application.fcstats.objectbroker") or not isobject(application.fcstats.objectbroker)>
@@ -47,16 +37,15 @@
 	<cffunction name="configureType" access="public" output="false" returntype="boolean">
 		<cfargument name="typename" required="yes" type="string">
 		<cfargument name="MaxObjects" required="no" type="numeric" default="100">
+		<cfargument name="Timeout" required="no" type="numeric" default="86400">
 		
-		<cfset var bResult = "true" />
+		<cfset application.objectbroker[arguments.typename] = {
+			"aobjects" = [],
+			"maxobjects" = arguments.MaxObjects,
+			"timeout" = arguments.timeout
+		} />
 		
-		<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">			
-			<cfset application.objectbroker[arguments.typename]=structnew() />
-			<cfset application.objectbroker[arguments.typename].aobjects=arraynew(1) />
-			<cfset application.objectbroker[arguments.typename].maxobjects=arguments.MaxObjects />		
-		</cflock>
-		
-		<cfreturn bResult />
+		<cfreturn true />
 	</cffunction>
 	
 	<cffunction name="GetObjectCacheEntry" access="public" output="false" returntype="struct" hint="Get an object's cache entry in the object broker">
@@ -542,14 +531,7 @@
 		</cfif>
 
 		<!--- Cache settings --->
-		<cfset baseCheck = baseCheck and not (structKeyExists(url, "updateapp") AND url.updateapp EQ 1) and
-		  (
-		  	listfindnocase("fulookup,config,navid,catid",arguments.typename)
-		  	OR (
-			  isdefined("application.stCOAPI.#arguments.typename#.bObjectBroker") and 
-			  application.stcoapi[arguments.typename].bObjectBroker
-			)
-		  ) />
+		<cfset baseCheck = baseCheck and not (structKeyExists(url, "updateapp") AND url.updateapp EQ 1) and structkeyexists(application.objectbroker, arguments.typename) />
 		<cfif baseCheck eq false>
 			<cfset countUncacheable(argumentCollection=arguments,reason="settings") />
 			<cfreturn false />
@@ -669,7 +651,11 @@
 		</cfif>
 
 		<cfif isCacheable(typename=arguments.typename,action="write") and structkeyexists(arguments,"key")>
-			<cfset cacheAdd("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.key#",arguments.stObj,24*60*60) />
+			<cfset cacheAdd(
+				"#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.key#",
+				arguments.stObj,
+				application.objectbroker[arguments.typename].timeout
+			) />
 			<cfset cleanupObjectBroker(typename=arguments.typename)>
 			<cfreturn true />
 		</cfif>
@@ -737,7 +723,7 @@
 		<cfset var i = "" />
 		<cfset var key = "" />
 
-		<cfif application.bObjectBroker and (listfindnocase("fulookup,config,navid,catid",arguments.typename) OR (len(arguments.typename) and structKeyExists(application.stcoapi, arguments.typename) and application.stcoapi[arguments.typename].bObjectBroker))>
+		<cfif application.bObjectBroker and structkeyexists(application.objectbroker, arguments.typename)>
 
 			<cfloop list="#arguments.lObjectIDs#" index="i">
 

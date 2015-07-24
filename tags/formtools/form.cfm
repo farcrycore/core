@@ -41,7 +41,8 @@ It just ignores the inner ones.
 		<skin:loadJS id="farcry-form" />
 		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadCSS id="jquery-tooltip" />
-		
+		<skin:loadJS id="jquery-ajaxq" />
+	
 	
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
 		<cfparam name="attributes.Target" default="">

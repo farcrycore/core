@@ -42,39 +42,36 @@ $out:$
 <cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 <cfparam name="request.MODE.LVALIDSTATUS" default="approved">
 <cfparam name="request.MODE.FLUSHCACHE" default="false">
-<!--- If we are in the middle of a <skin:location> or we failed to init then we dont want to output a bunch of javascript --->
-<cfif not structKeyExists(request.fc, "bLocating") and not structKeyExists(request,"fcInitError")>
 
-	<skin:pop format="gritter" />
+<skin:pop format="gritter" />
+
+<!--- Add the loaded libraries into the header --->
+<cfif not isdefined("request.mode.ajax") or not request.mode.ajax>
+	<core:inHead variable="aHead" />
 	
-	<!--- Add the loaded libraries into the header --->
-	<cfif not isdefined("request.mode.ajax") or not request.mode.ajax>
-		<core:inHead variable="aHead" />
-		
-		<cfloop from="1" to="#arraylen(aHead)#" index="i">
-			<cfif aHead[i].id eq "onReady">
-				<cfhtmlHead text="<script type='text/javascript'>$j(document).ready(function(){ #aHead[i].html# });</script>" />
-			<cfelse>
-				<cfhtmlHead text="#aHead[i].html#" />
-			</cfif>
-		</cfloop>
-	</cfif>
-	
-	<cfif not GetPageContext().GetResponse().IsCommitted()>
-		<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
-			<!--- Page ok to cache, a webskin has specified a cache timeout --->
-			<cfif not isdefined("request.fc.browserCacheTimeout") or request.fc.browserCacheTimeout eq -1>
-				<cfset request.fc.browserCacheTimeout = application.defaultBrowserCacheTimeout />
-			</cfif>
-			<cfif not isdefined("request.fc.proxyCacheTimeout") or request.fc.proxyCacheTimeout eq -1>
-				<cfset request.fc.proxyCacheTimeout = application.defaultProxyCacheTimeout />
-			</cfif>
+	<cfloop from="1" to="#arraylen(aHead)#" index="i">
+		<cfif aHead[i].id eq "onReady">
+			<cfhtmlHead text="<script type='text/javascript'>$j(document).ready(function(){ #aHead[i].html# });</script>" />
 		<cfelse>
-			<cfset request.fc.browserCacheTimeout = 0 />
-			<cfset request.fc.proxyCacheTimeout = 0 />
+			<cfhtmlHead text="#aHead[i].html#" />
 		</cfif>
-		<misc:cacheControl browserSeconds="#request.fc.browserCacheTimeout#" proxySeconds="#request.fc.proxyCacheTimeout#" />
+	</cfloop>
+</cfif>
+
+<cfif not GetPageContext().GetResponse().IsCommitted()>
+	<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
+		<!--- Page ok to cache, a webskin has specified a cache timeout --->
+		<cfif not isdefined("request.fc.browserCacheTimeout") or request.fc.browserCacheTimeout eq -1>
+			<cfset request.fc.browserCacheTimeout = application.defaultBrowserCacheTimeout />
+		</cfif>
+		<cfif not isdefined("request.fc.proxyCacheTimeout") or request.fc.proxyCacheTimeout eq -1>
+			<cfset request.fc.proxyCacheTimeout = application.defaultProxyCacheTimeout />
+		</cfif>
+	<cfelse>
+		<cfset request.fc.browserCacheTimeout = 0 />
+		<cfset request.fc.proxyCacheTimeout = 0 />
 	</cfif>
+	<misc:cacheControl browserSeconds="#request.fc.browserCacheTimeout#" proxySeconds="#request.fc.proxyCacheTimeout#" />
 </cfif>
 
 

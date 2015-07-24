@@ -56,6 +56,7 @@
 
 		<cfset arguments.stMetadata = prepMetadata(stObject = arguments.stObject, stMetadata = arguments.stMetadata) />
 
+		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="fc-fontawesome" />

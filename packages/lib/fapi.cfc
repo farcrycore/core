@@ -1242,7 +1242,7 @@
 			
 			<cfset var result = "" />
 			
-			<cfif not isdefined("request.cache.config.#arguments.key#")>
+			<cfif not isdefined("request.cache.config.#arguments.key#") AND isDefined("application.stCOAPI.farConfig")>
 				<cfset request.cache.config[arguments.key] = application.fapi.getContentType("farConfig").getConfig(arguments.key) />
 			</cfif>
 
@@ -1433,6 +1433,7 @@
 			<cfargument name="r_url" default=""><!--- Define a variable to pass the link back (instead of writing out via the tag). Note setting urlOnly invalidates this setting --->
 			<cfargument name="xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
 			<cfargument name="includeDomain" default="false">
+			<cfargument name="bSecure" default="false"><!--- Return a secure link - ignored when href used --->
 			<cfargument name="Domain" default="#cgi.http_host#">
 			<cfargument name="stParameters" default="#StructNew()#">
 			<cfargument name="urlParameters" default="">
@@ -1491,12 +1492,12 @@
 					<cfset returnURL = "#returnURL#?">
 				</cfif>
 			<cfelse>
-				<cfif arguments.includeDomain>
+				<cfif arguments.includeDomain or arguments.bSecure>
 					<cfif not listfindnocase("80,443",CGI.SERVER_PORT)>
 						<cfset arguments.Domain = "#arguments.domain#:#CGI.SERVER_PORT#" />
 					</cfif>
 
-					<cfif CGI.SERVER_PORT_SECURE>
+					<cfif CGI.SERVER_PORT_SECURE or arguments.bSecure>
 						<cfset returnURL = "https://#arguments.Domain##application.url.webroot#">
 					<cfelse>
 						<cfset returnURL = "http://#arguments.Domain##application.url.webroot#">

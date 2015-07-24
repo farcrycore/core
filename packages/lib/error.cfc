@@ -520,7 +520,7 @@
 		
 		<cfset var showError = false />
 		
-		<cfif structkeyexists(application,"url") and reFindNoCase("^#application.url.webtop#", cgi.script_name) or (structKeyExists(url,"view") and refindnocase("^webtop",url.view))>
+		<cfif isdefined("application.url.webtop") and reFindNoCase("^#application.url.webtop#", cgi.script_name) or (structKeyExists(url,"view") and refindnocase("^webtop",url.view))>
 			<cfset showError = true />
 		<cfelseif isdefined("url.debug") AND url.debug>
 			<cfset showError = true />
@@ -529,8 +529,6 @@
 		<cfelseif cgi.remote_addr eq "127.0.0.1">
 			<cfset showError = true />
 		</cfif>
-		
-		<cfparam name="application.url.webtop" default="/webtop">
 		
 		<!--- in the case of data views (json, xml, etc), return stream the data back in that type --->
 		<cfif isdefined("url.type") and len(url.type) and isdefined("url.view") and len(url.view)

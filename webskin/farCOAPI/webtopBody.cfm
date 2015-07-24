@@ -474,9 +474,65 @@
 		<cfoutput><tr class="none"><td colspan="5">No COAPI types</td></tr></cfoutput>
 	</cfif>
 	<cfoutput>
-			<tbody>
+			</tbody>
 		</table>
 	</cfoutput>
 </cfloop>
+
+
+<!--- other tables --->
+
+<cfset coapiSchema = structKeyList(application.schema)>
+<cfset coapiTables = structKeyList(application.stCOAPI)>
+
+<cfdbinfo datasource="#application.dsn#" type="tables" name="qAllTables" />
+<cfquery name="qTables" dbtype="query">
+	SELECT *, lower(TABLE_NAME) AS sort
+	FROM qAllTables
+	WHERE 1=1
+		AND TABLE_TYPE = 'TABLE'
+		AND TABLE_NAME NOT LIKE 'sys%'
+		AND TABLE_NAME NOT IN (<cfqueryparam cfsqltype="cf_sql_char" list="true" value="#coapiSchema#">)
+		AND TABLE_NAME NOT IN (<cfqueryparam cfsqltype="cf_sql_char" list="true" value="#coapiTables#">)
+	ORDER BY sort ASC
+</cfquery>
+
+<cfset unmatchedTables = arrayNew(1)>
+<cfset foundTables = valueList(qTables.TABLE_NAME)>
+<cfloop list="#foundTables#" index="item">
+	<cfif len(item) AND NOT listContainsNoCase(coapiTables, listFirst(item, "_")) AND NOT listContainsNoCase(coapiSchema, listFirst(item, "_"))>
+		<cfset arrayAppend(unmatchedTables, item)>
+	</cfif>
+</cfloop>
+
+<cfif arrayLen(unmatchedTables)>
+<cfoutput>
+<h2>Other Tables</h2>
+<p>The tables below don't match any of the schemas, rules or types known by the FarCry COAPI</p>
+<table class="farcry-objectadmin table table-striped table-hover" style="width:100%;table-layout:fixed;">
+	<thead>
+		<tr>
+			<th class="class">Class</th>
+			<th class="name">Name</th>
+			<th class="conflicts"></th>
+			<th class="actions"></th>
+		</tr>
+	</thead>
+	<tbody>
+	<cfloop from="1" to="#arrayLen(unmatchedTables)#" index="i">
+		<tr class="type">
+			<td class="class">Table</td>
+			<td class="name">
+				<i style="color:##777" class="fa fa-table fa-fw"></i> #unmatchedTables[i]#</td>
+			<td class="conflicts"></td>
+			<td class="actions"></td>
+			<td class="logchanges"></td>
+		</tr>
+	</cfloop>
+	</tbody>
+</table>
+</cfoutput>
+</cfif>
+
 
 <cfsetting enablecfoutputonly="false" />
