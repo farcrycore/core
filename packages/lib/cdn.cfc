@@ -540,6 +540,58 @@
 			) />
 		</code>
 	 --->
+	<cffunction name="ioValidateFile" returntype="string" access="public" output="false" hint="Checks the validity of the specified file">
+		<cfargument name="location" type="string" required="false" />
+		<cfargument name="file" type="string" required="false" />
+		<cfargument name="localpath" type="string" required="false" />
+		<cfargument name="existingFile" type="string" required="true" />
+		<cfargument name="acceptextensions" type="string" required="false" />
+		<cfargument name="sizeLimit" type="numeric" required="false" />
+		
+		<cfset var filename = "" />
+		<cfset var filesize = 0 />
+
+		<cfif structKeyExists(arguments, "localpath")>
+			<cfset filename = listlast(arguments.localpath, "/\") />
+			<cfset filesize = getFileInfo(arguments.localpath).size />
+		<cfelse>
+			<cfset filename = listlast(arguments.file, "/\") />
+			<cfset filesize = ioGetFileSize(location=arguments.location, file=arguments.file) />
+		</cfif>
+		
+		<!--- Check the uploaded extension --->
+		<cfif structkeyexists(arguments,"acceptextensions") and len(arguments.acceptextensions) and not listfindnocase(arguments.acceptextensions,listlast(filename,"."))>
+			<cfreturn "Invalid extension. Valid extensions are #replace(arguments.acceptextensions,",",", ","ALL")#" />
+		</cfif>
+		
+		<!--- Check the size of the uploaded file --->
+		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit and filesize gt arguments.sizeLimit>
+			<cfreturn "#listlast(arguments.localpath,'\/')# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB" />
+		</cfif>
+		
+		<!--- DESTINATION can specify a directory or a file --->
+		<cfif refind("\.\w+$",arguments.existingfile) and not listlast(arguments.existingfile,".") eq listlast(filename,".")>
+			<cfreturn "New file must have the same extension. Current extension is #listlast(arguments.destination,".")# and new extension is #listlast(filename,".")#." />
+		</cfif>
+		
+		<cfreturn "" />
+	</cffunction>
+	
+	<!--- @@description: 
+		<p>Uploads the a file to the specified location.</p>
+		
+		@@examples:
+		<code>
+			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
+			    location="securefiles",
+			    destination=arguments.stMetadata.ftDestination,
+			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
+			    nameconflict="makeunique",
+			    uniqueamong="privatefiles,publicfiles",
+			    acceptedextensions=arguments.stMetadata.ftAllowedFileExtensions
+			) />
+		</code>
+	 --->
 	<cffunction name="ioUploadFile" returntype="string" access="public" output="false" hint="Uploads the a file to the specified location">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="destination" type="string" required="true" />

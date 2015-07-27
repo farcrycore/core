@@ -25,13 +25,24 @@
 		</cfif>
 
 		<!--- copy file up --->
-		<cfset stObject[arguments.details.targetfield] = application.fc.lib.cdn.ioMoveFile(
-			source_location="temp",
-			source_file=arguments.details.tempfile,
-			dest_location=destinationLocation,
-			dest_file=application.stCOAPI[arguments.details.typename].stProps[arguments.details.targetfield].metadata.ftDestination & "/" & listlast(arguments.details.tempfile,"/"),
-			nameconflict="makeunique"
+		<cfset stResult = application.formtools[application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftType")].oFactory.handleFileLocal(
+			typename = stObject.typename,
+			objectid = stObject.objectid,
+			existingFile = "",
+			localFile = application.fc.lib.cdn.ioGetFileLocation(location="temp", file=arguments.details.tempfile).path,
+			destination = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftDestination"),
+			secure = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSecure", false),
+			status = structKeyExists(stObject, "status") ? stObject.status : "approved",
+			allowedExtensions = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftAllowedExtensions"),
+			sizeLimit = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSizeLimit", 0),
+			bArchive = false
 		) />
+		<cfif not stResult.bSuccess>
+			<cflog file="#application.applicationname#-newsimport" text="Could not handle #arguments.details.tempfile#: #stResult.stError.message#" />
+			<creturn "" />
+		</cfif>
+		<cfset stObject[arguments.details.targetfield] = stResult.value />
+		<cfset stResult = {} />
 
 		<!--- call additional function to support cloudinary plugin --->
 		<cfset arguments.details.stObject = stObject />
