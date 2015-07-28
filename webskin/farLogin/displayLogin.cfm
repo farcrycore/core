@@ -73,13 +73,7 @@ FARCRY IMPORT FILES
 </cfif>
 
 <!--- Get alternate sessions --->
-<cfset qSessions = application.fc.lib.session.getSessions() />
-<cfquery dbtype="query" name="qSessions">
-	select 		*
-	from 		qSessions
-	where 		bCurrent = 0
-	order by 	lastAccessed desc
-</cfquery>
+<cfset qSessions = application.fc.lib.session.getSessions(bCurrent=0) />
 <cfif qSessions.recordcount>
 	<cfif qExtraOptions.recordcount>
 		<cfset queryaddrow(qExtraOptions) />
@@ -87,6 +81,10 @@ FARCRY IMPORT FILES
 		<cfset querysetcell(qExtraOptions,"url","divider") />
 	</cfif>
 	
+	<cfset queryaddrow(qExtraOptions) />
+	<cfset querysetcell(qExtraOptions,"label","Select User") />
+	<cfset querysetcell(qExtraOptions,"url","nav-header") />
+
 	<cfloop query="qSessions">
 		<cfset queryaddrow(qExtraOptions) />
 		<cfset querysetcell(qExtraOptions,"label","#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)") />
@@ -129,6 +127,8 @@ FARCRY IMPORT FILES
 					<cfloop query="qExtraOptions">
 						<cfif qExtraOptions.url eq "divider">
 							<li class="divider"></li>
+						<cfelseif qExtraOptions.url eq "nav-header">
+							<li class="nav-header" style="padding-left:15px;">#qExtraOptions.label#</li>
 						<cfelse>
 							<li <cfif qExtraOptions.selected> class="active"</cfif>><a href="#qExtraOptions.url#">#qExtraOptions.label#</a></li>
 						</cfif>

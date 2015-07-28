@@ -37,13 +37,7 @@
 </cfif>
 
 <!--- Get alternate sessions --->
-<cfset qSessions = application.fc.lib.session.getSessions() />
-<cfquery dbtype="query" name="qSessions">
-	select 		*
-	from 		qSessions
-	where 		bCurrent = 0
-	order by 	lastAccessed desc
-</cfquery>
+<cfset qSessions = application.fc.lib.session.getSessions(bCurrent=0) />
 
 <cfoutput><!DOCTYPE html>
 <html dir="#session.writingDir#" lang="#session.userLanguage#">
@@ -109,10 +103,17 @@
 								<li class="divider"></li>
 								<li><a href="#application.fapi.fixURL(addvalues='updateapp=1')#">Update Application</a></li>
 							</cfif>
+							<cfif qSessions.recordcount>
+								<li class="divider"></li>
+								<li class="nav-header" style="padding-left:15px;">Switch User</li>
+								<cfloop query="qSessions">
+									<li class="media">
+										<a class="pull-right" style="clear:none; margin-left:0;" href="#application.fapi.fixURL(addvalues='endsession=#qSessions.sessionID#')#"><i class="fa fa-times"></i></a>
+										<a class="media-body" style="clear:none;" href="#application.fapi.fixURL(addvalues='switchsession=#qSessions.sessionID#')#">#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)</a>
+									</li>
+								</cfloop>
+							</cfif>
 							<li class="divider"></li>
-							<cfloop query="qSessions">
-								<li><a href="#application.fapi.fixURL(addvalues='switchsession=#qSessions.sessionID#')#">#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)</a></li>
-							</cfloop>
 							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 						</ul>
 					</div>

@@ -7,17 +7,20 @@ component {
 		return this;
 	}
 
-	public query function getSessions() hint="Returns information about the currently active sessions" {
+	public query function getSessions(boolean bCurrent, numeric maxRows=5) hint="Returns information about the currently active sessions" {
 		var qSessions = querynew("sessionID,lastAccessed,bCurrent,user", "varchar,date,bit,varchar");
 		var sessionID = "";
+		var qResult = new Query();
 		
-		queryAddRow(qSessions);
-		querySetCell(qSessions, "sessionID", getCurrentSessionID());
-		querySetCell(qSessions, "lastAccessed", now());
-		querySetCell(qSessions, "bCurrent", 1);
-		querySetCell(qSessions, "user", isdefined("session.dmProfile.label") ? session.dmProfile.label : "anonymous");
+		if (not structKeyExists(arguments, "bCurrent") or arguments.bCurrent eq 1){
+			queryAddRow(qSessions);
+			querySetCell(qSessions, "sessionID", getCurrentSessionID());
+			querySetCell(qSessions, "lastAccessed", now());
+			querySetCell(qSessions, "bCurrent", 1);
+			querySetCell(qSessions, "user", isdefined("session.dmProfile.label") ? session.dmProfile.label : "anonymous");
+		}
 
-		if (isdefined("session.sessions")){
+		if ((not structKeyExists(arguments, "bCurrent") or arguments.bCurrent eq 0) and isdefined("session.sessions")){
 			for (sessionID in session.sessions){
 				queryAddRow(qSessions);
 				querySetCell(qSessions, "sessionID", sessionID);
@@ -27,7 +30,17 @@ component {
 			}
 		}
 
-		return qSessions;
+		qResult.setDBType("query");
+		qResult.setAttributes(sourceQuery=qSessions);
+		qResult.addParam(name="type", value="Admin", cfsqltype="cf_sql_varchar");
+		if (arguments.maxRows eq 0){
+			qResult.setSQL("SELECT * FROM sourceQuery ORDER BY lastAccessed DESC");
+		}
+		else {
+			qResult.setSQL("SELECT TOP #arguments.maxRows# * FROM sourceQuery ORDER BY lastAccessed DESC");
+		}
+
+		return qResult.execute().getResult();
 	}
 
 	public string function switchSession(string sessionID="session_#replace(application.fapi.getUUID(), '-', '_', 'ALL')#", boolean keepOldSession=true) hint="Switches to the specified session scope, creating it if necessary" {

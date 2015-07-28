@@ -441,6 +441,9 @@
 			<cfelse>
 				<cflocation url="#application.url.webroot#" addtoken="false" />
 			</cfif>
+		<cfelseif structKeyExists(url, "endsession")>
+			<cfset application.fc.lib.session.endSession(url.endsession) />
+			<cflocation url="#application.fapi.fixURL(removevalues='endsession')#" addtoken="false" />
 		</cfif>
 
 		<!--- Setup FarCry Namespace in the request scope --->

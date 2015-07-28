@@ -93,13 +93,19 @@
 	<cfset lButtons = "Add,Properties,Unlock" />
 </cfif>
 
+<cfif application.security.checkPermission(permission="impersonation")>
+	<cfset lCustomActions = "Change password,Preview Webtop Security,Impersonate User" />
+<cfelse>
+	<cfset lCustomActions = "Change password,Preview Webtop Security" />
+</cfif>
+
 <ft:objectadmin
 	typename="dmProfile"
 	title="User Administration"
 	columnList="avatar,username,userstatus,userdirectory,firstname,lastname,emailAddress" 
 	sortableColumns="username,userstatus"
 	lFilterFields="username,firstname,lastname,emailAddress"
-	lCustomActions="Change password,Preview Webtop Security,Impersonate User"
+	lCustomActions="#lCustomActions#"
 	lButtons="#lButtons#"
 	bPreviewCol="false"
 	sqlorderby="username asc" 
