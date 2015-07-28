@@ -80,7 +80,7 @@ component {
 			return session.sessions[arguments.sessionID];
 		}
 		
-		throw message="Requested session does not exist: [#arguments.sessionID#]";
+		throw(message="Requested session does not exist: [#arguments.sessionID#]");
 	}
 
 	public any function setSession(string sessionID, struct scope) hint="Updates the session" {

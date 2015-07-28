@@ -20,7 +20,7 @@
 		<cfset var item = "">
 		<cfset var formTheme = "">
 
-		<cfloop collection="#application.forms#" index="item">
+		<cfloop collection="#application.forms#" item="item">
 			<cfif reFindNoCase("^formTheme.+$", item)>
 				<cfset lFormThemes = listAppend(lFormThemes, item)>
 			</cfif>
