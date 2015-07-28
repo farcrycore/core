@@ -72,6 +72,28 @@ FARCRY IMPORT FILES
 	</cfloop>
 </cfif>
 
+<!--- Get alternate sessions --->
+<cfset qSessions = application.fc.lib.session.getSessions() />
+<cfquery dbtype="query" name="qSessions">
+	select 		*
+	from 		qSessions
+	where 		bCurrent = 0
+	order by 	lastAccessed desc
+</cfquery>
+<cfif qSessions.recordcount>
+	<cfif qExtraOptions.recordcount>
+		<cfset queryaddrow(qExtraOptions) />
+		<cfset querysetcell(qExtraOptions,"label","divider") />
+		<cfset querysetcell(qExtraOptions,"url","divider") />
+	</cfif>
+	
+	<cfloop query="qSessions">
+		<cfset queryaddrow(qExtraOptions) />
+		<cfset querysetcell(qExtraOptions,"label","#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)") />
+		<cfset querysetcell(qExtraOptions,"url",application.fapi.fixURL(url=arguments.stParam.loginReturnURL, addvalues='switchsession=#qSessions.sessionID#')) />
+		<cfset querysetcell(qExtraOptions,"selected",false) />
+	</cfloop>
+</cfif>
 
 <skin:view typename="farLogin" template="displayHeaderLogin" />
 

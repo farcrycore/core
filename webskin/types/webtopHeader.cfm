@@ -111,7 +111,7 @@
 							</cfif>
 							<li class="divider"></li>
 							<cfloop query="qSessions">
-								<li><a href="#application.fapi.fixURL(addvalues='switchsession=#qSessions.sessionID#')#">#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'hh:mmtt')#)</a></li>
+								<li><a href="#application.fapi.fixURL(addvalues='switchsession=#qSessions.sessionID#')#">#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)</a></li>
 							</cfloop>
 							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 						</ul>
