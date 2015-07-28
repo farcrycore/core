@@ -77,7 +77,7 @@
 		<cfif application.security.checkPermission(permission="admin")>
 			<cflocation url="#application.url.webtop#" addtoken="false" />
 		<cfelse>
-			<cflocation url="#application.url.webroot#" addtoken="false" />
+			<cflocation url="#application.url.webroot#/" addtoken="false" />
 		</cfif>
 	</cfif>
 </ft:processform>
