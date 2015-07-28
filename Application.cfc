@@ -433,6 +433,16 @@
 	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false" hint="Fires at first part of page processing.">
 		<cfargument name="TargetPage" type="string" required="true" />
 
+		<!--- If a session switch was requested, do that now --->
+		<cfif structKeyExists(url, "switchsession")>
+			<cfset application.fc.lib.session.switchSession(url.switchsession) />
+			<cfif not find(cgi.script_path, application.url.webtop) or application.security.checkPermission(permission="admin")>
+				<cflocation url="#application.fapi.fixURL(removevalues='switchsession')#" addtoken="false" />
+			<cfelse>
+				<cflocation url="#application.url.webroot#" addtoken="false" />
+			</cfif>
+		</cfif>
+
 		<!--- Setup FarCry Namespace in the request scope --->
 		<cfparam name="request.fc" default="#structNew()#" />
 

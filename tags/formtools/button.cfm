@@ -199,6 +199,12 @@
 
 		</cfdefaultcase>
 		</cfswitch>
+
+		<cfset fcSettings = SerializeJSON(stButtonAttributes)>
+		<skin:onReady>
+			<cfoutput>
+			$j('###attributes.id#').data('fcSettings', #fcSettings#);</cfoutput>
+		</skin:onReady>
 		
 		
 		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>

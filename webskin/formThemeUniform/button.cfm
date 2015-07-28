@@ -94,12 +94,4 @@
 		<cfoutput>
 		$j('###attributes.id#').button( #buttonsettings# );</cfoutput>
 	</skin:onReady>
-
-
-
-	<cfset fcSettings = SerializeJSON(attributes.stButtonAttributes)>
-	<skin:onReady>
-		<cfoutput>
-		$j('###attributes.id#').data('fcSettings', #fcSettings#);</cfoutput>
-	</skin:onReady>
 </cfif>

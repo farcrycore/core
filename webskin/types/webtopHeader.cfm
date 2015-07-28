@@ -36,7 +36,14 @@
 	<cfset webtopAvatar = session.dmProfile.avatar>
 </cfif>
 
-
+<!--- Get alternate sessions --->
+<cfset qSessions = application.fc.lib.session.getSessions() />
+<cfquery dbtype="query" name="qSessions">
+	select 		*
+	from 		qSessions
+	where 		bCurrent = 0
+	order by 	lastAccessed desc
+</cfquery>
 
 <cfoutput><!DOCTYPE html>
 <html dir="#session.writingDir#" lang="#session.userLanguage#">
@@ -103,6 +110,9 @@
 								<li><a href="#application.fapi.fixURL(addvalues='updateapp=1')#">Update Application</a></li>
 							</cfif>
 							<li class="divider"></li>
+							<cfloop query="qSessions">
+								<li><a href="#application.fapi.fixURL(addvalues='switchsession=#qSessions.sessionID#')#">#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'hh:mmtt')#)</a></li>
+							</cfloop>
 							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 						</ul>
 					</div>

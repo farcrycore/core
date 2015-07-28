@@ -461,7 +461,9 @@
 		<cfelseif stDefaultProfile.override>
 			<cfset structappend(session.dmProfile,stDefaultProfile,true) />
 		</cfif>
-		<cfset oProfile.setData(stProperties=session.dmProfile, bAudit=false) />
+		<cfif not structKeyExists(session, "impersonator")>
+			<cfset oProfile.setData(stProperties=session.dmProfile, bAudit=false) />
+		</cfif>
 	
 		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
         <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
@@ -491,9 +493,11 @@
 		<!--- /DEPRECATED --->
 		
 		<!--- First login flag --->
-		<cfif (structkeyexists(session.dmProfile,"bDefaultObject") and session.dmProfile.bDefaultObject) 
-			or (structkeyexists(session.dmProfile,"bInDB") and not session.dmProfile.bInDB) 
-			or session.dmProfile.datetimeCreated eq session.dmProfile.datetimeLastUpdated>
+		<cfif not structKeyExists(session, "impersonator") and (
+				(structkeyexists(session.dmProfile,"bDefaultObject") and session.dmProfile.bDefaultObject) 
+				or (structkeyexists(session.dmProfile,"bInDB") and not session.dmProfile.bInDB) 
+				or session.dmProfile.datetimeCreated eq session.dmProfile.datetimeLastUpdated
+			)>
 			
 			<cfset session.security.firstlogin = true />
 			
@@ -507,7 +511,9 @@
 		</cfif>
 		
 		<!--- Log the result --->
-		<cfif session.firstLogin>
+		<cfif structKeyExists(session, "impersonator")>
+			<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
+		<cfelseif session.firstLogin>
 			<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
 		<cfelse>
 			<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
