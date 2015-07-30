@@ -439,7 +439,7 @@
 			<cfif not find(cgi.script_path, application.url.webtop) or application.security.checkPermission(permission="admin")>
 				<cflocation url="#application.fapi.fixURL(removevalues='switchsession')#" addtoken="false" />
 			<cfelse>
-				<cflocation url="#application.url.webroot#" addtoken="false" />
+				<cflocation url="#application.url.webroot#/" addtoken="false" />
 			</cfif>
 		<cfelseif structKeyExists(url, "endsession")>
 			<cfset application.fc.lib.session.endSession(url.endsession) />
