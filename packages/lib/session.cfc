@@ -33,12 +33,8 @@ component {
 		qResult.setDBType("query");
 		qResult.setAttributes(sourceQuery=qSessions);
 		qResult.addParam(name="type", value="Admin", cfsqltype="cf_sql_varchar");
-		if (arguments.maxRows eq 0){
-			qResult.setSQL("SELECT * FROM sourceQuery ORDER BY lastAccessed DESC");
-		}
-		else {
-			qResult.setSQL("SELECT TOP #arguments.maxRows# * FROM sourceQuery ORDER BY lastAccessed DESC");
-		}
+		qResult.setMaxRows(arguments.maxRows);
+		qResult.setSQL("SELECT * FROM sourceQuery ORDER BY lastAccessed DESC");
 
 		return qResult.execute().getResult();
 	}
