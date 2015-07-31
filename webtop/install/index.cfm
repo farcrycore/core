@@ -1105,7 +1105,7 @@ $(function(){
 							<cfset stResult.errorTitle = "Your DSN (#arguments.dsn#) is invalid" />
 							<cfsavecontent variable="stResult.errorDescription">
 								<cfoutput>
-								Please check it is setup and verifies within the ColdFusion / Railo Administrator.
+								Please check it is setup and verifies within the ColdFusion / Lucee Administrator.
 								</cfoutput>
 							</cfsavecontent>
 						</cfcatch>
