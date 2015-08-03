@@ -87,6 +87,24 @@
 		</cfif>
 	
 	</cffunction>
+
+	<!--- Thanks to Dan Switzer for figuring this out (http://blog.pengoworks.com/index.cfm/2011/5/26/Modifying-the-message-in-a-CFCATCH-before-rethrowing-error) --->
+	<cffunction name="rethrowMessage" access="public" returntype="void" output="false" hint="Rethrow a CFCATCH error, but allows customizing the message key">
+		<cfargument name="cfcatch" type="any" required="true" />
+		<cfargument name="message" type="string" required="false" />
+
+		<cfset var exception = "" />
+
+		<cfif not structKeyExists(arguments, "message")>
+			<cfset arguments.message = arguments.cfcatch.message />
+		</cfif>
+
+		<cfset exception = createObject("java", "java.lang.Exception").init(arguments.message) />
+		<cfset exception.initCause(arguments.cfcatch.getCause()) />
+		<cfset exception.setStackTrace(arguments.cfcatch.getStackTrace()) />
+
+		<cfthrow object="#exception#" />
+	</cffunction>
 	
 	<cffunction name="collectRequestInfo" access="public" returntype="struct" output="false" hint="Returns a struct containing information that should be included in every error report">
 		<cfset var stResult = structnew() />

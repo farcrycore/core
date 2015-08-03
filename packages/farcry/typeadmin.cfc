@@ -252,7 +252,6 @@ environment references (might be nice to clean these up)
 	<!--- filter by keyword --->
 	<cfset aKeyword = ListToArray(prefs.filter_lkeywords,"~")>
 	<cfif ArrayLen(aKeyword)>
-		<cftry>
 		<cfquery dbtype="query" name="recordset">
 		SELECT	*
 		FROM	recordset
@@ -261,11 +260,6 @@ environment references (might be nice to clean these up)
 			AND #ListFirst(aKeyword[i],"^")# is not null
 			AND lower(#ListFirst(aKeyword[i],"^")#) LIKE <cfqueryparam value="%#LCase(ListLast(aKeyword[i],'^'))#%" cfsqltype="cf_sql_varchar"></cfloop>
 		</cfquery>
-		<cfcatch >
-			<cfdump var="#cfcatch#">
-			<cfabort>
-		</cfcatch>
-		</cftry>
 	</cfif>
 
 	<!--- reorder query if needed --->

@@ -499,7 +499,7 @@
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
 
-				<cftry>				
+				<cftry>
 					<cfset inputClass = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getFormtoolInputClass(ftFieldMetadata.ftType)>
 
 					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
@@ -512,8 +512,10 @@
 						<cfinvokeargument name="inputClass" value="#inputClass#">
 					</cfinvoke>
 					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
-										
-					<cfcatch><cfdump var="#cfcatch#" expand="false"><cfabort></cfcatch>
+
+					<cfcatch>
+						<cfset application.fc.lib.error.rethrowMessage(cfcatch=cfcatch, message="[#ftFieldMetadata.name#] #cfcatch.message#") />
+					</cfcatch>
 				</cftry>
 				
 				<cfset variables.errorClass = "" />

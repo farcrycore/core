@@ -33,7 +33,6 @@ Runs a display template from the webskin on a specified object instance.
 ------------------------------------------------------------------------->
 <cfinclude template="_funclibrary.cfm">
 
-<cftry>
 <cfscript>
 // attributes
 	reqParam("objectid");
@@ -60,9 +59,6 @@ Runs a display template from the webskin on a specified object instance.
 	Evaluate("#objcall#.getDisplay('#attributes.objectid#', '#attributes.template#')");
 </cfscript>
 
-<cfcatch><cfdump var="#cfcatch#"></cfcatch>
-
-</cftry>
 <!--- debug output --->
 <cfif isDefined("bcacheused") AND bcacheused>
 	<cftrace type="information" category="coapi" text="Request cache used for #attributes.typename#.#attributes.method#()" var="attributes.objectid">
