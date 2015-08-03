@@ -334,7 +334,7 @@
 						<cfquery dbtype="query" name="qTemp">
 							select 	* 
 							from 	qLibrary 
-							where 	key=<cfqueryparam cfsqltype="cf_sql_varchar" value="#item#">
+							where 	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#item#">
 						</cfquery>
 
 						<cfif qTemp.recordcount>
