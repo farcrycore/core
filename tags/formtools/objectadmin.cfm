@@ -265,9 +265,6 @@
 				
 							
 				<cfset session.objectadminFilterObjects[attributes.typename].stObject.label = "" />
-				<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
-		
-				<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 				
 				<!--- The default filter doesn't incorporate the default values specified in stFilterMetadata. This loop handles that gap. --->
 				<cfloop collection="#attributes.stFilterMetadata#" item="prop">
@@ -275,7 +272,7 @@
 						<cfset session.objectadminFilterObjects[attributes.typename].stObject[prop] = attributes.stFilterMetadata[prop].ftDefault />
 					</cfif>
 				</cfloop>
-				
+				<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
 			</cfif>
 			
 			<ft:processform action="apply filter" url="refresh">

@@ -784,7 +784,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="bShallow" type="boolean" required="false" default="false" hint="Setting to true filters all longchar property types from record.">
 		<cfargument name="bFullArrayProps" type="boolean" required="false" default="true" hint="Setting to true returns array properties as an array of structs instead of an array of strings IF IT IS AN EXTENDED ARRAY.">
-		<cfargument name="bUseInstanceCache" type="boolean" required="false" default="true" hint="setting to use instance cache if one exists">
+		<cfargument name="bUseInstanceCache" type="boolean" required="false" hint="setting to use instance cache if one exists">
 		<cfargument name="bArraysAsStructs" type="boolean" required="false" hint="Setting to true returns array properties as an array of structs instead of an array of strings.">
 		
 		<cfset var stobj=structnew()>
@@ -808,8 +808,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfif isdefined("application.stCOAPI.#typename#.bArraysAsStructs") and (not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs))>
 			<cfset arguments.bArraysAsStructs = application.stCOAPI[typename].bArraysAsStructs />
+			<cfparam name="arguments.bUseInstanceCache" default="true" />
 		<cfelseif not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs)>
 			<cfset arguments.bArraysAsStructs = false />
+			<cfset arguments.bUseInstanceCache = true />
+		<cfelse>
+			<cfset arguments.bUseInstanceCache = not arguments.bArraysAsStructs />
 		</cfif>
 		
 		<!---------------------------------------------------------------
@@ -827,7 +831,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs AND structKeyExists(tempObjectStore,arguments.objectid)>
+		<cfif arguments.bUseInstanceCache AND structKeyExists(tempObjectStore,arguments.objectid)>
 			<!--- get from the temp object stroe --->
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
@@ -865,13 +869,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		We therefore need to return a default object of this typename.
 		 --->
 		<cfif NOT structKeyExists(stObj,'objectID')>
-			
 			<cfset stObj = getDefaultObject(argumentCollection=arguments)>	
-			
-			
 			<cfset stObj.bDefaultObject = true />
 		</cfif>
-		
 
 		<cfreturn stObj>
 	</cffunction>
