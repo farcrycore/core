@@ -41,7 +41,7 @@
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<skin:loadJS id="fc-jquery" />
+		<skin:loadJS id="jquery" />
 		
 		<cfif not len(arguments.stMetadata.ftClickable)>
 			<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch)>
