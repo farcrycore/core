@@ -204,7 +204,8 @@
 			<cfreturn serializeJSON(getTemplateOptions(
 				stObject=stObj,
 				stMetadata=arguments.stMetadata,
-				relatedtypename=url.relatedtypename
+				relatedtypename=url.relatedtypename,
+				relatedids=url.relatedids
 			)) />
 		</cfif>
 
@@ -293,9 +294,10 @@
 		<cfargument name="stObject" type="struct" required="true" />
 		<cfargument name="stMetadata" type="struct" required="true" />
 		<cfargument name="relatedtypename" type="string" required="true" />
+		<cfargument name="relatedids" type="string" required="false" default="" />
 
 		<cfset var stProps = application.stcoapi[arguments.stObject.typename].stprops />
-		<cfset var lRelated = "" />
+		<cfset var lRelated = arguments.relatedids />
 		<cfset var fieldname = "" />
 		<cfset var templateWebskinPrefix = "" />
 		<cfset var templateSnippetWebskinPrefix = "" />

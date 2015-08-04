@@ -21,7 +21,10 @@
 							updatePreview("webskin",null);
 
 							$j.getJSON(params.optionsURL,{
-								relatedtypename : stType.id
+								relatedtypename : stType.id,
+								relatedids : $j(".array input[type=hidden],.uuid input[type=hidden]").map(function(){ 
+									return this.value.search(/^(,?\w{8}-\w{4}-\w{4}-\w{16}),?$/) === -1 ? null : this.value; 
+								}).get().join(",")
 							},function(data){
 								if (typeof(data)==="string")
 									data = $j.parseJSON(data);
