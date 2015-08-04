@@ -20,7 +20,7 @@
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<skin:loadJS id="fc-jquery" />
+		<skin:loadJS id="jquery" />
 		
 		<cfparam name="arguments.stMetadata.ftValidation" default="" />
 		<cfif not listfindnocase(arguments.stMetadata.ftValidation,"creditcardexpiry")>
