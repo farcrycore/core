@@ -307,7 +307,7 @@
 		<cfset var stItem = structnew() />
 		<cfset var qLibrary = "" />
 		<cfset var qTemp = "" />
-		<cfset var stMetadata = "" />
+		<cfset var stRelatedMetadata = "" />
 		<cfset var item = "" />
 		
 		<!--- items --->
@@ -325,12 +325,12 @@
 				</cfif>
 
 				<cfif len(lRelated)>
-					<cfset stMetadata = application.fapi.getPropertyMetadata(typename=arguments.stObject.typename, property=fieldname) />
-					<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject=arguments.stObject, stMetadata=stMetadata) />
-					<cfif not structkeyexists(stMetadata,"ftLibraryDataTypename") or not len(stMetadata.ftLibraryDataTypename)>
-						<cfset stMetadata.ftLibraryDataTypename = arguments.relatedtypename />
+					<cfset stRelatedMetadata = application.fapi.getPropertyMetadata(typename=arguments.stObject.typename, property=fieldname) />
+					<cfset stRelatedMetadata = application.fapi.getFormtool(stRelatedMetadata.type).prepMetadata(stObject=arguments.stObject, stMetadata=stRelatedMetadata) />
+					<cfif not structkeyexists(stRelatedMetadata,"ftLibraryDataTypename") or not len(stRelatedMetadata.ftLibraryDataTypename)>
+						<cfset stRelatedMetadata.ftLibraryDataTypename = arguments.relatedtypename />
 					</cfif>
-					<cfset qLibrary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename).getLibraryRecordset(primaryID=arguments.stObject.objectid, primaryTypename=arguments.stObject.typename, stMetadata=stMetadata, filterType=arguments.relatedtypename, filter="") />
+					<cfset qLibrary = application.fapi.getContentType(stRelatedMetadata.ftLibraryDataTypename).getLibraryRecordset(primaryID=arguments.stObject.objectid, primaryTypename=arguments.stObject.typename, stMetadata=stRelatedMetadata, filterType=arguments.relatedtypename, filter="") />
 
 					<cfloop list="#lRelated#" index="item">
 						<cfquery dbtype="query" name="qTemp">
