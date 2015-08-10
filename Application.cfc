@@ -299,31 +299,6 @@
 			</cfdefaultcase>
 		</cfswitch>
 		
-						
-		<!----------------------------------------
-		SECURITY
-		 ---------------------------------------->		
-		<!---// dmSecurity settings --->
-		<!---//Init Application dmsec scope --->
-		<cfset Application.dmSec=StructNew() />
-		<!---// --- Initialise the userdirectories --- --->
-		<cfset Application.dmSec.UserDirectory = structNew() />
-		
-		<!---// Client User Directory --->
-		<cfset Application.dmSec.UserDirectory.ClientUD = structNew() />
-		<cfset temp = Application.dmSec.UserDirectory.ClientUD />
-		<cfset temp.type = "Daemon" />
-		<cfset temp.datasource = application.dsn />
-		
-		<!---//Policy Store settings --->
-		<cfset Application.dmSec.PolicyStore = StructNew() />
-		<cfset ps = Application.dmSec.PolicyStore />
-		<cfset ps.dataSource = application.dsn />
-		<cfset ps.permissionTable = "dmPermission" />
-		<cfset ps.policyGroupTable = "dmPolicyGroup" />
-		<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
-		<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
-
 
 		<!---------------------------------------------- 
 		INITIALISE THE COAPIADMIN SINGLETON
@@ -616,7 +591,7 @@
 				<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
 				<cfset url.updateapp = true>
 			<cfelse>		
-				<cfif isBoolean(url.updateapp) AND isDefined("session.dmSec.Authentication.bAdmin") and session.dmSec.Authentication.bAdmin>
+				<cfif isBoolean(url.updateapp) AND isDefined("session.mode.bAdmin") and session.mode.bAdmin>
 					<!--- ADMINISTRATORS CAN ALWAYS UPDATE APP WITH 1 --->
 				<cfelse>
 					<!--- Not an adminstrator and didnt know the updateappkey --->
