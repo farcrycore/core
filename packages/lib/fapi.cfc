@@ -116,6 +116,7 @@
 		<cfset var thisfilter = "" />
 		<cfset var i = 0 />
 		<cfset var f = "" />
+		<cfset var dsn_read = getContentTypeMetadata(arguments.typename, "dsn", application.dsn_read) />
 		
 		<!--- set requestmode here; allows getContentObjects() to run when request scope is blank eg. during init --->
 		<cfif NOT len(arguments.status) AND structKeyExists(request, "mode") AND structKeyExists(request.mode, "lValidStatus")>
@@ -179,7 +180,16 @@
 			<cfset arguments.aFilters[i].sqltype = propertytypemap[arguments.aFilters[i].type] />
 		</cfloop>
 		
-		<cfquery datasource="#application.dsn#" name="q" maxrows="#arguments.maxRows#">
+		<!--- Status filter --->
+		<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
+			<cfset arrayappend(arguments.aFilters,struct(
+					property="status",
+					filter="in",
+					value=arguments.status
+			)) />
+		</cfif>
+
+		<cfquery datasource="#dsn_read#" name="q" maxrows="#arguments.maxRows#">
 			select		#preserveSingleQuotes(arguments.lProperties)#, '#arguments.typename#' as typename
 			from		#application.dbowner##arguments.typename#
 			where		1=1

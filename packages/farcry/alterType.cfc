@@ -434,8 +434,6 @@ $out:$
 	</cffunction>
 	
 	<cffunction name="refreshAllCFCAppData" output="true" hint="Inserts the metadata information for each cfc into the application scope.">
-		<cfargument name="dsn" required="No" default="#application.dsn#">
-		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		
 		<cfset var thispackage = "" />
 		<cfset var thistype = "" />

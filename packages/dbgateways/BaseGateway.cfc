@@ -14,6 +14,16 @@
 		
 		<cfreturn this />
 	</cffunction>
+
+	<cffunction name="getProperties" access="public" returntype="struct" output="false" hint="Returns information about this gateway">
+
+		<cfreturn {
+			"dbowner" = this.dbowner,
+			"dsn" = this.dsn,
+			"dbtype" = this.dbtype,
+			"dbtype_label" = listlast(getMetadata(this).dbType,":")
+		} />
+	</cffunction>
 	
 	<!--- UTILITY FUNCTIONS --->
 	<cffunction name="combineResults" access="public" returntype="struct" output="false" hint="Merges two standard stResult struts (bSuccess,results)">
@@ -79,7 +89,7 @@
 		
 		<cftry>
 			<!--- anything else / needs to be checked as this does not work for all databases--->
-			<cfquery datasource="#arguments.dsn#" result="queryresult">
+			<cfquery datasource="#this.dsn#" result="queryresult">
 				UPDATE 	#this.dbowner##arguments.tablename#
 				SET 	#this.dbowner##arguments.tablename#.typename = refObjects.typename		
 				FROM 	#this.dbowner##arguments.tablename# INNER JOIN refObjects
@@ -503,7 +513,7 @@
 						<!--- Return this array as an array of structs --->
 						
 						<!--- getdata for array properties --->
-						<cfquery datasource="#arguments.dsn#" name="qArrayData">
+						<cfquery datasource="#this.dsn#" name="qArrayData">
 				  			select 		#structkeylist(arguments.schema.fields[thisfield].fields)# 
 				  			from 		#this.dbowner##arguments.schema.fields[thisfield].tablename#
 							where 		parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
@@ -521,7 +531,7 @@
 					<cfelse><!--- Return this array as an array of objectids --->
 						
 						<!--- getdata for array properties --->
-						<cfquery datasource="#arguments.dsn#" name="qArrayData">
+						<cfquery datasource="#this.dsn#" name="qArrayData">
 				  			select 		data 
 				  			from 		#this.dbowner##arguments.schema.fields[thisfield].tablename#
 							where 		parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />

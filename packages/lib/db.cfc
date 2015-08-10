@@ -9,13 +9,16 @@
 	
 	<!--- DB INITIALISATION --->
 	<cffunction name="init" access="public" output="false" returntype="any">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#" />
-		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#" />
-		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#" />
 		<cfargument name="loglocation" type="string" required="false" default="" />
 		
 		<cfset variables.paths = getDBTypes() />
-		<cfset variables.gateways[arguments.dsn] = initialiseGateway(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
+		<cfset variables.modes = {
+			"read" = application.dsn_read,
+			"write" = application.dsn_write
+		} />
+
+		<cfset createGateway(dsn=application.dsn_read, dbtype=application.dbtype_read, dbowner=application.dbowner_read) />
+		<cfset createGateway(dsn=application.dsn_write, dbtype=application.dbtype_write, dbowner=application.dbowner_write) />
 		
 		<cfset this.logChangeFlags = "" />
 		<cfset this.logLocation = arguments.loglocation />
@@ -106,21 +109,48 @@
 		
 		<cfreturn oGateway />
 	</cffunction>
+
+	<cffunction name="createGateway" access="public" output="false" returntype="any" hint="Creates a gateway for the given db connection parameters, and adds it to the application scope">
+		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dbtype" type="string" required="true" />
+		<cfargument name="dbowner" type="string" required="true" />
+
+		<cfset variables.gateways[arguments.dsn] = initialiseGateway(argumentCollection=arguments) />
+
+		<cfreturn variables.gateways[arguments.dsn] />
+	</cffunction>
 	
 	<cffunction name="getGateway" access="public" output="false" returntype="any" hint="Gets the gateway for the given db connection parameters">
-		<cfargument name="dsn" type="string" required="true" />
-		<cfargument name="dbtype" type="string" required="false" />
-		<cfargument name="dbowner" type="string" required="false" />
-		
-		<cfif not structKeyExists(variables.gateways,arguments.dsn) and structkeyexists(arguments,"dbtype") and structkeyexists(arguments,"dbowner")>
-			<!--- This is a new DSN, initialise the gateway --->
-			<cfset variables.gateways[arguments.dsn] = initialiseGateway(argumentCollection=arguments) />
-		<cfelseif not structKeyExists(variables.gateways,arguments.dsn)>
-			<cfthrow message="getGateway() requires an existing DSN or DSN and DBType and DBOwner" />
+		<cfargument name="dsn" type="string" required="false" default="" />
+		<cfargument name="mode" type="string" required="false" default="" />
+
+		<cfif len(arguments.mode) and not len(arguments.dsn) and structKeyExists(variables.modes, arguments.mode)>
+			<cfset arguments.dsn = variables.modes[arguments.mode] />
+		<cfelseif not len(arguments.dsn)>
+			<cfthrow message="getGateway() requires a dsn or mode" />
 		</cfif>
-		
+
 		<!--- DSN exists --->
 		<cfreturn variables.gateways[arguments.dsn] />
+	</cffunction>
+
+	<cffunction name="getGatewayProperties" access="public" output="false" returntype="query" hint="Returns information about all registered gateways">
+		<cfset var qResult = querynew("dsn,dbowner,dbtype,dbtype_label,read,write", "varchar,varchar,varchar,varchar,bit,bit") />
+		<cfset var key = "" />
+		<cfset var stProps = "" />
+
+		<cfloop collection="#variables.gateways#" item="key">
+			<cfset stProps = variables.gateways[key].getProperties() />
+			<cfset queryAddRow(qResult) />
+			<cfset querySetCell(qResult, "dsn", stProps.dsn) />
+			<cfset querySetCell(qResult, "dbowner", stProps.dbowner) />
+			<cfset querySetCell(qResult, "dbtype", stProps.dbtype) />
+			<cfset querySetCell(qResult, "dbtype_label", stProps.dbtype_label) />
+			<cfset querySetCell(qResult, "read", stProps.dsn eq variables.modes.read) />
+			<cfset querySetCell(qResult, "write", stProps.dsn eq variables.modes.write) />
+		</cfloop>
+
+		<cfreturn qResult />
 	</cffunction>
 	
 	<cffunction name="initialiseTableMetadata" access="public" output="false" returntype="any" hint="Initialises and returns table metadata for a given content type">
@@ -170,6 +200,7 @@
 		<cfset var thisindex = "" />
 		<cfset var thispropindex = 0 />
 		
+		<cfparam name="stResult.typename" default="#listfirst(listlast(arguments.md.path,'\/'),'.')#" />
 		<cfparam name="stResult.tablename" default="#listfirst(listlast(arguments.md.path,'\/'),'.')#" />
 		<cfparam name="stResult.fields" default="#structnew()#" />
 		<cfparam name="stResult.arrayfields" default="#structnew()#" /><!--- To make associating extending array content types easier --->
@@ -177,6 +208,9 @@
 		
 		<cfset tmpMD = arguments.md />
 		<cfloop condition="not structisempty(tmpMD)">
+			<cfif structkeyexists(tmpMD,"dsn") and not structKeyExists(stResult,"dsn")>
+				<cfset stResult.dsn = tmpMD.dsn />
+			</cfif>
 			<cfif structkeyexists(tmpMD,"properties")>
 				<cfloop from="1" to="#arrayLen(tmpMD.properties)#" index="i">
 					<cfif structkeyexists(tmpMD.properties[i],"type") and tmpMD.properties[i].type eq "any">
@@ -507,12 +541,17 @@
 	<cffunction name="createData" access="public" output="false" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="stProperties" type="struct" required="true" />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var stReturn = StructNew()>
 		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var schema = getTableMetadata(arguments.typename) />
 		
-		<cfset stReturn = getGateway(dsn=arguments.dsn).createData(schema=getTableMetadata(arguments.typename),stProperties=stProperties,logLocation=logLocation) />
+		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
+			<cfset arguments.dsn = schema.dsn />
+		</cfif>
+
+		<cfset stReturn = getGateway(dsn=arguments.dsn, mode="write").createData(schema=schema,stProperties=stProperties,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#serializeJSON(stReturn)#" file="coapi" type="error" application="yes" />
@@ -524,11 +563,16 @@
 	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Passes update data to the gateway">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="stProperties" required="true" />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,listlast(arguments.typename,".")) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var schema = getTableMetadata(arguments.typename) />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).setData(schema=getTableMetadata(arguments.typename),stProperties=arguments.stProperties,logLocation=logLocation) />
+		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
+			<cfset arguments.dsn = schema.dsn />
+		</cfif>
+
+		<cfreturn getGateway(dsn=arguments.dsn, mode="write").setData(schema=schema,stProperties=arguments.stProperties,logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="setArrayData" access="public" output="false" returntype="struct" hint="Passes update an array update to the gateway">
@@ -536,33 +580,47 @@
 		<cfargument name="propertyname" required="true" type="string" />
 		<cfargument name="objectid" type="UUID" required="true" />
 		<cfargument name="aProperties" required="true" type="array" />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var schema = getTableMetadata(arguments.typename) />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).setArrayData(schema=getTableMetadata(arguments.typename).fields[arguments.propertyname],aProperties=arguments.aProperties,parentid=arguments.objectid,logLocation=logLocation) />
+		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
+			<cfset arguments.dsn = schema.dsn />
+		</cfif>
+
+		<cfreturn getGateway(dsn=arguments.dsn, mode="write").setArrayData(schema=schema.fields[arguments.propertyname],aProperties=arguments.aProperties,parentid=arguments.objectid,logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="getData" access="public" output="false" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="bDepth" type="numeric" required="false" default="1" hint="0:Everything (with full structs for all array field elements),1:Everything (only extended array field as structs),2:No array fields,3:No array or longchar fields" />
 		<cfargument name="fields" type="string" required="false" default="" hint="Overrides the default fields returned. NOTE: the bDepth field may restrict the list further." />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset arguments.schema = getTableMetadata(arguments.typename) />
-		
-		<cfreturn getGateway(dsn=arguments.dsn).getData(argumentCollection=arguments) />
+
+		<cfif not len(arguments.dsn) and structKeyExists(arguments.schema, "dsn")>
+			<cfset arguments.dsn = arguments.schema.dsn />
+		</cfif>
+
+		<cfreturn getGateway(dsn=arguments.dsn, mode="read").getData(argumentCollection=arguments) />
 	</cffunction>
-	
+
 	<cffunction name="deleteData" access="public" output="false" returntype="struct" hint="Delete the specified objectid and corresponding data, including array properties and refObjects.">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var stReturn = StructNew()>
 		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 		
 		<cfset arguments.schema = getTableMetadata(arguments.typename) />
-		<cfset stReturn = getGateway(dsn=arguments.dsn).deleteData(argumentCollection=arguments,logLocation=logLocation) />
+		
+		<cfif not len(arguments.dsn) and structKeyExists(arguments.schema, "dsn")>
+			<cfset arguments.dsn = arguments.schema.dsn />
+		</cfif>
+
+		<cfset stReturn = getGateway(dsn=arguments.dsn, mode="write").deleteData(argumentCollection=arguments,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes" />
@@ -643,7 +701,7 @@
 	<!--- CUSTOM FUNCTION ACCESS --->
 	<cffunction name="run" access="public" output="false" returntype="any" hint="Simplifies access to gateway specific functions provided by plugins or projects. Returns false if the mixin does not exist.">
 		<cfargument name="name" type="string" required="true" hint="The name of the mixin function to run" />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var result = false />
 		
@@ -659,51 +717,84 @@
 	<!--- SCHEMA AND MAINTENANCE --->
  	<cffunction name="isDeployed" access="public" returntype="boolean" output="false" hint="Returns True if the table is already deployed">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
-    	
-		<cfreturn getGateway(dsn=arguments.dsn).isDeployed(schema=getTableMetadata(arguments.typename)) />
+		<cfargument name="dsn" type="string" required="false" default="" />
+
+		<cfset var schema = getTableMetadata(arguments.typename) />
+
+		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
+			<cfset arguments.dsn = schema.dsn />
+		</cfif>
+
+		<cfreturn getGateway(dsn=arguments.dsn, mode="read").isDeployed(schema=schema) />
 	</cffunction>
 	
 	<cffunction name="deployType" access="public" returntype="struct" output="false">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="bDropTable" type="boolean" required="true" />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var schema = getTableMetadata(arguments.typename) />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).deploySchema(schema=getTableMetadata(arguments.typename),bDropTable=arguments.bDropTable,logLocation=logLocation) />
+		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
+			<cfset arguments.dsn = schema.dsn />
+		</cfif>
+
+		<cfreturn getGateway(dsn=arguments.dsn, mode="write").deploySchema(schema=schema,bDropTable=arguments.bDropTable,logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="dropType" access="public" returntype="struct" output="false">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
-		<cfargument name="dsn" type="string" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var schema = getTableMetadata(arguments.typename) />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).dropSchema(schema=getTableMetadata(arguments.typename),logLocation=logLocation) />
+		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
+			<cfset arguments.dsn = schema.dsn />
+		</cfif>
+
+		<cfreturn getGateway(dsn=arguments.dsn, mode="write").dropSchema(schema=schema,logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="diffSchema" access="public" returntype="struct" output="false" hint="Compares type metadata to the actual database schema">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
-		<cfargument name="dsn" type="string" required="true" />
-		
-		<cfreturn getGateway(arguments.dsn).diffSchema(schema=getTableMetadata(arguments.typename)) />
+		<cfargument name="dsn" type="string" required="false" default="" />
+
+		<cfset var schema = getTableMetadata(arguments.typename) />
+
+		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
+			<cfset arguments.dsn = schema.dsn />
+		</cfif>
+
+		<cfreturn getGateway(dsn=arguments.dsn, mode="read").diffSchema(schema=schema) />
 	</cffunction>
  	
 	
 	<cffunction name="deployChanges" access="public" returntype="array" output="false" hint="Processes an array of changes and returns an array of results">
 		<cfargument name="changes" type="array" required="true" hint="Array of changes in the form { action, schema, propertyname|indexname, bDropTable(deploySchema only) }. Other properties can be included but will be ignored." />
-		<cfargument name="dsn" type="string" required="true" hint="The database to update" />
+		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var aResults = arraynew(1) />
 		<cfset var stResult = structnew() />
 		<cfset var i = 0 />
-		<cfset var gateway = getGateway(arguments.dsn) />
+		<cfset var gateway = "" />
 		<cfset var logLocation = "" />
+		<cfset var schema = getTableMetadata(arguments.typename) />
 		
 		<cfloop from="1" to="#arraylen(arguments.changes)#" index="i">
 			<cfset arguments.changes[i].logLocation = iif(listfindnocase(this.logChangeFlags,listfirst(arguments.changes[i].schema.tablename,"_")) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+
+			<cfif len(arguments.dsn)>
+				<cfset gateway = getGateway(dsn=arguments.dsn, mode="write") />
+			<cfelseif structKeyExists(arguments.changes[i], "dsn")>
+				<cfset gateway = getGateway(dsn=arguments.changes[i].dsn, mode="write") />
+			<cfelse>
+				<cfset gateway = getGateway(dsn=arguments.dsn, mode="write") />
+			</cfif>
+
 			<cfinvoke component="#gateway#" method="#arguments.changes[i].action#" argumentcollection="#arguments.changes[i]#" returnvariable="stResult" />
+
 			<cfif stResult.bSuccess and structkeyexists(arguments.changes[i],"success")>
 				<cfset stResult.message = arguments.changes[i].success />
 			</cfif>

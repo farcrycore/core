@@ -1155,7 +1155,7 @@
 
 	<cffunction name="findType" access="public" output="false" returntype="string" hint="Determine the typename for an objectID.">
 		<cfargument name="objectid"  required="true">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
 		<cfset var result = application.coapi.coapiUtilities.findType(argumentCollection=arguments) />

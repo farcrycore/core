@@ -63,7 +63,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="webskin" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
-		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		<cfargument name="dsn" required="no" type="string" default="">
 		<cfargument name="onExitProcess" required="no" type="any" default="" hint="A url string to redirect to if a processForm exit='true' is called within the webskin">
 		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
 		<cfargument name="hashKey" required="no" default="" type="string" hint="Pass in a key to be used to hash the objectBroker webskin cache">
@@ -370,7 +370,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="hashKey" required="true" />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />	
 		<cfargument name="onExitProcess" required="false" type="any" default="" hint="A url string to redirect to if a processForm exit='true' is called within the webskin" />
-		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		<cfargument name="dsn" required="no" type="string" default="">
 		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 		
 		<cfset var stCurrentView = structNew() />
@@ -736,7 +736,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
     	<cfset var stResult = structNew()>
 		<cfset var stClass = structnew() />
     	
-		<cfset stResult = application.fc.lib.db.deployType(typename=typename,bDropTable=arguments.bDropTable,dsn=application.dsn) />
+		<cfset stResult = application.fc.lib.db.deployType(typename=typename,bDropTable=arguments.bDropTable) />
 		
 		<cfif stResult.bSuccess AND bDeployCoapiRecord>
 			<!--- MAKE SURE THAT THE farCOAPI record exists for this type. --->
@@ -748,7 +748,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
  	<cffunction name="isDeployed" access="public" returntype="boolean" output="false" hint="Returns True if the table is already deployed">
 		
-		<cfreturn application.fc.lib.db.isDeployed(typename=getTypePath(),dsn=application.dsn) />
+		<cfreturn application.fc.lib.db.isDeployed(typename=getTypePath()) />
 	</cffunction>
 	
 	<!---****************  CRUD METHODS  ****************--->
@@ -757,7 +757,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	<cffunction name="createData" access="public" output="true" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="stProperties" type="struct" required="true">
 		<cfargument name="objectid" type="UUID" required="false" default="#application.fc.utils.createJavaUUID()#">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		
@@ -781,7 +781,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 	<cffunction name="getData" access="public" output="true" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">
 		<cfargument name="objectid" type="uuid" required="true">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="bShallow" type="boolean" required="false" default="false" hint="Setting to true filters all longchar property types from record.">
 		<cfargument name="bFullArrayProps" type="boolean" required="false" default="true" hint="Setting to true returns array properties as an array of structs instead of an array of strings IF IT IS AN EXTENDED ARRAY.">
 		<cfargument name="bUseInstanceCache" type="boolean" required="false" hint="setting to use instance cache if one exists">
@@ -878,7 +878,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
 		<cfargument name="bSetDefaultCoreProperties" type="boolean" required="false" default="true" hint="This allows the developer to skip defaulting the core properties if they dont exist.">	
 		<cfargument name="auditNote" type="string" required="false" default="">
@@ -1063,7 +1063,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						<cfif NOT reFindNoCase("^config", application.stCOAPI[aRelated[i].typename].aJoins[j].coapiType)>
 							<cfswitch expression="#application.stCOAPI[aRelated[i].typename].aJoins[j].direction#_#application.stCOAPI[aRelated[i].typename].aJoins[j].type#">
 								<cfcase value="from_array">
-									<cfquery datasource="#application.dsn#" name="qRelated">
+									<cfquery datasource="#application.dsn_read#" name="qRelated">
 										SELECT		parentID
 										FROM		#application.stCOAPI[aRelated[i].typename].aJoins[j].coapitype#_#application.stCOAPI[aRelated[i].typename].aJoins[j].property#
 										WHERE		data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aRelated[i].objectid#" />
@@ -1072,7 +1072,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 								</cfcase>
 								
 								<cfcase value="from_uuid">
-									<cfquery datasource="#application.dsn#" name="qRelated">
+									<cfquery datasource="#application.dsn_read#" name="qRelated">
 										SELECT		objectid
 										FROM		#application.stCOAPI[aRelated[i].typename].aJoins[j].coapitype#
 										WHERE		#application.stCOAPI[aRelated[i].typename].aJoins[j].property# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aRelated[i].objectid#" />
@@ -1105,7 +1105,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 	<cffunction name="deleteData" access="public" output="false" returntype="struct" hint="Delete the specified objectid and corresponding data, including array properties and refObjects.">
 		<cfargument name="objectid" type="uuid" required="true">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		
@@ -1135,12 +1135,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset application.fc.lib.db.deleteData(typename=getTypePath(),objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- TODO: convert this to use gateways --->
-		<cfquery datasource="#arguments.dsn#" name="qdeleteRefData">
+		<cfquery datasource="#arguments.dsn_write#" name="qdeleteRefData">
 		DELETE FROM #arguments.dbowner#refObjects
 		WHERE objectID = '#arguments.objectID#'
 		</cfquery>
 		
-		<cfquery datasource="#arguments.dsn#" name="qdeleteFUs">
+		<cfquery datasource="#arguments.dsn_write#" name="qdeleteFUs">
 		DELETE FROM #arguments.dbowner#farFU
 		WHERE refObjectID = '#arguments.objectID#'
 		</cfquery>
@@ -1153,7 +1153,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	<!---********  NON CRUD DB ACCESS METHODS  **********--->
 	<cffunction name="findType" access="public" output="false" returntype="string" hint="Determine the typename for an objectID.">
 		<cfargument name="objectid"  required="true">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
 		<cfset var result = application.coapi.coapiUtilities.findType(argumentCollection=arguments) />
@@ -1516,7 +1516,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stLibraryData = {} />
 
 		<cfif len(arguments.filter)>
-			<cfquery datasource="#application.dsn#" name="qFiltered">
+			<cfquery datasource="#application.dsn_read#" name="qFiltered">
 				SELECT objectid AS "key"
 				FROM #arguments.filterType#
 				WHERE LOWER(label) LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="%#lcase(arguments.filter)#%" />
