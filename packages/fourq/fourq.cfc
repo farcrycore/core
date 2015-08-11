@@ -811,7 +811,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfparam name="arguments.bUseInstanceCache" default="true" />
 		<cfelseif not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs)>
 			<cfset arguments.bArraysAsStructs = false />
-			<cfset arguments.bUseInstanceCache = true />
+			<cfparam name="arguments.bUseInstanceCache" default="true" />
 		<cfelse>
 			<cfset arguments.bUseInstanceCache = not arguments.bArraysAsStructs />
 		</cfif>
