@@ -1172,7 +1172,7 @@ $(function(){
 		<cfcatch></cfcatch>
 	</cftry>
 
-	<cfif NOT structIsEmpty(stInfo)>
+	<cfif isDefined("stInfo.database_productname") AND len(stInfo.database_productname)>
 		<cfswitch expression="#stInfo.database_productname#">
 			<cfcase value="MySQL">
 				<cfset dbType = "mysql">
