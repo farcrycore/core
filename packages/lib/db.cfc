@@ -780,15 +780,14 @@
 		<cfset var i = 0 />
 		<cfset var gateway = "" />
 		<cfset var logLocation = "" />
-		<cfset var schema = getTableMetadata(arguments.typename) />
 		
 		<cfloop from="1" to="#arraylen(arguments.changes)#" index="i">
 			<cfset arguments.changes[i].logLocation = iif(listfindnocase(this.logChangeFlags,listfirst(arguments.changes[i].schema.tablename,"_")) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 
 			<cfif len(arguments.dsn)>
 				<cfset gateway = getGateway(dsn=arguments.dsn, mode="write") />
-			<cfelseif structKeyExists(arguments.changes[i], "dsn")>
-				<cfset gateway = getGateway(dsn=arguments.changes[i].dsn, mode="write") />
+			<cfelseif structKeyExists(arguments.changes[i].schema, "dsn")>
+				<cfset gateway = getGateway(dsn=arguments.changes[i].schema.dsn, mode="write") />
 			<cfelse>
 				<cfset gateway = getGateway(dsn=arguments.dsn, mode="write") />
 			</cfif>
