@@ -309,6 +309,7 @@
 		<cfset var qTemp = "" />
 		<cfset var stRelatedMetadata = "" />
 		<cfset var item = "" />
+		<cfset var lAdded = "" />
 		
 		<!--- items --->
 		<cfset stResult["items"] = arraynew(1) />
@@ -322,6 +323,8 @@
 					<cfset lRelated = listAppend(lRelated, arrayToList(arguments.stObject[fieldname])) />
 				<cfelseif stProps[fieldname].metadata.type EQ "UUID" and len(arguments.stObject[fieldname])>
 					<cfset lRelated = listAppend(lRelated, arguments.stObject[fieldname]) />
+				<cfelse>
+					<cfset lRelated = "" />
 				</cfif>
 
 				<cfif len(lRelated)>
@@ -333,17 +336,20 @@
 					<cfset qLibrary = application.fapi.getContentType(stRelatedMetadata.ftLibraryDataTypename).getLibraryRecordset(primaryID=arguments.stObject.objectid, primaryTypename=arguments.stObject.typename, stMetadata=stRelatedMetadata, filterType=arguments.relatedtypename, filter="") />
 
 					<cfloop list="#lRelated#" index="item">
-						<cfquery dbtype="query" name="qTemp">
-							select 	* 
-							from 	qLibrary 
-							where 	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#item#">
-						</cfquery>
+						<cfif not listfindnocase(lAdded, item)>
+							<cfquery dbtype="query" name="qTemp">
+								select 	* 
+								from 	qLibrary 
+								where 	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#item#">
+							</cfquery>
 
-						<cfif qTemp.recordcount>
-							<cfset stItem = structnew() />
-							<cfset stItem["value"] = item />
-							<cfset stItem["text"] = qTemp.label[1] />
-							<cfset arrayappend(stResult["items"],stItem) />
+							<cfif qTemp.recordcount>
+								<cfset stItem = structnew() />
+								<cfset stItem["value"] = item />
+								<cfset stItem["text"] = qTemp.label[1] />
+								<cfset arrayappend(stResult["items"],stItem) />
+								<cfset lAdded = listappend(lAdded, item) />
+							</cfif>
 						</cfif>
 					</cfloop>
 				</cfif>
