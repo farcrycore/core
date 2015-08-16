@@ -552,7 +552,7 @@
 					<cfcatch>
 						
 						<!--- log error --->
-						<cfset application.fc.lib.error.logData(stResult["error"]) />
+						<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
 						
 						<!--- remove thread tracker --->
 						<cfset structdelete(application.fc.lib.tasks.threads,attributes.threadID) />
