@@ -25,7 +25,9 @@
 			<tr>
 				<td>CFML Engine</td>
 				<td>
-					<cfif structKeyExists(server, "railo")>
+					<cfif structKeyExists(server, "lucee")>
+						#server.coldfusion.productname# #server.lucee.version# (#server.lucee.state#) (Compatible #server.coldfusion.productversion#)
+					<cfelseif structKeyExists(server, "railo")>
 						#server.coldfusion.productname# #server.railo.version# (#server.railo.state#) (Compatible #server.coldfusion.productversion#)
 					<cfelse>
 						#server.coldfusion.productname# #server.coldfusion.productversion#
