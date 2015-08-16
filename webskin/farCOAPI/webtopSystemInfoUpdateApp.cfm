@@ -17,15 +17,15 @@
 <cfif isdefined("application.fcstats.updateapp")>
 	<ft:field label="Startup Performance" bMultiField="true" hint="How long the application took to start up on each updateapp">
 		<cfoutput>
+			<cfchart format="png" xaxistitle="Startup Date/Time" yaxistitle="Application Startup (ms)" chartwidth="500" chartheight="300" categoryLabelPositions="vertical">
+				<cfchartseries type="line" query="application.fcstats.updateapp" itemcolumn="when" valuecolumn="howlong">
+				</cfchartseries>
+			</cfchart>
+			<br>
 			<strong>Average: #round(arrayAvg(listToArray(valueList(application.fcstats.updateapp.howlong))))#ms</strong>
 			(Min: #round(arrayMin(listToArray(valueList(application.fcstats.updateapp.howlong))))#ms, 
 			Max: #round(arrayMax(listToArray(valueList(application.fcstats.updateapp.howlong))))#ms)
-			<br>
 		</cfoutput>
-		<cfchart format="png" xaxistitle="Date" yaxistitle="Tick Count" chartwidth="500">
-			<cfchartseries type="line" query="application.fcstats.updateapp" itemcolumn="when" valuecolumn="howlong">
-			</cfchartseries>
-		</cfchart>
 	</ft:field>
 </cfif>
 
