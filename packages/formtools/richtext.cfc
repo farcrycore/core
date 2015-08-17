@@ -205,7 +205,8 @@
 			<cfreturn serializeJSON(getTemplateOptions(
 				stObject=stObj,
 				stMetadata=arguments.stMetadata,
-				relatedtypename=url.relatedtypename
+				relatedtypename=url.relatedtypename,
+				relatedids=url.relatedids
 			)) />
 		</cfif>
 
@@ -294,9 +295,10 @@
 		<cfargument name="stObject" type="struct" required="true" />
 		<cfargument name="stMetadata" type="struct" required="true" />
 		<cfargument name="relatedtypename" type="string" required="true" />
+		<cfargument name="relatedids" type="string" required="false" default="" />
 
 		<cfset var stProps = application.stcoapi[arguments.stObject.typename].stprops />
-		<cfset var lRelated = "" />
+		<cfset var lRelated = arguments.relatedids />
 		<cfset var fieldname = "" />
 		<cfset var templateWebskinPrefix = "" />
 		<cfset var templateSnippetWebskinPrefix = "" />
@@ -304,36 +306,59 @@
 		<cfset var qRelated = "" />
 		<cfset var qWebskins = "" />
 		<cfset var stItem = structnew() />
-
-
-		<cfloop collection="#stProps#" item="fieldname">
-			<cfif (stProps[fieldname].metadata.type EQ "array" OR stProps[fieldname].metadata.type EQ "UUID" AND structKeyExists(stProps[fieldname].metadata, "ftJoin"))
-				AND listContainsNoCase(stProps[fieldname].metadata.ftJoin,arguments.relatedtypename)>
-				
-				<cfif stProps[fieldname].metadata.type EQ "array" and arraylen(arguments.stObject[fieldname])>
-					<cfset lRelated = listAppend(lRelated, arrayToList(arguments.stObject[fieldname])) />
-				<cfelseif stProps[fieldname].metadata.type EQ "UUID" and len(arguments.stObject[fieldname])>
-					<cfset lRelated = listAppend(lRelated, arguments.stObject[fieldname]) />
-				</cfif>
-			</cfif>
-		</cfloop>
-
+		<cfset var qLibrary = "" />
+		<cfset var qTemp = "" />
+		<cfset var stRelatedMetadata = "" />
+		<cfset var item = "" />
+		<cfset var lAdded = "" />
+		
 		<!--- items --->
 		<cfset stResult["items"] = arraynew(1) />
 		<cfset stResult["showitems"] = true>
 
+		<cfloop collection="#stProps#" item="fieldname">
+			<cfif (stProps[fieldname].metadata.type EQ "array" OR stProps[fieldname].metadata.type EQ "UUID" AND structKeyExists(stProps[fieldname].metadata, "ftJoin"))
+				AND listContainsNoCase(stProps[fieldname].metadata.ftJoin,arguments.relatedtypename)>
+
+				<cfif stProps[fieldname].metadata.type EQ "array" and arraylen(arguments.stObject[fieldname])>
+					<cfset lRelated = listAppend(lRelated, arrayToList(arguments.stObject[fieldname])) />
+				<cfelseif stProps[fieldname].metadata.type EQ "UUID" and len(arguments.stObject[fieldname])>
+					<cfset lRelated = listAppend(lRelated, arguments.stObject[fieldname]) />
+				<cfelse>
+					<cfset lRelated = "" />
+				</cfif>
+
+				<cfif len(lRelated)>
+					<cfset stRelatedMetadata = application.fapi.getPropertyMetadata(typename=arguments.stObject.typename, property=fieldname) />
+					<cfset stRelatedMetadata = application.fapi.getFormtool(stRelatedMetadata.type).prepMetadata(stObject=arguments.stObject, stMetadata=stRelatedMetadata) />
+					<cfif not structkeyexists(stRelatedMetadata,"ftLibraryDataTypename") or not len(stRelatedMetadata.ftLibraryDataTypename)>
+						<cfset stRelatedMetadata.ftLibraryDataTypename = arguments.relatedtypename />
+					</cfif>
+					<cfset qLibrary = application.fapi.getContentType(stRelatedMetadata.ftLibraryDataTypename).getLibraryRecordset(primaryID=arguments.stObject.objectid, primaryTypename=arguments.stObject.typename, stMetadata=stRelatedMetadata, filterType=arguments.relatedtypename, filter="") />
+
+					<cfloop list="#lRelated#" index="item">
+						<cfif not listfindnocase(lAdded, item)>
+							<cfquery dbtype="query" name="qTemp">
+								select 	* 
+								from 	qLibrary 
+								where 	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#item#">
+							</cfquery>
+
+							<cfif qTemp.recordcount>
+								<cfset stItem = structnew() />
+								<cfset stItem["value"] = item />
+								<cfset stItem["text"] = qTemp.label[1] />
+								<cfset arrayappend(stResult["items"],stItem) />
+								<cfset lAdded = listappend(lAdded, item) />
+							</cfif>
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cfif>
+		</cfloop>
+
 		<cfif arguments.relatedtypename eq "richtextSnippet">
 			<cfset stResult["showitems"] = false>
-		<cfelse>
-			<cfset qRelated = application.fapi.getContentObjects(typename=arguments.relatedtypename, lProperties="objectid,label", objectid_IN=lRelated)>
-			
-			<cfloop query="qRelated">
-				<cfset stItem = structnew() />
-				<cfset stItem["value"] = qRelated.objectid />
-				<cfset stItem["text"] = qRelated.label />
-				<cfset arrayappend(stResult["items"],stItem) />
-			</cfloop>
-
 		</cfif>
 
 		<!--- webskins --->

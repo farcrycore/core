@@ -1559,7 +1559,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 		<cfset oFormTools = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools"))>
-		<cfset stLibraryData = oFormTools.getRecordset(typename="#url.filterTypename#", sqlColumns="objectid", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="0") />
+		<cfset stLibraryData = oFormTools.getRecordset(typename=arguments.filtertype, sqlColumns="objectid,label", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="0") />
 		
 		<cfreturn stLibraryData.q />
 	</cffunction>

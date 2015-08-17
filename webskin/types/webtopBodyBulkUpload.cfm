@@ -93,7 +93,7 @@
 		<cfset stResult = structnew() />
 		<cfset stResult["files"] = arraynew(1) />
 		<cfset stResult["files"][1] = structnew() />
-		<cfset stResult["files"][1]["name"] = listlast(filename,"/") />
+		<cfset stResult["files"][1]["name"] = listlast(URLDecode(filename),"/") />
 		<cfset stResult["files"][1]["url"] = application.fapi.fixURL(removevalues="upload",addvalues="action=view&uploader=#form.uploaderID#&file=#fileObjectID#") />
 		<cfset stResult["files"][1]["thumbnail_url"] = "" />
 		<cfset stResult["files"][1]["delete_url"] = "" />
@@ -121,19 +121,28 @@
 		<cfset stResult["htmlhead"] = arraynew(1) />
 		
 		<cfloop from="1" to="#arraylen(stResult.files)#" index="i">
-			<cfif not structkeyexists(stResult.files[i],"error")>
-				<cfset stFile = stResult.files[i] />
-				<cfset stFile["stObject"] = getData(objectid=stFile.result.objectID) />
-				<cfset stFile["teaserHTML"] = getView(stObject=stFile.stObject,template="librarySelected") />
-				<cfset stFile["editHTML"] = "" />
+			<cfset stFile = stResult.files[i] />
+			<cfif not structkeyexists(stFile,"error") and isdefined("stFile.result.objectid")>
+				<cftry>
+					<cfset stFile["stObject"] = getData(objectid=stFile.result.objectID) />
+					<cfset stFile["teaserHTML"] = getView(stObject=stFile.stObject,template="librarySelected") />
+					<cfset stFile["editHTML"] = "" />
 				
-				<cfif len(lEditFields)>
-					<cfsavecontent variable="stFile.editHTML"><ft:object stObject="#stFile.stObject#" lFields="#lEditFields#" bIncludeFieldset="false" /></cfsavecontent>
-				</cfif>
+					<cfif len(lEditFields)>
+						<cfsavecontent variable="stFile.editHTML"><ft:object stObject="#stFile.stObject#" lFields="#lEditFields#" bIncludeFieldset="false" /></cfsavecontent>
+					</cfif>
+
+					<cfcatch>
+						<cfset stFile["error"] = application.fc.lib.error.normalizeError(cfcatch) />
+						<cfset application.fc.lib.error.logData(stResult.error) />
+					</cfcatch>
+				</cftry>
+			<cfelseif not structkeyexists(stFile,"error") and isdefined("stFile.result.error")>
+				<cfset stFile["error"] = stFile.result.error />
 			</cfif>
 		</cfloop>
 		
-		<cfif arraylen(stResult.files)>
+		<cfif structkeyexists(stResult, "files") and arraylen(stResult.files)>
 			<core:inHead variable="aHead" />
 			<cfset stResult["htmlhead"] = aHead />
 		</cfif>

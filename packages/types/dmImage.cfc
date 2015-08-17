@@ -263,7 +263,7 @@ type properties
 	<cfargument name="stFormPost" required="false" type="struct">		
 	
 	<cfif not structkeyexists(arguments.stProperties,"title") or not len(arguments.stProperties.title) and structkeyexists(arguments.stProperties,"sourceImage")>
-		<cfset arguments.stProperties.title = listfirst(listlast(arguments.stProperties.sourceImage,"/"),".") />
+		<cfset arguments.stProperties.title = listfirst(listlast(urldecode(arguments.stProperties.sourceImage),"/"),".") />
 	</cfif>
 	
 	<cfif structkeyexists(arguments.stProperties,"title")>

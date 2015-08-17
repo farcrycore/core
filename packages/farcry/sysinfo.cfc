@@ -2,7 +2,9 @@
 
 <cffunction name="getEngine" returntype="string" output="false" access="public" hint="Returns the CFML engine name">
 	
-	<cfif structkeyexists(server,"railo")>
+	<cfif structkeyexists(server,"lucee")>
+		<cfreturn "lucee" />
+	<cfelseif structkeyexists(server,"railo")>
 		<cfreturn "railo" />
 	<cfelseif structkeyexists(server,"coldfusion")>
 		<cfreturn "coldfusion" />
@@ -126,7 +128,7 @@
 	<cfreturn svnDate />
 </cffunction>
 
-<cffunction name="getServerVersion" access="public" output="false" hint="Returns the server (Railo or ColdFusion) version">
+<cffunction name="getServerVersion" access="public" output="false" hint="Returns the server version">
 	<cfset var stVersion = structnew() />
 	
 	<cfset stVersion["engine"] = getEngine() />
@@ -138,10 +140,13 @@
 			<cfset stVersion["productversion"] = SERVER.ColdFusion.ProductVersion />
 			<cfset stVersion["string"] = "ColdFusion " & SERVER.ColdFusion.ProductLevel & " " & SERVER.ColdFusion.ProductVersion />
 		</cfcase>
-		
 		<cfcase value="railo">
-			<cfset stVersion["productversion"] = Server.Railo.Version />
-			<cfset stVersion["string"] = "Railo " & Server.Railo.Version />
+			<cfset stVersion["productversion"] = server.railo.version />
+			<cfset stVersion["string"] = "Railo " & server.railo.version />
+		</cfcase>
+		<cfcase value="lucee">
+			<cfset stVersion["productversion"] = server.lucee.version />
+			<cfset stVersion["string"] = "Lucee " & server.lucee.version />
 		</cfcase>
 	</cfswitch>
 	
