@@ -382,7 +382,7 @@ default handlers
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Set to false to disable logging" />
 		
 		<cfset var stNewObject = "" />
-		<cfset var uploadfieldtype = application.stCOAPI[arguments.stProperties.typename].stProps[arguments.uploadfield].metadata.ftType />
+		<cfset var uploadfieldtype = "" />
 		<cfset var typename = "" />
 		<cfset var thisfield = "" />
 		<cfset var stFP = structnew() />
@@ -393,6 +393,8 @@ default handlers
 		<cfelse>
 			<cfset typename = getTypeName() />
 		</cfif>
+
+		<cfset uploadfieldtype = application.fapi.getPropertyMetadata(arguments.stProperties.typename, arguments.uploadfield, "ftType", "string") />
 		
 		<!--- if an image, resize as necessary and create dependant images --->
 		<cfif uploadfieldtype eq "image">
@@ -404,10 +406,8 @@ default handlers
 			) />
 			
 			<cfloop collection="#application.stCOAPI[typename].stProps#" item="thisfield">
-				<cfif isdefined("application.stCOAPI.#typename#.stProps.#thisfield#.metadata.ftType") 
-					and application.stCOAPI[typename].stProps[thisfield].metadata.ftType eq "image"
-					and isdefined("application.stCOAPI.#typename#.stProps.#thisfield#.metadata.ftSourceField")
-					and listfirst(application.stCOAPI[typename].stProps[thisfield].metadata.ftSourceField,":") eq arguments.uploadfield>
+				<cfif application.fapi.getPropertyMetadata(typename, thisfield, "ftType", "string") eq "image"
+					and listfirst(application.fapi.getPropertyMetadata(typename, thisfield, "ftSourceField", ""), ":") eq arguments.uploadfield>
 					
 					<cfset stFP[thisfield] = structnew() />
 					
@@ -422,11 +422,13 @@ default handlers
 		
 		<!--- standard createData  --->
 		<cfset stNewObject = createData(argumentCollection=arguments) />
-		
+		<cflog file="debug" text="#serializeJSON(stNewObject)#">
 		<!--- if the formtool has an onFileChange function, run it --->
 		<cfif structkeyexists(application.formtools[uploadfieldtype].oFactory,"onFileChange")>
 			<cfset application.formtools[uploadfieldtype].oFactory.onFileChange(
 				stObject=arguments.stProperties,
+				typename=typename,
+				objectid=arguments.stProperties.objectid,
 				stMetadata=application.stCOAPI[typename].stProps[arguments.uploadfield].metadata,
 				value=arguments.stProperties[arguments.uploadfield]
 			) />
