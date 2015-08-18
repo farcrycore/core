@@ -11,7 +11,7 @@
 		ftSeq="1" ftWizardStep="Task Result" ftFieldset="Task Result" ftLabel="Task" 
 		ftDisplayOnly="true" ftDisplayMethod="ftDisplayUUID">
 
-	<cfproperty name="jobType" type="string" required="false" default="Unkknown"
+	<cfproperty name="jobType" type="string" required="false" default="Unknown"
 		ftSeq="2" ftWizardStep="Queued Task" ftFieldset="Queued Task" ftLabel="Job Type"
 		ftDisplayOnly="true" dbIndex="getStatus:1" />
 	
