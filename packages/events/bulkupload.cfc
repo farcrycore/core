@@ -38,7 +38,7 @@
 			bArchive = false
 		) />
 		<cfif not stResult.bSuccess>
-			<cflog file="#application.applicationname#-newsimport" text="Could not handle #arguments.details.tempfile#: #stResult.stError.message#" />
+			<cflog file="bulkupload" text="Could not handle #arguments.details.tempfile#: #stResult.stError.message#" />
 			<creturn "" />
 		</cfif>
 		<cfset stObject[arguments.details.targetfield] = stResult.value />
