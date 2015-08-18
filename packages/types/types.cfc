@@ -422,7 +422,7 @@ default handlers
 		
 		<!--- standard createData  --->
 		<cfset stNewObject = createData(argumentCollection=arguments) />
-		<cflog file="debug" text="#serializeJSON(stNewObject)#">
+
 		<!--- if the formtool has an onFileChange function, run it --->
 		<cfif structkeyexists(application.formtools[uploadfieldtype].oFactory,"onFileChange")>
 			<cfset application.formtools[uploadfieldtype].oFactory.onFileChange(
