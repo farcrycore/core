@@ -756,22 +756,19 @@
 		<cfargument name="dir" type="string" required="true" />
 		
 		<cfset var qDir = "" />
-		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket#/" />
+		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#" />
 		
-		<cfdirectory action="list" directory="#s3path#" listinfo="name" name="qDir" />
+		<cfif not directoryExists(s3Path)>
+			<cfreturn querynew("file") />
+		</cfif>
+
+		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="name" name="qDir" />
 		
 		<cfquery dbtype="query" name="qDir">
 			SELECT 		'/' + name AS file
 			FROM 		qDir 
-			WHERE		lower('/' + name) like '#lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#%'
 			ORDER BY 	name
 		</cfquery>
-		
-		<cfif len(arguments.config.pathPrefix)>
-			<cfloop query="qDir">
-				<cfset querysetcell(qDir,"file",rereplacenocase(qDir.file,"^#arguments.config.pathPrefix#",""),qDir.currentrow) />
-			</cfloop>
-		</cfif>
 		
 		<cfreturn qDir />
 	</cffunction>
