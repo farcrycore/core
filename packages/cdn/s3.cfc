@@ -813,6 +813,8 @@
 			</cfif>
 			<cfif isvalid("email",arguments.config.admins[i])>
 				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'emailAddress="#arguments.config.admins[i]#"',', ') />
+			<cfelseif isstruct(arguments.config.admins[i]) and structKeyExists(arguments.config.admins[i], "id")>
+				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i].id#"',', ') />
 			<cfelse>
 				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i]#"',', ') />
 			</cfif>
