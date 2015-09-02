@@ -17,7 +17,9 @@
 <cfif isdefined("application.fcstats.updateapp")>
 	<ft:field label="Startup Performance" bMultiField="true" hint="How long the application took to start up on each updateapp">
 		<cfoutput>
-			<cfchart format="png" xaxistitle="Startup Date/Time" yaxistitle="Application Startup (ms)" chartwidth="500" chartheight="300" categoryLabelPositions="vertical">
+			<cfset chartAttributes = structNew()>
+			<cfset chartAttributes.categoryLabelPositions = "vertical">
+			<cfchart format="png" xaxistitle="Startup Date/Time" yaxistitle="Application Startup (ms)" chartwidth="500" chartheight="300" attributeCollection="#chartAttributes#">
 				<cfchartseries type="line" query="application.fcstats.updateapp" itemcolumn="when" valuecolumn="howlong">
 				</cfchartseries>
 			</cfchart>
