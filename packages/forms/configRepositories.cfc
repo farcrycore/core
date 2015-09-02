@@ -1,10 +1,10 @@
 <cfcomponent displayname="Repository Info Configuration" extends="forms" key="repo" output="false"
 	hint="Configure paths for source control repository info integration">
 
-	<cfproperty name="gitExecutable" type="string" default="C:\Program Files (x86)\Git\bin\git.exe" required="false"
+	<cfproperty name="gitExecutable" type="string" default="C:\Program Files\Git\bin\git.exe" required="false"
 		ftSeq="1" ftFieldset="Executable Paths" ftLabel="Git Executable"
 		ftType="string"
-		ftHint="e.g. /usr/bin/git or C:\Program Files (x86)\Git\bin\git.exe">
+		ftHint="e.g. /usr/bin/git or C:\Program Files\Git\bin\git.exe">
 
 	<cfproperty name="svnExecutable" type="string" default="C:\Program Files\TortoiseSVN\bin\svn.exe" required="false"
 		ftSeq="2" ftFieldset="Executable Paths" ftLabel="SVN Executable"
@@ -233,14 +233,18 @@
 			</cfif>
 
 			<!--- execute the git command --->
-			<cfset stAttributes.errorVariable = "outputError">
-			<cftry>
-				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
-				<cfparam name="outputError" default="">
-				<cfcatch>
-					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
-				</cfcatch>
-			</cftry>
+			<cfif len(gitExecutable)>
+				<cfset stAttributes.errorVariable = "outputError">
+				<cftry>
+					<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+					<cfparam name="outputError" default="">
+					<cfcatch>
+						<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<cfset outputError = "Git executable path not configured">
+			</cfif>
 		</cfif>
 
 		<cfset stResult["path"] = arguments.path>
@@ -281,14 +285,18 @@
 			</cfif>
 
 			<!--- execute the svn command --->
-			<cfset stAttributes.errorVariable = "outputError">
-			<cftry>
-				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
-				<cfparam name="outputError" default="">
-				<cfcatch>
-					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
-				</cfcatch>
-			</cftry>
+			<cfif len(svnExecutable)>
+				<cfset stAttributes.errorVariable = "outputError">
+				<cftry>
+					<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+					<cfparam name="outputError" default="">
+					<cfcatch>
+						<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
+					</cfcatch>
+				</cftry>
+			<cfelse>
+				<cfset outputError = "SVN executable path not configured">
+			</cfif>
 		</cfif>
 
 		<cfset stResult["path"] = arguments.path>
