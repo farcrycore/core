@@ -1135,12 +1135,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset application.fc.lib.db.deleteData(typename=getTypePath(),objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- TODO: convert this to use gateways --->
-		<cfquery datasource="#arguments.dsn_write#" name="qdeleteRefData">
+		<cfquery datasource="#application.dsn_write#" name="qdeleteRefData">
 		DELETE FROM #arguments.dbowner#refObjects
 		WHERE objectID = '#arguments.objectID#'
 		</cfquery>
 		
-		<cfquery datasource="#arguments.dsn_write#" name="qdeleteFUs">
+		<cfquery datasource="#application.dsn_write#" name="qdeleteFUs">
 		DELETE FROM #arguments.dbowner#farFU
 		WHERE refObjectID = '#arguments.objectID#'
 		</cfquery>
