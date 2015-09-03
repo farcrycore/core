@@ -35,7 +35,7 @@
 <a target="_blank" href="https://github.com/farcrycore">FarCry Core on GitHub</a><br>
 <a target="_blank" href="https://plus.google.com/communities/107650642291146266954">FarCry on Google+</a><br>
 <a target="_blank" href="https://twitter.com/farcrycore">@FarCryCore on Twitter</a><br>
-<a target="_blank" href="https://www.ohloh.net/p/farcry">FarCry Core on Ohloh</a><br>
+<a target="_blank" href="https://www.openhub.net/p/farcry">FarCry Core on Open Hub</a><br>
 <a target="_blank" href="http://www.daemon.com.au">Commercial FarCry Support</a><br>
 <br>
 
