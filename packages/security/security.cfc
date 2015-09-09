@@ -446,7 +446,7 @@
         <cfset session.userLanguage = left(session.dmProfile.locale,2) />
 		
 		<!--- Admin flag --->
-		<cfset session.mode.bAdmin = checkPermission(permission="Admin") />
+		<cfset session.fc.mode.bAdmin = checkPermission(permission="Admin") />
 		
 		<!--- /DEPRECATED --->
 		
