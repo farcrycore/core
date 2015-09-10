@@ -594,7 +594,7 @@
 				<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
 				<cfset url.updateapp = true>
 			<cfelse>		
-				<cfif isBoolean(url.updateapp) AND ((isDefined("session.mode.bAdmin") and session.mode.bAdmin) OR (isDefined("session.dmSec.Authentication.bAdmin") and session.dmSec.Authentication.bAdmin))>
+				<cfif isBoolean(url.updateapp) AND ((isDefined("session.fc.mode.bAdmin") and session.fc.mode.bAdmin) OR (isDefined("session.dmSec.Authentication.bAdmin") and session.dmSec.Authentication.bAdmin))>
 					<!--- ADMINISTRATORS CAN ALWAYS UPDATE APP WITH 1 --->
 				<cfelse>
 					<!--- Not an adminstrator and didnt know the updateappkey --->
