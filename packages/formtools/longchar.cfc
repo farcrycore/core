@@ -149,7 +149,7 @@
 		<!--- if range available set validation --->
 		<cfif len(arguments.stMetadata.ftLimitMin) AND len(arguments.stMetadata.ftLimit)>
 			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength"," ") />
-			<skin:onReady><cfoutput>$.validator.addClassRules("rangeLength", {rangelength:[#arguments.stMetadata.ftLimitMin#,#arguments.stMetadata.ftLimit#]});</cfoutput></skin:onReady>
+			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength", {rangelength:[#arguments.stMetadata.ftLimitMin#,#arguments.stMetadata.ftLimit#]});</cfoutput></skin:onReady>
 		</cfif>
 		
 		<cfsavecontent variable="html">
