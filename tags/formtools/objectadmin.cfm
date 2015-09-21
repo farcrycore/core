@@ -817,6 +817,8 @@
 		</cfoutput></skin:pop>
 
 
+		<cfset bShowStatus = false>
+
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination
 				paginationID="#attributes.typename#"
@@ -863,8 +865,16 @@
 							<cfoutput><th style="width:10em;">#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
 						</cfif>
 						
-						<cfif structKeyExists(st,"bHasMultipleVersion")>
-					 		<cfoutput><th style="width:9em;">#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
+						<cfif structKeyExists(st,"bHasMultipleVersion") AND NOT listFindNoCase(attributes.columnlist, "status")>
+							<cfset bShowStatus = true>
+							<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
+								<cfif structKeyExists(attributes.aCustomColumns[i], "property") AND listFindNoCase(attributes.aCustomColumns[i].property, "status")>
+								<cfset bShowStatus = false>
+								</cfif>
+							</cfloop>
+							<cfif bShowStatus>
+					 			<cfoutput><th style="width:9em;">#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
+							</cfif>
 						</cfif>
 						
 						<cfset o = createobject("component",PrimaryPackagepath) />
@@ -1108,7 +1118,7 @@
 						 		</cfif>
 				 			</cfif>
 
-					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
+					 		<cfif structKeyExists(st,"bHasMultipleVersion") AND bShowStatus eq true>
 						 		<cfoutput><td style="white-space:nowrap;">#statusOutput#</td></cfoutput>
 							</cfif>
 	
