@@ -669,7 +669,8 @@
 								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
 								errorMessage="#ftFieldMetadata.errorMessage#"
 								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
-								formTheme="#attributes.formTheme#">
+								formTheme="#attributes.formTheme#"
+								ftFieldMetadata="#ftFieldMetadata#">
 
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
 						
