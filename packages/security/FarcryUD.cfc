@@ -99,8 +99,7 @@
 		<cfset var dateTolerance = 0 />
 
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-		
-		
+
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>
 			<cfset qUser = queryUserPassword(form.userlogin,form.password) />
@@ -110,10 +109,12 @@
 				<ft:processformObjects typename="#getLoginForm()#">
 					<cfset qUser = queryUserPassword(stProperties.username,stProperties.password) />
 					<cfset stResult.userid = trim(stProperties.username) />
+					<!--- discard form object from session --->
+					<ft:break>
 				</ft:processformObjects>
 			</ft:processform>
 		</cfif>
-		
+
 		<!--- If (somehow) a login was submitted, process the result --->
 		<cfif structKeyExists(stResult, "userid") AND len(stResult.userid)>
 			
