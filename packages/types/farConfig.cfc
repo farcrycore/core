@@ -63,6 +63,7 @@ object methods
 		<cfset var qFieldset	= '' />
 		<cfset var propertyFormat = '' />
 		<cfset var stMeta = structNew() />
+		<cfset var stPropValues = structnew() />
 
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -113,10 +114,10 @@ object methods
 									<cfset stMeta = structNew()>
 									<cfset stMeta[qFieldset.propertyname] = structNew()>
 									<cfset stMeta[qFieldset.propertyname].ftHint = "This field is read only and cannot be edited via the webtop">
-									<cfset stMeta[qFieldset.propertyname].value = application.config_readonly[arguments.stObject.configkey][qFieldset.propertyname]>
+									<cfset stPropValues[qFieldset.propertyname] = application.config_readonly[arguments.stObject.configkey][qFieldset.propertyname]>
 								</cfif>
 
-								<ft:object stObject="#stObj#" format="#propertyFormat#" lExcludeFields="label" lFields="#qFieldset.propertyname#" stPropMetadata="#stMeta#" inTable="false" IncludeFieldSet="false" />
+								<ft:object stObject="#stObj#" format="#propertyFormat#" lExcludeFields="label" lFields="#qFieldset.propertyname#" stPropMetadata="#stMeta#" stPropValues="#stPropValues#" inTable="false" IncludeFieldSet="false" />
 
 							</cfloop>
 						</ft:fieldset>
