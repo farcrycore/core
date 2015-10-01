@@ -179,15 +179,7 @@
 			<cfset arguments.aFilters[i].property = application.stCOAPI[arguments.typename].stProps[arguments.aFilters[i].property].metadata.name />
 			<cfset arguments.aFilters[i].sqltype = propertytypemap[arguments.aFilters[i].type] />
 		</cfloop>
-		
-		<!--- Status filter --->
-		<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
-			<cfset arrayappend(arguments.aFilters,struct(
-					property="status",
-					filter="in",
-					value=arguments.status
-			)) />
-		</cfif>
+
 
 		<cfquery datasource="#dsn_read#" name="q" maxrows="#arguments.maxRows#">
 			select		#preserveSingleQuotes(arguments.lProperties)#, '#arguments.typename#' as typename
