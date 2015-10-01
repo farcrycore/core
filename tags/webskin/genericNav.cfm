@@ -198,7 +198,7 @@ else {
 				if(attributes.bLast and qNav.nRight[i] eq qMaxRight.maxRight){
 					itemclass=itemclass & '#attributes.lastClass# ';
 				}
-				if(attributes.bActive and (trim(qNav.ObjectID[i]) eq request.sectionObjectID or listfind(lAncestors, trim(qNav.ObjectID[i])))){
+				if(attributes.bActive and (trim(qNav.ObjectID[i]) eq attributes.sectionObjectID or listfind(lAncestors, trim(qNav.ObjectID[i])))){
 					itemclass=itemclass & '#attributes.activeClass# ';
 				}
 				// update counters
@@ -229,7 +229,7 @@ else {
 						}				
 						
 						writeOutput("<li");
-						if(request.sectionObjectID eq application.fapi.getNavID(attributes.homeAlias)){
+						if(attributes.sectionObjectID eq application.fapi.getNavID(attributes.homeAlias)){
 							homeclass=homeclass & ' #attributes.ActiveClass# ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
@@ -313,7 +313,7 @@ else {
 			writeOutput(">");
 						
 			writeOutput("<li");
-			if(request.sectionObjectID eq application.fapi.getNavID('home'))
+			if(attributes.sectionObjectID eq application.fapi.getNavID('home'))
 			{
 				writeOutput(" class=""active""");
 			}
