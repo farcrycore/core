@@ -17,6 +17,8 @@
 </cfif>
 
 
+<!--- The hierarchy of formthemes requires this to be in all nested ft:forms --->
+<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
 <!--- MJB
@@ -134,19 +136,35 @@ It just ignores the inner ones.
 			<cfset innerHTML = thisTag.generatedContent />
 			<cfset thisTag.generatedContent = "" />
 		</cfif>
-		
-	
-		<cfset formtheme = application.fapi.getDefaultFormTheme()>
-		
-		
-		
+
 		<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-		<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Form') >
-			<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Form'].path>
+		<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'form') >
+			<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['form'].path>
 		<cfelse>
-			<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapForm'].path>
+			<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['form'].path>
 		</cfif>
-		
+
+	
+		<!--- If submitting by ajax, append the ajax submission function call to the onsubmit. --->
+		<cfif attributes.bAjaxSubmission>
+
+			<!--- Make sure the ajax submission is told to go into ajax mode. --->
+			<cfset attributes.action = application.fapi.fixURL(url=attributes.action,addvalues="ajaxmode=true") />
+					
+			<!--- Add the function call to onsubmit --->
+			<cfsavecontent variable="sAjaxSubmission">
+				<cfoutput>
+		        farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#','#attributes.ajaxMaskMsg#','#attributes.ajaxMaskCls#', #attributes.ajaxTimeout#<cfif len(attributes.ajaxTarget)>,'#attributes.ajaxTarget#'</cfif>);
+		        return false;
+				</cfoutput>				
+			</cfsavecontent>
+			
+			<cfset attributes.onSubmit = "#attributes.onSubmit#;#sAjaxSubmission#" />
+			
+		</cfif>		
+
+
+
 		
 		<!--- Setup the ajax wrapper if this is the first render of the form. When the ajax submission is made, the returned HTML is placed in this div. --->
 		<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
@@ -180,114 +198,6 @@ It just ignores the inner ones.
 		</cfif>
 		
 		
-		<!--- If we are validating this form, load and initialise the validation engine.  --->
-		<cfif attributes.validation>
-			<skin:loadJS id="fc-jquery-validate" />
-
-			<!--- set up validation selectors and classes based on the form theme --->
-			<cfset stValConfig = structNew()>
-			<cfif formtheme eq "bootstrap">
-				<cfset stValConfig.wrapper = "">
-				<cfset stValConfig.errorElement = "p">
-				<cfset stValConfig.errorElementClass = "text-error">
-				<cfset stValConfig.errorPlacementSelector = "div.control-group">
-				<cfset stValConfig.fieldContainerSelector = "div.control-group">
-				<cfset stValConfig.fieldContainerClass = "error">
-			<cfelse>
-				<cfset stValConfig.wrapper = "">
-				<cfset stValConfig.errorElement = "p">
-				<cfset stValConfig.errorElementClass = "errorField">
-				<cfset stValConfig.errorPlacementSelector = "div.ctrlHolder">
-				<cfset stValConfig.fieldContainerSelector = "div.ctrlHolder">
-				<cfset stValConfig.fieldContainerClass = "error">
-			</cfif>
-			
-			<!--- Setup farcry form validation (fv) --->
-			<skin:onReady>
-				<cfoutput>
-				if(typeof $j('###attributes.Name#').validate != "undefined") {
-					$fc.fv#attributes.Name# = $j("###attributes.Name#").validate({
-						onsubmit: false, // let the onsubmit function handle the validation
-						errorElement: "#stValConfig.errorElement#",
-						errorClass: "#stValConfig.errorElementClass#",
-						<cfif len(stValConfig.wrapper)>
-							wrapper: "#stValConfig.wrapper#",  // a wrapper around the error message					   
-						</cfif>					   
-						errorPlacement: function(error, element) {
-					  		error.prependTo( element.closest("#stValConfig.errorPlacementSelector#") );
-				        },
-						highlight: function(element, errorClass) {
-						   $j(element).closest("#stValConfig.fieldContainerSelector#").addClass('#stValConfig.fieldContainerClass#');
-						},
-						unhighlight: function(element, errorClass) {
-						   $j(element).closest("#stValConfig.fieldContainerSelector#").removeClass('#stValConfig.fieldContainerClass#');
-						}
-					});
-				}
-				
-				</cfoutput>
-			</skin:onReady>
-		</cfif>
-			
-		<!--- If submitting by ajax, append the ajax submission function call to the onsubmit. --->
-		<cfif attributes.bAjaxSubmission>
-
-			<!--- Make sure the ajax submission is told to go into ajax mode. --->
-			<cfset attributes.action = application.fapi.fixURL(url=attributes.action,addvalues="ajaxmode=true") />
-					
-			<!--- Add the function call to onsubmit --->
-			<cfsavecontent variable="sAjaxSubmission">
-				<cfoutput>
-		        farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#','#attributes.ajaxMaskMsg#','#attributes.ajaxMaskCls#', #attributes.ajaxTimeout#<cfif len(attributes.ajaxTarget)>,'#attributes.ajaxTarget#'</cfif>);
-		        return false;
-				</cfoutput>				
-			</cfsavecontent>
-			
-			<cfset attributes.onSubmit = "#attributes.onSubmit#;#sAjaxSubmission#" />
-			
-		</cfif>			
-			
-		<!--- If we have anything in the onsubmit, use jquery to run it --->
-		<skin:onReady>
-			<cfoutput>
-			$j('###attributes.Name#').submit(function(){	
-				var valid = true;			
-				<cfif attributes.validation EQ 1>
-					if ( $j("###attributes.Name#").attr('fc:validate') == 'false' ) {
-						$j("###attributes.Name#").attr('fc:validate',true);					
-					} else {
-						valid = $j('###attributes.Name#').valid();
-					}
-				</cfif>			
-					 
-				if(valid){
-					
-					#attributes.onSubmit#;
-					
-					$j("###attributes.Name# .fc-btn, ###attributes.Name# .fc-btn-link").each(function(index,el){
-						
-						if( $j(el).attr('fc:disableOnSubmit') ) {
-							 $j(el).attr('disabled', 'disabled');
-						};
-						
-					});
-					
-				} else {
-					$fc.fv#attributes.Name#.focusInvalid();
-					return false;
-				}
-		    });
-			<cfif len(Request.farcryForm.defaultAction)>
-				$j('###attributes.Name# input,select').on("keypress",function(e){
-				if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-					$j('button[value="#replace(replacelist(Request.farcryForm.defaultAction,"\,!,"",##,$,%,&,',(,),*,+,.,/,:,;,<,=,>,?,@,[,],^,`,{,|,},~","\\\,\\!,\\"",\\##,\\$,\\%,\\&,\\',\\(,\\),\\*,\\+,\\.,\\/,\\:,\\;,\\<,\\=,\\>,\\?,\\@,\\[,\\],\\^,\\`,\\{,\\|,\\},\\~"), ",", "\\,", "ALL")#"]').click();
-					return false;
-				} else {
-					return true;
-				}
-			});</cfif>
-			</cfoutput>				
-		</skin:onReady>
 		
 		
 			

@@ -120,6 +120,7 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 
 		<cfset var fieldStyle = "">
 		<cfset var ToggleOffDateTimeJS = "" />
@@ -282,13 +283,14 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 
+<!--- TODO: rip out. hard coded stuff is bad --->
 						<cfif application.fapi.getDefaultFormTheme() eq "bootstrap">
 							<div class="input-prepend">
 								<span class="add-on"><i class="fa fa-calendar-o"></i></span>
-								<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
+								<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.inputClass# #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
 							</div>
 						<cfelse>
-							<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
+							<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.inputClass# #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
 						</cfif>
 
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">

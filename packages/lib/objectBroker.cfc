@@ -234,6 +234,7 @@
 		<cfset var WebskinCacheID = "" />
 		<cfset var iFormField = "" />
 		<cfset var iViewState = "" />
+		<cfset var varname = "" />
 	
 		
 		<!--- Always prefixed with the hash key. This can be overridden in the webskin call. It will include any cfparam attributes. --->

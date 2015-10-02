@@ -29,6 +29,7 @@
 <cfparam name="attributes.textOnSubmit" default="" /><!--- what should the text change to when the button is submitted.  --->
 <cfparam name="attributes.disableOnSubmit" default="true" /><!--- should the button be disabled when the form is submitted --->
 <cfparam name="attributes.dropdownToggle" default="false" /><!--- used in combination with dropdownMenu to open the menu --->
+<cfparam name="attributes.formtheme" default="#application.fapi.getDefaultFormTheme()#"><!--- The form theme to use --->
 
 
 <cfif not thistag.HasEndTag>
@@ -160,8 +161,9 @@
 	<cfif len(attributes.onClick)>
 		<cfset stButtonAttributes.onclick = attributes.onClick>
 	</cfif>
-	<!--- 
-	<cfwddx input="#stButtonAttributes#" output="fcSettings" action="cfml2js" topLevelVariable="fcSettings" /> --->
+	
+	<!--- Need to put stButtonAttributes into attributes scope so that it is passed into formTheme renderer --->
+	<cfset attributes.stButtonAttributes = stButtonAttributes />
 
 	<cfif attributes.dropdownToggle>
 		<cfset attributes.class = listAppend(attributes.class, "dropdown-toggle", " ") />
@@ -179,41 +181,30 @@
 		
 		<!--- Default FarcryButton based on form theme --->
 		<cfdefaultcase>
-			
-			
 
 			<cfset innerHTML = "" />
 			<cfif len(thisTag.generatedContent)>
 				<cfset innerHTML = thisTag.generatedContent />
 				<cfset thisTag.generatedContent = "" />
 			</cfif>
-			
-		
-			<cfset formtheme = application.fapi.getDefaultFormTheme()>
-			
-			
-			
+
 			<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-			<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Button') >
-				<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Button'].path>
+			<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'button') >
+				<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['button'].path>
 			<cfelse>
-				<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapButton'].path>
+				<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['button'].path>
 			</cfif>
 
-			
 			<cfmodule template="#modulePath#" attributecollection="#attributes#"></cfmodule>
-			
-			
+
 		</cfdefaultcase>
 		</cfswitch>
-	
-	
+
 		<cfset fcSettings = SerializeJSON(stButtonAttributes)>
 		<skin:onReady>
 			<cfoutput>
 			$j('###attributes.id#').data('fcSettings', #fcSettings#);</cfoutput>
 		</skin:onReady>
-		
 		
 		
 		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>

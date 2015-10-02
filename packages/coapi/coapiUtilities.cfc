@@ -27,15 +27,25 @@
 	<cffunction name="createRefObjectID" access="public" output="false" returntype="boolean" hint="Ensures objectid is unique and creates a refObject reference record.">
 		<cfargument name="objectid" required="true" hint="The objectID to check" />
 		<cfargument name="typename" required="yes" type="string" default="#getTablename()#">	
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
-	   	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
-		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
-		
+		<cfargument name="dsn" type="string" required="false" default="">
+		<cfargument name="dbtype" type="string" required="false" default="">
+		<cfargument name="dbowner" type="string" required="false" default="">
+
 		<cfset var qRefDataDupe = "" />
 		<cfset var qRefData = "" />
 		<cfset var qObjectDupe = "" />
 		<cfset var bSuccess = true />
-		
+
+		<cfif not len(arguments.dsn)>
+			<cfset arguments.dsn = application.dsn_write />
+		</cfif>
+		<cfif not len(arguments.dbtype)>
+			<cfset arguments.dbtype = application.dbtype_write />
+		</cfif>
+		<cfif not len(arguments.dbowner)>
+			<cfset arguments.dbowner = application.dbowner_write />
+		</cfif>
+
 		<!--- Need to check for existance of fapi as it will not be available during installation. --->
 		<cfif not structKeyExists(application, "fapi") OR application.fapi.getContentTypeMetadata(arguments.typename,'bRefObjects',true)>
 
@@ -93,7 +103,7 @@
 	</cffunction>
 		
 	<cffunction name="createCopy" access="public" output="false" returntype="struct" hint="Returns a duplicated struct with any extended array properties changed to point to the new struct.">
-		<cfargument name="objectid" type="uuid" required="true" default="#application.dsn#" />
+		<cfargument name="objectid" type="uuid" required="true" />
 		<cfargument name="typename" type="string" required="false" default="" />
 		
 		<cfset var st = structNew() />
@@ -142,11 +152,18 @@
 	
 	<cffunction name="findType" access="public" output="false" returntype="string" hint="Determine the typename for an objectID.">
 		<cfargument name="objectid"  required="true">
-		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
 		<cfset var qFindType=queryNew("init") />
 		<cfset var result = "" />
+
+		<cfif not len(arguments.dsn)>
+			<cfset arguments.dsn = application.dsn_read />
+		</cfif>
+		<cfif not len(arguments.dbowner)>
+			<cfset arguments.dbowner = application.dbowner_read />
+		</cfif>
 		
 		<cfif structKeyExists(variables.stRefobjects, arguments.objectid)>
 			<cfset result = variables.stRefobjects[arguments.objectid] />
@@ -255,7 +272,7 @@
 								
 								<!--- IF THE PROPERTY IS AN ARRAY, LOOK IN THIS OBJECTS ARRAY TABLE FOR RELATED CONTENT --->
 								<cfif application.stcoapi[iType].stprops[iProp].metadata.Type EQ "array">
-									<cfquery datasource="#application.dsn#" name="q">
+									<cfquery datasource="#application.dsn_read#" name="q">
 									SELECT data as objectID, typename
 									FROM #iType#_#iProp#
 									WHERE parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
@@ -268,7 +285,7 @@
 		
 								<!--- IF THE PROPERTY IS A UUID, LOOK IN THIS OBJECTS PROPERTY FOR RELATED CONTENT --->
 								<cfif application.stcoapi[iType].stprops[iProp].metadata.Type EQ "uuid">
-									<cfquery datasource="#application.dsn#" name="q">
+									<cfquery datasource="#application.dsn_read#" name="q">
 									SELECT #iProp# as objectID, refObjects.typename AS typename
 									FROM #iType# INNER JOIN refObjects
 									ON #iType#.#iProp#=refObjects.objectid
@@ -334,7 +351,7 @@
 						
 										<!--- IF THE PROPERTY IS AN ARRAY, LOOK IN THIS CONTENT TYPES ARRAY TABLE FOR RELATED CONTENT --->
 										<cfif application.stcoapi[iType].stprops[iProp].metadata.Type EQ "array">
-											<cfquery datasource="#application.dsn#" name="q">
+											<cfquery datasource="#application.dsn_read#" name="q">
 											SELECT parentID as objectID, '#iType#' AS typename
 											FROM #iType#_#iProp#
 											WHERE data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
@@ -343,7 +360,7 @@
 										
 										<!--- IF THE PROPERTY IS A UUID, LOOK IN THIS CONTENT TYPES PROPERTY FOR RELATED CONTENT --->
 										<cfif application.stcoapi[iType].stprops[iProp].metadata.Type EQ "uuid">
-											<cfquery datasource="#application.dsn#" name="q">
+											<cfquery datasource="#application.dsn_read#" name="q">
 											SELECT objectID, '#iType#' AS typename
 											FROM #iType#
 											WHERE #iProp# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />

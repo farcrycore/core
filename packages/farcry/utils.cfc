@@ -552,7 +552,7 @@
 			<cfset arguments.url = rereplacenocase(arguments.url,"^.*?/index.cfm",application.url.webroot & urldecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'#charset#')) />
 		</cfif>
 		
-		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/">
+		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and not find(".", arguments.url) and arguments.url neq "/">
 			<!--- /// --->
 
 			<!--- Removes the required url name/value pairs --->
@@ -629,7 +629,7 @@
 		<!--- now urlencode the url value --->
 		<cfset arguments.value = application.fc.lib.esapi.encodeForURL(arguments.value) />
 
-		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/" and bAllowFriendlyUrls is true>
+		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) AND not find(".",arguments.url) and arguments.url neq "/" and bAllowFriendlyUrls is true>
 			<cfif refindnocase("/#arguments.key#(/|$)",arguments.url)>
 				<cfset arguments.url = rereplacenocase(arguments.url,"/#arguments.key#/[^/]+","/#arguments.key#/#arguments.value#") />
 			<cfelse>

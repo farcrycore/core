@@ -32,6 +32,33 @@
 <cfparam name="attributes.hint" default=""><!--- This will place a hint below the field --->
 <cfparam name="attributes.errorMessage" default=""><!--- This will place an errormessage above the field --->
 <cfparam name="attributes.rbkey" default="coapi.field.#rereplace(attributes.label,'[^\w]','','ALL')#" /><!--- The resource path for this field. --->
+<cfparam name="attributes.formtheme" default=""><!--- The form theme to use --->
+<cfparam name="attributes.ftFieldMetadata" default="#structNew()#"><!--- all the formtool metatdata from the field --->
+
+
+<cfif not len(attributes.formtheme)>
+
+	<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+		<cfset baseTagData = getBaseTagData("cf_form")>
+
+		<cfif len(baseTagData.attributes.formtheme)>
+			<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+		</cfif>
+	 </cfif>
+</cfif>
+
+<cfif not len(attributes.formtheme)>
+
+	<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+		<cfset baseTagData = getBaseTagData("cf_form")>
+
+		<cfif len(baseTagData.attributes.formtheme)>
+			<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+		</cfif>
+	 </cfif>
+</cfif>
+
+
 
 <cfif thistag.ExecutionMode eq "start">
 	<!--- DO NOTHING --->
@@ -46,19 +73,14 @@
 		<cfset innerHTML = thisTag.generatedContent />
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
-	
 
-	<cfset formtheme = application.fapi.getDefaultFormTheme()>
-	
-	
-	
 	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Field') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Field'].path>
+	<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'field') >
+		<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['field'].path>
 	<cfelse>
-		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapField'].path>
+		<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['field'].path>
 	</cfif>
-		
+
 	<cfmodule template="#modulePath#" attributecollection="#attributes#">
 		<cfoutput>#innerHTML#</cfoutput>
 	</cfmodule>

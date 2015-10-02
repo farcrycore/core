@@ -38,7 +38,8 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-		
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
+
 		<cfset var navid = "" />
 		<cfset var lSelectedNaviIDs = "" />
 		<cfset var i = "" />
@@ -70,7 +71,7 @@
 			<cfset lSelectedNaviIDs = arguments.stObject['#arguments.stMetadata.name#'] />
 		</cfif>
 		
-		<cfreturn editDropdownTree(typename,stObject,stMetadata,fieldname,lSelectedNaviIDs,rootID) />
+		<cfreturn editDropdownTree(typename,stObject,stMetadata,fieldname,lSelectedNaviIDs,rootID,arguments.inputClass) />
 	</cffunction>
 	
 	<cffunction name="editDropdownTree" access="public" output="false" returntype="string" hint="Returns the edit UI for the dropdown">
@@ -80,6 +81,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		<cfargument name="lSelectedNavIDs" required="true" type="string" hint="The selected nodes">
 		<cfargument name="rootid" required="true" type="string" hint="The root node">
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 		
 		<cfset var html = "" />
 		<cfset var oTree = createObject("component", "#application.packagepath#.farcry.tree") />
@@ -96,7 +98,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>>
+				<select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.inputClass# #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>>
 					<option value="">#arguments.stMetadata.ftDropdownFirstItem#</option>
 			</cfoutput>
 			

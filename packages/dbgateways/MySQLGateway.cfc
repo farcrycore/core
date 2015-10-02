@@ -533,7 +533,7 @@
 		<cfset var qTables = "" />
 		
 		<!--- Get basic table columns--->
-		<cfdbinfo datasource="#application.dsn#" type="tables" name="qAllTables" />
+		<cfdbinfo datasource="#this.dsn#" type="tables" name="qAllTables" />
 		
 		<cfquery dbtype="query" name="qTables">
 			select * from qAllTables where upper(table_name) like '#ucase(arguments.typename)#'

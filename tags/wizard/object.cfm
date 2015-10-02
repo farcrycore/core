@@ -41,7 +41,9 @@
 	<cfparam name="attributes.r_stwizard" default="stwizard"><!--- The name of the CALLER variable that contains the stwizard structure --->
 	<cfparam name="attributes.bShowFieldHints" default="true" type="boolean"><!--- Flag to determine if the field hints are display. --->
 	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
-	
+	<cfparam name="attributes.formtheme" default="#application.fapi.getConfig('formTheme','webtop')#"><!--- The form theme to use --->
+
+
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
 	
@@ -378,17 +380,19 @@
 		
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
-			
-				
-					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
-						<cfinvokeargument name="typename" value="#typename#">
-						<cfinvokeargument name="stObject" value="#stObj#">
-						<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
-						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
-						<cfinvokeargument name="stPackage" value="#stPackage#">
-					</cfinvoke>
-					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
-				
+
+				<cfset inputClass = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getFormtoolInputClass(ftFieldMetadata.ftType)>
+
+				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
+					<cfinvokeargument name="typename" value="#typename#">
+					<cfinvokeargument name="stObject" value="#stObj#">
+					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
+					<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
+					<cfinvokeargument name="stPackage" value="#stPackage#">
+					<cfinvokeargument name="inputClass" value="#inputClass#">
+				</cfinvoke>
+				<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
+
 			</cfif>
 				
 						
@@ -485,8 +489,6 @@
 <cfif thistag.ExecutionMode EQ "End">
 
 	<cfif not len(Attributes.r_stFields)>
-		
-		<cfset attributes.formtheme = application.fapi.getConfig('formTheme','webtop')>
 		
 		<cfsavecontent variable="fieldsHTML">
 			

@@ -265,9 +265,6 @@
 				
 							
 				<cfset session.objectadminFilterObjects[attributes.typename].stObject.label = "" />
-				<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
-		
-				<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 				
 				<!--- The default filter doesn't incorporate the default values specified in stFilterMetadata. This loop handles that gap. --->
 				<cfloop collection="#attributes.stFilterMetadata#" item="prop">
@@ -275,7 +272,7 @@
 						<cfset session.objectadminFilterObjects[attributes.typename].stObject[prop] = attributes.stFilterMetadata[prop].ftDefault />
 					</cfif>
 				</cfloop>
-				
+				<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
 			</cfif>
 			
 			<ft:processform action="apply filter" url="refresh">
@@ -820,6 +817,8 @@
 		</cfoutput></skin:pop>
 
 
+		<cfset bShowStatus = false>
+
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination
 				paginationID="#attributes.typename#"
@@ -866,8 +865,16 @@
 							<cfoutput><th style="width:10em;">#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
 						</cfif>
 						
-						<cfif structKeyExists(st,"bHasMultipleVersion")>
-					 		<cfoutput><th style="width:9em;">#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
+						<cfif structKeyExists(st,"bHasMultipleVersion") AND NOT listFindNoCase(attributes.columnlist, "status")>
+							<cfset bShowStatus = true>
+							<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
+								<cfif structKeyExists(attributes.aCustomColumns[i], "property") AND listFindNoCase(attributes.aCustomColumns[i].property, "status")>
+								<cfset bShowStatus = false>
+								</cfif>
+							</cfloop>
+							<cfif bShowStatus>
+					 			<cfoutput><th style="width:9em;">#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
+							</cfif>
 						</cfif>
 						
 						<cfset o = createobject("component",PrimaryPackagepath) />
@@ -1111,7 +1118,7 @@
 						 		</cfif>
 				 			</cfif>
 
-					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
+					 		<cfif structKeyExists(st,"bHasMultipleVersion") AND bShowStatus eq true>
 						 		<cfoutput><td style="white-space:nowrap;">#statusOutput#</td></cfoutput>
 							</cfif>
 	

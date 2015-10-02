@@ -28,6 +28,20 @@
 <cfparam name="attributes.style" default=""><!--- The style to apply to the fieldset. --->
 <cfparam name="attributes.helpTitle" default=""><!--- The helping title for the fieldset. --->
 <cfparam name="attributes.helpSection" default=""><!--- The helping text for the fieldset. --->
+<cfparam name="attributes.formtheme" default=""><!--- The form theme to use --->
+
+
+<cfif not len(attributes.formtheme)>
+
+	<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+		<cfset baseTagData = getBaseTagData("cf_form")>
+
+		<cfif len(baseTagData.attributes.formtheme)>
+			<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+		</cfif>
+	 </cfif>
+</cfif>
+
 
 
 <cfif thistag.ExecutionMode eq "start">
@@ -44,16 +58,15 @@
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
 
-	<cfset formtheme = application.fapi.getDefaultFormTheme()>
 	
-	
+
 	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Fieldset') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Fieldset'].path>
+	<cfif structKeyExists(application.forms, "formTheme" & attributes.formtheme) AND structKeyExists(application.forms["formTheme" & attributes.formtheme].stWebskins, 'fieldset') >
+		<cfset modulePath = application.forms["formTheme" & attributes.formtheme].stWebskins['fieldset'].path>
 	<cfelse>
-		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapFieldset'].path>
+		<cfset modulePath = application.forms["formThemeBootstrap"].stWebskins['fieldset'].path>
 	</cfif>
-		
+
 	<cfmodule template="#modulePath#" attributecollection="#attributes#">
 		<cfoutput>#innerHTML#</cfoutput>
 	</cfmodule>

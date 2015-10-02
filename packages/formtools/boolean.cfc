@@ -31,6 +31,7 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 	
 		<cfset var html = "" />
 		
@@ -42,7 +43,7 @@
 		<cfsavecontent variable="html">
 			<cfoutput>
 			<div class="multiField">
-				<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="1" class="checkboxInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif arguments.stMetadata.value EQ 1>checked</cfif> />
+				<input type="checkbox" name="#arguments.fieldname#" id="#arguments.fieldname#" value="1" class="checkboxInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif arguments.stMetadata.value EQ 1>checked</cfif> />
 				<input type="hidden" name="#arguments.fieldname#" value="0" />
 				<cfif arguments.stMetadata.ftInlineLabel>
 					&nbsp;

@@ -73,7 +73,30 @@
 	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
 	<cfparam name="attributes.focusField" default="" /><!--- Enter the name of the field to focus on when rendering the form. --->
 	<cfparam name="attributes.autosave" default="" /><!--- Enter boolean to toggle default autosave values on properties --->
+	<cfparam name="attributes.formtheme" default=""><!--- The form theme to use --->
 	
+
+	<cfif not len(attributes.formtheme)>
+
+		<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+			<cfset baseTagData = getBaseTagData("cf_form")>
+
+			<cfif len(baseTagData.attributes.formtheme)>
+				<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+			</cfif>
+		 </cfif>
+	</cfif>
+
+	<cfif not len(attributes.formtheme)>
+
+		<cfif listFindNoCase(GetBaseTagList(),"cf_form")>
+			<cfset baseTagData = getBaseTagData("cf_form")>
+
+			<cfif len(baseTagData.attributes.formtheme)>
+				<cfset attributes.formtheme = baseTagData.attributes.formtheme>
+			</cfif>
+		 </cfif>
+	</cfif>
 	
 	<cfset variables.stReturnFields = structNew()>
 
@@ -475,10 +498,10 @@
 
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
-				
 
-				<cftry>				
-					
+				<cftry>
+					<cfset inputClass = application.fapi.getContentType(typename="formTheme" & attributes.formtheme).getFormtoolInputClass(ftFieldMetadata.ftType)>
+
 					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
 						<cfinvokeargument name="typename" value="#typename#">
 						<cfinvokeargument name="stObject" value="#stObj#">
@@ -486,10 +509,13 @@
 						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
 						<cfinvokeargument name="stPackage" value="#stPackage#">
 						<cfinvokeargument name="prefix" value="#variables.prefix#">
+						<cfinvokeargument name="inputClass" value="#inputClass#">
 					</cfinvoke>
 					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
-										
-					<cfcatch><cfdump var="#cfcatch#" expand="false"><cfabort></cfcatch>
+
+					<cfcatch>
+						<cfset application.fc.lib.error.rethrowMessage(cfcatch=cfcatch, message="[#ftFieldMetadata.name#] #cfcatch.message#") />
+					</cfcatch>
 				</cftry>
 				
 				<cfset variables.errorClass = "" />
@@ -620,8 +646,6 @@
 
 	<cfif not len(Attributes.r_stFields)>
 		
-		<cfset attributes.formtheme = application.fapi.getConfig('formTheme','webtop')>
-		
 		<cfsavecontent variable="fieldsHTML">
 			
 			<!--- FIELDS --->
@@ -644,7 +668,9 @@
 								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
 								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
 								errorMessage="#ftFieldMetadata.errorMessage#"
-								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
+								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
+								formTheme="#attributes.formTheme#"
+								ftFieldMetadata="#ftFieldMetadata#">
 
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
 						

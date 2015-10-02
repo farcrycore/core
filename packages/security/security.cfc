@@ -10,33 +10,6 @@
 		
 		<cfset initCache() />
 		
-		<!--- THE FOLLOWING VARIABLES ARE DEPRECATED --->
-		<!--- THIS CODE SHOULD BE BURNT IN A FIRE AND SCATTERED OVER MOVING WATER --->
-		<cfset application.factory.oAuthentication = createObject("component","#application.securitypackagepath#.authentication") />
-		
-		<cfset application.dmSec.lDefaultPolicyGroups = this.factory.role.getDefaultRoles() />
-		
-		<cfloop list="#this.factory.permission.getAllPermissions()#" index="permission">
-			<cfset stPermission = this.factory.permission.getData(objectid=permission,bUseInstanceCache=false) />
-			<cfif arraylen(stPermission.aRelatedtypes)>
-				<cfloop from="1" to="#arraylen(stPermission.aRelatedtypes)#" index="i">
-					<cfparam name="application.permission.#stPermission.aRelatedtypes[i]#" default="#structnew()#" />
-					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title] = structnew() />
-					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionID = stPermission.objectid />
-					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionName = stPermission.title />
-					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionNotes = "" />
-					<cfset application.permission[stPermission.aRelatedtypes[i]][stPermission.title].permissionType = stPermission.aRelatedtypes[i] />
-				</cfloop>
-			<cfelse>
-				<cfparam name="application.permission.PolicyGroup" default="#structnew()#" />
-				<cfset application.permission.PolicyGroup[stPermission.title] = structnew() />
-				<cfset application.permission.PolicyGroup[stPermission.title].permissionID = stPermission.objectid />
-				<cfset application.permission.PolicyGroup[stPermission.title].permissionName = stPermission.title />
-				<cfset application.permission.PolicyGroup[stPermission.title].permissionNotes = "" />
-				<cfset application.permission.PolicyGroup[stPermission.title].permissionType = "PolicyGroup" />
-			</cfif>
-		</cfloop>
-		
 		<cfreturn this />
 	</cffunction>
 
@@ -75,8 +48,6 @@
 
 	<cffunction name="onRequestStart" access="public" output="false" returntype="void" hint="This function should be executed on page request start">
 
-		<!--- These variables are depreciated --->
-		<cfset request.dmSec.oAuthentication = createObject("component","#application.securitypackagepath#.authentication") />
 	</cffunction>
 
 
@@ -436,7 +407,6 @@
 		<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
 			<cfset groups = listappend(groups,"#aUserGroups[i]#_#arguments.ud#") />
 		</cfloop>
-		<cfset session.dmSec.authentication.lPolicyGroupIds = this.factory.role.groupsToRoles(groups) />
 		
 		<!--- New structure --->
 		<cfset session.security.userid = "#arguments.userid#_#arguments.ud#" />
@@ -461,7 +431,9 @@
 		<cfelseif stDefaultProfile.override>
 			<cfset structappend(session.dmProfile,stDefaultProfile,true) />
 		</cfif>
-		<cfset oProfile.setData(stProperties=session.dmProfile, bAudit=false) />
+		<cfif not structKeyExists(session, "impersonator")>
+			<cfset oProfile.setData(stProperties=session.dmProfile, bAudit=false) />
+		</cfif>
 	
 		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
         <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
@@ -473,27 +445,17 @@
         <!--- i18n: final bit, grab user language from locale, tarts up html tag --->
         <cfset session.userLanguage = left(session.dmProfile.locale,2) />
 		
-		<!--- DEPRECATED - THESE VARIABLES SHOULD NOT BE USED --->
-		<!--- Retrieve user info --->
-		<cfif ud eq "CLIENTUD">
-			<cfset session.dmSec.authentication = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(arguments.userid) />
-			<cfif structkeyexists(session.dmSec.authentication,"password")>
-				<cfset structdelete(session.dmSec.authentication,"password") />
-			</cfif>
-		</cfif>
-		<cfset session.dmSec.authentication.userlogin = arguments.userid />
-		<cfset session.dmSec.authentication.canonicalname = "#arguments.userid#_#arguments.ud#" />
-		<cfset session.dmSec.authentication.userdirectory = arguments.ud />
-		
 		<!--- Admin flag --->
-		<cfset session.dmSec.authentication.bAdmin = checkPermission(permission="Admin") />
+		<cfset session.fc.mode.bAdmin = checkPermission(permission="Admin") />
 		
 		<!--- /DEPRECATED --->
 		
 		<!--- First login flag --->
-		<cfif (structkeyexists(session.dmProfile,"bDefaultObject") and session.dmProfile.bDefaultObject) 
-			or (structkeyexists(session.dmProfile,"bInDB") and not session.dmProfile.bInDB) 
-			or session.dmProfile.datetimeCreated eq session.dmProfile.datetimeLastUpdated>
+		<cfif not structKeyExists(session, "impersonator") and (
+				(structkeyexists(session.dmProfile,"bDefaultObject") and session.dmProfile.bDefaultObject) 
+				or (structkeyexists(session.dmProfile,"bInDB") and not session.dmProfile.bInDB) 
+				or session.dmProfile.datetimeCreated eq session.dmProfile.datetimeLastUpdated
+			)>
 			
 			<cfset session.security.firstlogin = true />
 			
@@ -507,7 +469,9 @@
 		</cfif>
 		
 		<!--- Log the result --->
-		<cfif session.firstLogin>
+		<cfif structKeyExists(session, "impersonator")>
+			<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
+		<cfelseif session.firstLogin>
 			<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
 		<cfelse>
 			<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
@@ -781,7 +745,7 @@
 		
 		<cfset var thisvar = "" />
 		<cfset var urlvar = "" />
-		<cfset var sessionmodes = "designmode:design,flushcache,showdraft,debug,livecombine" />
+		<cfset var sessionmodes = "bAdmin,designmode:design,flushcache,showdraft,debug,livecombine" />
 		<cfset var requestmodes = "profile,tracewebskins,bShowTray" />
 		
 		<cfset request.fc.bShowTray = true />
@@ -790,11 +754,6 @@
 		<cfif isdefined("session")>
 			<!--- init session.fc.mode with defaults --->
 			<cfparam name="session.fc" default="#structnew()#" />
-		</cfif>
-		
-		<!--- admin options visible in page --->
-		<cfif  IsDefined("session.dmSec.Authentication.bAdmin")>
-			<cfset request.mode.bAdmin = session.dmSec.Authentication.bAdmin />
 		</cfif>
 		
 		<!--- normalize bdebug --->

@@ -1,23 +1,42 @@
-<cfcomponent 
-	extends="forms"
-	displayname="Form Theme Configuration" 
-	hint="Configuration for the markup rendering of forms" 
-	output="false" key="formtheme">
-<!--- 
-Currently support themes:
-- https://github.com/draganbabic/uni-form/
-- http://getbootstrap.com/2.3.2/
- --->
+<cfcomponent extends="forms" displayname="Form Theme Configuration" output="false"
+	key="formtheme"
+	hint="Configuration for the markup rendering of forms">
+
+
 	<cfproperty name="webtop" type="string" required="false" default="bootstrap" 
 		ftSeq="10" ftFieldset="Form Theme Properties" ftLabel="Webtop Forms" 
-		ftType="list" 
-		ftList="bootstrap:Bootstrap 2.3.2+ (by Twitter),uniform:Uni-Form (by Sprawsm)"
-		fthint="Form markup for forms used in the webtop.">
+		ftType="list" ftListData="getFormThemeListData"
+		ftHint="Form markup for forms used in the webtop.">
 
 	<cfproperty name="site" type="string" required="false" default="uniform" 
-		ftSeq="20" ftFieldset="Form Theme Properties" ftLabel="Front End Forms" 
-		ftType="list" 
-		ftList="bootstrap:Bootstrap 2.3.2+ (by Twitter),uniform:Uni-Form (by Sprawsm)"
-		fthint="Form markup for forms used in the front-end web site.">
+		ftSeq="20" ftFieldset="Form Theme Properties" ftLabel="Front-end Forms" 
+		ftType="list" ftListData="getFormThemeListData"
+		ftHint="Form markup for forms used in the front-end of the web site.">
+
+
+	<cffunction name="getFormThemeListData">
+		<cfset var lResult = "">
+		<cfset var lFormThemes = "">
+		<cfset var item = "">
+		<cfset var formTheme = "">
+
+		<cfloop collection="#application.forms#" item="item">
+			<cfif reFindNoCase("^formTheme.+$", item)>
+				<cfset lFormThemes = listAppend(lFormThemes, item)>
+			</cfif>
+		</cfloop>
+
+		<cfset lFormThemes = listSort(lFormThemes, "text")>
+
+		<cfloop list="#lFormThemes#" index="item">
+			<cfset formTheme = replaceNoCase(item, "formTheme", "")>
+			<cfif len(formTheme)>
+				<cfset lResult = listAppend(lResult, formTheme & ":" & application.fapi.getContentTypeMetadata(item, "displayname", formTheme))>
+			</cfif>
+		</cfloop>
+
+		<cfreturn lResult>
+	</cffunction>
+
 
 </cfcomponent>

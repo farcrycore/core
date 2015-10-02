@@ -35,7 +35,8 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-	
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
+
 		<cfset var html = "" />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -50,13 +51,13 @@
 					<cfoutput>
 						<div class="multiField multiFieldNoLabel">
 							<ft:field label="Current password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#">
-								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 							<ft:field label="New password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#New">
-								<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 							<ft:field label="Re-enter new password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#Confirm">
-								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 						</div>
 					</cfoutput>
@@ -67,10 +68,10 @@
 					<cfoutput>				
 						<div class="multiField multiFieldNoLabel">
 							<ft:field label="Choose a password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#">
-								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 							<ft:field label="Re-enter password" labelAlignment="#arguments.stMetadata.ftLabelAlignment#" for="#arguments.fieldname#Confirm">
-								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
 							</ft:field>
 						</div>
 					</cfoutput>
@@ -79,7 +80,7 @@
 			<cfdefaultcase>
 				<cfsavecontent variable="html">
 					<cfoutput>
-						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#arguments.stMetadata.value#</cfif>" autocomplete="off" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" />
+						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#arguments.stMetadata.value#</cfif>" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" />
 					</cfoutput>
 				</cfsavecontent>
 			</cfdefaultcase>

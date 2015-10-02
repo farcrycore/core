@@ -37,60 +37,63 @@
 	<!--- set up the farcry dsn from the environment --->
 	<cfif structKeyExists(THIS, "bUseEnv") AND THIS.bUseEnv eq "true">
 		<cfset system = createObject("java", "java.lang.System")>
-		<cfset FARCRY_DSN = "" & system.getEnv("FARCRY_DSN")>
 
-		<cfif len(FARCRY_DSN)>
+		<cfloop array="#['', '_READ', '_WRITE']#" index="key">
+			<cfset FARCRY_DSN = "" & system.getEnv("FARCRY_DSN" & key)>
 
-			<!--- set the farcry dsn, dbtype and dbowner --->
-			<cfset THIS.dsn = FARCRY_DSN /> 
-			<cfset FARCRY_DBTYPE = system.getEnv("FARCRY_DBTYPE")>
-			<cfif NOT isNull(FARCRY_DBTYPE)>
-				<cfset THIS.dbType = FARCRY_DBTYPE>
-			</cfif>
-			<cfset FARCRY_DBOWNER = system.getEnv("FARCRY_DBOWNER")>
-			<cfif NOT isNull(FARCRY_DBOWNER)>
-				<cfset THIS.dbOwner = FARCRY_DBOWNER>
-			</cfif>
+			<cfif len(FARCRY_DSN)>
 
-			<!--- set up the datasource settings --->
-			<cfset this.datasources[FARCRY_DSN] = {
-				"class" = system.getEnv("FARCRY_DSN_CLASS"),
-				"connectionString" = system.getEnv("FARCRY_DSN_CONNECTIONSTRING"),
-				"database" = system.getEnv("FARCRY_DSN_DATABASE"),
-				"driver" = system.getEnv("FARCRY_DSN_DRIVER"),
-				"host" = system.getEnv("FARCRY_DSN_HOST"),
-				"port" = system.getEnv("FARCRY_DSN_PORT"),
-				"type" = system.getEnv("FARCRY_DSN_TYPE"),
-				"url" = system.getEnv("FARCRY_DSN_URL"),
-				"username" = system.getEnv("FARCRY_DSN_USERNAME"),
-				"password" = system.getEnv("FARCRY_DSN_PASSWORD")
-			}>
-
-			<!--- set custom options when not using a connection string --->
-			<cfset FARCRY_DSN_CUSTOM = system.getEnv("FARCRY_DSN_CUSTOM")>
-			<cfif NOT isNull(FARCRY_DSN_CUSTOM) AND len(FARCRY_DSN_CUSTOM)>
-				<cfif isJSON(FARCRY_DSN_CUSTOM)>
-					<cfset this.datasources[FARCRY_DSN].custom = deserializeJSON(FARCRY_DSN_CUSTOM)>
-				<cfelse>
-					<cfset stCustom = {}>
-					<cfloop list="#FARCRY_DSN_CUSTOM#" index="item" delimiters="&">
-						<cfset stCustom[listFirst(item, "=")] = listRest(item, "=")>
-					</cfloop>
-					<cfset this.datasources[FARCRY_DSN].custom = stCustom>
+				<!--- set the farcry dsn, dbtype and dbowner --->
+				<cfset THIS["dsn" & key] = FARCRY_DSN /> 
+				<cfset FARCRY_DBTYPE = system.getEnv("FARCRY_DBTYPE" & key)>
+				<cfif NOT isNull(FARCRY_DBTYPE)>
+					<cfset THIS["dbType" & key] = FARCRY_DBTYPE>
 				</cfif>
-			</cfif>
-
-			<!--- set linked db hostname/port using the provided alias --->
-			<cfset FARCRY_DB_LINK_ALIAS = system.getEnv("FARCRY_DB_LINK_ALIAS")>
-			<cfif NOT isNull(FARCRY_DB_LINK_ALIAS) AND len(FARCRY_DB_LINK_ALIAS)>
-				<cfset DB_PORT = system.getEnv(ucase(FARCRY_DB_LINK_ALIAS) & "_PORT")>
-				<cfif NOT isNull(DB_PORT) AND len(DB_PORT)>
-					<cfset this.datasources[FARCRY_DSN].host = listFirst(listLast(DB_PORT, "/"), ":")>
-					<cfset this.datasources[FARCRY_DSN].port = listLast(listLast(DB_PORT, "/"), ":")>
+				<cfset FARCRY_DBOWNER = system.getEnv("FARCRY_DBOWNER" & key)>
+				<cfif NOT isNull(FARCRY_DBOWNER)>
+					<cfset THIS["dbOwner" & key] = FARCRY_DBOWNER>
 				</cfif>
-			</cfif>
 
-		</cfif>
+				<!--- set up the datasource settings --->
+				<cfset this.datasources[FARCRY_DSN] = {
+					"class" = system.getEnv("FARCRY_DSN#key#_CLASS"),
+					"connectionString" = system.getEnv("FARCRY_DSN#key#_CONNECTIONSTRING"),
+					"database" = system.getEnv("FARCRY_DSN#key#_DATABASE"),
+					"driver" = system.getEnv("FARCRY_DSN#key#_DRIVER"),
+					"host" = system.getEnv("FARCRY_DSN#key#_HOST"),
+					"port" = system.getEnv("FARCRY_DSN#key#_PORT"),
+					"type" = system.getEnv("FARCRY_DSN#key#_TYPE"),
+					"url" = system.getEnv("FARCRY_DSN#key#_URL"),
+					"username" = system.getEnv("FARCRY_DSN#key#_USERNAME"),
+					"password" = system.getEnv("FARCRY_DSN#key#_PASSWORD")
+				}>
+
+				<!--- set custom options when not using a connection string --->
+				<cfset FARCRY_DSN_CUSTOM = system.getEnv("FARCRY_DSN#key#_CUSTOM")>
+				<cfif NOT isNull(FARCRY_DSN_CUSTOM) AND len(FARCRY_DSN_CUSTOM)>
+					<cfif isJSON(FARCRY_DSN_CUSTOM)>
+						<cfset this.datasources[FARCRY_DSN].custom = deserializeJSON(FARCRY_DSN_CUSTOM)>
+					<cfelse>
+						<cfset stCustom = {}>
+						<cfloop list="#FARCRY_DSN_CUSTOM#" index="item" delimiters="&">
+							<cfset stCustom[listFirst(item, "=")] = listRest(item, "=")>
+						</cfloop>
+						<cfset this.datasources[FARCRY_DSN].custom = stCustom>
+					</cfif>
+				</cfif>
+
+				<!--- set linked db hostname/port using the provided alias --->
+				<cfset FARCRY_DB_LINK_ALIAS = system.getEnv("FARCRY_DB#key#_LINK_ALIAS")>
+				<cfif NOT isNull(FARCRY_DB_LINK_ALIAS) AND len(FARCRY_DB_LINK_ALIAS)>
+					<cfset DB_PORT = system.getEnv(ucase(FARCRY_DB_LINK_ALIAS) & "_PORT")>
+					<cfif NOT isNull(DB_PORT) AND len(DB_PORT)>
+						<cfset this.datasources[FARCRY_DSN].host = listFirst(listLast(DB_PORT, "/"), ":")>
+						<cfset this.datasources[FARCRY_DSN].port = listLast(listLast(DB_PORT, "/"), ":")>
+					</cfif>
+				</cfif>
+
+			</cfif>
+		</cfloop>
 	</cfif>
 
 
@@ -284,7 +287,7 @@
 		----------------------------------------->
 		<cfswitch expression="#application.dbtype#">
 			<cfdefaultcase>
-				<cfquery datasource="#application.dsn#" name="qProfileLocales">
+				<cfquery datasource="#application.dsn_read#" name="qProfileLocales">
 				SELECT distinct(locale) as locale
 				from #application.dbowner#dmProfile
 				</cfquery>
@@ -299,31 +302,6 @@
 			</cfdefaultcase>
 		</cfswitch>
 		
-						
-		<!----------------------------------------
-		SECURITY
-		 ---------------------------------------->		
-		<!---// dmSecurity settings --->
-		<!---//Init Application dmsec scope --->
-		<cfset Application.dmSec=StructNew() />
-		<!---// --- Initialise the userdirectories --- --->
-		<cfset Application.dmSec.UserDirectory = structNew() />
-		
-		<!---// Client User Directory --->
-		<cfset Application.dmSec.UserDirectory.ClientUD = structNew() />
-		<cfset temp = Application.dmSec.UserDirectory.ClientUD />
-		<cfset temp.type = "Daemon" />
-		<cfset temp.datasource = application.dsn />
-		
-		<!---//Policy Store settings --->
-		<cfset Application.dmSec.PolicyStore = StructNew() />
-		<cfset ps = Application.dmSec.PolicyStore />
-		<cfset ps.dataSource = application.dsn />
-		<cfset ps.permissionTable = "dmPermission" />
-		<cfset ps.policyGroupTable = "dmPolicyGroup" />
-		<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
-		<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
-
 
 		<!---------------------------------------------- 
 		INITIALISE THE COAPIADMIN SINGLETON
@@ -432,6 +410,19 @@
  
 	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false" hint="Fires at first part of page processing.">
 		<cfargument name="TargetPage" type="string" required="true" />
+
+		<!--- If a session switch was requested, do that now --->
+		<cfif structKeyExists(url, "switchsession")>
+			<cfset application.fc.lib.session.switchSession(url.switchsession) />
+			<cfif not find(cgi.script_path, application.url.webtop) or application.security.checkPermission(permission="admin")>
+				<cflocation url="#application.fapi.fixURL(removevalues='switchsession')#" addtoken="false" />
+			<cfelse>
+				<cflocation url="#application.url.webroot#/" addtoken="false" />
+			</cfif>
+		<cfelseif structKeyExists(url, "endsession")>
+			<cfset application.fc.lib.session.endSession(url.endsession) />
+			<cflocation url="#application.fapi.fixURL(removevalues='endsession')#" addtoken="false" />
+		</cfif>
 
 		<!--- Setup FarCry Namespace in the request scope --->
 		<cfparam name="request.fc" default="#structNew()#" />
@@ -603,7 +594,7 @@
 				<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
 				<cfset url.updateapp = true>
 			<cfelse>		
-				<cfif isBoolean(url.updateapp) AND isDefined("session.dmSec.Authentication.bAdmin") and session.dmSec.Authentication.bAdmin>
+				<cfif isBoolean(url.updateapp) AND ((isDefined("session.fc.mode.bAdmin") and session.fc.mode.bAdmin) OR (isDefined("session.dmSec.Authentication.bAdmin") and session.dmSec.Authentication.bAdmin))>
 					<!--- ADMINISTRATORS CAN ALWAYS UPDATE APP WITH 1 --->
 				<cfelse>
 					<!--- Not an adminstrator and didnt know the updateappkey --->
@@ -838,17 +829,24 @@
 		</cfif>
 
 		<cfparam name="this.dsn" default="#this.name#" />
-
 		<cfif not isDefined("this.dbtype")>
 			<cfset this.dbType = detectDBType()>
 			<cfif NOT len(this.dbType)>
 				<cfabort showerror="this.dbtype not defined in your projects farcryConstructor or could not be auto-detected.">
 			</cfif>
 		</cfif>
-		
+		<cfparam name="this.dbowner" default="" />
+
+		<cfparam name="this.dsn_read" default="" />
+		<cfparam name="this.dbtype_read" default="" />
+		<cfparam name="this.dbowner_read" default="" />
+
+		<cfparam name="this.dsn_write" default="" />
+		<cfparam name="this.dbtype_write" default="" />
+		<cfparam name="this.dbowner_write" default="" />
+
 		<cfparam name="this.displayName" default="#this.name#" />
 		
-		<cfparam name="this.dbowner" default="" />
 		<cfparam name="this.locales" default="en_AU,en_US" />
 		
 		<cfparam name="this.projectDirectoryName" default="#this.name#"  />
@@ -892,6 +890,12 @@
 		<cfset application.dsn = this.dsn />
 		<cfset application.dbtype = this.dbtype />
 		<cfset application.dbowner = this.dbowner />
+		<cfset application.dsn_read = (len(this.dsn_read) ? this.dsn_read : this.dsn) />
+		<cfset application.dbtype_read = (len(this.dbtype_read) ? this.dbtype_read : this.dbtype) />
+		<cfset application.dbowner_read = (len(this.dbowner_read) ? this.dbowner_read : this.dbowner) />
+		<cfset application.dsn_write = (len(this.dsn_write) ? this.dsn_write : this.dsn) />
+		<cfset application.dbtype_write = (len(this.dbtype_write) ? this.dbtype_write : this.dbtype) />
+		<cfset application.dbowner_write = (len(this.dbowner_write) ? this.dbowner_write : this.dbowner) />
 		<cfset application.locales = replaceNoCase(this.locales, " ","",  "all") />
 		
 		<cfif findnocase("mssql",application.dbtype) AND NOT len(this.dbowner)>

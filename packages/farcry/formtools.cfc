@@ -57,6 +57,7 @@
 	<cfargument name="cacheTimeSpan" required="No" type="numeric" default="0" hint="duration in days, need non empty argument paginationID to work, recommendation: use createTimeSpan" />
 	
 	<cfargument name="aCategoryFilters" required="No" type="array" default="#arrayNew(1)#" />
+	<cfargument name="dsn" required="No" type="string" default="" />
 
 
 	<cfset var PrimaryPackage = "" />
@@ -83,6 +84,9 @@
 	
 	<cfset var thisDiff = 0 /><!--- var used if recordcount/RecordsPerPage remainder is not 0, occurs at the end of pagination --->
 
+	<cfif not len(arguments.dsn)>
+		<cfset arguments.dsn = application.dsn_read /><!--- NOTE: the read dsn should allow temporary table creation --->
+	</cfif>
 
 	<cfif arguments.sqlColumns eq "objectid">
 		<cfset arguments.sqlColumns = "tbl.objectid">
@@ -172,7 +176,7 @@
 		
 		<!--- Find out how many results there will be --->
 		<cfif bHasVersionID>
-			<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+			<cfquery name="#qCountName#" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 				SELECT COUNT(objectid) as CountAll
 				from (
 					<!--- Return the objectid's of matching approved/draft-only content --->
@@ -205,7 +209,7 @@
 				) joined
 			</cfquery>
 		<cfelse>
-			<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+			<cfquery name="#qCountName#" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 				SELECT count(distinct tbl.objectid) as CountAll 
 				FROM #arguments.typename# tbl 			
 				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
@@ -241,7 +245,7 @@
 		<cfif findnocase("MSSQL",application.dbtype)>
 	
 			
-			<cfquery name="#qName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+			<cfquery name="#qName#" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 	
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
@@ -325,7 +329,7 @@
 				<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=1) />
 			
 				<cfif bHasVersionID>
-					<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+					<cfquery name="qrecordcount" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 						SELECT count(distinct objectid) as CountAll
 						from (
 							<!--- Return the objectid's of matching approved/draft-only content --->
@@ -358,7 +362,7 @@
 						) joined
 					</cfquery>
 				<cfelse>
-					<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+					<cfquery name="qrecordcount" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 						SELECT count(distinct tbl.objectid) as CountAll 
 						FROM #arguments.typename# tbl 			
 						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
@@ -379,7 +383,7 @@
 			
 				
 							
-				<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+				<cfquery name="qFormToolRecordset" datasource="#arguments.dsn#">
 	
 				IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 				CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
@@ -453,7 +457,7 @@
 			
 			
 			<cfif bHasVersionID>
-				<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+				<cfquery name="qrecordcount" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 					SELECT count(distinct objectid) as CountAll
 					from (
 						<!--- Return the objectid's of matching editable-draft content or approved/draft-only content --->
@@ -470,7 +474,7 @@
 					) joined
 				</cfquery>
 			<cfelse>
-				<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+				<cfquery name="qrecordcount" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 					SELECT count(distinct tbl.objectid) as CountAll 
 					FROM #arguments.typename# tbl 			
 					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
@@ -484,7 +488,7 @@
 				</cfquery>
 			</cfif>
 
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+			<cfquery name="qFormToolRecordset" datasource="#arguments.dsn#">
 			SELECT #arguments.sqlColumns#
 				<cfif bHasversionID>
 					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
@@ -570,7 +574,7 @@
 			<cfset arguments.sqlWhere = "0=0" />
 		</cfif>
 	
-		<cfquery name="getRecords" datasource="#application.dsn#">		
+		<cfquery name="getRecords" datasource="#arguments.dsn#">		
 				SELECT #arguments.sqlColumns# 
 				FROM #arguments.typename# tbl 
 				<cfif arguments.SqlWhere neq ''>WHERE #preserveSingleQuotes(arguments.SqlWhere)#</cfif>
@@ -686,8 +690,8 @@
 	<cfargument name="typename" type="string" required="true" hint="Typename of the content." />
 	<cfargument name="larrayprops" type="string" required="false" default="" hint="List of array properties to return." />
 	<cfargument name="bFormToolMetadata" type="boolean" default="true" hint="Convert content item to form tool metadata; else leave as a simple structure.">
-	<cfargument name="dsn" default="#application.dsn#" type="string" hint="Datasource name." />
-	<cfargument name="dbowner" default="#application.dbowner#" type="string" hint="Database owner." />
+	<cfargument name="dsn" default="" type="string" hint="Datasource name." />
+	<cfargument name="dbowner" default="" type="string" hint="Database owner." />
 
 	
 	<cfset var PrimaryPackage = "" />
@@ -703,7 +707,12 @@
 	<cfset var qArrayData = queryNew("data") />
 	<cfset var stResult=structNew() />
 	
-
+	<cfif not len(arguments.dsn)>
+		<cfset arguments.dsn = application.dsn_read />
+	</cfif>
+	<cfif not len(arguments.dbowner)>
+		<cfset arguments.dbowner = application.dbowner_read />
+	</cfif>
 	
 	<cfif structKeyExists(application.types, arguments.typename)>
 		<cfset PrimaryPackage = application.types[arguments.typename] />
@@ -759,12 +768,15 @@
 	<cfargument name="typename" type="string" required="true" hint="Typename of the content." />
 	<cfargument name="larrayprops" type="string" required="false" default="" hint="List of array properties to return." />
 	<cfargument name="bFormToolMetadata" type="boolean" default="true" hint="Convert content item to form tool metadata; else leave as a simple structure.">
-	<cfargument name="dsn" default="#application.dsn#" type="string" hint="Datasource name." />
-	<cfargument name="dbowner" default="#application.dbowner#" type="string" hint="Database owner." />
+	<cfargument name="dsn" default="" type="string" hint="Datasource name." />
+	<cfargument name="dbowner" default="" type="string" hint="Database owner." />
+
 	<cfset var aResult=arrayNew(1) />
+
 	<cfloop query="arguments.recordset">
 		<cfset arrayAppend(aResult, getRecordsetObject(row=arguments.recordset.currentrow, recordset=arguments.recordset, typename=arguments.typename, larrayprops=arguments.larrayprops, dsn=arguments.dsn, dbowner=arguments.dbowner, bformtoolmetadata=arguments.bformtoolmetadata)) />
 	</cfloop>
+
 	<cfreturn aResult />
 </cffunction>
 

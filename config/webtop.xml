@@ -75,6 +75,7 @@
 			<menu id="coapitools" sequence="20" label="COAPI Tools">
 				<menuitem id="coapioverview" sequence="10" label="COAPI Content Types" typename="farCOAPI" />
 				<menuitem id="coapisqllog" sequence="20" label="SQL Log" typename="farCOAPI" bodyview="webtopBodySQLLog" />
+				<menuitem id="dbgateways" sequence="30" label="Database Gateways" typename="farCOAPI" bodyview="webtopBodyGateways" />
 			</menu>
 			<menu id="coapirepair" sequence="30" label="COAPI Repair Tools">
 				<menuitem id="rebuildtree" sequence="10" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />

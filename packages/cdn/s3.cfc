@@ -365,7 +365,7 @@
 				<cfset epochTime = DateDiff("s", DateConvert("utc2Local", "January 1 1970 00:00"), now()) + arguments.config.urlExpiry />
 				
 				<!--- Create a canonical string to send --->
-				<cfset signature = "#arguments.method#\n\n\n#epochTime#\n#urlpath#" />
+				<cfset signature = "#arguments.method#\n\n\n#epochTime#\n/#arguments.config.bucket##urlpath#" />
 				
 				<!--- Replace "\n" with "chr(10) to get a correct digest --->
 				<cfset signature = replace(signature,"\n","#chr(10)#","all") />
@@ -756,22 +756,19 @@
 		<cfargument name="dir" type="string" required="true" />
 		
 		<cfset var qDir = "" />
-		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket#/" />
+		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#" />
 		
-		<cfdirectory action="list" directory="#s3path#" listinfo="name" name="qDir" />
+		<cfif not directoryExists(s3Path)>
+			<cfreturn querynew("file") />
+		</cfif>
+
+		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="name" name="qDir" />
 		
 		<cfquery dbtype="query" name="qDir">
 			SELECT 		'/' + name AS file
 			FROM 		qDir 
-			WHERE		lower('/' + name) like '#lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#%'
 			ORDER BY 	name
 		</cfquery>
-		
-		<cfif len(arguments.config.pathPrefix)>
-			<cfloop query="qDir">
-				<cfset querysetcell(qDir,"file",rereplacenocase(qDir.file,"^#arguments.config.pathPrefix#",""),qDir.currentrow) />
-			</cfloop>
-		</cfif>
 		
 		<cfreturn qDir />
 	</cffunction>
@@ -816,6 +813,8 @@
 			</cfif>
 			<cfif isvalid("email",arguments.config.admins[i])>
 				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'emailAddress="#arguments.config.admins[i]#"',', ') />
+			<cfelseif isstruct(arguments.config.admins[i]) and structKeyExists(arguments.config.admins[i], "id")>
+				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i].id#"',', ') />
 			<cfelse>
 				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i]#"',', ') />
 			</cfif>

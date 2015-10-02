@@ -136,7 +136,6 @@
 		<cfif request.mode.bAdmin>
 			<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
 			<cfset request.mode.showdraft = 1 />
-			<!---<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />--->
 			<cfset request.mode.lValidStatus = "draft,pending,approved" />
 			<!---<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />--->
 		<cfelse>			
