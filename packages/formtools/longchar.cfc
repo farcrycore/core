@@ -171,7 +171,7 @@
 							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#">#arguments.stMetadata.value#</textarea>
 							<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>
 								<div style="clear:both;" id="dm_ct_Text_#arguments.fieldname#"><span id="dm_ct_countDown_#arguments.fieldname#">#len(arguments.stMetadata.value)#</span>/#arguments.stMetadata.ftLimit# <span id="dm_ct_overage_#arguments.fieldname#" style="color:red;display:none;">#arguments.stMetadata.ftLimitWarning#</span></div> 
-								<script type="text/javascript">$j("###arguments.fieldname#").keydown(function(e){ updateLoncharCounter("#arguments.fieldname#", #arguments.stMetadata.ftLimit#, "#arguments.stMetadata.ftLimitOverage#", e.keyCode) });</script>
+								<script type="text/javascript">$j("###arguments.fieldname#").on("change keydown", function(e){ updateLoncharCounter("#arguments.fieldname#", #arguments.stMetadata.ftLimit#, "#arguments.stMetadata.ftLimitOverage#", e.keyCode)});</script>
 							</cfif>
 						</div>
 					</div>
