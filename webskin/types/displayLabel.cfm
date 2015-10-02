@@ -31,7 +31,9 @@ START WEBSKIN
  ------------------>
 <cfset newLabel = "">
 
-<cfloop list="#valueList( application.stcoapi[stObj.typename].QMETADATA.propertyname)#" index="field">
+<cfset stLocal.QMETADATA = application.stcoapi[stObj.typename].QMETADATA>
+
+<cfloop list="#valueList(stLocal.QMETADATA.propertyname)#" index="field">
     <cfif structKeyExists(stObj,field) AND isDefined("application.stcoapi.#stObj.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[stObj.typename].stProps[field].Metadata.bLabel>
         <cfset newLabel = "#newLabel# #stObj[field]#">
     </cfif>
