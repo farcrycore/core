@@ -94,7 +94,7 @@
 							<b class="fa fa-caret-down"></b>
 						</div>
 						<ul class="dropdown-menu pull-right">
-							<li><a href="#application.url.webtop#?id=dashboard&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
+							<li><a href="#application.url.webtop#/?id=dashboard&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
 							</cfoutput>
 								<skin:view typename="dmProfile" stObject="#session.dmProfile#" webskin="displaySummaryOptions#session.dmProfile.userdirectory#" alternateHTML="" />
 							<cfoutput>
@@ -103,7 +103,7 @@
 								<li><a href="#application.fapi.fixURL(addvalues='updateapp=1')#">Update Application</a></li>
 							</cfif>
 							<li class="divider"></li>
-							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
+							<li><a href="#application.url.webtop#/?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 						</ul>
 					</div>
 				</div>

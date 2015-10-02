@@ -6,7 +6,7 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cfoutput>
-	<li><a href="#application.url.webtop#?id=dashboard&typename=farUser&bodyView=editOwnPassword"><admin:resource key="coapi.farUser.general.changepassword">Change password</admin:resource></a></li>
+	<li><a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnPassword"><admin:resource key="coapi.farUser.general.changepassword">Change password</admin:resource></a></li>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false" />
