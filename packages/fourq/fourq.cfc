@@ -806,7 +806,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var tempObjectStore = structNew() />
 		<cfset var typename = getTypeName() />
 		
-		<cfif isdefined("application.stCOAPI.#typename#.bArraysAsStructs") and (not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs))>
+	
+
+		
+		<cfif isdefined("application.stCOAPI.#typename#.bArraysAsStructs") and (not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs))>		
 			<cfset arguments.bArraysAsStructs = application.stCOAPI[typename].bArraysAsStructs />
 			<cfparam name="arguments.bUseInstanceCache" default="true" />
 		<cfelseif not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs)>
@@ -814,6 +817,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfparam name="arguments.bUseInstanceCache" default="true" />
 		<cfelse>
 			<cfset arguments.bUseInstanceCache = not arguments.bArraysAsStructs />
+		</cfif>
+		
+		<cfif not isBoolean(arguments.bUseInstanceCache)>
+			<cfset arguments.bUseInstanceCache = true>
 		</cfif>
 		
 		<!---------------------------------------------------------------
@@ -829,6 +836,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfcatch>
 		</cftry>
 		
+	
 		
 		<!--- Check to see if the object is in the temporary object store --->
 		<cfif arguments.bUseInstanceCache AND structKeyExists(tempObjectStore,arguments.objectid)>
