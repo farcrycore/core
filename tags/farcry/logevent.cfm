@@ -13,7 +13,7 @@
 <cfparam name="attributes.event" type="string" /><!--- The event that is being logged --->
 <cfparam name="attributes.location" type="string" default="" /><!--- The location of the event --->
 <cfparam name="attributes.userid" type="string" default="unknown" /><!--- The user associated with the event --->
-<cfparam name="attributes.ipaddress" type="string" default="#cgi.REMOTE_HOST#" /><!--- The ip of user --->
+<cfparam name="attributes.ipaddress" type="string" default="#cgi.REMOTE_ADDR#" /><!--- The ip of user --->
 <cfparam name="attributes.notes" type="string" default="" /><!--- Free text :D --->
 <cfparam name="attributes.note" type="string" default="" /><!--- I wrote the damn thing and I can never remember if was notes or note => so both --->
 
@@ -28,6 +28,7 @@
 <cfset stObj.event = attributes.event />
 <cfset stObj.location = attributes.location />
 <cfset stObj.userid = attributes.userid />
+<cfset stObj.ipaddress = attributes.ipaddress />
 <cfset stObj.notes = attributes.note & attributes.notes />
 
 <cfif structKeyExists(application, "stcoapi") AND structKeyExists(application.stcoapi, "farLog")>
