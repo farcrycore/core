@@ -95,6 +95,7 @@
 <cfcomponent extends="field" name="list" displayname="list" hint="Field component to liase with all list field types"> 
  
 	<cfproperty name="ftList" required="false" default="" hint="comma separated list of values or variable:value pairs to appear in the drop down. e.g apple,orange,kiwi or APP:apple,ORA:orange,KIW:kiwi" />
+	<cfproperty name="ftListDelims" required="false" default="," hint="Overrides the list delimiter used in ftList or in the string returned by ftListData" />
 	<cfproperty name="ftListData" required="false" default="" hint="Method call that must return a string in the same variable value pair format as the ftlist attribute OR a query containing the columns value & name. Method gets passed the objectid of the currently edited object as an argument. e.g apple,orange,kiwi or APP:apple,ORA:orange,KIW:kiwi or queryNew('value,name')" />
 	<cfproperty name="ftListDataTypename" required="false" default="" hint="Specific typename to call ftlistdata method on." />
 	<cfproperty name="ftRenderType" required="false" default="dropdown" options="dropdown,checkbox,radio" hint="The way the list will get rendered." />
@@ -114,7 +115,7 @@
 		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="getListData" access="private" output="false" returntype="string" hint="This will return a list that is used by the edit function">
+	<cffunction name="getListData" access="private" output="false" returntype="query" hint="This will return a list that is used by the edit function">
 		<cfargument name="objectid" required="false" type="string" default="" hint="The objectid of the record we are getting the list for if available.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this property is part of.">
 		<cfargument name="property" required="true" type="string" hint="The name of the property">
@@ -122,7 +123,8 @@
 		
 		<cfset var rListData = "" />
 		<cfset var oList = "" />
-		<cfset var result = "" />
+		<cfset var result = querynew("value,name") />
+		<cfset var i = "" />
 		
 		<cfif structIsEmpty(arguments.stPropMetadata)>
 			<cfset arguments.stPropMetadata = application.fapi.getPropertyMetadata(typename="#arguments.typename#", property="#arguments.property#") />
@@ -140,18 +142,25 @@
 			</cfinvoke>
 			
 			<cfif isQuery(rListData)>
-				<cfif rListData.recordCount AND listFindNoCase(rListData.columnList, "value") AND listFindNoCase(rListData.columnList, "name")>
-					<cfloop query="rListData">
-						<cfset result = listAppend(result, "#rListData.value#:#rListData.name#") />
-					</cfloop>
-				</cfif>
-			<cfelse>
-				<cfset result = rListData />
+				<cfreturn rListData />
 			</cfif>
 		<cfelse>
-			<cfset result = arguments.stPropMetadata.ftList />	
+			<cfset rListData = arguments.stPropMetadata.ftList />	
 		</cfif>
-			
+		
+		<cfif len(rListData)>
+			<cfloop list="#rListData#" index="i" delimiters="#arguments.stPropMetadata.ftListDelims#">
+				<cfset queryAddRow(result) />
+				<cfset querySetCell(result, "name", ListLast(i , ":")) />
+				<cfif Left(i, 1) EQ ":">
+					<!--- This means that the developer wants the value to be an empty string --->
+					<cfset querySetCell(result, "value", "") />
+				<cfelse>
+					<cfset querySetCell(result, "value", ListFirst(i,":")) />
+				</cfif>
+			</cfloop>
+		</cfif>
+
 		<cfreturn result />
 	</cffunction>
 	
@@ -171,81 +180,53 @@
 		<cfset var lData = "" />
 
 	
-		<cfset lData = getListData(	objectid="#arguments.stobject.objectid#", 
+		<cfset qData = getListData(	objectid="#arguments.stobject.objectid#", 
 									typename="#arguments.typename#",
 									property="#arguments.stMetadata.name#",
 									stPropMetadata="#arguments.stMetadata#") /> 
 		
-		<cfif listLen(lData)>
+		<cfif qData.recordcount>
 			<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 				
 				<cfcase value="dropdown">								
-					<cfsavecontent variable="html">
-					
-						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.inputClass# #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
-						<cfloop list="#lData#" index="i">
-							<cfif Left(i, 1) EQ ":">
-								<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
-							<cfelse>
-								<cfset optionValue = ListFirst(i,":") />
-							</cfif>
-							<cfoutput><option value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
-						</cfloop>
-						<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=""></cfoutput>
-						
-					</cfsavecontent>					
+					<cfsavecontent variable="html"><cfoutput>
+						<select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.inputClass# #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>>
+							<cfloop query="qData">
+								<option value="#qData.value#"<cfif listFindNoCase(arguments.stMetadata.value, qData.value)> selected="selected"</cfif>>#qData.name#</option>
+							</cfloop>
+						</select>
+						<input type="hidden" name="#arguments.fieldname#" value="">
+					</cfoutput></cfsavecontent>					
 				</cfcase>
 				
 				<cfcase value="checkbox">
-					<cfsavecontent variable="html">
-
-						<cfoutput>
+					<cfsavecontent variable="html"><cfoutput>
 						<div class="multiField">
-							<cfset tmpCount=0>
-							<cfloop list="#lData#" index="i">
-								<cfset tmpCount=tmpCount + 1>
-								<cfif Left(i, 1) EQ ":">
-									<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
-								<cfelse>
-									<cfset optionValue = ListFirst(i,":") />
-								</cfif>
+							<cfloop query="qData">
 								<label>
-									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #arguments.stMetadata.ftClass#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
-									#ListLast(i , ":")#
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #arguments.stMetadata.ftClass#" value="#qData.value#"<cfif listFindNoCase(arguments.stMetadata.value, qData.value)> checked="checked"</cfif> />
+									#qData.name#
 									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 								</label>
 							</cfloop>
 							<input type="hidden" name="#arguments.fieldname#" value="">	
 						</div>
-						</cfoutput>
-
-					</cfsavecontent>
+					</cfoutput></cfsavecontent>
 				</cfcase>
 				
 				<cfcase value="radio">
-					<cfsavecontent variable="html">
-
-						<cfoutput>
-							<div class="multiField">
-								<cfset tmpCount=0>
-								<cfloop list="#lData#" index="i">
-									<cfset tmpCount=tmpCount + 1>
-									<cfif Left(i, 1) EQ ":">
-										<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
-									<cfelse>
-										<cfset optionValue = ListFirst(i,":") />
-									</cfif>
-									<label>
-										<input type="radio" name="#arguments.fieldname#" class="required #arguments.stMetadata.ftClass#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
-										#ListLast(i , ":")#
-										<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
-									</label>
-								</cfloop>
-								<input type="hidden" name="#arguments.fieldname#" value="">
-							</div>
-						</cfoutput>
-
-					</cfsavecontent>
+					<cfsavecontent variable="html"><cfoutput>
+						<div class="multiField">
+							<cfloop query="qData">
+								<label>
+									<input type="radio" name="#arguments.fieldname#" class="required #arguments.stMetadata.ftClass#" value="#qData.value#"<cfif listFindNoCase(arguments.stMetadata.value, qData.value)> checked="checked"</cfif> />
+									#qData.name#
+									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
+								</label>
+							</cfloop>
+							<input type="hidden" name="#arguments.fieldname#" value="">
+						</div>
+					</cfoutput></cfsavecontent>
 				</cfcase>
 				
 				<cfdefaultcase></cfdefaultcase>
@@ -269,14 +250,14 @@
 		<cfset var html = "" />
 		<cfset var oList = "" />
 		<cfset var rListData = "" />
-		<cfset var lData = getListData(	objectid="#arguments.stobject.objectid#", 
+		<cfset var qData = getListData(	objectid="#arguments.stobject.objectid#", 
 									typename="#arguments.typename#",
 									property="#arguments.stMetadata.name#",
 									stPropMetadata="#arguments.stMetadata#") /> 
 			
-		<cfloop list="#lData#" index="i">			
-			<cfif listFindNoCase(arguments.stMetadata.value,ListFirst(i,":"))>
-				<cfset html = listappend(html,ListLast(i,":")) />
+		<cfloop query="qData">
+			<cfif listFindNoCase(arguments.stMetadata.value, qData.value)>
+				<cfset html = listappend(html, qData.name) />
 			</cfif>
 		</cfloop>
 		
@@ -345,7 +326,7 @@
 																			property="#arguments.filterProperty#" ) />
 		<cfset var i = "" />
 		<cfset var optionValue = "" />
-		<cfset var lData = getListData(	typename="#filterTypename#",
+		<cfset var qData = getListData(	typename="#filterTypename#",
 										property="#filterProperty#") /> 
 		
 		<cfsavecontent variable="resultHTML">
@@ -357,14 +338,9 @@
 					<cfparam name="arguments.stFilterProps.value" default="" />
 					
 					<cfoutput><select id="#arguments.fieldname#value" name="#arguments.fieldname#value" class="selectInput" multiple="multiple"></cfoutput>
-					<cfloop list="#lData#" index="i">
-						<cfif Left(i, 1) EQ ":">
-							<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
-						<cfelse>
-							<cfset optionValue = ListFirst(i,":") />
-						</cfif>
-						<cfoutput><option value="#optionValue#"<cfif listFindNoCase(arguments.stFilterProps.value, optionValue) or arguments.stFilterProps.value eq optionValue> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
-					</cfloop>
+					<cfoutput query="qData">
+						<option value="#qData.value#"<cfif listFindNoCase(arguments.stFilterProps.value, qData.value) or arguments.stFilterProps.value eq qData.value> selected="selected"</cfif>>#qData.name#</option>
+					</cfoutput>
 					<cfoutput></select><input type="hidden" name="#arguments.fieldname#value" value=""></cfoutput>
 									
 				</cfcase>
@@ -386,7 +362,7 @@
 		<cfset var resultHTML = "" />
 		<cfset var html = "" />														
 		<cfset var i = "" />
-		<cfset var lData = getListData(	typename="#arguments.filterTypename#",
+		<cfset var qData = getListData(	typename="#arguments.filterTypename#",
 										property="#arguments.filterProperty#") /> 
 										
 		<cfsavecontent variable="resultHTML">
@@ -395,9 +371,9 @@
 				
 				<cfcase value="has selected">
 					<cfparam name="arguments.stFilterProps.value" default="" />
-					<cfloop list="#lData#" index="i">			
-						<cfif listFindNoCase(arguments.stFilterProps.value,ListFirst(i,":"))>
-							<cfset html = listappend(html,ListLast(i,":")) />
+					<cfloop query="qData">
+						<cfif listFindNoCase(arguments.stFilterProps.value, qData.value)>
+							<cfset html = listappend(html, qData.name) />
 						</cfif>
 					</cfloop>
 					<cfoutput>#html#</cfoutput>
