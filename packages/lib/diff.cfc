@@ -306,6 +306,46 @@
 					</cfif>
 				</cfif>
 			</cfcase>
+			<cfcase value="boolean">
+				<cfif IsBoolean(stResult.left) AND IsBoolean(stResult.right) >
+					<cfset stResult.leftHighlighted = YesNoFormat(stResult.left) />
+					<cfset stResult.rightHighlighted = YesNoFormat(stResult.right) />
+					<cfset stResult.different = compare(stResult.leftHighlighted,stResult.rightHighlighted) neq 0 />
+				</cfif>
+			</cfcase>
+			<cfcase value="list">
+				<cfif IsSimpleValue(stResult.left) AND IsSimpleValue(stResult.right) >
+					<cfset var listData = stMetadata.ftList >
+					<cfif Len(stMetadata.ftListData) gt 0 >
+						<cfset var oType = CreateObject("component", application.stCOAPI[arguments.typename].packagepath) >
+						<cfinvoke component="#oType#" method="#stMetadata.ftListData#" returnvariable="listData" />
+					</cfif>
+					<cfif isQuery(listData) >
+						<cfif listFindNoCase(listData.columnList, "value") AND listFindNoCase(listData.columnList, "name") >
+							<cfloop query="listData">
+								<cfif listData.value eq stResult.left >
+									<cfset stResult.leftHighlighted = listData.name />
+								</cfif>
+								<cfif listData.value eq stResult.right >
+									<cfset stResult.rightHighlighted = listData.name />
+								</cfif>
+							</cfloop>
+						</cfif>
+					<cfelse>
+						<cfloop list="#listData#" delimiters="," index="i">
+							<cfset var listValue = ListFirst(i, ":") >
+							<cfif Left(i, 1) eq ":" ><cfset listValue = "" ></cfif>
+							<cfif listValue eq stResult.left >
+								<cfset stResult.leftHighlighted = ListRest(i, ":") />
+							</cfif>
+							<cfif listValue eq stResult.right >
+								<cfset stResult.rightHighlighted = ListRest(i, ":") />
+							</cfif>
+						</cfloop>
+					</cfif>
+					<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
+				</cfif>
+			</cfcase>
 		</cfswitch>
 		
 		<cfreturn stResult />
