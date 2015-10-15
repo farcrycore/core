@@ -4,7 +4,8 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-
+<ft:serverSideValidation />
+	
 <ft:processform action="Save" exit="true">
 	<ft:processformobjects typename="farUser" />
 </ft:processform>
