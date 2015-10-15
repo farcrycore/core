@@ -320,8 +320,7 @@
 							</cfloop>
 							</select>
 							<select class="fc-time" name="#arguments.fieldname#Minute">
-								<option value="00">00</option>
-								<cfloop from="1" to="60" index="i">
+								<cfloop from="0" to="59" index="i">
 									<option value="#numberFormat(i, '00')#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i> selected="selected"</cfif>>#numberFormat(i, '00')#</option>
 								</cfloop>
 							</select>
