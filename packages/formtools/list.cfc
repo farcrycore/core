@@ -210,7 +210,7 @@
 									<cfset optionValue = ListFirst(i,":") />
 								</cfif>
 								<label>
-									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #arguments.stMetadata.ftClass#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #arguments.stMetadata.ftClass#" value="#optionValue#" <cfif LCase(arguments.stMetadata.value) EQ LCase(optionValue)> checked="checked"</cfif> />
 									#ListLast(i , ":")#
 									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 								</label>
@@ -236,7 +236,7 @@
 										<cfset optionValue = ListFirst(i,":") />
 									</cfif>
 									<label>
-										<input type="radio" name="#arguments.fieldname#" class="required #arguments.stMetadata.ftClass#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
+										<input type="radio" name="#arguments.fieldname#" class="required #arguments.stMetadata.ftClass#" value="#optionValue#" <cfif LCase(arguments.stMetadata.value) EQ LCase(optionValue)> checked="checked"</cfif> />
 										#ListLast(i , ":")#
 										<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 									</label>
