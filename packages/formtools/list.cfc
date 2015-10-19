@@ -192,7 +192,7 @@
 					<cfsavecontent variable="html"><cfoutput>
 						<select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.inputClass# #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>>
 							<cfloop query="qData">
-								<option value="#qData.value#"<cfif listFindNoCase(arguments.stMetadata.value, qData.value)> selected="selected"</cfif>>#qData.name#</option>
+								<option value="#qData.value#" <cfif listFindNoCase(arguments.stMetadata.value, qData.value) OR arguments.stMetadata.value eq qData.value>selected="selected"</cfif>>#qData.name#</option>
 							</cfloop>
 						</select>
 						<input type="hidden" name="#arguments.fieldname#" value="">
@@ -204,7 +204,7 @@
 						<div class="multiField">
 							<cfloop query="qData">
 								<label>
-									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #arguments.stMetadata.ftClass#" value="#qData.value#"<cfif listFindNoCase(arguments.stMetadata.value, qData.value)> checked="checked"</cfif> />
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #arguments.stMetadata.ftClass#" value="#qData.value#" <cfif listFindNoCase(arguments.stMetadata.value, qData.value) OR arguments.stMetadata.value eq qData.value>checked="checked"</cfif> />
 									#qData.name#
 									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 								</label>
@@ -219,7 +219,7 @@
 						<div class="multiField">
 							<cfloop query="qData">
 								<label>
-									<input type="radio" name="#arguments.fieldname#" class="required #arguments.stMetadata.ftClass#" value="#qData.value#"<cfif listFindNoCase(arguments.stMetadata.value, qData.value)> checked="checked"</cfif> />
+									<input type="radio" name="#arguments.fieldname#" class="required #arguments.stMetadata.ftClass#" value="#qData.value#" <cfif listFindNoCase(arguments.stMetadata.value, qData.value) OR arguments.stMetadata.value eq qData.value>checked="checked"</cfif> />
 									#qData.name#
 									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 								</label>
@@ -256,7 +256,7 @@
 									stPropMetadata="#arguments.stMetadata#") /> 
 			
 		<cfloop query="qData">
-			<cfif listFindNoCase(arguments.stMetadata.value, qData.value)>
+			<cfif listFindNoCase(arguments.stMetadata.value, qData.value) OR arguments.stMetadata.value eq qData.value>
 				<cfset html = listappend(html, qData.name) />
 			</cfif>
 		</cfloop>
@@ -339,7 +339,7 @@
 					
 					<cfoutput><select id="#arguments.fieldname#value" name="#arguments.fieldname#value" class="selectInput" multiple="multiple"></cfoutput>
 					<cfoutput query="qData">
-						<option value="#qData.value#"<cfif listFindNoCase(arguments.stFilterProps.value, qData.value) or arguments.stFilterProps.value eq qData.value> selected="selected"</cfif>>#qData.name#</option>
+						<option value="#qData.value#" <cfif listFindNoCase(arguments.stFilterProps.value, qData.value) OR arguments.stFilterProps.value eq qData.value>selected="selected"</cfif>>#qData.name#</option>
 					</cfoutput>
 					<cfoutput></select><input type="hidden" name="#arguments.fieldname#value" value=""></cfoutput>
 									
@@ -372,7 +372,7 @@
 				<cfcase value="has selected">
 					<cfparam name="arguments.stFilterProps.value" default="" />
 					<cfloop query="qData">
-						<cfif listFindNoCase(arguments.stFilterProps.value, qData.value)>
+						<cfif listFindNoCase(arguments.stFilterProps.value, qData.value) OR arguments.stFilterProps.value eq qData.value>
 							<cfset html = listappend(html, qData.name) />
 						</cfif>
 					</cfloop>
@@ -428,7 +428,6 @@
 		
 		<cfreturn resultHTML />
 	</cffunction>
-		
-		
-			
+
+
 </cfcomponent>
