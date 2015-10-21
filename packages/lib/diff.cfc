@@ -317,7 +317,11 @@
 				<cfif IsSimpleValue(stResult.left) AND IsSimpleValue(stResult.right) >
 					<cfset var listData = stMetadata.ftList >
 					<cfif Len(stMetadata.ftListData) gt 0 >
-						<cfset var oType = CreateObject("component", application.stCOAPI[arguments.typename].packagepath) >
+						<cfif len(stMetadata.ftListDataTypename)>
+							<cfset var oType = application.fapi.getContentType(stMetadata.ftListDataTypename) />
+						<cfelse>
+							<cfset var oType = application.fapi.getContentType(arguments.typename) />
+						</cfif>
 						<cfinvoke component="#oType#" method="#stMetadata.ftListData#" returnvariable="listData" />
 					</cfif>
 					<cfif isQuery(listData) >
