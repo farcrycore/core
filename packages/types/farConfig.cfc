@@ -309,7 +309,7 @@ object methods
 				<cfset bChanged = true />
 			</cfif>
 
-			<!--- update with missing values --->
+			<!--- update with missing default values --->
 			<cfif structkeyexists(stResult, "typename") AND structkeyexists(application.stCOAPI,stResult.typename)>
 				<cfset stDefault = createobject("component",application.stCOAPI[stResult.typename].packagepath).getData(application.fc.utils.createJavaUUID()) />
 				<cfloop collection="#stDefault#" item="formkey">
@@ -318,9 +318,8 @@ object methods
 						<cfset bChanged = true />
 					</cfif>
 				</cfloop>
-			<cfelse>
-				<cfset bChanged = true />
 			</cfif>
+
 
 			<!--- if the config was updated, save to db --->
 			<cfif bChanged>
