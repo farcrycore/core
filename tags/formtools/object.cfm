@@ -514,7 +514,7 @@
 					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
 
 					<cfcatch>
-						<cfset application.fc.lib.error.rethrowMessage(cfcatch=cfcatch, message="[#ftFieldMetadata.name#] #cfcatch.message#") />
+						<cfset application.fc.lib.error.rethrowMessage(cfcatch=cfcatch, message="[#typename# #ftFieldMetadata.name# #stObj.objectid#] #cfcatch.message#") />
 					</cfcatch>
 				</cftry>
 				

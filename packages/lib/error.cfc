@@ -99,11 +99,15 @@
 			<cfset arguments.message = arguments.cfcatch.message />
 		</cfif>
 
-		<cfset exception = createObject("java", "java.lang.Exception").init(arguments.message) />
-		<cfset exception.initCause(arguments.cfcatch.getCause()) />
-		<cfset exception.setStackTrace(arguments.cfcatch.getStackTrace()) />
+		<cfif structKeyExists(server, "lucee") OR structKeyExists(server, "railo")>
+			<cfthrow message="#arguments.message#" attributeCollection="#arguments.cfcatch#" />
+		<cfelse>
+			<cfset exception = createObject("java", "java.lang.Exception").init(arguments.message) />
+			<cfset exception.initCause(arguments.cfcatch.getCause()) />
+			<cfset exception.setStackTrace(arguments.cfcatch.getStackTrace()) />
+			<cfthrow object="#exception#" />
+		</cfif>
 
-		<cfthrow object="#exception#" />
 	</cffunction>
 	
 	<cffunction name="collectRequestInfo" access="public" returntype="struct" output="false" hint="Returns a struct containing information that should be included in every error report">
