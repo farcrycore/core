@@ -74,6 +74,9 @@ object methods
 		<cfif not structkeyexists(stObj,"typename")>
 			<cfset stObj.typename = getForm(key=arguments.stObject.configkey) />
 		</cfif>
+
+		<!--- set a default/dummy objectid --->
+		<cfparam name="stObj.objectid" default="#createUUID()#">
 		
 		<cfif structkeyexists(stObj,"typename") and structkeyexists(application.stCOAPI,stObj.typename)>
 		
