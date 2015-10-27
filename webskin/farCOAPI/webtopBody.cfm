@@ -11,11 +11,12 @@
 <cfset changedTypes = "" />
 
 <cfif isdefined("url.logchanges")>
-	<cfset stConfig = application.fapi.getContentType("farConfig").getConfig("general") />
-	<cfset stConfig.logDBChanges = url.logchanges />
+	<cfset stConfigData = application.fapi.getContentType("farConfig").getConfig("general") />
+	<cfset stConfigData.logDBChanges = url.logchanges />
 	<cfset qConfig = application.fapi.getContentObjects(typename="farConfig",configkey_eq="general") />
 	<cfset stConfig = application.fapi.getContentObject(typename="farConfig",objectid=qConfig.objectid) />
-	<cfwddx action="cfml2wddx" input="#stConfig#" output="stConfig.configdata" />
+	<cfset stConfig.configdata = serializeJSON(stConfigData)>
+	<cfset stConfig.datetimelastupdated = now()>
 	<cfset application.fapi.setData(stProperties=stConfig) />
 	<cfoutput>true</cfoutput>
 	<cfabort>
