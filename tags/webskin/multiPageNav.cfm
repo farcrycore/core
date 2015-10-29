@@ -142,7 +142,7 @@ $in: nextArrow (optional - value to use for next page arrow)$
 			<!--- if current page, display previous --->
 			<cfif objectid eq attributes.objectid and currentRow gt 1>
 				<!--- display link --->
-				<cfoutput><a href="index.cfm?objectid=#qPages.objectid[currentRow-1]#">#attributes.previousArrow# <cfif attributes.displayNextPreviousTitle>#qPages.title[currentRow-1]#<cfelse>Previous</cfif></a> #attributes.seperator# </cfoutput>
+				<cfoutput><a href="#application.fapi.getLink(objectid=qPages.objectid[currentRow-1])#">#attributes.previousArrow# <cfif attributes.displayNextPreviousTitle>#qPages.title[currentRow-1]#<cfelse>Previous</cfif></a> #attributes.seperator# </cfoutput>
 			</cfif>
 		</cfloop>	
 	</cfif>
@@ -156,7 +156,7 @@ $in: nextArrow (optional - value to use for next page arrow)$
 				<!--- check not current page, if so don't link --->
 				<cfif objectid neq attributes.objectId>
 					<!--- display link --->
-					<cfoutput><a href="index.cfm?objectid=#objectid#"></cfoutput>
+					<cfoutput><a href="#application.fapi.getLink(objectid=objectid)#"></cfoutput>
 				</cfif>
 				<!--- check if there is a title --->
 				<cfoutput>#currentRow#</cfoutput>
@@ -176,7 +176,7 @@ $in: nextArrow (optional - value to use for next page arrow)$
 			<!--- if current page, display next --->
 			<cfif objectid eq attributes.objectid and currentRow neq qPages.recordcount>
 				<!--- display link --->
-				<cfoutput><a href="index.cfm?objectid=#qPages.objectid[currentRow+1]#"><cfif attributes.displayNextPreviousTitle>#qPages.title[currentRow+1]#<cfelse>Next</cfif> #attributes.nextArrow# </a></cfoutput>
+				<cfoutput><a href="#application.fapi.getLink(objectid=qPages.objectid[currentRow+1])#"><cfif attributes.displayNextPreviousTitle>#qPages.title[currentRow+1]#<cfelse>Next</cfif> #attributes.nextArrow# </a></cfoutput>
 			</cfif>
 		</cfloop>	
 	</cfif>
