@@ -197,6 +197,11 @@
 		</cfif>
 		
 		<cfset stResult.value = aField>
+		
+		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT arrayLen(aField)>
+			<cfset stResult = failed(value="#aField#", message="This is a required field.") />
+		</cfif>
+
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
