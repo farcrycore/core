@@ -954,7 +954,7 @@ default handlers
 			</cfoutput>
 		
 			<!--- PERFORM SERVER SIDE VALIDATION --->
-			<!--- <ft:serverSideValidation /> --->
+			<ft:serverSideValidation />
 		
 			<!---------------------------------------
 			ACTION:
