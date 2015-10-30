@@ -180,6 +180,7 @@
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
 
+		<cfset stResult = super.validate(argumentCollection=arguments)>
 		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
