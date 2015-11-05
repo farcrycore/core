@@ -51,7 +51,7 @@
 		<cfset var qArrayField = "" />
 		<cfset var stActions = structNew() /><!--- Need to allow for earlier versions of farcry which had different naming conventions --->
 		<cfset var libraryData = "" />
-		<cfset var qLibraryList = "" />
+		<cfset var qLibraryList = queryNew("") />
 		<cfset var lBulkUploadable = "" />
 
 		<cfset arguments.stMetadata = prepMetadata(stObject = arguments.stObject, stMetadata = arguments.stMetadata) />
@@ -173,13 +173,13 @@
 							<cfset qLibraryList = libraryData />
 						</cfif>		
 						
+					<cfelse>
+						<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
 					</cfif>
-				</cfif>
-				<!--- if nothing exists to generate library data then cobble something together --->
-				<cfif NOT isDefined("qLibraryList")>
+				<cfelse>
 					<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
 				</cfif>
-	
+
 				<cfsavecontent variable="returnHTML">
 					<grid:div class="multiField">
 						<cfif qLibraryList.recordcount>
