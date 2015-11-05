@@ -2458,19 +2458,13 @@
 	 --->	
 	<cffunction name="flushCache" access="public" output="false" returnType="void" hint="Flushes cache of passed in typename">
 		<cfargument name="lTypes" type="string" default="#structKeyList(application.stCoapi)#" required="true" hint="typenames to flush" />
-	
-		<cfset var typeName = "" />
-	
-		<cfloop list="#arguments.lTypes#" index="typeName">
-			
-			<cfif structkeyexists(application.stCOAPI,typename) AND structKeyExists(application.stCoapi[typeName],"bObjectBroker") AND application.stCoapi[typeName].bObjectBroker>
-			
-				<cfset application.objectbroker[typeName] = structNew() />
-				<cfset application.objectbroker[typeName].aObjects = arrayNew(1) />
-				<cfset application.objectbroker[typeName].maxObjects = application.stCoapi[typeName].objectBrokerMaxObjects />
 
+		<cfset var typeName = "" />
+
+		<cfloop list="#arguments.lTypes#" index="typeName">
+			<cfif structkeyexists(application.stCOAPI,typename) AND structKeyExists(application.stCoapi[typeName],"bObjectBroker") AND application.stCoapi[typeName].bObjectBroker>
+				<cfset application.fc.lib.objectbroker.configureType(typeName, application.stCoapi[typeName].objectBrokerMaxObjects)>
 			</cfif>
-			
 		</cfloop>
 
 		<cfreturn />
