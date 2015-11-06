@@ -235,6 +235,40 @@
 							</select>
 					</div>					
 				</div>
+				<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
+					
+					<cfif request.fc.inWebtop>
+					    <cfset theme = application.fapi.getConfig("formtheme", "webtop")>
+					<cfelse>
+					    <cfset theme = application.fapi.getConfig("formtheme", "site")>
+					</cfif>	
+					<cfset theme = application.fapi.getConfig("formtheme", "webtop")>
+					<cfset oFormTheme = application.fapi.getContentType(typename="formTheme#theme#")>
+					<cfset stValConfig = oFormTheme.getValidationConfig()>
+					<skin:onReady>
+					<cfoutput>	
+						$j("form").validate({
+						   	groups: {
+						        #arguments.fieldname#: "#arguments.fieldname#Day #arguments.fieldname#Month #arguments.fieldname#Year"
+						    },
+						    errorElement: "#stValConfig.errorElement#",
+	                        errorClass: "#stValConfig.errorElementClass#",
+	                        <cfif len(stValConfig.wrapper)>
+	                            wrapper: "#stValConfig.wrapper#",  // a wrapper around the error message                       
+	                        </cfif>                       
+	                        errorPlacement: function(error, element) {
+	                              error.prependTo( element.closest("#stValConfig.errorPlacementSelector#") );
+	                        },
+	                        highlight: function(element, errorClass) {
+	                           $j(element).closest("#stValConfig.fieldContainerSelector#").addClass('#stValConfig.fieldContainerClass#');
+	                        },
+	                        unhighlight: function(element, errorClass) {
+	                           $j(element).closest("#stValConfig.fieldContainerSelector#").removeClass('#stValConfig.fieldContainerClass#');
+	                        }
+						});
+						</cfoutput>	
+					</skin:onReady>
+				</cfif>
 				</cfoutput>
 			</cfsavecontent>		
 			
