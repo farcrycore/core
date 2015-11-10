@@ -164,13 +164,13 @@
 		<cfset stException = duplicate(arguments.exception) />
 		
 		<cfif structKeyExists(stException, "rootcause")>
-			<cfset stException = stException.rootcause />
+			<cfset stException.message = stException.message & " - " & stException.rootcause />
 		<cfelseif structkeyexists(stException, "cause")>
-			<cfset stException = stException.cause />
+			<cfset stException.message = stException.message & " - " & stException.cause />
 		</cfif>
-		
+
 		<cfset stResult["message"] = stException.message />
-		
+
 		<!--- Normalize the stack trace --->
 		<cfset stResult["stack"] = arraynew(1) />
 		<cfloop from="1" to="#min(arraylen(stException.TagContext),20)#" index="i">
