@@ -375,7 +375,7 @@
 		<cfargument name="quality" type="numeric" required="false" default="1" hint="This is only required for image writes" />
 		
 		<cfset var connectionname = "" />
-		<cfset var cfftp = structnew() />
+		<cfset var stResult = structNew() />
 		<cfset var tmpfile = getCachedFile(config=arguments.config,file=arguments.file) />
 		
 		<cfif not len(tmpfile)>
@@ -442,7 +442,7 @@
 		<cfargument name="datatype" type="string" required="false" default="text" options="text,binary,image" />
 		
 		<cfset var connectionname = "" />
-		<cfset var cfftp = structnew() />
+		<cfset var stResult = structNew() />
 		<cfset var data = "" />
 		<cfset var tmpfile = getCachedFile(config=arguments.config,file=arguments.file) />
 		
@@ -530,7 +530,7 @@
 		<cfargument name="dest_localpath" type="string" required="false" />
 		
 		<cfset var connectionname = "" />
-		<cfset var cfftp = structnew() />
+		<cfset var stResult = structNew() />
 		<cfset var tmpfile = "" />
 		<cfset var cachePath = "" />
 		
@@ -643,7 +643,7 @@
 		<cfargument name="dest_localpath" type="string" required="false" />
 		
 		<cfset var connectionname = "" />
-		<cfset var cfftp = structnew() />
+		<cfset var stResult = structNew() />
 		<cfset var tmpfile = "" />
 		<cfset var cachePath = "" />
 		
@@ -725,7 +725,7 @@
 		<cfargument name="file" type="string" required="true" />
 		
 		<cfset var connectionname = openConnection(config=arguments.config) />
-		<cfset var cfftp = structnew() />
+		<cfset var stResult = structNew() />
 		
 		<cfftp	connection="#connectionname#" 
 				action="remove" 
@@ -745,20 +745,18 @@
 		<cfargument name="dir" type="string" required="true" />
 		
 		<cfset var connectionname = openConnection(config=arguments.config) />
-		<cfset var cfftp = structnew() />
+		<cfset var stResult = structNew() />
 		
-		<cfif len(arguments.dir) and right(arguments.dir,1) eq "/">
+		<cfif len(arguments.dir) AND right(arguments.dir,1) eq "/">
 			<cfset arguments.dir = mid(arguments.dir,1,len(arguments.dir)-1) />
 		</cfif>
 		
-		<cfftp 	connection="#connectionname#" 
-				action="existsDir" 
-				stopOnError="Yes" 
-				directory="#getFTPPath(config=arguments.config,file=arguments.dir)#" />
+		<cfftp connection="#connectionname#" action="existsDir" result="stResult"
+			stopOnError="Yes" directory="#getFTPPath(config=arguments.config,file=arguments.dir)#" />
 		
 		<cfset closeConnection(config=arguments.config) />
 		
-		<cfreturn cfftp.returnValue />
+		<cfreturn stResult.returnValue />
 	</cffunction>
 	
 	<cffunction name="ioCreateDirectory" returntype="void" access="public" output="false" hint="Creates the specified directory. It assumes that it does not already exist, and will create all missing directories">
@@ -766,11 +764,11 @@
 		<cfargument name="dir" type="string" required="true" />
 		
 		<cfset var connectionname = openConnection(config=arguments.config) />
-		<cfset var cfftp = structnew() />
+		<cfset var stResult = structNew() />
 		<cfset var thispart = "" />
 		<cfset var dirsofar = "" />
 		
-		<cfif len(arguments.dir) and right(arguments.dir,1) eq "/">
+		<cfif len(arguments.dir) AND right(arguments.dir,1) eq "/">
 			<cfset arguments.dir = mid(arguments.dir,1,len(arguments.dir)-1) />
 		</cfif>
 		
@@ -779,16 +777,12 @@
 		<cfloop list="#arguments.dir#" index="thispart" delimiters="/">
 			<cfset dirsofar = dirsofar & "/" & thispart />
 			
-			<cfftp 	connection="#connectionname#" 
-					action="existsDir" 
-					stopOnError="Yes" 
-					directory="#dirsofar#" />
+			<cfftp connection="#connectionname#" action="existsDir" result="stResult"
+				stopOnError="Yes" directory="#dirsofar#" />
 			
-			<cfif not cfftp.returnValue>
-				<cfftp 	connection="#connectionname#" 
-						action="createDir" 
-						stopOnError="Yes" 
-						directory="#dirsofar#" />
+			<cfif NOT stResult.returnValue>
+				<cfftp connection="#connectionname#" action="createDir" 
+					stopOnError="Yes" directory="#dirsofar#" />
 			</cfif>
 		</cfloop>
 		
@@ -801,7 +795,7 @@
 		
 		<cfset var qDir = "" />
 		
-		<cfif len(arguments.dir) and right(arguments.dir,1) eq "/">
+		<cfif len(arguments.dir) AND right(arguments.dir,1) eq "/">
 			<cfset arguments.dir = mid(arguments.dir,1,len(arguments.dir)-1) />
 		</cfif>
 		
