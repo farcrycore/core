@@ -94,20 +94,40 @@
 		
 		<cfreturn st />
 	</cffunction>
-	
+
 	<cffunction name="openConnection" output="false" access="public" returntype="string" hint="Opens a connection with the specified config and returns the connection name">
 		<cfargument name="config" type="struct" required="true" />
-		
+
 		<cfset var key = "" />
 		<cfset var stAttributes = "" />
+
+		<cfif NOT isdefined("request.ftpconnections.#arguments.config.name#")>
+			<cfset request.ftpconnections[arguments.config.name] = arguments.config.name />
+
+			<cfset stAttributes = getCFFTPAttributes(arguments.config) />
+			<cfftp action="open" connection="#request.ftpconnections[arguments.config.name]#"
+				attributeCollection="#stAttributes#" />
+
+		</cfif>
+
+		<cfreturn request.ftpconnections[arguments.config.name] />
+	</cffunction>
+
+	<cffunction name="closeConnection" output="false" access="public" returntype="void" hint="Closes the specified connection">
+		<cfargument name="config" type="struct" required="true" />
+
+		<cfset structDelete(request.ftpconnections, arguments.config.name)>
 		
-		<cfif not isdefined("request.ftpconnections.#arguments.config.name#")>
-			<cfset request.ftpconnections[arguments.config.name] = "#dateformat(now(),'yyyymmdd')##timeformat(now(),'hhmmss')#_#replace(createuuid(),'-','','ALL')#" />
+	</cffunction>
+
+	<cffunction name="getCFFTPAttributes" output="false" access="public" returntype="struct" hint="Returns a struct of the CFFTP attributes">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="connection" type="string" required="false" default="" />
+
+		<cfset var stAttributes = structnew() />
+
+		<cfif NOT len(arguments.connection) OR listFindNoCase("railo,lucee", server.coldfusion.productname)>
 			
-			<cfset stAttributes = structnew() />
-			<cfset stAttributes.action = "open" />
-			<cfset stAttributes.stopOnError = true />
-			<cfset stAttributes.connection = request.ftpconnections[arguments.config.name] />
 			<cfset stAttributes.username = arguments.config.username />
 			<cfset stAttributes.server = arguments.config.server />
 			<cfset stAttributes.port = arguments.config.port />
@@ -115,25 +135,23 @@
 			<cfset stAttributes.timeout = arguments.config.timeout />
 			<cfset stAttributes.secure = arguments.config.secure />
 			<cfset stAttributes.passive = arguments.config.passive />
-			
+
+			<cfset stAttributes.stopOnError = true />
+
 			<cfloop list="password,proxyServer,fingerprint,key" index="key">
 				<cfif len(arguments.config[key])>
 					<cfset stAttributes[key] = arguments.config[key] />
 				</cfif>
 			</cfloop>
-			
-			<cfftp attributeCollection="#stAttributes#" />
+
+		<cfelseif len(arguments.connection)>
+			<cfset stAttributes.connection = arguments.connection />
 		</cfif>
-		
-		<cfreturn request.ftpconnections[arguments.config.name] />
+
+		<cfreturn stAttributes>
 	</cffunction>
-	
-	<cffunction name="closeConnection" output="false" access="public" returntype="void" hint="Closes the specified connection">
-		<cfargument name="config" type="struct" required="true" />
-		
-		<!--- Connection will be closed automatically at end of request --->
-	</cffunction>
-	
+
+
 	<cffunction name="isSameServer" output="false" access="public" returntype="boolean" hint="Returns true if the two configs refer to the same server">
 		<cfargument name="configA" type="struct" required="true" />
 		<cfargument name="configB" type="struct" required="true" />
@@ -160,7 +178,7 @@
 			<cfset arguments.qResult = querynew("file") />
 		</cfif>
 		
-		<cfftp	connection="#connectionname#" 
+		<cfftp	attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" 
 				action="listDir" 
 				stopOnError="Yes" 
 				name="qThisDir" 
@@ -335,7 +353,7 @@
 		
 			<cfset connectionname = openConnection(config=arguments.config) />
 			
-			<cfftp	connection="#connectionname#" 
+			<cfftp	attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" 
 					action="listDir" 
 					stopOnError="Yes" 
 					name="qDir" 
@@ -397,16 +415,16 @@
 			</cfcase>
 		</cfswitch>
 		
-		<!--- Put file onto FTP server --->
-		<cfset connectionname = openConnection(config=arguments.config) />
-		
 		<cfif not ioDirectoryExists(config=arguments.config,dir=getDirectoryFromPath(arguments.file))>
 			<cfset ioCreateDirectory(config=arguments.config,dir=getDirectoryFromPath(arguments.file)) />
 		</cfif>
 		
+		<!--- Put file onto FTP server --->
+		<cfset connectionname = openConnection(config=arguments.config) />
+		
 		<cfswitch expression="#arguments.datatype#">
 			<cfcase value="text">
-				<cfftp	connection="#connectionname#" 
+				<cfftp	attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" 
 						action="putFile" 
 						transferMode="ascii" 
 						localFile="#tmpfile#" 
@@ -416,12 +434,12 @@
 			
 			<cfcase value="binary,image" delimiters=",">
 				
-				<cfftp	connection="#connectionname#" 
+				<cfftp	attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" 
 						action="putFile" 
-						transferMode="binary" 
+						transferMode="auto" 
 						localFile="#tmpfile#"  
 						remoteFile="#getFTPPath(config=arguments.config,file=arguments.file)#" />
-				
+
 			</cfcase>
 		</cfswitch>
 		
@@ -473,7 +491,7 @@
 			<cfswitch expression="#arguments.datatype#">
 				<cfcase value="text">
 					
-					<cfftp	connection="#connectionname#" 
+					<cfftp	attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" 
 							action="getFile" 
 							transferMode="ascii" 
 							localFile="#tmpfile#"  
@@ -483,7 +501,7 @@
 				
 				<cfcase value="binary,image" delimiters=",">
 					
-					<cfftp	connection="#connectionname#" 
+					<cfftp	attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" 
 							action="getFile" 
 							transferMode="binary" 
 							localFile="#tmpfile#"  
@@ -550,14 +568,14 @@
 				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
 			</cfif>
 			
-			<cfftp	connection="#connectionname#" 
+			<cfftp	attributeCollection="#getCFFTPAttributes(arguments.source_config, connectionname)#" 
 					action="rename" 
 					existing="#getFTPPath(config=arguments.source_config,file=arguments.source_file)#"  
 					new="#getFTPPath(config=arguments.dest_config,file=arguments.dest_file)#" />
 			
 			<cfset closeConnection(config=arguments.dest_config) />
 			
-			<cfif arguments.config.localCacheSize>
+			<cfif arguments.source_config.localCacheSize>
 				<cfset removeCachedFile(config=arguments.source_config,file=arguments.source_file) />
 			</cfif>
 			
@@ -576,7 +594,7 @@
 				<!--- Delete from FTP --->
 				<cfset connectionname = openConnection(config=arguments.source_config) />
 				
-				<cfftp	connection="#connectionname#" 
+				<cfftp	attributeCollection="#getCFFTPAttributes(arguments.source_config, connectionname)#" 
 						action="remove" 
 						item="#getFTPPath(config=arguments.source_config,file=arguments.source_file)#" />
 				
@@ -589,13 +607,13 @@
 				<!--- Get local from FTP --->
 				<cfset connectionname = openConnection(config=arguments.source_config) />
 				
-				<cfftp	connection="#connectionname#" 
+				<cfftp	attributeCollection="#getCFFTPAttributes(arguments.source_config, connectionname)#" 
 						action="getFile" 
 						transferMode="auto" 
 						localFile="#arguments.dest_localpath#"  
 						remoteFile="#getFTPPath(config=arguments.source_config,file=arguments.source_file)#" />
 				
-				<cfftp	connection="#connectionname#" 
+				<cfftp	attributeCollection="#getCFFTPAttributes(arguments.source_config, connectionname)#" 
 						action="remove" 
 						item="#getFTPPath(config=arguments.source_config,file=arguments.source_file)#" />
 				
@@ -612,7 +630,7 @@
 				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
 			</cfif>
 			
-			<cfftp	connection="#connectionname#" 
+			<cfftp	attributeCollection="#getCFFTPAttributes(arguments.dest_config, connectionname)#" 
 					action="putFile" 
 					transferMode="auto" 
 					localFile="#arguments.source_localpath#"  
@@ -673,7 +691,7 @@
 				
 				<cfset connectionname = openConnection(config=arguments.source_config) />
 				
-				<cfftp	connection="#connectionname#" 
+				<cfftp	attributeCollection="#getCFFTPAttributes(arguments.source_config, connectionname)#" 
 						action="getFile" 
 						transferMode="auto" 
 						localFile="#tmpfile#"  
@@ -700,7 +718,7 @@
 				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
 			</cfif>
 			
-			<cfftp	connection="#connectionname#" 
+			<cfftp	attributeCollection="#getCFFTPAttributes(arguments.dest_config, connectionname)#" 
 					action="putFile" 
 					transferMode="auto" 
 					localFile="#arguments.source_localpath#"  
@@ -709,7 +727,7 @@
 			<cfset closeConnection(config=arguments.dest_config) />
 			
 			<cfif arguments.dest_config.localCacheSize>
-				<cfset tmpfile = getTemporaryFile(config=arguments.config,file=arguments.file) />
+				<cfset tmpfile = getTemporaryFile(config=arguments.source_config,file=arguments.file) />
 				
 				<cffile action="copy" source="#arguments.source_localpath#" destination="#tmpfile#" mode="664" nameconflict="overwrite" />
 				
@@ -727,7 +745,7 @@
 		<cfset var connectionname = openConnection(config=arguments.config) />
 		<cfset var stResult = structNew() />
 		
-		<cfftp	connection="#connectionname#" 
+		<cfftp	attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" 
 				action="remove" 
 				item="#getFTPPath(config=arguments.config,file=arguments.file)#" />
 		
@@ -751,11 +769,11 @@
 			<cfset arguments.dir = mid(arguments.dir,1,len(arguments.dir)-1) />
 		</cfif>
 		
-		<cfftp connection="#connectionname#" action="existsDir" result="stResult"
+		<cfftp attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" action="existsDir" result="stResult"
 			stopOnError="Yes" directory="#getFTPPath(config=arguments.config,file=arguments.dir)#" />
 		
 		<cfset closeConnection(config=arguments.config) />
-		
+
 		<cfreturn stResult.returnValue />
 	</cffunction>
 	
@@ -777,11 +795,11 @@
 		<cfloop list="#arguments.dir#" index="thispart" delimiters="/">
 			<cfset dirsofar = dirsofar & "/" & thispart />
 			
-			<cfftp connection="#connectionname#" action="existsDir" result="stResult"
+			<cfftp attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" action="existsDir" result="stResult"
 				stopOnError="Yes" directory="#dirsofar#" />
 			
 			<cfif NOT stResult.returnValue>
-				<cfftp connection="#connectionname#" action="createDir" 
+				<cfftp attributeCollection="#getCFFTPAttributes(arguments.config, connectionname)#" action="createDir" 
 					stopOnError="Yes" directory="#dirsofar#" />
 			</cfif>
 		</cfloop>
