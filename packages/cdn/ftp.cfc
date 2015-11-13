@@ -308,8 +308,10 @@
 		<cfif not left(urlpath,1) eq "/">
 			<cfset urlpath = "/" & urlpath />
 		</cfif>
-		
-		<cfset urlpath = arguments.config.urlPathPrefix & urlpath />
+
+		<cfif NOT left(urlpath,2) eq "//">
+			<cfset urlpath = arguments.config.urlPathPrefix & urlpath />
+		</cfif>
 		
 		<cfif structkeyexists(arguments,"protocol") and refind("^//",urlpath)>
 			<cfset urlpath = arguments.protocol & ":" & urlpath />
