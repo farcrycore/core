@@ -352,6 +352,10 @@
 				<cfset stResult.type = "datetime" />
 				<cfset stResult.precision = "" />
 			</cfcase>
+			<cfcase value="datetime2" delimiters=",">
+				<cfset stResult.type = "datetime2" />
+				<cfset stResult.precision = "7" />
+			</cfcase>
 			<cfcase value="numeric">
 				<cfset stResult.type = "numeric" />
 				<cfset stResult.precision = "10,2" />
