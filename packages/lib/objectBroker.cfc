@@ -673,7 +673,7 @@
 			<!--- Poll the object recycler for a soft reference to an object recycled by the garbage collector --->
 			<cfset objRef = application.objectrecycler.poll() />
 			
-			<cfloop condition="#isDefined("objRef")#">
+			<cfloop condition="isDefined('objRef') AND NOT IsNull(objRef)">
 				<!--- We got a soft reference: try to grab the contained object --->
 				<cfset stCacheEntry = objRef.get() />
 				<!--- Is the inner object still available with objectid and typename values? --->
