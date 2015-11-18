@@ -1,4 +1,4 @@
-<cfcomponent extends="MSSQL2005Gateway" dbType="mssql2008:Microsoft SQL 2008" usesDBOwner="true">
+<cfcomponent extends="MSSQL2005Gateway" dbType="mssql2012:Microsoft SQL 2012" usesDBOwner="true">
 	
 	<!--- DEPLOYMENT --->
 	
@@ -33,8 +33,13 @@
 						</cfcase>
 						<cfcase value="string"><cfoutput>nvarchar(#stProp.precision#) </cfoutput></cfcase>
 						<cfcase value="longchar"><cfoutput>nvarchar(MAX) </cfoutput></cfcase>
-						<cfcase value="datetime"><cfoutput>datetime </cfoutput></cfcase>
-						<cfcase value="datetime2"><cfoutput>datetime2(#stProp.precision#) </cfoutput></cfcase>
+						<cfcase value="datetime">
+							<cfif stProp.precision eq "">
+								<cfoutput>datetime2(6) </cfoutput>
+							<cfelse>
+								<cfoutput>datetime2(#stProp.precision#) </cfoutput>
+							</cfif>
+						</cfcase>
 					</cfswitch>
 					
 					<cfif stProp.nullable><cfoutput>NULL </cfoutput><cfelse><cfoutput>NOT NULL </cfoutput></cfif>
@@ -150,8 +155,13 @@
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
-					<cfcase value="datetime">datetime</cfcase>
-					<cfcase value="datetime2">datetime2(#stProp.precision#)</cfcase>
+					<cfcase value="datetime">
+						<cfif stProp.precision eq "">
+							datetime2(6)
+						<cfelse>
+							datetime2(#stProp.precision#)
+						</cfif>
+					</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				
@@ -269,8 +279,13 @@
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
-					<cfcase value="datetime">datetime</cfcase>
-					<cfcase value="datetime2">datetime2(#stProp.precision#)</cfcase>
+					<cfcase value="datetime">
+						<cfif stProp.precision eq "">
+							datetime2(6)
+						<cfelse>
+							datetime2(#stProp.precision#)
+						</cfif>
+					</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 			</cfquery>
@@ -420,6 +435,7 @@
 					</cfcase>
 					<cfcase value="datetime" delimiters=",">
 						<cfset stColumn.type = "datetime" />
+						<cfset stColumn.precision = "" />
 						<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
 							<cfset stColumn.default = "NULL" />
 						<cfelseif stColumn.default gt dateadd('yyyy',100,now())>
@@ -427,7 +443,7 @@
 						</cfif>
 					</cfcase>
 					<cfcase value="datetime2" delimiters=",">
-						<cfset stColumn.type = "datetime2" />
+						<cfset stColumn.type = "datetime" />
 						<cfset stColumn.precision = "#qColumns.datetime_precision#" />
 						<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
 							<cfset stColumn.default = "NULL" />

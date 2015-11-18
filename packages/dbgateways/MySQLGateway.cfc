@@ -500,6 +500,8 @@
 					<cfset stColumn.precision = "#qColumns.column_size#,0" />
 				</cfcase>
 				<cfcase value="datetime">
+					<cfset stColumn.type = "datetime" />
+					<cfset stColumn.precision = "6" />
 					<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
 						<cfset stColumn.default = "NULL" />
 					<cfelseif stColumn.default gt dateadd('yyyy',100,now())>
