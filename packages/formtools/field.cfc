@@ -34,21 +34,30 @@
 		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 
 		<cfset var html = "" />
-		<cfset var maxLength = 0 />
 
-		<cfif 
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
+		<cfif not structKeyExists(arguments.stMetadata, "ftMaxLength") AND
 			structKeyExists(application.fc.lib.db.tablemetadata,arguments.typename) AND 
 			structKeyExists(application.fc.lib.db.tablemetadata[arguments.typename].fields,arguments.stMetadata.name) AND
-			len(application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision)>
-			
-			<cfif NOT findNoCase(",", application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision)>
-				<cfset maxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
-			</cfif>
+			len(application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision) AND
+			NOT findNoCase(",", application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision)>
+
+			<cfset arguments.stMetadata.ftMaxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
 		</cfif>
 
-		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" <cfif maxLength neq 0>maxLength="#maxLength#"</cfif> /></cfoutput>
-		</cfsavecontent>
+		<cfif structKeyExists(arguments.stMetadata, "ftMaxLength")>
+			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength"," ") />
+			<skin:loadJS id="fc-jquery" />
+			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength", {rangelength:[0,#arguments.stMetadata.ftMaxLength#]});</cfoutput></skin:onReady>
+			<cfsavecontent variable="html">
+				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" maxLength="#arguments.stMetadata.ftMaxLength#" /></cfoutput>
+			</cfsavecontent>
+		<cfelse>
+			<cfsavecontent variable="html">
+				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" /></cfoutput>
+			</cfsavecontent>
+		</cfif>
 
 		<cfreturn html>
 	</cffunction>
@@ -76,12 +85,23 @@
 		
 		<cfset var stResult = structNew()>		
 		<cfset stResult = passed(value=stFieldPost.Value) />
-		
+
+		<cfif not structKeyExists(arguments.stMetadata, "ftMaxLength") AND
+			structKeyExists(application.fc.lib.db.tablemetadata,arguments.typename) AND 
+			structKeyExists(application.fc.lib.db.tablemetadata[arguments.typename].fields,arguments.stMetadata.name) AND
+			len(application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision) AND
+			NOT findNoCase(",", application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision)>
+
+			<cfset arguments.stMetadata.ftMaxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
+		</cfif>
+
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->	
 		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
+		<cfelseif structKeyExists(arguments.stMetadata, "ftMaxLength") and arguments.stMetadata.ftMaxLength and len(arguments.stFieldPost.value) gt arguments.stMetadata.ftMaxLength>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="The maximum length for this field is #arguments.stMetadata.ftMaxLength# characters.") />
 		</cfif>
 	
 		<!--- ----------------- --->
