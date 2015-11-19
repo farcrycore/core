@@ -339,7 +339,8 @@ code { color: #000; }
 							<div class="controls">
 								<select id="dbType" name="dbType" class="span3">
 									<option value="h2" <cfif stConstructor.dbType EQ "h2">selected</cfif>>H2</option>
-									<option value="mssql2005" <cfif stConstructor.dbType EQ "mssql2005">selected</cfif>>Microsoft SQL 2005 or newer</option>
+									<option value="mssql2012" <cfif stConstructor.dbType EQ "mssql2012">selected</cfif>>Microsoft SQL 2012 or newer</option>
+									<option value="mssql2005" <cfif stConstructor.dbType EQ "mssql2005">selected</cfif>>Microsoft SQL 2005</option>
 									<option value="mssql" <cfif stConstructor.dbType EQ "mssql">selected</cfif>>Microsoft SQL 2000</option>
 									<option value="mysql" <cfif stConstructor.dbType EQ "mysql">selected</cfif>>MySQL</option>
 								</select>
@@ -1178,7 +1179,9 @@ $(function(){
 				<cfset dbType = "mysql">
 			</cfcase>
 			<cfcase value="Microsoft SQL Server">
-				<cfif listFirst(stInfo.database_version, ".") gte 9>
+				<cfif listFirst(stInfo.database_version, ".") gte 11>
+					<cfset dbType = "mssql2012">
+				<cfelseif listFirst(stInfo.database_version, ".") gte 9>
 					<cfset dbType = "mssql2005">
 				<cfelse>
 					<cfset dbType = "mssql">

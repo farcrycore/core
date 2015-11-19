@@ -231,7 +231,7 @@
 		
 		<cfif arguments.maxRows neq 0>
 			<cfswitch expression="#application.dbtype#">
-				<cfcase value="mssql,mssql2005">
+				<cfcase value="mssql,mssql2005,mssql2012">
 					<cfset sqlMaxRows = " top #numberFormat(arguments.maxRows)# ">
 					<cfset bSqlMax = 1>
 				</cfcase>

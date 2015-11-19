@@ -798,7 +798,9 @@
 				<cfset dbType = "mysql">
 			</cfcase>
 			<cfcase value="Microsoft SQL Server">
-				<cfif listFirst(stInfo.database_version, ".") gte 9>
+				<cfif listFirst(stInfo.database_version, ".") gte 11>
+					<cfset dbType = "mssql2012">
+				<cfelseif listFirst(stInfo.database_version, ".") gte 9>
 					<cfset dbType = "mssql2005">
 				<cfelse>
 					<cfset dbType = "mssql">
