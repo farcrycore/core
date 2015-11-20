@@ -53,7 +53,7 @@
 
 	<!--- DEPLOYMENT --->
 	
-	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into a MySQL database.">
+	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		
 		<cfset var resultSQL = "">
@@ -117,7 +117,7 @@
 		<cfreturn resultSQL>
 	</cffunction>
 	
-	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into a MySQL database.">
+	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false" />
 		<cfargument name="logLocation" type="string" required="false" default="" />

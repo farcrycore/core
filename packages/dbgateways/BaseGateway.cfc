@@ -671,7 +671,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="addIndex" access="public" output="false" returntype="struct" hint="Deploys the index into a MySQL database.">
+	<cffunction name="addIndex" access="public" output="false" returntype="struct" hint="Deploys the index into the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
 		<cfargument name="logLocation" type="string" required="false" default="" />
@@ -721,7 +721,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="repairIndex" access="public" output="false" returntype="struct" hint="Repairs the index in a MySQL database.">
+	<cffunction name="repairIndex" access="public" output="false" returntype="struct" hint="Repairs the index in the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
 		<cfargument name="logLocation" type="string" required="false" default="" />
@@ -753,7 +753,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="dropIndex" access="public" output="false" returntype="struct" hint="Drops the index from a MySQL database.">
+	<cffunction name="dropIndex" access="public" output="false" returntype="struct" hint="Drops the index from the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
 		<cfargument name="logLocation" type="string" required="false" default="" />

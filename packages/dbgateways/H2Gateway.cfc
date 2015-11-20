@@ -2,7 +2,7 @@
 	
 	<!--- DEPLOYMENT --->
 	
-	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into a MySQL database.">
+	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		
 		<cfset var resultSQL = "">
@@ -66,7 +66,7 @@
 		<cfreturn resultSQL>
 	</cffunction>
 	
-	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into a MySQL database.">
+	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false" />
 		<cfargument name="logLocation" type="string" required="false" default="" />
@@ -262,7 +262,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="addIndex" access="public" output="false" returntype="struct" hint="Deploys the index into a MySQL database.">
+	<cffunction name="addIndex" access="public" output="false" returntype="struct" hint="Deploys the index into the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
 		<cfargument name="logLocation" type="string" required="false" default="" />
@@ -312,7 +312,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="dropIndex" access="public" output="false" returntype="struct" hint="Drops the index from a MySQL database.">
+	<cffunction name="dropIndex" access="public" output="false" returntype="struct" hint="Drops the index from the database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
 		<cfargument name="logLocation" type="string" required="false" default="" />
