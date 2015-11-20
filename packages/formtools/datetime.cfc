@@ -4,44 +4,44 @@
 	<code>
 		<cfproperty
 			name="basicDate" type="date" hint="something meaningful" required="no" default=""
-			ftseq="1" ftfieldset="General" ftwizardStep="General Details"
-			ftType="datetime" ftlabel="Basic Date" />
+			ftSeq="1" ftFieldset="General" ftWizardStep="General Details"
+			ftType="datetime" ftLabel="Basic Date" />
 	</code>
 	<p>Default to todays date</p>
 	<code>
 		<cfproperty
 			name="someDate" type="date" hint="The start date of the event" required="no" default=""
-			ftseq="2" ftfieldset="General" ftwizardStep="General Details"
-			ftDefaultType="Evaluate" ftDefault="now()" ftType="datetime" ftlabel="Some Date" />
+			ftSeq="2" ftFieldset="General" ftWizardStep="General Details"
+			ftDefaultType="Evaluate" ftDefault="now()" ftType="datetime" ftLabel="Some Date" />
 	</code>
 	<p>Custom date and time format mask</p>
 	<code>
 		<cfproperty
 			name="someDate" type="date" hint="The start date of the event" required="no" default=""
-			ftseq="3" ftfieldset="General" ftwizardStep="General Details"
+			ftSeq="3" ftFieldset="General" ftWizardStep="General Details"
 			ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" 
-			ftlabel="Some Date" />
+			ftLabel="Some Date" />
 	</code>
 	<p>Show date only</p>
 	<code>
 		<cfproperty
 			name="dateOnly" type="date" hint="The start date of the event" required="no" default=""
-			ftseq="4" ftfieldset="General" ftwizardStep="General Details"
-			ftType="datetime" ftShowTime="false" ftlabel="Date Only" />
+			ftSeq="4" ftFieldset="General" ftWizardStep="General Details"
+			ftType="datetime" ftShowTime="false" ftLabel="Date Only" />
 	</code>
 	<p>Disable dateTime field by default</p>
 	<code>
 		<cfproperty
 			name="someDate" type="date" hint="The start date of the event" required="no" default=""
-			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
-			ftType="datetime" ftToggleOffDateTime="true" ftlabel="Some Date" />
+			ftSeq="5" ftFieldset="General" ftWizardStep="General Details"
+			ftType="datetime" ftToggleOffDateTime="true" ftLabel="Some Date" />
 	</code>
 	<p>Datetime to be automatically set to the other field's date value.</p>
 	<code>
 		<cfproperty
 			name="endDate" type="date" hint="The start date of the event" required="no" default=""
-			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
-			ftType="datetime" ftlabel="Some Date" ftWatch="startDate"/>
+			ftSeq="5" ftFieldset="General" ftWizardStep="General Details"
+			ftType="datetime" ftLabel="Some Date" ftWatch="startDate"/>
 	</code>
 	<p>Use 24 hour time notation.</p>
 	<code>
