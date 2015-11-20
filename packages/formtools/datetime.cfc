@@ -43,7 +43,15 @@
 			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
 			ftType="datetime" ftlabel="Some Date" ftWatch="startDate"/>
 	</code>
- --->
+	<p>Use 24 hour time notation.</p>
+	<code>
+		<cfproperty 
+			name="someDate" type="date" required="false" default=""
+			ftSeq="5" ftFieldset="General" ftWizardStep="General Details"
+			ftType="datetime" ftTimeNotationType="24h"
+			ftLabel="Some Date" />
+	</code>
+--->
 
 <cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types"> 
 	<!--- edit handler options --->
