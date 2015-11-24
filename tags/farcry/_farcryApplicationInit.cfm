@@ -202,8 +202,6 @@ Build NavIDs from Navigation Nodes
 <cfparam name="application.sysInfo.farcryVersionTagLine" default="#oSysInfo.getVersionTagline()#" />
 <cfparam name="application.sysInfo.version" default="#oSysInfo.getCoreVersion()#" />
 <cfparam name="application.sysInfo.engine" default="#oSysInfo.getServerVersion()#" />
-<cfparam name="application.sysInfo.version" default="#oSysInfo.getCoreVersion()#" />
-<cfparam name="application.sysInfo.engine" default="#oSysInfo.getServerVersion()#" />
 <cfparam name="application.sysinfo.bwebtopaccess" default="true" type="boolean" />
 
 <!------------------------------------------------------------
