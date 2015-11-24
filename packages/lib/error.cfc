@@ -101,6 +101,11 @@
 		<cfelse>
 			<cfset stResult["instancename"] = "Unknown" />
 		</cfif>
+		<cfif isdefined("application.sysInfo.version.string")>
+			<cfset stResult["coreversion"] = application.sysInfo.version.string />
+		<cfelse>
+			<cfset stResult["coreversion"] = "Unknown" />
+		</cfif>
 		<cfset stResult["bot"] = IIF(!isdefined("request.fc.hasSessionScope") || !request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
 		<cfset stResult["browser"] = cgi.HTTP_USER_AGENT />
 		<cfset stResult["datetime"] = now() />
@@ -277,6 +282,7 @@
 			
 			<cfcase value="xml">
 				<cfset output.append('<?xml version="1.0" encoding="UTF-8" ?><error>') />
+				<cfset output.append("<coreVersion><![CDATA[#xmlformat(arguments.exception.coreVersion)#]]></coreVersion>") />
 				<cfset output.append("<machineName><![CDATA[#xmlformat(arguments.exception.machineName)#]]></machineName>") />
 				<cfset output.append("<instancename><![CDATA[#xmlformat(arguments.exception.instancename)#]]></instancename>") />
 				<cfset output.append("<message><![CDATA[#xmlformat(arguments.exception.message)#]]></message>") />
@@ -334,6 +340,7 @@
 			
 			<cfcase value="html">
 				<cfset output.append("<h2>#padResource('error.overview@label','Error Overview')#</h2><table>") />
+				<cfset output.append("<tr><th>Core Version:</th><td>#arguments.exception.coreVersion#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.machine@label','Machine')#:</th><td>#arguments.exception.machineName#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.instance@label','Instance')#:</th><td>#arguments.exception.instancename#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.message@label','Message')#:</th><td>#encodeErrorText(arguments.exception.message)#</td></tr>") />
@@ -395,6 +402,7 @@
 			
 			<cfcase value="text">
 				<cfset output.append(ucase(padResource('error.overview@label','Error Overview')) & variables.newline) />
+				<cfset output.append("Core Version         : #arguments.exception.coreVersion#" & variables.newline) />
 				<cfset output.append("#padResource('error.overview.machine@label','Machine','',20)# : #arguments.exception.machineName#" & variables.newline) />
 				<cfset output.append("#padResource('error.overview.instance@label','Instance','',20)# : #arguments.exception.instancename#" & variables.newline) />
 				<cfset output.append("#padResource('error.overview.message@label','Message','',20)# : #arguments.exception.message#" & variables.newline) />
