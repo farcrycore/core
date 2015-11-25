@@ -295,7 +295,9 @@
 		
 		<cfset var output = createObject("java","java.lang.StringBuffer").init() />
 		<cfset var first = true />
-		<cfset var i	= '' />
+		<cfset var i = "" />
+		<cfset var aKeys = arrayNew(1) />
+		<cfset var item = "" />
 		
 		<cfswitch expression="#arguments.format#">
 			<cfcase value="json">
@@ -348,10 +350,13 @@
 				
 				<cfif structKeyExists(arguments.exception, "url")>
 					<cfset output.append("<url>") />
-					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
+					<cfset aKeys = structKeyArray(arguments.exception.url) />
+					<cfset arraySort(aKeys, "textnocase") />
+					<cfloop from="1" to="#arrayLen(aKeys)#" index="i">
+						<cfset item = aKeys[i]>
 						<cfset output.append("<variable>") />
-						<cfset output.append("<name><![CDATA[#xmlformat(i)#]]></name>") />
-						<cfset output.append("<value><![CDATA[#xmlformat(arguments.exception.url[i])#]]></value>") />
+						<cfset output.append("<name><![CDATA[#xmlformat(item)#]]></name>") />
+						<cfset output.append("<value><![CDATA[#xmlformat(arguments.exception.url[item])#]]></value>") />
 						<cfset output.append("</variable>") />
 					</cfloop>
 					<cfset output.append("</url>") />
@@ -409,11 +414,14 @@
 				
 				<cfif structKeyExists(arguments.exception, "url")>
 					<cfset output.append("<tr><th valign='top'>#padResource('error.details.postprocessurl@label','Post-process URL')#:</th><td><ul>") />
-					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
-						<cfif issimplevalue(arguments.exception.url[i])>
-							<cfset output.append("<li>#i# = #encodeErrorText(arguments.exception.url[i])#</li>") />
+					<cfset aKeys = structKeyArray(arguments.exception.url) />
+					<cfset arraySort(aKeys, "textnocase") />
+					<cfloop from="1" to="#arrayLen(aKeys)#" index="i">
+						<cfset item = aKeys[i]>
+						<cfif issimplevalue(arguments.exception.url[item])>
+							<cfset output.append("<li>#item# = #encodeErrorText(arguments.exception.url[item])#</li>") />
 						<cfelse>
-							<cfset output.append("<li>#i# = #encodeErrorText(serializeJSON(arguments.exception.url[i]))#</li>") />
+							<cfset output.append("<li>#item# = #encodeErrorText(serializeJSON(arguments.exception.url[item]))#</li>") />
 						</cfif>
 					</cfloop>
 					<cfset output.append("</ul></td></tr>") />
@@ -474,13 +482,16 @@
 				
 				<cfif structKeyExists(arguments.exception, "url")>
 					<cfset output.append("#padResource('error.details.postprocessurl@label','Post-process URL','',20)# : ") />
-					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
+					<cfset aKeys = structKeyArray(arguments.exception.url) />
+					<cfset arraySort(aKeys, "textnocase") />
+					<cfloop from="1" to="#arrayLen(aKeys)#" index="i">
+						<cfset item = aKeys[i]>
 						<cfif not first>
 							<cfset output.append("                 ")>
 						</cfif>
 						<cfset first = false />
 						
-						<cfset output.append("#i# = #arguments.exception.url[i]#") />
+						<cfset output.append("#item# = #arguments.exception.url[item]#") />
 					</cfloop>
 				</cfif>
 			</cfcase>
