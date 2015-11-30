@@ -175,7 +175,7 @@
 				<cfset stException.message = stException.message & " - " & stException.rootcause />
 			</cfif>
 		<cfelseif structkeyexists(stException, "cause")>
-			<cfif isStruct(stException.rootcause)>
+			<cfif isStruct(stException.cause)>
 				<cfset stException.message = stException.message & " - " & stException.cause.message />
 			<cfelse>
 				<cfset stException.message = stException.message & " - " & stException.cause />
