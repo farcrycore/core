@@ -169,9 +169,17 @@
 		<cfset stException = duplicate(arguments.exception) />
 		
 		<cfif structKeyExists(stException, "rootcause")>
-			<cfset stException.message = stException.message & " - " & stException.rootcause />
+			<cfif isStruct(stException.rootcause)>
+				<cfset stException.message = stException.message & " - " & stException.rootcause.message />
+			<cfelse>
+				<cfset stException.message = stException.message & " - " & stException.rootcause />
+			</cfif>
 		<cfelseif structkeyexists(stException, "cause")>
-			<cfset stException.message = stException.message & " - " & stException.cause />
+			<cfif isStruct(stException.rootcause)>
+				<cfset stException.message = stException.message & " - " & stException.cause.message />
+			<cfelse>
+				<cfset stException.message = stException.message & " - " & stException.cause />
+			</cfif>
 		</cfif>
 
 		<cfset stResult["message"] = stException.message />
