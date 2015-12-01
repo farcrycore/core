@@ -37,7 +37,10 @@
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+		<!--- set maxlength to the precision of string fields --->
 		<cfif not structKeyExists(arguments.stMetadata, "ftMaxLength") AND
+			structKeyExists(arguments.stMetadata, "type") AND
+			listFindNoCase("string,longchar,nstring", arguments.stMetadata.type) AND
 			structKeyExists(application.fc.lib.db.tablemetadata,arguments.typename) AND 
 			structKeyExists(application.fc.lib.db.tablemetadata[arguments.typename].fields,arguments.stMetadata.name) AND
 			len(application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision) AND
@@ -86,7 +89,10 @@
 		<cfset var stResult = structNew()>		
 		<cfset stResult = passed(value=stFieldPost.Value) />
 
+		<!--- set maxlength to the precision of string fields --->
 		<cfif not structKeyExists(arguments.stMetadata, "ftMaxLength") AND
+			structKeyExists(arguments.stMetadata, "type") AND
+			listFindNoCase("string,longchar,nstring", arguments.stMetadata.type) AND
 			structKeyExists(application.fc.lib.db.tablemetadata,arguments.typename) AND 
 			structKeyExists(application.fc.lib.db.tablemetadata[arguments.typename].fields,arguments.stMetadata.name) AND
 			len(application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision) AND
