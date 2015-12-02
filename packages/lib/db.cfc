@@ -847,6 +847,7 @@
 		<cfargument name="stDiff" type="struct" required="true" hint="Conflict struct for a table" />
 		<cfargument name="propertyname" type="string" required="false" hint="Specific property" />
 		<cfargument name="indexname" type="string" required="false" hint="Specific index" />
+		<cfargument name="bIncludeDestructive" type="boolean" required="false" default="0" hint="Should we get destructive db changes?" />
 		
 		<cfset var aChanges = arraynew(1) />
 		<cfset var stChange = structnew() />
@@ -865,7 +866,9 @@
 				</cfcase>
 				<cfcase value="-">
 					<!--- Don't drop columns by default. Code left in place as a reference. --->
-					<!--- <cfset arrayappend(aChanges,createChange(action="dropColumn",schema=arguments.stDiff.newMetadata,propertyname=arguments.propertyname)) /> --->
+					<cfif arguments.bIncludeDestructive>
+						<cfset arrayappend(aChanges,createChange(action="dropColumn",schema=arguments.stDiff.newMetadata,propertyname=arguments.propertyname)) />
+					</cfif>
 				</cfcase>
 			</cfswitch>
 		<cfelseif structkeyexists(arguments,"indexname")>
@@ -880,7 +883,9 @@
 				</cfcase>
 				<cfcase value="-">
 					<!--- Don't drop indexes by default. Code left in place as a reference. --->
-					<!--- <cfset arrayappend(aChanges,createChange(action="dropIndex",schema=arguments.stDiff.newMetadata,indexname=arguments.indexname)) /> --->
+					<cfif arguments.bIncludeDestructive>
+						<cfset arrayappend(aChanges,createChange(action="dropIndex",schema=arguments.stDiff.newMetadata,indexname=arguments.indexname)) />
+					</cfif>
 				</cfcase>
 			</cfswitch>
 		<cfelse><!--- Table diff --->
@@ -891,15 +896,17 @@
 				</cfcase>
 				<cfcase value="x">
 					<cfloop collection="#arguments.stDiff.fields#" item="arguments.propertyname">
-						<cfset aChanges = mergeChanges(aChanges,getDefaultChanges(stDiff=arguments.stDiff,propertyname=arguments.propertyname)) />
+						<cfset aChanges = mergeChanges(aChanges,getDefaultChanges(stDiff=arguments.stDiff,propertyname=arguments.propertyname,bIncludeDestructive=arguments.bIncludeDestructive)) />
 					</cfloop>
 					<cfloop collection="#arguments.stDiff.indexes#" item="arguments.indexname">
-						<cfset aChanges = mergeChanges(aChanges,getDefaultChanges(stDiff=arguments.stDiff,indexname=arguments.indexname)) />
+						<cfset aChanges = mergeChanges(aChanges,getDefaultChanges(stDiff=arguments.stDiff,indexname=arguments.indexname,bIncludeDestructive=arguments.bIncludeDestructive)) />
 					</cfloop>
 				</cfcase>
 				<cfcase value="-">
 					<!--- Don't drop tables by default. Code left in place as a reference. --->
-					<!--- <cfset arrayappend(aChanges,createChange(action="dropSchema",schema=arguments.stDiff.oldMetadata)) /> --->
+					<cfif arguments.bIncludeDestructive>
+						<cfset arrayappend(aChanges,createChange(action="dropSchema",schema=arguments.stDiff.oldMetadata)) />
+					</cfif>
 				</cfcase>
 			</cfswitch>
 		</cfif>
