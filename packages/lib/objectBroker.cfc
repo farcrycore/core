@@ -838,7 +838,7 @@
 				<cfcatch />
 			</cftry>
 
-			<cfif isDefined("stCacheEntry") and structkeyexists(stCacheEntry,"value")>
+			<cfif isDefined("stCacheEntry") AND NOT isNull(stCacheEntry) AND structkeyexists(stCacheEntry, "value")>
 				<cfreturn duplicate(stCacheEntry.value) />
 			<cfelse>
 				<!--- Soft reference is empty: cache entry must have been recycled --->
