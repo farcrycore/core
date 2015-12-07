@@ -35,7 +35,7 @@
 						<cfcase value="longchar"><cfoutput>nvarchar(MAX) </cfoutput></cfcase>
 						<cfcase value="datetime">
 							<cfif stProp.precision eq "">
-								<cfoutput>datetime2(6) </cfoutput>
+								<cfoutput>datetime2(3) </cfoutput>
 							<cfelse>
 								<cfoutput>datetime2(#stProp.precision#) </cfoutput>
 							</cfif>
@@ -157,7 +157,7 @@
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">
 						<cfif stProp.precision eq "">
-							datetime2(6)
+							datetime2(3)
 						<cfelse>
 							datetime2(#stProp.precision#)
 						</cfif>
@@ -281,7 +281,7 @@
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">
 						<cfif stProp.precision eq "">
-							datetime2(6)
+							datetime2(3)
 						<cfelse>
 							datetime2(#stProp.precision#)
 						</cfif>

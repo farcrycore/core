@@ -350,7 +350,7 @@
 			</cfcase>
 			<cfcase value="date,datetime" delimiters=",">
 				<cfset stResult.type = "datetime" />
-				<cfset stResult.precision = "6" />
+				<cfset stResult.precision = "3" />
 			</cfcase>
 			<cfcase value="numeric">
 				<cfset stResult.type = "numeric" />
