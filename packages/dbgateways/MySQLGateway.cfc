@@ -90,7 +90,13 @@
 							</cfif>
 						</cfcase>
 						<cfcase value="longchar"><cfoutput>longtext </cfoutput></cfcase>
-						<cfcase value="datetime"><cfoutput>datetime </cfoutput></cfcase>
+						<cfcase value="datetime">
+							<cfif stProp.precision eq "">
+								<cfoutput>datetime(3) </cfoutput>
+							<cfelse>
+								<cfoutput>datetime(#stProp.precision#) </cfoutput>
+							</cfif>
+						</cfcase>
 					</cfswitch>
 					
 					<cfif stProp.nullable><cfoutput>NULL </cfoutput><cfelse><cfoutput>NOT NULL </cfoutput></cfif>
@@ -212,7 +218,13 @@
 						</cfif>
 					</cfcase>
 					<cfcase value="longchar">longtext</cfcase>
-					<cfcase value="datetime">datetime</cfcase>
+					<cfcase value="datetime">
+						<cfif stProp.precision eq "">
+							datetime(3)
+						<cfelse>
+							datetime(#stProp.precision#)
+						</cfif>
+					</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
@@ -273,7 +285,13 @@
 						</cfif>
 					</cfcase>
 					<cfcase value="longchar">longtext</cfcase>
-					<cfcase value="datetime">datetime</cfcase>
+					<cfcase value="datetime">
+						<cfif stProp.precision eq "">
+							datetime(3)
+						<cfelse>
+							datetime(#stProp.precision#)
+						</cfif>
+					</cfcase>				
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
@@ -352,9 +370,23 @@
 		<cfargument name="tablename" type="string" required="true" />
 		
 		<cfset var qColumns = "" />
-		
-		<cfdbinfo datasource="#this.dsn#" type="columns" table="#arguments.tablename#" name="qColumns" />
-		
+
+		<cfquery name="qColumns" datasource="#this.dsn#">
+			SELECT table_name
+				, column_name
+				, column_default AS column_default_value
+				, data_type AS type_name
+				, character_octet_length AS char_octet_length
+				, character_maximum_length AS column_size
+				, numeric_precision
+				, numeric_scale AS decimal_digits
+				, datetime_precision
+				, is_nullable
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE table_name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.tablename#">
+			ORDER BY table_name, ordinal_position
+		</cfquery>
+
 		<cfreturn qColumns />
 	</cffunction>
 	
@@ -489,19 +521,19 @@
 				</cfcase>
 				<cfcase value="varchar">
 					<cfset stColumn.type = "string" />
-					<cfset stColumn.precision = qColumns.char_octet_length />
+					<cfset stColumn.precision = qColumns.column_size />
 				</cfcase>
 				<cfcase value="decimal">
 					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "#qColumns.column_size#,#qColumns.decimal_digits#" />
+					<cfset stColumn.precision = "#qColumns.numeric_precision#,#qColumns.decimal_digits#" />
 				</cfcase>
 				<cfcase value="int">
 					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "#qColumns.column_size#,0" />
+					<cfset stColumn.precision = "#qColumns.numeric_precision#,0" />
 				</cfcase>
 				<cfcase value="datetime">
 					<cfset stColumn.type = "datetime" />
-					<cfset stColumn.precision = "3" />
+					<cfset stColumn.precision = "#qColumns.datetime_precision#" />
 					<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
 						<cfset stColumn.default = "NULL" />
 					<cfelseif stColumn.default gt dateadd('yyyy',100,now())>
@@ -571,5 +603,6 @@
 				  OR arguments.expected.type neq arguments.actual.type
 				  OR arguments.expected.precision neq arguments.actual.precision />
 	</cffunction>
+
 	
 </cfcomponent>
