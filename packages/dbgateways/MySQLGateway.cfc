@@ -16,6 +16,8 @@
 					<cfset stResult.value = "" />
 				<cfelseif arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL">
 					<cfset stResult.value = dateadd('yyyy',200,now()) />
+				<cfelseif isDate(arguments.value)>
+					<cfset stResult.value = "#lsdateformat(arguments.value,'yyyy-mm-dd')# #timeformat(arguments.value,'HH:mm:ss.lll')#" />
 				<cfelse>
 					<cfset stResult.value = "#LSDateFormat(arguments.value,'yyyy-mm-dd')# #timeFormat(arguments.value,'HH:mm:ss.lll')#" />
 				</cfif>
