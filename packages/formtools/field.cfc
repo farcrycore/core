@@ -50,9 +50,9 @@
 		</cfif>
 
 		<cfif structKeyExists(arguments.stMetadata, "ftMaxLength")>
-			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength"," ") />
+			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength-#arguments.stMetadata.name#"," ") />
 			<skin:loadJS id="fc-jquery" />
-			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength", {rangelength:[0,#arguments.stMetadata.ftMaxLength#]});</cfoutput></skin:onReady>
+			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength-#arguments.stMetadata.name#", {rangelength:[0,#arguments.stMetadata.ftMaxLength#]});</cfoutput></skin:onReady>
 			<cfsavecontent variable="html">
 				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" maxLength="#arguments.stMetadata.ftMaxLength#" /></cfoutput>
 			</cfsavecontent>
