@@ -19,7 +19,7 @@
 				<cfelseif isDate(arguments.value)>
 					<cfset stResult.value = "#lsdateformat(arguments.value,'yyyy-mm-dd')# #timeformat(arguments.value,'HH:mm:ss.lll')#" />
 				<cfelse>
-					<cfset stResult.value = "#LSDateFormat(arguments.value,'yyyy-mm-dd')# #timeFormat(arguments.value,'HH:mm:ss.lll')#" />
+					<cfset stResult.value = arguments.value />
 				</cfif>
 			</cfcase>
 			<cfcase value="numeric">
