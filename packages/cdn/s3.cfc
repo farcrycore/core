@@ -27,19 +27,19 @@
 		<cfset var st = duplicate(arguments.config) />
 		
 		<cfif not structkeyexists(st,"accessKeyId")>
-			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'accessKeyId' ]) />
+			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'accessKeyId' ]) />
 		</cfif>
 		
 		<cfif not structkeyexists(st,"awsSecretKey")>
-			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'awsSecretKey' ]) />
+			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'awsSecretKey' ]) />
 		</cfif>
 		
 		<cfif not structkeyexists(st,"bucket")>
-			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'bucket' ]) />
+			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'bucket' ]) />
 		</cfif>
 		
 		<cfif not structkeyexists(st,"region")>
-			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'region' ]) />
+			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'region' ]) />
 		</cfif>
 		
 		<cfif not structkeyexists(st,"domain")>
@@ -54,7 +54,7 @@
 		</cfif>
 		
 		<cfif structkeyexists(st,"security") and not listfindnocase("public,private",arguments.config.security)>
-			<cfset application.fapi.throw(message="the '{1}' value must be one of ({2})",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'security', 'public|private' ]) />
+			<cfset application.fapi.throw(message="the '{1}' value must be one of ({2})",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'security', 'public|private' ]) />
 		<cfelseif not structkeyexists(st,"security")>
 			<cfset st.security = "public" />
 		</cfif>
@@ -71,13 +71,13 @@
 		</cfif>
 		
 		<cfif st.security eq "private" and not structkeyexists(st,"urlExpiry")>
-			<cfset application.fapi.throw(message="no 'urlExpiry' value defined for private location",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+			<cfset application.fapi.throw(message="no 'urlExpiry' value defined for private location",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		<cfelseif structkeyexists(st,"urlExpiry") and (not isnumeric(st.urlExpiry) or st.urlExpiry lt 0)>
-			<cfset application.fapi.throw(message="the 'urlExpiry' value must be a positive integer",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+			<cfset application.fapi.throw(message="the 'urlExpiry' value must be a positive integer",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		</cfif>
 		
 		<cfif structkeyexists(st,"admins") and not isarray(arguments.config.admins)>
-			<cfset application.fapi.throw(message="the 'admins' value must be an array of canonical user ids and email addresses",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+			<cfset application.fapi.throw(message="the 'admins' value must be an array of canonical user ids and email addresses",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		<cfelseif not structkeyexists(st,"admins")>
 			<cfset st.admins = arraynew(1) />
 		</cfif>
@@ -87,11 +87,11 @@
 		</cfif>
 		
 		<cfif structkeyexists(st,"maxAge") and not refind("^\d+$",st.maxAge)>
-			<cfset application.fapi.throw(message="the 'maxAge' value must be an integer",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+			<cfset application.fapi.throw(message="the 'maxAge' value must be an integer",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		</cfif>
 		
 		<cfif structkeyexists(st,"sMaxAge") and not refind("^\d+$",st.sMaxAge)>
-			<cfset application.fapi.throw(message="the 'sMaxAge' value must be an integer",type="cdnconfigerror",detail=serializeJSON(arguments.config)) />
+			<cfset application.fapi.throw(message="the 'sMaxAge' value must be an integer",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		</cfif>
 		
 		<cfreturn st />
@@ -142,7 +142,7 @@
 		<cfset this.cacheMap[arguments.config.name][arguments.file].touch = now() />
 		<cfset this.cacheMap[arguments.config.name][arguments.file].path = arguments.path />
 		
-		<cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #arguments.file# to local cache" />
+		<cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" />
 		
 		<!--- Remove old files --->
 		<cfif structcount(this.cacheMap[arguments.config.name]) gte arguments.config.localCacheSize>
@@ -173,7 +173,7 @@
 			
 			<cfset structdelete(this.cacheMap[arguments.config.name],arguments.file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Removed [#arguments.config.name#] #arguments.file# from local cache" />
+			<cflog file="#application.applicationname#_s3" text="Removed [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
 		</cfif>
 	</cffunction>
 	
@@ -392,11 +392,11 @@
 				<cfset imageWrite(arguments.data,tmpfile,arguments.quality,true) />
 			</cfcase>
 		</cfswitch>
-		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #arguments.file# to temporary file #tmpfile#" />
+		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to temporary file #tmpfile#" />
 		
 		<!--- Move file to S3 --->
 		<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.config,dest_file=arguments.file) />
-		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #arguments.file# to S3" />
+		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to S3" />
 	</cffunction>
 	
 	<cffunction name="ioReadFile" returntype="any" access="public" output="false" hint="Reads from the specified file">
@@ -424,7 +424,7 @@
 				</cfcase>
 			</cfswitch>
 			
-			<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #arguments.file# from local cache" />
+			<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
 			
 		<cfelse>
 
@@ -454,7 +454,7 @@
 				<cfset deleteTemporaryFile(tmpfile) />
 			</cfif>
 			
-			<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #arguments.file# from S3" />
+			<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from S3" />
 			
 		</cfif>
 			
@@ -487,7 +487,7 @@
 			<cfset ioMoveFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #arguments.source_file# to [#arguments.dest_config.name#] #arguments.dest_file#" />
+			<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -499,7 +499,7 @@
 				
 				<cfset ioDeleteFile(config=arguments.source_config,file=arguments.source_file) />
 				
-				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #arguments.source_file# from cache to #arguments.dest_localpath#" />
+				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" />
 				
 			<cfelse>
 			
@@ -514,7 +514,7 @@
 				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
 				<cffile action="delete" file="#sourcefile#" />
 				
-				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #arguments.source_file# from S3 to #destfile#" />
+				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" />	
 				
 			</cfif>
 			
@@ -528,7 +528,7 @@
 				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
 				
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error moving #arguments.source_localpath# to [#arguments.dest_config.name#] #arguments.dest_file#: #cfcatch.message#" />
+					<cflog file="#application.applicationname#_s3" text="Error moving #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#: #cfcatch.message#" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
@@ -543,7 +543,7 @@
 				<cffile action="delete" file="#arguments.source_localpath#" />
 			</cfif>
 			
-			<cflog file="#application.applicationname#_s3" text="Moved #arguments.source_localpath# to [#arguments.dest_config.name#] #arguments.dest_file#" />
+			<cflog file="#application.applicationname#_s3" text="Moved #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
 			
 		</cfif>
 		
@@ -575,7 +575,7 @@
 			<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #arguments.source_file# to [#arguments.dest_config.name#] #arguments.dest_file#" />
+			<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -585,7 +585,7 @@
 				
 				<cffile action="copy" source="#cachePath#" destination="#arguments.dest_localpath#" mode="664" nameconflict="overwrite" />
 				
-				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #arguments.source_file# from cache to #arguments.dest_localpath#" />
+				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" />
 				
 			<cfelse>
 			
@@ -605,7 +605,7 @@
 					<cfset addCachedFile(config=arguments.source_config,file=arguments.source_file,path=tmpfile) />
 				</cfif>
 				
-				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #arguments.source_file# from S3 to #destfile#" />
+				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" />
 				
 			</cfif>
 			
@@ -619,7 +619,7 @@
 				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
 				<cflog file="debug" text="c. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error copying #arguments.source_localpath# to [#arguments.dest_config.name#] #arguments.source_file#: #cfcatch.message#" />
+					<cflog file="#application.applicationname#_s3" text="Error copying #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.source_file)#: #cfcatch.message#" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
@@ -633,7 +633,7 @@
 				<cflog file="debug" text="g. #fileexists(arguments.source_localpath)# #arguments.source_localpath#">
 			</cfif>
 			
-			<cflog file="#application.applicationname#_s3" text="Copied #arguments.source_localpath# to [#arguments.dest_config.name#] #arguments.dest_file#" />
+			<cflog file="#application.applicationname#_s3" text="Copied #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
 			
 		</cfif>
 	</cffunction>
@@ -648,7 +648,7 @@
 			<cfset removeCachedFile(config=arguments.config,file=arguments.file) />
 		</cfif>
 		
-		<cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #arguments.file#" />
+		<cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" />
 	</cffunction>
 	
 	
@@ -806,5 +806,28 @@
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
-	
+
+	<cffunction name="sanitiseS3URL" access="public" output="false" returntype="string">
+		<cfargument name="s3URL" type="string" required="true" />
+
+		<cfset var result = reReplace(arguments.s3URL, "(s3:\/\/)(.*?:.*?)(@.*)", "\1STRIPPEDACCESSKEYID:STRIPPEDAWSSECRETKEY\3")>
+
+		<cfreturn result />
+	</cffunction>
+
+	<cffunction name="sanitiseS3Config" access="public" output="false" returntype="struct">
+		<cfargument name="config" type="struct" required="true" />
+
+		<cfset var stResult = duplicate(arguments.config)>
+
+		<cfif structKeyExists(stResult, "accessKeyId")>
+			<cfset stResult.accessKeyId = "STRIPPEDACCESSKEYID">			
+		</cfif>
+		<cfif structKeyExists(stResult, "awsSecretKey")>
+			<cfset stResult.awsSecretKey = "STRIPPEDAWSSECRETKEY">
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
 </cfcomponent>
