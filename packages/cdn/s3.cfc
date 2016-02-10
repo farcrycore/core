@@ -601,7 +601,13 @@
 			</cfif>
 			
 			<cftry>
-				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
+
+				<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
+					<cffile action="write" output="#fileReadBinary(arguments.source_localpath)#" file="#getS3Path(config=arguments.dest_config,file=arguments.dest_file)#">
+				<cfelse>
+					<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />									
+				</cfif>
+
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
@@ -692,7 +698,13 @@
 			</cfif>
 			
 			<cftry>
-				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
+
+				<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
+					<cffile action="write" output="#fileReadBinary(arguments.source_localpath)#" file="#getS3Path(config=arguments.dest_config,file=arguments.dest_file)#">
+				<cfelse>
+					<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />									
+				</cfif>
+
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
