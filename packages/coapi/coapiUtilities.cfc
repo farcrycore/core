@@ -151,27 +151,29 @@
 		<cfif structKeyExists(variables.stRefobjects, arguments.objectid)>
 			<cfset result = variables.stRefobjects[arguments.objectid] />
 		<cfelse>
-			
-			<cfquery datasource="#arguments.dsn#" name="qFindType">
-			select typename from #arguments.dbowner#refObjects
-			where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
-			</cfquery>
-			
-			<cfif qFindType.recordCount>
-				<cfset result = qFindType.typename />
-			<cfelse>		
-				<cfif isDefined("Session") AND structKeyExists(Session, "TempObjectStore") 
-					AND structKeyExists(Session.TempObjectStore, "#arguments.objectid#")
-					AND structKeyExists(Session.TempObjectStore["#arguments.objectid#"], "typename")>
-					
-					<cfset result = Session.TempObjectStore["#arguments.objectid#"].typename />
+
+			<cfif isValid("uuid", arguments.objectID)>
+				<cfquery datasource="#arguments.dsn#" name="qFindType">
+				select typename from #arguments.dbowner#refObjects
+				where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
+				</cfquery>
+				
+				<cfif qFindType.recordCount>
+					<cfset result = qFindType.typename />
+				<cfelse>		
+					<cfif isDefined("Session") AND structKeyExists(Session, "TempObjectStore") 
+						AND structKeyExists(Session.TempObjectStore, "#arguments.objectid#")
+						AND structKeyExists(Session.TempObjectStore["#arguments.objectid#"], "typename")>
+						
+						<cfset result = Session.TempObjectStore["#arguments.objectid#"].typename />
+					</cfif>
+				</cfif>	
+				
+				<cfif len(result)>
+					<cfset variables.stRefobjects[arguments.objectid] = result />
 				</cfif>
-			</cfif>	
-			
-			<cfif len(result)>
-				<cfset variables.stRefobjects[arguments.objectid] = result />
 			</cfif>
-			
+
 		</cfif>
 		
 		<cfreturn result />	
