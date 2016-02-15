@@ -376,30 +376,30 @@
 			<cfcase value="html">
 				<cfset output.append("<h2>#padResource('error.overview@label','Error Overview')#</h2><table>") />
 				<cfset output.append("<tr><th>Core Version:</th><td>#arguments.exception.coreVersion#</td></tr>") />
-				<cfset output.append("<tr><th>#padResource('error.overview.machine@label','Machine')#:</th><td>#arguments.exception.machineName#</td></tr>") />
-				<cfset output.append("<tr><th>#padResource('error.overview.instance@label','Instance')#:</th><td>#arguments.exception.instancename#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.machine@label','Machine')#:</th><td>#encodeErrorText(arguments.exception.machineName)#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.instance@label','Instance')#:</th><td>#encodeErrorText(arguments.exception.instancename)#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.message@label','Message')#:</th><td>#encodeErrorText(arguments.exception.message)#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.browser@label','Browser')#:</th><td>#encodeErrorText(arguments.exception.browser)#</td></tr>") />
-				<cfset output.append("<tr><th>#padResource('error.overview.datetime@label','DateTime')#:</th><td>#arguments.exception.datetime#</td></tr>") />
-				<cfset output.append("<tr><th>#padResource('error.overview.host@label','Host')#:</th><td>#arguments.exception.host#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.datetime@label','DateTime')#:</th><td>#encodeErrorText(arguments.exception.datetime)#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.host@label','Host')#:</th><td>#encodeErrorText(arguments.exception.host)#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.httpreferer@label','HTTPReferer')#:</th><td>#encodeErrorText(arguments.exception.httpreferer)#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.querystring@label','QueryString')#:</th><td>#encodeErrorText(arguments.exception.querystring)#</td></tr>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.remoteaddress@label','RemoteAddress')#:</th><td>#encodeErrorText(arguments.exception.remoteaddress)#</td></tr>") />
-				<cfset output.append("<tr><th>#padResource('error.overview.bot@label','Bot')#:</th><td>#arguments.exception.bot#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.bot@label','Bot')#:</th><td>#encodeErrorText(arguments.exception.bot)#</td></tr>") />
 				<cfset output.append("</table><h2>#padResource('error.details@label','Error Details')#</h2><table>") />
 				<cfif structKeyExists(arguments.exception, "type") and len(arguments.exception.type)>
-					<cfset output.append("<tr><th>#padResource('error.details.exceptiontype@label','Exception Type')#:</th><td>#arguments.exception.type#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.exceptiontype@label','Exception Type')#:</th><td>#encodeErrorText(arguments.exception.type)#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail) and isJSON(arguments.exception.detail) and structkeyexists(application,"fapi")>
-					<cfset output.append("<tr><th>#padResource('error.details.detail@label','Detail')#:</th><td><pre class='formatjson'>#application.fapi.formatJSON(arguments.exception.detail)#</pre></td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.detail@label','Detail')#:</th><td><pre class='formatjson'>#encodeErrorText(application.fapi.formatJSON(arguments.exception.detail))#</pre></td></tr>") />
 				<cfelseif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail)>
-					<cfset output.append("<tr><th>#padResource('error.details.detail@label','Detail')#:</th><td>#arguments.exception.detail#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.detail@label','Detail')#:</th><td>#encodeErrorText(arguments.exception.detail)#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "extended_info") and len(arguments.exception.extended_info)>
-					<cfset output.append("<tr><th>#padResource('error.details.extendedinfo@label','Extended Info')#:</th><td>#arguments.exception.extended_info#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.extendedinfo@label','Extended Info')#:</th><td>#encodeErrorText(arguments.exception.extended_info)#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "queryError") and len(arguments.exception.queryError)>
-					<cfset output.append("<tr><th>#padResource('error.details.error@label','Error')#:</th><td>#arguments.exception.queryError#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.error@label','Error')#:</th><td>#encodeErrorText(arguments.exception.queryError)#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "sql") and len(arguments.exception.sql)>
 					<cfset output.append("<tr><th>#padResource('error.details.sql@label','SQL')#:</th><td>#encodeErrorText(arguments.exception.sql)#</td></tr>") />

@@ -562,7 +562,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<!--- <cfset oError.logData(oError.normalizeError(cfcatch)) /> --->
 					
 					<!--- show error if debugging --->
-					<cfif isdefined("url.debug") and url.debug EQ 1>
+					<cfif isdefined("request.mode.debug") and request.mode.debug EQ 1>
 						<cfset request.cfdumpinited = false>
 						
 						<skin:bubble title="Error with rule '#application.stcoapi[rule].displayName#'" bAutoHide="false" tags="rule,error">

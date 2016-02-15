@@ -185,41 +185,38 @@
 	<cffunction name="getDefaultFUObject" returnType="struct" access="public" output="false" hint="Returns the default FU objectid for an object. Returns empty string if no default is set.">
 		<cfargument name="refObjectID" required="yes" hint="Objectid of the RefObject to retrieve the default" />
 		<cfargument name="bIgnoreCache" required="false" type="boolean" default="false" />
-			
+
 		<cfset var stLocal = structNew() />
 		<cfset var stDefaultFU = structNew() />
-		
+
 		<cfif not arguments.bIgnoreCache>
 			<cfset stDefaultFU = getFUStructByObjectID(arguments.refObjectID) />
 		</cfif>
-		
+
 		<cfif structIsEmpty(stDefaultFU)>
 			<!--- 
 			SORTING BY DEFAULT FIRST SO THAT IF WE HAVE A DEFAULT SETUP IT WILL BE PICKED UP.
 			However, if no default is available, we will automatically get the custom first or else finally the system
 			 --->
 			<cfquery datasource="#application.dsn#" name="stLocal.qDefault">
-				SELECT 		f.objectid as objectid, r.typename as typename
-				FROM 		farFU f
-							INNER JOIN 
-							refObjects r
-							on f.refobjectid = r.objectid
-				WHERE 		f.refobjectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
-							AND f.fuStatus > 0
-				ORDER BY 	f.bDefault DESC, f.fuStatus DESC 
+				SELECT objectid
+				FROM farFU
+				WHERE refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
+				AND fuStatus > 0
+				ORDER BY bDefault DESC, fuStatus DESC
 			</cfquery>		
-		
-			<cfif stLocal.qDefault.recordCount>
-				<cfset stDefaultFU = getData(objectid="#stLocal.qDefault.objectID#") />
 
+			<cfif stLocal.qDefault.recordCount>
+				<cfset stDefaultFU = getData(objectid=stLocal.qDefault.objectID) />
+				<cfset stLocal.typename = application.fapi.findType(stLocal.qDefault.objectID)>
 				<cfif not arguments.bIgnoreCache>
-					<cfset setMapping(objectid="#stLocal.qDefault.objectID#", bForce="true", typename="#stLocal.qDefault.typename#") /><!--- Setting bForce ensures that this FU is used as the default because it MAY not have a default set. --->
+					<cfset setMapping(objectid=stLocal.qDefault.objectID, bForce=true, typename=stLocal.typename) /><!--- Setting bForce ensures that this FU is used as the default because it MAY not have a default set. --->
 				</cfif>
 			</cfif>
 		</cfif>
-		
+
 		<cfreturn stDefaultFU />
-		
+
 	</cffunction>
 	
 	<cffunction name="createCustomFU" access="public" returntype="struct" hint="Returns the success state of creating a new Custom FU of an object" output="false">
