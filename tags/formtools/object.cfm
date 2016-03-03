@@ -510,7 +510,7 @@
 					<cfinvokeargument name="prefix" value="#variables.prefix#">
 					<cfinvokeargument name="inputClass" value="#inputClass#">
 				</cfinvoke>
-				<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
+				<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",formtheme="#attributes.formtheme#",html=variables.returnHTML) />
 
 				<cfset variables.errorClass = "" />
 				<cfset variables.formValidationMessage = "" />
@@ -540,7 +540,7 @@
 			
 				<cfsavecontent variable="variables.returnHTML">
 					<cfoutput>
-					<span id="wrap-#variables.prefix##ftFieldMetadata.Name#" class="propertyRefreshWrap" ft:format="#attributes.format#" ft:type="#stObj.typename#" ft:objectid="#stObj.objectid#" ft:property="#ftFieldMetadata.Name#" ft:prefix="#variables.prefix#" ft:watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:reloadOnAutoSave="#yesNoFormat(ftFieldMetadata.ftReloadOnAutoSave)#" ft:refreshPropertyOnAutoSave="#yesNoFormat(ftFieldMetadata.ftRefreshPropertyOnAutoSave)#" watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:watchingFields="<cfif structKeyExists(FTFIELDMETADATA, "ftWatchingFields")>#ftFieldMetadata.ftWatchingFields#</cfif>" >
+					<span id="wrap-#variables.prefix##ftFieldMetadata.Name#" class="propertyRefreshWrap" ft:format="#attributes.format#" ft:type="#stObj.typename#" ft:objectid="#stObj.objectid#" ft:property="#ftFieldMetadata.Name#" ft:prefix="#variables.prefix#" ft:formtheme="#attributes.formTheme#" ft:watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:reloadOnAutoSave="#yesNoFormat(ftFieldMetadata.ftReloadOnAutoSave)#" ft:refreshPropertyOnAutoSave="#yesNoFormat(ftFieldMetadata.ftRefreshPropertyOnAutoSave)#" watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:watchingFields="<cfif structKeyExists(FTFIELDMETADATA, "ftWatchingFields")>#ftFieldMetadata.ftWatchingFields#</cfif>" >
 						#variables.returnHTML#
 					</span>
 					</cfoutput>

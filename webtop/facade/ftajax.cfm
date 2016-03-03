@@ -19,6 +19,7 @@
 <cfparam name="url.typename" />
 <cfparam name="url.property" />
 <cfparam name="url.fieldname" />
+<cfparam name="url.formtheme" default="" />
 
 
 <cfset stMetadata = duplicate(application.stCOAPI[url.typename].stProps[url.property].metadata) />
@@ -87,12 +88,15 @@
 	</cfif>
 </cfif>
 
+<cfset inputClass = application.fapi.getContentType(typename="formTheme" & url.formtheme).getFormtoolInputClass(stMetadata.ftType)>
+
 <cfinvoke component="#oType#" method="#FieldMethod#" returnvariable="out">
 	<cfinvokeargument name="typename" value="#url.typename#" />
 	<cfinvokeargument name="stObject" value="#stObj#" />
 	<cfinvokeargument name="stMetadata" value="#stMetadata#" />
 	<cfinvokeargument name="fieldname" value="#url.fieldname#" />
 	<cfinvokeargument name="stFieldPost" value="#stFieldPost#" />
+	<cfinvokeargument name="inputClass" value="#inputClass#">
 </cfinvoke>
 
 <cfcontent reset="true">

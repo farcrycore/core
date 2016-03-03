@@ -168,6 +168,7 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="formtheme" default=""><!--- The form theme to use --->
 		<cfargument name="html" type="string" required="true" hint="The html to wrap" />
 		
 		<cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
@@ -195,6 +196,7 @@
 							typename:'#arguments.typename#',
 							property:'#arguments.stMetadata.name#',
 							formtool:'#arguments.stMetadata.ftType#',
+							formtheme:'#arguments.formtheme#',
 							watchedproperty:'#thisprop#'
 						});
 					</cfloop>
@@ -215,6 +217,7 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 
 		<cfset var stMD = duplicate(arguments.stMetadata) />
 		<cfset var oType = createobject("component",application.stCOAPI[arguments.typename].packagepath) />
@@ -244,6 +247,7 @@
 			<cfinvokeargument name="stObject" value="#arguments.stObject#" />
 			<cfinvokeargument name="stMetadata" value="#stMD#" />
 			<cfinvokeargument name="fieldname" value="#arguments.fieldname#" />
+			<cfinvokeargument name="inputClass" value="#arguments.inputClass#" />
 		</cfinvoke>
 		
 		<cfreturn html />
