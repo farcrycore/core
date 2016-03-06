@@ -141,7 +141,7 @@ test for the existance of each and act accordingly
 <cfloop list="#oConfig.getConfigKeys()#" index="configkey">
 	<cfset application.config[configkey] = oConfig.getConfig(key=configkey,bIgnoreCache=true) />
 </cfloop>
-<cfset application.fc.lib.db.setLogChangeFlags(application.fapi.getConfig("general","logDBChanges")) />
+<cfset application.fc.lib.db.setLogChangeFlags(application.fapi.getConfig("general","logDBChanges","")) />
 
 <!--- set up the configs from the environment --->
 <cfif structKeyExists(THIS, "bUseEnv") AND THIS.bUseEnv eq "true">
