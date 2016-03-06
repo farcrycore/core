@@ -414,8 +414,64 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="protocol" type="string" require="false" />
-		
-		<cfreturn fileExists(getS3Path(config=arguments.config,file=arguments.file)) />
+
+		<cfset var bExists = false />
+		<cfset var signature = "" />
+		<cfset var timestamp = GetHTTPTimeString(Now()) />
+		<cfset var stResponse = structNew() />
+		<cfset var results = "" />
+		<cfset var path = "" />
+		<cfset var stDetail = structNew() />
+		<cfset var substituteValues = arrayNew(1) />
+
+		<cfif left(arguments.file,1) neq "/">
+			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
+		<cfelse>
+			<cfset path = arguments.config.pathPrefix & arguments.file />
+		</cfif>
+				
+		<!--- create signature --->
+		<cfset signature = replace("HEAD\n\n\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%2F,%2D,%2E,%5F","/,-,.,_")#","\n","#chr(10)#","all") />
+
+		<!--- REST call --->
+		<cfhttp method="HEAD" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="stResponse" timeout="10">
+			<!--- Amazon Global Headers --->
+			<cfhttpparam type="header" name="Date" value="#timestamp#" />
+			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+		</cfhttp>
+
+		<cfif listfirst(stResponse.statuscode," ") eq "200">
+			<!--- file exists --->
+			<cfset bExists = true />
+		<cfelseif listfirst(stResponse.statuscode," ") eq "404">
+			<!--- file does not exist --->
+			<cfset bExists = false />
+		<cfelse>
+			<!--- API error --->
+			<!--- check XML parsing --->
+			<cfif isXML(stResponse.fileContent)>
+				<cfset results = XMLParse(stResponse.fileContent) />
+				<!--- check for errors --->
+				<cfif structkeyexists(results,"error")>
+					<!--- check error xml --->
+					<cfset stDetail = structNew()>
+					<cfset stDetail["signature"] = signature>
+					<cfset stDetail["result"] = results>
+					<cfset substituteValues = arrayNew(1)>
+					<cfset substituteValues[1] = results.error.message.XMLText>
+					<cfset substituteValues[2] = signature>
+					<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+				</cfif>
+			<cfelseif NOT listFindNoCase("200,204",listfirst(stResponse.statuscode," "))>
+				<cfset substituteValues = arrayNew(1)>
+				<cfset substituteValues[1] = stResponse.statuscode>
+				<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=stResponse.filecontent,substituteValues=substituteValues) />
+			</cfif>
+
+		</cfif>
+
+		<cfreturn bExists />
 	</cffunction>
 	
 	<cffunction name="ioGetFileSize" returntype="numeric" output="false" hint="Returns the size of the file in bytes">
