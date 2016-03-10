@@ -123,6 +123,30 @@
 		
 		<cfreturn duplicate(arguments.stProperties) />
 	</cffunction>
+
+
+	
+	<cffunction name="delete" access="public" hint="Basic delete method that provides compatibility with types" returntype="struct" output="false">
+		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
+		
+		<!--- INCLUDED FOR COMPATABILITY WITH TYPES --->
+		<cfset var stReturn = StructNew()>		
+		
+		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.ObjectID)>	
+	   		<cfset structdelete(Session.TempObjectStore, arguments.ObjectID) />
+	   	</cfif>
+		
+		<cfset stReturn.bSuccess = true>
+		<cfset stReturn.message = "form deleted.">
+		<cfreturn stReturn>
+	</cffunction>
+
+
+
+
+
 	
 	<cffunction name="getData" access="public" output="false" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">
 		<cfargument name="objectid" type="uuid" required="true">
