@@ -901,7 +901,7 @@
 		$j(propertyWrap).mask('');
 		var $wrap = $j(propertyWrap);
 		
-		var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&view=displayAjaxRefreshAutoSaveProperty';
+		var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&formtheme=' + $wrap.attr('ft:formtheme') + '&view=displayAjaxRefreshAutoSaveProperty';
 		
 		if (typeof($wrap) == 'undefined'){
 			// ignore

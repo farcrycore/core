@@ -20,6 +20,7 @@
 <cfparam name="url.property" />
 <cfparam name="url.fieldname" />
 <cfparam name="url.formtheme" default="" />
+<cfparam name="url.format" default="edit" />
 
 
 <cfset stMetadata = duplicate(application.stCOAPI[url.typename].stProps[url.property].metadata) />
