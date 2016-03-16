@@ -277,9 +277,10 @@
 	
 		<cfdefaultcase>
 			
-			<cfparam name="arguments.stMetadata.ftShowTime" default="true">
+			<cfparam name="arguments.stMetadata.ftShowTime" default="true" />
 			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
 			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
+			<cfparam name="session.dmProfile.timeFormat" type="string" default="12h" />
 			
 			<cfif arguments.stMetadata.ftRenderType neq "input">
 				<!--- load jquery-ui before bootstrap-datepicker so that bootstrap-datepicker overwrites it --->
@@ -348,20 +349,33 @@
 						</cfif>
 
 						<cfif arguments.stMetadata.ftShowTime>
-							<select class="fc-time" name="#arguments.fieldname#Hour">
-							<cfloop from="1" to="12" index="i">
-								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'h') EQ i> selected="selected"</cfif>>#i#</option>
-							</cfloop>
-							</select>
-							<select class="fc-time" name="#arguments.fieldname#Minute">
-								<cfloop from="0" to="59" index="i">
-									<option value="#numberFormat(i, '00')#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i> selected="selected"</cfif>>#numberFormat(i, '00')#</option>
+							<cfif session.dmProfile.timeFormat IS "24h">
+								<select class="fc-time" name="#arguments.fieldname#Hour">
+								<cfloop list="00,01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23" index="i">
+									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'HH') EQ i> selected="selected"</cfif>>#i#</option>
 								</cfloop>
-							</select>
-							<select class="fc-time" name="#arguments.fieldname#Period">
-								<option value="AM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "AM"> selected="selected"</cfif>>AM</option>
-								<option value="PM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "PM"> selected="selected"</cfif>>PM</option>
-							</select>
+								</select>
+								<select class="fc-time" name="#arguments.fieldname#Minute">
+									<cfloop from="0" to="59" index="i">
+										<option value="#numberFormat(i, '00')#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i> selected="selected"</cfif>>#numberFormat(i, '00')#</option>
+									</cfloop>
+								</select>
+							<cfelse>
+								<select class="fc-time" name="#arguments.fieldname#Hour">
+								<cfloop from="1" to="12" index="i">
+									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'h') EQ i> selected="selected"</cfif>>#i#</option>
+								</cfloop>
+								</select>
+								<select class="fc-time" name="#arguments.fieldname#Minute">
+									<cfloop from="0" to="59" index="i">
+										<option value="#numberFormat(i, '00')#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i> selected="selected"</cfif>>#numberFormat(i, '00')#</option>
+									</cfloop>
+								</select>
+								<select class="fc-time" name="#arguments.fieldname#Period">
+									<option value="AM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "AM"> selected="selected"</cfif>>AM</option>
+									<option value="PM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "PM"> selected="selected"</cfif>>PM</option>
+								</select>
+							</cfif>
 						</cfif>
 						&nbsp;
 					</div>	
@@ -434,7 +448,8 @@
 		<cfset var newDate = "" />
 		<cfset var newTime = "" />
 		
-		<cfparam name="arguments.stFieldPost.stSupporting.renderType" default="calendar">
+		<cfparam name="arguments.stFieldPost.stSupporting.renderType" default="calendar" />
+		<cfparam name="session.dmProfile.timeFormat" type="string" default="12h" />
 		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
@@ -460,7 +475,8 @@
 					
 						<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 							AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
-							AND structKeyExists(arguments.stFieldPost.stSupporting,"period")>
+							AND structKeyExists(arguments.stFieldPost.stSupporting,"period")
+							AND session.dmProfile.timeFormat IS "12h">
 									
 							<cfif arguments.stFieldPost.stSupporting.period EQ "PM">
 								<cfset arguments.stFieldPost.stSupporting.hour = arguments.stFieldPost.stSupporting.hour + 12 />
@@ -469,8 +485,12 @@
 								<cfset arguments.stFieldPost.stSupporting.hour = 0 />
 							</cfif>
 							<cfset newDate = createDateTime(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day, arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0) />
-
-						<cfelse>					
+						<cfelseif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
+							AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
+							AND session.dmProfile.timeFormat IS "24h">
+							
+							<cfset newDate = createDateTime(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day, arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0) />
+						<cfelse>
 							<cfset newDate = createDate(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day) />
 						</cfif>
 						
@@ -493,14 +513,15 @@
 		</cfcase>
 		
 		<cfdefaultcase>
-			<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true">
+			<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true" />
 			
 			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1) AND isDate(arguments.stFieldPost.Value)>
 			
 				<cftry>
 					<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
-						AND structKeyExists(arguments.stFieldPost.stSupporting,"period")>
+						AND structKeyExists(arguments.stFieldPost.stSupporting,"period")
+						AND session.dmProfile.timeFormat IS "12h">
 								
 						<cfif arguments.stFieldPost.stSupporting.period EQ "PM">
 							<cfif arguments.stFieldPost.stSupporting.hour LT 12>
@@ -512,6 +533,12 @@
 						<cfif arguments.stFieldPost.stSupporting.hour GTE 24>
 							<cfset arguments.stFieldPost.stSupporting.hour = 0 />
 						</cfif>
+						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
+						
+					<cfelseif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
+						AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
+						AND session.dmProfile.timeFormat IS "24h">
+							
 						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
 					</cfif>
 							

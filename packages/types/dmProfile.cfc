@@ -87,15 +87,19 @@ TYPE PROPERTIES
 		ftType="list" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','locale')" 
 		ftListDataTypename="dmProfile" ftListData="getLocales"
 		hint="Profile object locale">
+		
+	<cfproperty name="timeFormat" type="string" required="yes" default="12h" 
+		ftSeq="14" ftFieldset="User settings" ftLabel="Time format" 
+		ftType="list" ftList="12h,24h" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','xxx', '12h')" />
 
 	<cfproperty name="overviewHome" type="string" required="no" default="" 
-		ftSeq="14" ftFieldset="User settings" ftLabel="Default site tree location" 
+		ftSeq="15" ftFieldset="User settings" ftLabel="Default site tree location" 
 		ftType="navigation" ftAlias="root" ftRenderType="dropdown" ftDefaultType="evaluate" ftDefault="application.fapi.getNavID('home')" 
 		ftSelectMultiple="false"
 		hint="Nav Alias name for this users home node in the overview tree">
 
 	<cfproperty name="notes" type="longchar" required="no" default="" 
-		ftSeq="15" ftLabel="" 
+		ftSeq="16" ftLabel="" 
 		ftType="longchar"
 		hint="Additional notes">
 
