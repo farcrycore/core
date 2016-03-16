@@ -1,4 +1,4 @@
-<!--- 	
+<!---
 	@@examples:
 	<p>Basic</p>
 	<code>
@@ -21,7 +21,7 @@
 		<cfproperty
 			name="someDate" type="date" hint="The start date of the event" required="no" default=""
 			ftseq="3" ftfieldset="General" ftwizardStep="General Details"
-			ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" 
+			ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt"
 			ftlabel="Some Date" />
 	</code>
 
@@ -40,7 +40,7 @@
 			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
 			ftType="datetime" ftToggleOffDateTime="true" ftlabel="Some Date" />
 	</code>
-	
+
 	<p>Datetime to be automatically set to the other field's date value.</p>
 	<code>
 		<cfproperty
@@ -50,7 +50,7 @@
 	</code>
  --->
 
-<cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types"> 
+<cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types">
 
 	<!--- edit handler options --->
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, input)" />
@@ -67,25 +67,24 @@
 	<cfproperty name="ftTimeMask" default="short" hint="Coldfusion time mask for display handler." />
 
 	<cfproperty name="ftDisplayPrettyDate" default="true" hint="Converts SQL dateTime value to human readable string" />
-				
 
-	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
-		
+	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.datetime" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
-	
+
 	<cffunction name="reParse" access="public" output="false" returntype="any" hint="Uses regular expression back references to parse values out of a string">
 		<cfargument name="pattern" type="string" required="true" hint="The regular expression to use" />
 		<cfargument name="haystack" type="string" required="true" hint="The string to search" />
 		<cfargument name="fields" type="string" required="true" hint="The names of the fields defined in the pattern, in order" />
 		<cfargument name="returnall" type="boolean" required="false" default="false" hint="Set to true to process every instance of the pattern" />
-		
+	
 		<cfset var aMatches = arraynew(1) />
 		<cfset var stResult = structnew() />
 		<cfset var aResult = arraynew(1) /><!--- Only used if returnall is true --->
 		<cfset var i = 0 />
-		
+	
 		<cfset aMatches = refindnocase(arguments.regex,arguments.haystack,1,true) />
 		<cfif arraylen(aMatches)>
 			<cfset stResult = structnew() />
@@ -94,7 +93,7 @@
 			</cfloop>
 			<cfset arrayappend(aResult,stResult) />
 		</cfif>
-		
+	
 		<cfif arguments.returnall>
 			<cfloop condition="arraylen(aMatches)">
 				<cfset aMatches = refindnocase(arguments.regex,arguments.haystack,aMatches.pos[1]+aMatches.len[1],true) />
@@ -107,21 +106,21 @@
 				<cfset arrayappend(aResult,stResult) />
 			</cfloop>
 		</cfif>
-		
+	
 		<cfif arguments.returnall>
 			<cfreturn aResult />
 		<cfelse>
 			<cfreturn stResult />
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
-
+	
 		<cfset var fieldStyle = "">
 		<cfset var ToggleOffDateTimeJS = "" />
 		<cfset var html = "" />
@@ -132,47 +131,44 @@
 		<cfset var i = "">
 		<cfset var step=1>
 		<cfset var jsDateFormatMask = "">
-		
+	
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch) and isDate(arguments.stObject[arguments.stMetadata.ftWatch]) and isDate(arguments.stMetadata.value)>
 			<cfif DateCompare(arguments.stObject[arguments.stMetadata.ftWatch], arguments.stMetadata.value) eq 1>
 				<cfset arguments.stMetadata.value = arguments.stObject[arguments.stMetadata.ftWatch]>
 			</cfif>
 		</cfif>
-
+	
 		<!--- If a required field, then the user will not have the option to toggle off the date time --->
 		<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
 			<cfset arguments.stMetadata.ftToggleOffDateTime = "0" />
 		</cfif>
-		
+	
 		<cfif isDate(arguments.stMetadata.value)>
 			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
 		</cfif>
-		
-			
+	
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
-			
 			<skin:onReady>
-			<cfoutput>	
+			<cfoutput>
 			<cfif application.fapi.showFarcryDate(arguments.stMetadata.value) >
 				$j("###arguments.fieldname#include").prop('checked', true);
 			<cfelse>
 				$j("###arguments.fieldname#-wrap").hide();
 				$j("###arguments.fieldname#").val('');
 			</cfif>
-			
 			$j("###arguments.fieldname#include").on("click", function() {
-				if ($j("###arguments.fieldname#include").prop('checked')) {	
-					$j("###arguments.fieldname#-wrap").show("slow");				
-				} else {					
+				if ($j("###arguments.fieldname#include").prop('checked')) {
+					$j("###arguments.fieldname#-wrap").show("slow");
+				} else {
 					$j("###arguments.fieldname#-wrap").hide("slow");
-				}				
+				}
 			});
 			</cfoutput>
 			</skin:onReady>
-		</cfif>		
-		
+		</cfif>
+
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
-		
+
 		<cfcase value="dropdown">
 			<cfif not isdefined("arguments.stMetadata.ftStartYear") or not len(arguments.stMetadata.ftStartYear)>
 				<cfset arguments.stMetadata.ftStartYear = year(now()) + arguments.stMetadata.ftStartYearShift />
@@ -180,24 +176,24 @@
 			<cfif not isdefined("arguments.stMetadata.ftEndYear") or not len(arguments.stMetadata.ftEndYear)>
 				<cfset arguments.stMetadata.ftEndYear = year(now()) + arguments.stMetadata.ftEndYearShift />
 			</cfif>
-			
+		
 			<cfif arguments.stMetadata.ftStartYear gt arguments.stMetadata.ftEndYear>
 				<cfset step=-1 />
 			</cfif>
-			
+		
 			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
 				<cfset locale = session.dmProfile.locale>
 			<cfelse>
 				<cfset locale = "en_AU">
-			</cfif>			
-			
+			</cfif>
+		
 			<cfset localeMonths = createObject("component", "/farcry/core/packages/farcry/gregorianCalendar").getMonths(locale) />
-	
+		
 			<cfsavecontent variable="html">
 				<cfoutput>
 				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" />
 				<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
-				
+			
 				<div class="multiField">
 					<cfif arguments.stMetadata.ftToggleOffDateTime>
 						<cfoutput>
@@ -208,80 +204,79 @@
 						</label>
 						</cfoutput>
 					</cfif>
-					
+				
 					<div id="#arguments.fieldname#-wrap">
-							Day 
+							Day
 						<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;width:auto;">
 							<option value="">--</option>
 							<cfloop from="1" to="31" index="i">
 								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
 								</cfloop>
 						</select>
-						
-							Month 
+					
+							Month
 						<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;width:auto;">
 								<option value="">--</option>
 								<cfloop from="1" to="12" index="i">
 									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
 								</cfloop>
-							</select>	
+							</select>
 						
-							Year 				
+							Year
 						<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;width:auto;">
 								<option value="">--</option>
 								<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
 									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
 								</cfloop>
 							</select>
-					</div>					
+					</div>
 				</div>
 				<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
-					
 					<cfif request.fc.inWebtop>
-					    <cfset theme = application.fapi.getConfig("formtheme", "webtop")>
+						<cfset theme = application.fapi.getConfig("formtheme", "webtop")>
 					<cfelse>
-					    <cfset theme = application.fapi.getConfig("formtheme", "site")>
-					</cfif>	
+						<cfset theme = application.fapi.getConfig("formtheme", "site")>
+					</cfif>
 					<cfset theme = application.fapi.getConfig("formtheme", "webtop")>
 					<cfset oFormTheme = application.fapi.getContentType(typename="formTheme#theme#")>
 					<cfset stValConfig = oFormTheme.getValidationConfig()>
 					<skin:onReady>
-					<cfoutput>	
+					<cfoutput>
 						$j("form").validate({
-						   	groups: {
-						        #arguments.fieldname#: "#arguments.fieldname#Day #arguments.fieldname#Month #arguments.fieldname#Year"
-						    },
-						    errorElement: "#stValConfig.errorElement#",
-	                        errorClass: "#stValConfig.errorElementClass#",
-	                        <cfif len(stValConfig.wrapper)>
-	                            wrapper: "#stValConfig.wrapper#",  // a wrapper around the error message                       
-	                        </cfif>                       
-	                        errorPlacement: function(error, element) {
-	                              error.prependTo( element.closest("#stValConfig.errorPlacementSelector#") );
-	                        },
-	                        highlight: function(element, errorClass) {
-	                           $j(element).closest("#stValConfig.fieldContainerSelector#").addClass('#stValConfig.fieldContainerClass#');
-	                        },
-	                        unhighlight: function(element, errorClass) {
-	                           $j(element).closest("#stValConfig.fieldContainerSelector#").removeClass('#stValConfig.fieldContainerClass#');
-	                        }
+							groups: {
+								#arguments.fieldname#: "#arguments.fieldname#Day #arguments.fieldname#Month #arguments.fieldname#Year"
+							},
+							errorElement: "#stValConfig.errorElement#",
+							errorClass: "#stValConfig.errorElementClass#",
+							<cfif len(stValConfig.wrapper)>
+								wrapper: "#stValConfig.wrapper#", // a wrapper around the error message
+							</cfif>
+							errorPlacement: function(error, element) {
+								error.prependTo( element.closest("#stValConfig.errorPlacementSelector#") );
+							},
+							highlight: function(element, errorClass) {
+								$j(element).closest("#stValConfig.fieldContainerSelector#").addClass('#stValConfig.fieldContainerClass#');
+							},
+							unhighlight: function(element, errorClass) {
+								$j(element).closest("#stValConfig.fieldContainerSelector#").removeClass('#stValConfig.fieldContainerClass#');
+							}
 						});
-						</cfoutput>	
+						</cfoutput>
 					</skin:onReady>
 				</cfif>
 				</cfoutput>
-			</cfsavecontent>		
-			
+			</cfsavecontent>
+
 			<cfreturn html>
 		</cfcase>
-	
+
 		<cfdefaultcase>
-			
+
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true" />
 			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
 			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
 			<cfparam name="session.dmProfile.timeFormat" type="string" default="12h" />
-			
+
 			<cfif arguments.stMetadata.ftRenderType neq "input">
 				<!--- load jquery-ui before bootstrap-datepicker so that bootstrap-datepicker overwrites it --->
 				<skin:loadJS id="fc-jquery" />
@@ -290,32 +285,29 @@
 				<skin:loadJS id="bootstrap-datepicker" />
 				<skin:loadCSS id="bootstrap-datepicker" />
 			</cfif>
-			
-			
+
 			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
 				<cfset locale = session.dmProfile.locale>
 			<cfelse>
 				<cfset locale = "en_AU">
-			</cfif>			
-			
-			
+			</cfif>
+
 			<cfsavecontent variable="html">
 
 				<cfoutput>
-				
-				
+
 				<div class="multiField">
 					<cfif arguments.stMetadata.ftToggleOffDateTime>
 						<cfoutput>
 						<label class="inlineLabel" for="#arguments.fieldname#include">
-						
+
 							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" class="checkboxInput">
 							<input type="hidden" name="#arguments.fieldname#include" value="0">
 							Include
-						</label>	
+						</label>
 						</cfoutput>
 					</cfif>
-					
+
 					<div id="#arguments.fieldname#-wrap">
 
 <!--- TODO: rip out. hard coded stuff is bad --->
@@ -341,8 +333,8 @@
 							<skin:onReady>
 								<cfoutput>
 									$j('###arguments.fieldname#').datepicker({
-									    format: '#jsDateFormatMask#',
-									    autoclose: true
+										format: '#jsDateFormatMask#',
+										autoclose: true
 									});
 								</cfoutput>
 							</skin:onReady>
@@ -378,19 +370,16 @@
 							</cfif>
 						</cfif>
 						&nbsp;
-					</div>	
-						
-								
+					</div>
+
 				</div>
 				</cfoutput>
-			</cfsavecontent>		
-			
+			</cfsavecontent>
+
 			<cfreturn html>
-		</cfdefaultcase>	
-		
+		</cfdefaultcase>
 
 		</cfswitch>
-		
 
 	</cffunction>
 
@@ -402,82 +391,73 @@
 
 		<cfset var html = "" />
 		<cfset var renderDate = "" />
-		
-		
-		
+
 		<cfif isDate(arguments.stMetadata.value)>
 			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
 		</cfif>
-		
-		
+
 		<cfparam name="arguments.stMetadata.ftDateMask" default="d-mmm-yy">
 		<cfparam name="arguments.stMetadata.ftTimeMask" default="short">
 		<cfparam name="arguments.stMetadata.ftShowTime" default="true">
 		<cfparam name="arguments.stMetadata.ftDisplayPrettyDate" default="true">
-		
-		
+
 		<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
-			
+
 			<cfsavecontent variable="renderDate">
 				<cfoutput>#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateMask)#</cfoutput>
 				<cfif arguments.stMetadata.ftShowTime>
 					<cfoutput> #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeMask)# </cfoutput>
 				</cfif>
 			</cfsavecontent>
-			
+
 			<cfsavecontent variable="html">
 				<cfif arguments.stMetadata.ftDisplayPrettyDate>
 					<cfoutput><span class="fc-prettydate" title="#renderDate#" data-datetime="#dateFormat(arguments.stMetadata.value,"yyyy-mm-dd")# #timeFormat(arguments.stMetadata.value,"HH:mm:ss")#">#application.fapi.prettyDate(arguments.stMetadata.value)#</span></cfoutput>
 				<cfelse>
 					<cfoutput>#renderDate#</cfoutput>
 				</cfif>
-				
-			</cfsavecontent>				
+
+			</cfsavecontent>
 		</cfif>
-		
-		
+
 		<cfreturn html>
 	</cffunction>
 
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
-		
 
 		<cfset var stResult = passed(value="") />
 		<cfset var newDate = "" />
 		<cfset var newTime = "" />
-		
+
 		<cfparam name="arguments.stFieldPost.stSupporting.renderType" default="calendar" />
 		<cfparam name="session.dmProfile.timeFormat" type="string" default="12h" />
-		
+
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		
-		
-		
+
 		<cfswitch expression="#arguments.stFieldPost.stSupporting.renderType#">
-		
+
 		<cfcase value="dropdown">
-			
+
 			<!--- --------------------------- --->
 			<!--- Perform any validation here --->
 			<!--- --------------------------- --->
-			
-		
+
 			<cfif structKeyExists(arguments.stFieldPost.stSupporting,"day")
 				AND structKeyExists(arguments.stFieldPost.stSupporting,"month")
 				AND structKeyExists(arguments.stFieldPost.stSupporting,"year")>
-				
+
 				<cfif len(arguments.stFieldPost.stSupporting.day) OR len(arguments.stFieldPost.stSupporting.month) OR len(arguments.stFieldPost.stSupporting.year)>
 					<cftry>
-					
+
 						<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 							AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
 							AND structKeyExists(arguments.stFieldPost.stSupporting,"period")
 							AND session.dmProfile.timeFormat IS "12h">
-									
+
 							<cfif arguments.stFieldPost.stSupporting.period EQ "PM">
 								<cfset arguments.stFieldPost.stSupporting.hour = arguments.stFieldPost.stSupporting.hour + 12 />
 							</cfif>
@@ -488,12 +468,12 @@
 						<cfelseif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 							AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
 							AND session.dmProfile.timeFormat IS "24h">
-							
+
 							<cfset newDate = createDateTime(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day, arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0) />
 						<cfelse>
 							<cfset newDate = createDate(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day) />
 						</cfif>
-						
+
 						<cfset stResult = passed(value="#newDate#") />
 						<cfcatch type="any">
 							<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
@@ -505,24 +485,24 @@
 			<cfelseif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required")>
 				<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field") />
 			</cfif>
-					
+
 			<cfif stResult.bSuccess>
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
-			</cfif>	
+			</cfif>
 		</cfcase>
-		
+
 		<cfdefaultcase>
 			<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true" />
-			
+
 			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1) AND isDate(arguments.stFieldPost.Value)>
-			
+
 				<cftry>
 					<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"period")
 						AND session.dmProfile.timeFormat IS "12h">
-								
+
 						<cfif arguments.stFieldPost.stSupporting.period EQ "PM">
 							<cfif arguments.stFieldPost.stSupporting.hour LT 12>
 								<cfset arguments.stFieldPost.stSupporting.hour = arguments.stFieldPost.stSupporting.hour + 12 />
@@ -534,83 +514,81 @@
 							<cfset arguments.stFieldPost.stSupporting.hour = 0 />
 						</cfif>
 						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
-						
+
 					<cfelseif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
 						AND session.dmProfile.timeFormat IS "24h">
-							
+
 						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
 					</cfif>
-							
+
 					<cfset newDate = CreateODBCDateTime("#DateFormat(arguments.stFieldPost.Value,arguments.stMetadata.ftDateFormatMask)# #newTime#") />
 					<cfset stResult = passed(value="#newDate#") />
 					<cfcatch type="any">
 						<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
 					</cfcatch>
 				</cftry>
-				
+
 			<cfif stResult.bSuccess>
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
 			</cfif>
-				
+
 			<cfelse>
 				<cfset newDate = "" />
 				<cfset stResult = passed(value="#newDate#") />
 			</cfif>
 		</cfdefaultcase>
 		</cfswitch>
-				
+
 		<!--- If we have a valid date, convert it to the system date. --->
 		<cfif isDate(stResult.value)>
 			<cfset stResult.value = application.fapi.convertToSystemTimezone(stResult.value) />
 		</cfif>
-		
+
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
 		<cfreturn stResult>
 
-		
 	</cffunction>
-
 
 	<cffunction name="getFilterUIOptions">
 		<cfreturn "before,after,between,more than,less than,is within" />
 	</cffunction>
-	
+
 	<cffunction name="editFilterUI">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		<cfargument name="stPackage" required="false" type="struct" hint="Contains the metadata for the all fields for the current typename.">
-				
+
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
 		<cfargument name="filterType" />
 		<cfargument name="stFilterProps" />
-		
+
 		<cfset var resultHTML = "" />
-		
+
 		<cfsavecontent variable="resultHTML">
-			
+
 			<cfswitch expression="#arguments.filterType#">
-				
+
 				<cfcase value="before">
 					<cfparam name="arguments.stFilterProps.before" default="" />
 					<cfoutput>
 					<input type="string" name="#arguments.fieldname#before" value="#dateFormat(arguments.stFilterProps.before)#" />
 					</cfoutput>
 				</cfcase>
-				
+
 				<cfcase value="after">
 					<cfparam name="arguments.stFilterProps.after" default="" />
 					<cfoutput>
 					<input type="string" name="#arguments.fieldname#after" value="#dateFormat(arguments.stFilterProps.after)#" />
 					</cfoutput>
 				</cfcase>
-				
+
 				<cfcase value="between">
 					<cfparam name="arguments.stFilterProps.from" default="" />
 					<cfparam name="arguments.stFilterProps.to" default="" />
@@ -619,9 +597,7 @@
 					<input type="string" name="#arguments.fieldname#to" value="#dateFormat(arguments.stFilterProps.to)#" />
 					</cfoutput>
 				</cfcase>
-				
 
-				
 				<cfcase value="more than,less than">
 					<cfparam name="arguments.stFilterProps.datepart" default="1:d" />
 					<cfoutput>
@@ -650,8 +626,8 @@
 					</select>
 					ago
 					</cfoutput>
-				</cfcase>	
-				
+				</cfcase>
+
 				<cfcase value="is within">
 					<cfparam name="arguments.stFilterProps.datepart" default="1:d" />
 					<cfoutput>
@@ -680,54 +656,52 @@
 					</select>
 					time
 					</cfoutput>
-				</cfcase>		
-					
-			
+				</cfcase>
+
 			</cfswitch>
 		</cfsavecontent>
-		
+
 		<cfreturn resultHTML />
 	</cffunction>
-	
+
 	<cffunction name="displayFilterUI">
 		<cfargument name="filterType" />
 		<cfargument name="stFilterProps" />
-		
+
 		<cfset var resultHTML = "" />
 		<cfset var suffix = "" />
-		
+
 		<cfsavecontent variable="resultHTML">
-			
+
 			<cfswitch expression="#arguments.filterType#">
-				
+
 				<cfcase value="before">
 					<cfparam name="arguments.stFilterProps.before" default="" />
 					<cfoutput>#arguments.stFilterProps.before#</cfoutput>
 				</cfcase>
-				
+
 				<cfcase value="after">
 					<cfparam name="arguments.stFilterProps.after" default="" />
 					<cfoutput>#arguments.stFilterProps.after#</cfoutput>
 				</cfcase>
-				
+
 				<cfcase value="between">
 					<cfparam name="arguments.stFilterProps.from" default="" />
 					<cfparam name="arguments.stFilterProps.to" default="" />
-					
-					<cfif isValid("date", arguments.stFilterProps.from) AND  isValid("date", arguments.stFilterProps.to)>
+
+					<cfif isValid("date", arguments.stFilterProps.from) AND isValid("date", arguments.stFilterProps.to)>
 						<cfoutput>
 							#dateFormat(arguments.stFilterProps.from)# and #dateFormat(arguments.stFilterProps.to)#
 						</cfoutput>
 					</cfif>
 				</cfcase>
-			
-				
+
 				<cfcase value="more than,less than">
 					<cfparam name="arguments.stFilterProps.datepart" default="" />
 					<cfif listFirst(arguments.stFilterProps.datepart, ":") GT 1>
 						<cfset suffix = "s" />
 					</cfif>
-					
+
 					<cfoutput>
 					#listFirst(arguments.stFilterProps.datepart, ":")#
 					<cfswitch expression="#listLast(arguments.stFilterProps.datepart, ":")#">
@@ -739,11 +713,10 @@
 					ago
 					</cfoutput>
 				</cfcase>
-			
-				
+
 				<cfcase value="is within">
 					<cfparam name="arguments.stFilterProps.datepart" default="" />
-					
+
 					<cfoutput>
 					#listFirst(arguments.stFilterProps.datepart, ":")#
 					<cfswitch expression="#listLast(arguments.stFilterProps.datepart, ":")#">
@@ -757,70 +730,68 @@
 				</cfcase>
 			</cfswitch>
 		</cfsavecontent>
-		
+
 		<cfreturn resultHTML />
 	</cffunction>
-	
+
 	<cffunction name="getFilterSQL">
 
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
 		<cfargument name="filterType" />
 		<cfargument name="stFilterProps" />
-		
+
 		<cfset var resultHTML = "" />
-		
+
 		<cfsavecontent variable="resultHTML">
-			
+
 			<cfswitch expression="#arguments.filterType#">
-				
+
 				<cfcase value="before">
 					<cfparam name="arguments.stFilterProps.before" default="" />
 					<cfif isValid("date", arguments.stFilterProps.before)>
 						<cfoutput>#arguments.filterProperty# < #createODBCDate(arguments.stFilterProps.before)#</cfoutput>
 					</cfif>
 				</cfcase>
-				
+
 				<cfcase value="after">
 					<cfparam name="arguments.stFilterProps.after" default="" />
 					<cfif isValid("date", arguments.stFilterProps.after)>
 						<cfoutput>#arguments.filterProperty# > #createODBCDate(arguments.stFilterProps.after)#</cfoutput>
 					</cfif>
 				</cfcase>
-				
+
 				<cfcase value="between">
 					<cfparam name="arguments.stFilterProps.from" default="" />
 					<cfparam name="arguments.stFilterProps.to" default="" />
-					
-					<cfif isValid("date", arguments.stFilterProps.from) AND  isValid("date", arguments.stFilterProps.to)>
+				
+					<cfif isValid("date", arguments.stFilterProps.from) AND isValid("date", arguments.stFilterProps.to)>
 						<cfoutput>
 							(
-								#arguments.filterProperty# 
+								#arguments.filterProperty#
 								BETWEEN
 								#createODBCDate(arguments.stFilterProps.from)#
-								AND 
+								AND
 								#createODBCDate(arguments.stFilterProps.to)#
 							)
 						</cfoutput>
 					</cfif>
 				</cfcase>
-			
-				
+
 				<cfcase value="less than">
 					<cfparam name="arguments.stFilterProps.datepart" default="" />
 					<cfif len(arguments.stFilterProps.datepart)>
 						<cfoutput>#arguments.filterProperty# > #createODBCDate(dateAdd(listLast(arguments.stFilterProps.datepart, ":"), listFirst(arguments.stFilterProps.datepart, ":") * -1, now()) )#</cfoutput>
 					</cfif>
 				</cfcase>
-			
-				
+
 				<cfcase value="more than">
 					<cfparam name="arguments.stFilterProps.datepart" default="" />
 					<cfif len(arguments.stFilterProps.datepart)>
 						<cfoutput>#arguments.filterProperty# < #createODBCDate(dateAdd(listLast(arguments.stFilterProps.datepart, ":"), listFirst(arguments.stFilterProps.datepart, ":") * -1, now()) )#</cfoutput>
 					</cfif>
 				</cfcase>
-				
+
 				<cfcase value="is within">
 					<cfparam name="arguments.stFilterProps.datepart" default="" />
 					<cfif len(arguments.stFilterProps.datepart)>
@@ -831,24 +802,24 @@
 						)
 						</cfoutput>
 					</cfif>
-					
+
 				</cfcase>
 			</cfswitch>
 		</cfsavecontent>
 
 		<cfreturn resultHTML />
 	</cffunction>
-	
+
 	<cffunction name="cf2jsDate" access="private" output="false" returnType="string" hint="converts a cf date object to a js date object">
 		<cfargument name="cfDate" required="true" default="#now()#" type="string" />
-		
+
 		<cfset var jsDate = "" />
-		
+
 		<cfif (isDate(arguments.cfDate))>
 			<cfset jsDate = "new Date(#year(arguments.cfDate)#, #(month(arguments.cfDate)-1)#, #day(arguments.cfDate)#, #hour(arguments.cfDate)#, #minute(arguments.cfDate)#, #second(arguments.cfDate)#)" />
 		</cfif>
-		
+
 		<cfreturn jsDate />
 	</cffunction>
-	
-</cfcomponent> 
+
+</cfcomponent>

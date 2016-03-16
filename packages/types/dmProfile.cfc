@@ -1,109 +1,109 @@
 <!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
-    This file is part of FarCry.
+	This file is part of FarCry.
 
-    FarCry is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	FarCry is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    FarCry is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	FarCry is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent 
-	displayName="User Profile" 
-	extends="types" 
+<cfcomponent
+	displayName="User Profile"
+	extends="types"
 	hint="Every user in the system has their own profile from staff to community members. You can create new users, edit existing ones or change the group they belong to."
 	icon="fa-user">
 
 <!------------------------------
 TYPE PROPERTIES
 -------------------------------->
-	<cfproperty name="userName" type="string" required="yes" default="" 
-		ftSeq="1" ftFieldset="Authentication" ftLabel="User ID" 
-		ftType="string" 
+	<cfproperty name="userName" type="string" required="yes" default=""
+		ftSeq="1" ftFieldset="Authentication" ftLabel="User ID"
+		ftType="string"
 		bLabel="true"
 		hint="The username/login the profile is associated with">
 
-	<cfproperty name="userDirectory" type="string" required="yes" default="" 
-		ftSeq="2" ftFieldset="Authentication" ftLabel="User directory" 
+	<cfproperty name="userDirectory" type="string" required="yes" default=""
+		ftSeq="2" ftFieldset="Authentication" ftLabel="User directory"
 		ftType="string"
 		hint="The user directory the profile is associated with.">
 
-	<cfproperty name="bActive" type="boolean" required="yes" default="0" 
-		ftSeq="3" ftFieldset="Authentication" ftLabel="Active" 
+	<cfproperty name="bActive" type="boolean" required="yes" default="0"
+		ftSeq="3" ftFieldset="Authentication" ftLabel="Active"
 		ftType="boolean"
 		hint="Is user active">
 
-	<cfproperty name="firstName" type="string" required="no" default="" 
+	<cfproperty name="firstName" type="string" required="no" default=""
 		ftSeq="4" ftFieldset="Contact details" ftLabel="First Name"
 		hint="Profile object first name">
 
-	<cfproperty name="lastName" type="string" required="no" default="" 
+	<cfproperty name="lastName" type="string" required="no" default=""
 		ftSeq="5" ftFieldset="Contact details" ftLabel="Last Name"
 		hint="Profile object last name">
 
-	<cfproperty name="emailAddress" type="string" required="no" default="" 
-		ftSeq="6" ftFieldset="Contact details" ftLabel="Email Address" 
+	<cfproperty name="emailAddress" type="string" required="no" default=""
+		ftSeq="6" ftFieldset="Contact details" ftLabel="Email Address"
 		ftType="email"
 		hint="Profile object email address">
 
-	<cfproperty name="bReceiveEmail" type="boolean" required="yes" default="1" 
-		ftSeq="7" ftFieldset="Contact details" ftLabel="Receive Emails" 
+	<cfproperty name="bReceiveEmail" type="boolean" required="yes" default="1"
+		ftSeq="7" ftFieldset="Contact details" ftLabel="Receive Emails"
 		ftType="boolean"
 		ftHint="Select this option if you want to receive email notifications from FarCry."
 		hint="Does user receive workflow and system email notices.">
 
-	<cfproperty name="phone" type="string" required="no" default="" 
+	<cfproperty name="phone" type="string" required="no" default=""
 		ftSeq="8" ftFieldset="Contact details" ftLabel="Phone"
 		hint="Profile object phone number">
 
-	<cfproperty name="fax" type="string" required="no" default="" 
+	<cfproperty name="fax" type="string" required="no" default=""
 		ftSeq="9" ftFieldset="Contact details" ftLabel="Fax"
 		hint="Profile object fax number">
 
-	<cfproperty name="avatar" type="string" default="" 
-		ftSeq="10" ftFieldset="Profile" ftLabel="Profile Image" 
-		ftType="image" ftDestination="/images/dmProfile/avatar" 
-		ftAutoGenerateType="center" ftImageWidth="80" ftImageHeight="80" 
-		ftAllowUpload="true" 
+	<cfproperty name="avatar" type="string" default=""
+		ftSeq="10" ftFieldset="Profile" ftLabel="Profile Image"
+		ftType="image" ftDestination="/images/dmProfile/avatar"
+		ftAutoGenerateType="center" ftImageWidth="80" ftImageHeight="80"
+		ftAllowUpload="true"
 		ftQuality="1.0" ftInterpolation="blackman">
 
-	<cfproperty name="position" type="string" required="no" default="" 
+	<cfproperty name="position" type="string" required="no" default=""
 		ftSeq="11" ftFieldset="Organisation" ftLabel="Position"
 		hint="Profile object position">
 
-	<cfproperty name="department" type="string" required="no" default="" 
+	<cfproperty name="department" type="string" required="no" default=""
 		ftSeq="12" ftFieldset="Organisation" ftLabel="Department"
 		hint="Profile object department">
 
-	<cfproperty name="locale" type="string" required="yes" default="en_AU" 
-		ftSeq="13" ftFieldset="User settings" ftLabel="Locale" 
-		ftType="list" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','locale')" 
+	<cfproperty name="locale" type="string" required="yes" default="en_AU"
+		ftSeq="13" ftFieldset="User settings" ftLabel="Locale"
+		ftType="list" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','locale')"
 		ftListDataTypename="dmProfile" ftListData="getLocales"
 		hint="Profile object locale">
 		
-	<cfproperty name="timeFormat" type="string" required="yes" default="12h" 
-		ftSeq="14" ftFieldset="User settings" ftLabel="Time format" 
+	<cfproperty name="timeFormat" type="string" required="yes" default="12h"
+		ftSeq="14" ftFieldset="User settings" ftLabel="Time format"
 		ftType="list" ftList="12h,24h" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','xxx', '12h')" />
 
-	<cfproperty name="overviewHome" type="string" required="no" default="" 
-		ftSeq="15" ftFieldset="User settings" ftLabel="Default site tree location" 
-		ftType="navigation" ftAlias="root" ftRenderType="dropdown" ftDefaultType="evaluate" ftDefault="application.fapi.getNavID('home')" 
+	<cfproperty name="overviewHome" type="string" required="no" default=""
+		ftSeq="15" ftFieldset="User settings" ftLabel="Default site tree location"
+		ftType="navigation" ftAlias="root" ftRenderType="dropdown" ftDefaultType="evaluate" ftDefault="application.fapi.getNavID('home')"
 		ftSelectMultiple="false"
 		hint="Nav Alias name for this users home node in the overview tree">
 
-	<cfproperty name="notes" type="longchar" required="no" default="" 
-		ftSeq="16" ftLabel="" 
+	<cfproperty name="notes" type="longchar" required="no" default=""
+		ftSeq="16" ftLabel=""
 		ftType="longchar"
 		hint="Additional notes">
 
-	<cfproperty name="wddxPersonalisation" type="longchar" required="no" default="" 
+	<cfproperty name="wddxPersonalisation" type="longchar" required="no" default=""
 		ftLabel=""
 		hint="WDDX packet containing a user's personalisation settings.">
 
@@ -126,14 +126,14 @@ OBJECT METHODS
 		<cfreturn result />
 	</cffunction>
 	
-    <cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="true">
-        <cfargument name="stProperties" type="struct" required="yes" />
+	<cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="true">
+		<cfargument name="stProperties" type="struct" required="yes" />
 		
 		<cfset var stProfile=duplicate(arguments.stProperties) />
 		<cfset var stResult=structNew() />
 		<cfset var stobj=structNew() />
 
-        <!--- if userlogin missing use user name (bwd compatability hack) --->
+		<!--- if userlogin missing use user name (bwd compatability hack) --->
 		<cfif not structkeyexists(stProfile,"username")>
 			<cfset stProfile.username = stProfile.userlogin />
 		</cfif>
@@ -145,7 +145,6 @@ OBJECT METHODS
 		<cfif not structkeyexists(stProfile,"userlogin")>
 			<cfset stProfile.userlogin = stProfile.username />
 		</cfif>
-		
 		
 		<cfparam name="stProfile.objectID" default="#application.fc.utils.createJavaUUID()#" />
 		<cfparam name="stProfile.label" default="#stProfile.userLogin#" />
@@ -175,7 +174,7 @@ OBJECT METHODS
 		<cfelse>
 			<cfreturn structnew() />
 		</cfif>
-    </cffunction>
+	</cffunction>
 
 	<cffunction name="getProfileID" access="public" returntype="string" hint="Returns the objectid of a profile for a given username. Returns empty string if username not found">
 		<cfargument name="userName" type="string" required="yes" hint="The username unique for the user directory." />
@@ -187,14 +186,14 @@ OBJECT METHODS
 		
 		<!--- Use the  --->
 		<cfquery name="qProfile" datasource="#application.dsn#">
-			SELECT objectID 
+			SELECT objectID
 			FROM #application.dbowner#dmProfile
 			WHERE UPPER(userName) = '#UCase(combinedUsername)#'
 		</cfquery>
 		
 		<cfif not qProfile.recordCount>
 			<cfquery name="qProfile" datasource="#application.dsn#">
-				SELECT objectID 
+				SELECT objectID
 				FROM #application.dbowner#dmProfile
 				WHERE UPPER(userName) = '#UCase(arguments.userName)#'
 			</cfquery>
@@ -252,9 +251,9 @@ OBJECT METHODS
 
 		<cfif len(lProfiles)>
 			<cfquery datasource="#application.dsn#" name="stReturn.queryObject">
-				select		*
-				from	 	#application.dbowner#dmProfile
-				where		objectid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lProfiles#" />)
+				select *
+				from #application.dbowner#dmProfile
+				where objectid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lProfiles#" />)
 			</cfquery>
 		<cfelse>
 			<cfset stReturn.bSuccess = false />
@@ -280,7 +279,6 @@ OBJECT METHODS
 			
 			<cfreturn stReturn />
 		<cfelse>
-		
 			<cfif listlast(stObj.username,"_") eq "CLIENTUD" and not structisempty(stUser)>
 				<cfset oUser.delete(objectid=stUser.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 			</cfif>
@@ -293,7 +291,7 @@ OBJECT METHODS
  	<cffunction name="autoSetLabel" access="public" output="false" returntype="string" hint="Automagically sets the label">
 		<cfargument name="stProperties" required="true" type="struct">
 
-		<!--- 
+		<!---
 			This will set the default Label value. It first looks form the bLabel associated metadata.
 			Otherwise it will look for title, then name and then anything with the substring Name.
 		 --->
@@ -308,5 +306,5 @@ OBJECT METHODS
 		</cfif>
 
 		<cfreturn trim(newLabel) />
-	</cffunction>		
+	</cffunction>
 </cfcomponent>
