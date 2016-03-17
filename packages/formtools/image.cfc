@@ -1625,7 +1625,6 @@
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
 		<cfset var currentfilename = arguments.stObject[arguments.stMetadata.name] />
-		<cfset var newfilename = "" />
 		<cfset var currentlocation = "" />
 		
 		<cfif not len(currentfilename)>
@@ -1634,11 +1633,11 @@
 		
 		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations="images",file=currentfilename) />
 		
-		<cfif isDefined("currentlocation") and not len(currentlocation)>
+		<cfif not len(currentlocation)>
 			<cfreturn "" />
 		</cfif>
 		
-		<cfreturn application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=currentfilename,dest_location="images",dest_file=newfilename,nameconflict="makeunique",uniqueamong="images") />
+		<cfreturn application.fc.lib.cdn.ioCopyFile(source_location="images", source_file=currentfilename, dest_location="images", dest_file=currentfilename, nameconflict="makeunique", uniqueamong="images") />
 	</cffunction>
 	
 	<cffunction name="failed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">

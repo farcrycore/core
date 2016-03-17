@@ -906,14 +906,14 @@
 		
 		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=currentfilename) />
 		
-		<cfif not len(currentpath)>
+		<cfif not len(currentlocation)>
 			<cfreturn "" />
 		</cfif>
 		
 		<cfif isSecured(arguments.stObject,arguments.stMetadata)>
-			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location="privatefiles",dest_file=newfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />
+			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location="privatefiles",dest_file=currentfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />
 		<cfelse>
-			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location="publicfiles",dest_file=newfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />
+			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location="publicfiles",dest_file=currentfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />
 		</cfif>
 	</cffunction>
 	
