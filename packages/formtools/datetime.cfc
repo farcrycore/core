@@ -404,9 +404,9 @@
 		<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
 
 			<cfsavecontent variable="renderDate">
-				<cfoutput>#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateMask)#</cfoutput>
+				<cfoutput>#lsDateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateMask)#</cfoutput>
 				<cfif arguments.stMetadata.ftShowTime>
-					<cfoutput> #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeMask)# </cfoutput>
+					<cfoutput> #lsTimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeMask)# </cfoutput>
 				</cfif>
 			</cfsavecontent>
 
