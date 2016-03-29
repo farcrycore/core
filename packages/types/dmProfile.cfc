@@ -90,7 +90,7 @@ TYPE PROPERTIES
 		
 	<cfproperty name="timeFormat" type="string" required="yes" default="12h"
 		ftSeq="14" ftFieldset="User settings" ftLabel="Time format"
-		ftType="list" ftList="12h,24h" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','xxx', '12h')" />
+		ftType="list" ftList="12h:12-hour time format,24h:24-hour time format" ftDefaultType="evaluate" ftDefault="application.fapi.getConfig('general','timeFormat', '12h')" />
 
 	<cfproperty name="overviewHome" type="string" required="no" default=""
 		ftSeq="15" ftFieldset="User settings" ftLabel="Default site tree location"
