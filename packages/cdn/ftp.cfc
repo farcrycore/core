@@ -116,8 +116,10 @@
 	<cffunction name="closeConnection" output="false" access="public" returntype="void" hint="Closes the specified connection">
 		<cfargument name="config" type="struct" required="true" />
 
-		<cfset structDelete(request.ftpconnections, arguments.config.name)>
-		
+		<cfif listFindNoCase("railo,lucee", server.coldfusion.productname)>
+			<cfset structDelete(request.ftpconnections, arguments.config.name)>			
+		</cfif>
+
 	</cffunction>
 
 	<cffunction name="getCFFTPAttributes" output="false" access="public" returntype="struct" hint="Returns a struct of the CFFTP attributes">
