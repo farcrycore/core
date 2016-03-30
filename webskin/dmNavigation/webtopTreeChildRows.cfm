@@ -187,7 +187,7 @@
 			<cfset thisClass = thisClass & " fc-treestate-hidden">
 		<cfelseif qTree.parentid eq rootObjectID AND NOT url.bIgnoreExpandedNodes>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
-		<cfelseif bUnexpandedAncestor>
+		<cfelseif bUnexpandedAncestor AND NOT url.bIgnoreExpandedNodes>
 			<cfset thisClass = thisClass & " fc-treestate-hidden">
 		<cfelseif qTree.parentid eq rootObjectID>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
