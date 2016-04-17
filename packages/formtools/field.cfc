@@ -49,7 +49,7 @@
 			<cfset arguments.stMetadata.ftMaxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
 		</cfif>
 
-		<cfif structKeyExists(arguments.stMetadata, "ftMaxLength")>
+		<cfif structKeyExists(arguments.stMetadata, "ftMaxLength") AND isNumeric(arguments.stMetadata.ftMaxLength)>
 			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength-#arguments.stMetadata.name#"," ") />
 			<skin:loadJS id="fc-jquery" />
 			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength-#arguments.stMetadata.name#", {rangelength:[0,#arguments.stMetadata.ftMaxLength#]});</cfoutput></skin:onReady>
@@ -106,7 +106,7 @@
 		<!--- --------------------------- --->	
 		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
-		<cfelseif structKeyExists(arguments.stMetadata, "ftMaxLength") and arguments.stMetadata.ftMaxLength and len(arguments.stFieldPost.value) gt arguments.stMetadata.ftMaxLength>
+		<cfelseif structKeyExists(arguments.stMetadata, "ftMaxLength") and isNumeric(arguments.stMetadata.ftMaxLength) and len(arguments.stFieldPost.value) gt arguments.stMetadata.ftMaxLength>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="The maximum length for this field is #arguments.stMetadata.ftMaxLength# characters.") />
 		</cfif>
 	
