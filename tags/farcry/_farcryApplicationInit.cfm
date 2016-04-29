@@ -149,7 +149,7 @@ test for the existance of each and act accordingly
 	<cfset ENV = system.getEnv()>
 	<cfset ENV_ARRAY = ENV.keySet().toArray()>
 	<cfloop from="1" to="#arrayLen(ENV_ARRAY)#" index="i">
-		<cfif findNoCase("FARCRY_CONFIG_", ENV_ARRAY[i]) AND listLen(ENV_ARRAY[i], "_") gte 4>
+		<cfif left(ENV_ARRAY[i], 14) eq "FARCRY_CONFIG_" AND listLen(ENV_ARRAY[i], "_") gte 4>
 			<cfset configKey = listGetAt(ENV_ARRAY[i], 3, "_")>
 			<cfset configProperty = replaceNoCase(ENV_ARRAY[i], "FARCRY_CONFIG_#configKey#_" , "")>
 			<cfset configValue = ENV.get(ENV_ARRAY[i])>
