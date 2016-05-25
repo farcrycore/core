@@ -944,11 +944,106 @@
 		</cfif>
 	</cffunction>
 
+	<cffunction name="putACL" access="public" output="false" returntype="string" hint="Uses the S3 rest API to update an object's ACL">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset var stHeaders = structnew() />
+		<cfset var stAMZHeaders = structnew() />
+		<cfset var i = 0 />
+		<cfset var sortedAMZ = "" />
+		<cfset var amz = "" />
+		<cfset var signature = "" />
+		<cfset var timestamp = GetHTTPTimeString(Now()) />
+		<cfset var cfhttp = "" />
+		<cfset var results = "" />
+		<cfset var path = "" />
+		<cfset var stDetail = structNew() />
+		<cfset var substituteValues = arrayNew(1) />
+		<cfset var header = "" />
+
+		<cfif left(arguments.file,1) neq "/">
+			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
+		<cfelse>
+			<cfset path = arguments.config.pathPrefix & arguments.file />
+		</cfif>
+		<cfset path = path & "?acl" />
+
+		<!--- add ACL --->
+		<cfloop from="1" to="#arraylen(arguments.config.acl)#" index="i">
+			<cfif arguments.config.acl[i].permission eq "read">
+				<cfset header = "x-amz-grant-read" />
+			<cfelseif arguments.config.acl[i].permission eq "full_control">
+				<cfset header = "x-amz-grant-full-control" />
+			</cfif>
+			<cfif NOT structKeyExists(stAMZHeaders, header)>
+				<cfset stAMZHeaders[header] = "" />
+			</cfif>
+			<cfif isvalid("email",arguments.config.acl[i])>
+				<cfset stAMZHeaders[header] = listappend(stAMZHeaders[header],'emailAddress="#arguments.config.acl[i]#"',', ') />
+			<cfelseif isstruct(arguments.config.acl[i]) and structKeyExists(arguments.config.acl[i], "id")>
+				<cfset stAMZHeaders[header] = listappend(stAMZHeaders[header],'id="#arguments.config.acl[i].id#"',', ') />
+			<cfelseif isStruct(arguments.config.acl[i]) and structKeyExists(arguments.config.acl[i], "group") and arguments.config.acl[i].group eq "all">
+				<cfset stAMZHeaders[header] = listAppend(stAMZHeaders[header],'uri=http://acs.amazonaws.com/groups/global/AllUsers') />
+			<cfelseif isSimpleValue(arguments.config.acl[i])>
+				<cfset stAMZHeaders[header] = listappend(stAMZHeaders[header],'id="#arguments.config.acl[i]#"',', ') />
+			</cfif>
+		</cfloop>
+
+		<!--- prepare amz headers in sorted order --->
+		<cfset sortedAMZ = listToArray(listSort(structKeyList(stAMZHeaders),'textnocase')) />
+		<cfloop from="1" to="#arraylen(sortedAMZ)#" index="i">
+			<cfset stHeaders[sortedAMZ[i]] = stAMZHeaders[sortedAMZ[i]] />
+			<cfset amz = amz & "\n" & sortedAMZ[i] & ":" & stAMZHeaders[sortedAMZ[i]] />
+		</cfloop>
+
+		<!--- create signature --->
+		<cfset signature = replace("PUT\n\napplication/x-www-form-urlencoded; charset=utf-8\n#timestamp##amz#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%3F,%2F,%2D,%2E,%5F","?,/,-,.,_")#","\n","#chr(10)#","all") />
+
+		<!--- REST call --->
+		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
+			<!--- Amazon Global Headers --->
+			<cfhttpparam type="header" name="Date" value="#timestamp#" />
+			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+
+			<!--- Headers --->
+			<cfloop collection="#stHeaders#" item="i">
+				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+			</cfloop>
+		</cfhttp>
+
+		<!--- check XML parsing --->
+		<cfif isXML(cfhttp.fileContent)>
+			<cfset results = XMLParse(cfhttp.fileContent) />
+
+			<!--- check for errors --->
+			<cfif structkeyexists(results,"error")>
+				<!--- check error xml --->
+				<cfset stDetail = structNew()>
+				<cfset stDetail["signature"] = replace(signature, chr(10), "\n", "ALL")>
+				<cfset stDetail["result"] = results>
+				<cfset substituteValues = arrayNew(1)>
+				<cfset substituteValues[1] = results.error.message.XMLText>
+				<cfset substituteValues[2] = signature>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+			</cfif>
+		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
+			<cfset substituteValues = arrayNew(1)>
+			<cfset substituteValues[1] = cfhttp.statuscode>
+			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
+		</cfif>
+	</cffunction>
+
 	<cffunction name="updateACL" access="public" output="false" returntype="void">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 
-		<cfset storeSetACL(getS3Path(config=arguments.config,file=file), arguments.config.acl) />
+		<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
+			<cfset putFile(config=arguments.config, file=arguments.file) />
+		<cfelse>
+			<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
+		</cfif>
 	</cffunction>
 
 	<cffunction name="sanitiseS3URL" access="public" output="false" returntype="string">
