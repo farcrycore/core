@@ -577,6 +577,8 @@
 			<cfset showError = true />
 		<cfelseif cgi.remote_addr eq "127.0.0.1">
 			<cfset showError = true />
+		<cfelseif application.fapi.getContentType(typename="configEnvironment").getEnvironment() eq "development">
+			<cfset showError = true />
 		</cfif>
 		
 		<!--- in the case of data views (json, xml, etc), return stream the data back in that type --->
