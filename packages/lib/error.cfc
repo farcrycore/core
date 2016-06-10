@@ -612,7 +612,9 @@
 			<cfcontent reset="true" />
 		</cfif>
 		<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
-		
+
+		<cfset request.fc.okToCache = 0>
+
 		<cfif isdefined("application.url.webtop") and reFindNoCase("^#application.url.webtop#", cgi.script_name)>
 			<cfinclude template="/farcry/core/webtop/errors/#statuscode#.cfm" />
 		<cfelseif isdefined("application.path.project") and fileexists("#application.path.project#/errors/#statuscode#.cfm")>
