@@ -791,7 +791,7 @@
 		
 		<!--- normalize bdebug --->
 		<cfif structkeyexists(arguments.stURL,"bDebug")>
-			<cfset arguments.stURL.debug = argument.stURL.bDebug />
+			<cfset arguments.stURL.debug = arguments.stURL.bDebug />
 		</cfif>
 		
 		<!--- session modes --->
