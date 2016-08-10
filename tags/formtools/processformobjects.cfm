@@ -72,6 +72,12 @@
 	<!--- Allow processing to session only. --->
 	<cfparam name="attributes.bSessionOnly" default="false" />
 	
+	<!--- Allow processing to session only. --->
+	<cfparam name="attributes.bAudit" default="true" />
+	
+	<!--- Allow processing to session only. --->
+	<cfparam name="attributes.auditNote" default="Process Form Objects" />
+	
 	
 	<cfset Caller[attributes.r_stProperties] = structNew()>
 	<cfset Caller.lSavedObjectIDs = "">
@@ -266,7 +272,7 @@
 
 			
 			<!--- Save the object with new properties --->
-			<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy, bSessionONly="#variables.bSessionOnly#")>		
+			<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy, bSessionONly="#variables.bSessionOnly#",bAudit=attributes.bAudit,auditNote=attributes.auditNote)>		
 			
 			<!--- We need to return the new structure if requested. --->
 			<cfif isDefined("attributes.r_stObject") AND len(attributes.r_stObject)>
