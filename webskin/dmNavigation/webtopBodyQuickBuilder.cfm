@@ -273,6 +273,7 @@ $out:$
 						   data: { typename: $j('##makehtml').val() },
 						   cache: false,
 						   timeout: 10000,
+						   dataType:'html',
 						   success: function(msg){
 								$j('##displayMethods').html(msg);			     	
 						   }
