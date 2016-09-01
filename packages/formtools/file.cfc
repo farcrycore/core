@@ -383,6 +383,9 @@
 					bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive),
 					stFieldPost=arguments.stFieldPost
 				) />
+				<!--- validation cleanup to avoid additional/duplicate file uploads from further field validation processing in this request --->
+				<cfset structDelete(FORM,"#stMetadata.FormFieldPrefix##stMetadata.name#NEW")>
+				<cfset form["#stMetadata.FormFieldPrefix##stMetadata.name#"] = stResult.value>
 			</cfcase>
 		
 			<cfdefaultcase><!--- value="flash" --->
