@@ -23,11 +23,12 @@
 			
 			
 	<cfif structKeyExists(form, "FARCRYFORMPREFIXES")>
+		<cfset lValidatedForms = "">
 		<cfloop list="#form.FARCRYFORMPREFIXES#" index="prefix">
-			
-			<cfif structKeyExists(form, "#prefix#objectid")>
+
+			<cfif structKeyExists(form, "#prefix#objectid") AND NOT listFindNoCase(lValidatedForms, prefix)>
 				<ft:validateFormObjects typename="#ListGetAt(form['#prefix#typename'],1)#" objectid="#ListGetAt(form['#prefix#objectid'],1)#" />
-			
+				<cfset lValidatedForms = listAppend(lValidatedForms, prefix)>
 			</cfif>
 		</cfloop>
 	</cfif>
