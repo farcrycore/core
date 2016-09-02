@@ -644,9 +644,12 @@
 		<cfelse>
 			<cfset filename = normalizePath(arguments.destination & "/" & cffile.ServerFile) />
 		</cfif>
-		
-		<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />
-		
+
+		<!--- move the file if the destination location is different to the current temp location, or if the destination filename is different to the current temp filename --->
+		<cfif getLocation(arguments.location).fullpath & "/" neq replace(tmpdir, "\", "/", "all") OR "/#cffile.serverFile#" neq filename>
+			<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />
+		</cfif>
+
 		<cfreturn filename />
 	</cffunction>
 	
