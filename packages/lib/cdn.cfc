@@ -607,6 +607,7 @@
 		<cfset var filename = "" />
 		<cfset var cffile = structnew() />
 		<cfset var tmpdir = GetTempDirectory() />
+		<cfset var stLocation = getLocation(arguments.location)>
 		
 		<cfif arguments.nameconflict eq "makeunique" and not len(arguments.uniqueamong)>
 			<cfset arguments.uniqueamong = arguments.location />
@@ -646,7 +647,7 @@
 		</cfif>
 
 		<!--- move the file if the destination location is different to the current temp location, or if the destination filename is different to the current temp filename --->
-		<cfif getLocation(arguments.location).fullpath & "/" neq replace(tmpdir, "\", "/", "all") OR "/#cffile.serverFile#" neq filename>
+		<cfif NOT structKeyExists(stLocation, "fullpath") OR stLocation.fullpath & "/" neq replace(tmpdir, "\", "/", "all") OR "/#cffile.serverFile#" neq filename>
 			<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />
 		</cfif>
 
