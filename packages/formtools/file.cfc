@@ -384,6 +384,9 @@
 					bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive),
 					stFieldPost=arguments.stFieldPost
 				) />
+				<!--- validation cleanup to avoid additional/duplicate file uploads from further field validation processing in this request --->
+				<cfset structDelete(FORM,"#stMetadata.FormFieldPrefix##stMetadata.name#NEW")>
+				<cfset form["#stMetadata.FormFieldPrefix##stMetadata.name#"] = stResult.value>
 			</cfcase>
 		
 			<cfdefaultcase><!--- value="flash" --->
@@ -610,7 +613,7 @@
 				</cfif>
 			<cfelse>
 				<!--- There is no file currently so we simply copy the file and make it unique  --->
-				<cfset stResult.value = application.fc.lib.cdn.ioCopyFile(
+				<cfset stResult.value = application.fc.lib.cdn.ioMoveFile(
 					source_localpath=arguments.localfile,
 					dest_location=fileLocation,
 					dest_file=arguments.destination & "/" & listlast(arguments.localfile,"/\"),
