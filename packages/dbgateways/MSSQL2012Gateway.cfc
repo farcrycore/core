@@ -348,8 +348,63 @@
 		
 		<cfreturn stResult />
 	</cffunction>
-	
-	
+
+	<cffunction name="getInsertSQL" access="public" output="false" returntype="string" hint="Returns the SQL to insert data into the table specified and used by the Farcry Content Export">
+		<cfargument name="table" type="string" required="true" />
+		<cfargument name="aTableColMD" type="array" required="true" />
+		<cfargument name="orderBy" type="string" required="true" />
+		<cfargument name="from" type="numeric" default="1" />
+		<cfargument name="to" type="numeric" default="0" />
+		
+		<cfset var resultSQL = "">
+		<cfset var j = 0>
+		<cfset var k = "">
+		<cfset var stTableMetadata = introspectTable(arguments.table)>
+
+		<cfsavecontent variable="resultSQL">
+		
+		<cfoutput>
+		SELECT (		
+			<cfset j = 1>
+			<cfloop list="#structKeyList(stTableMetadata.fields)#" index="k">
+				<cfif j NEQ 1>
+					 +
+				</cfif>
+
+				<cfif FindNoCase("char", stTableMetadata.fields[k].type)
+			    OR FindNoCase("unique", stTableMetadata.fields[k].type)
+			    OR FindNoCase("xml", stTableMetadata.fields[k].type)
+			    OR FindNoCase("object", stTableMetadata.fields[k].type)
+			    OR FindNoCase("string", stTableMetadata.fields[k].type)
+			     >
+					'|---|' + COALESCE(#stTableMetadata.fields[k].Name#,'') + '|---|'
+				<cfelseif FindNoCase("text", stTableMetadata.fields[k].type) OR FindNoCase("longchar", stTableMetadata.fields[k].type)>
+					'|---|' + COALESCE( CONVERT( varchar(MAX) , #stTableMetadata.fields[k].Name#),'') + '|---|'
+				<cfelseif FindNoCase("date", stTableMetadata.fields[k].type) OR FindNoCase("time", stTableMetadata.fields[k].type)>
+					'|---|' + COALESCE( CONVERT ( varchar(25) , #stTableMetadata.fields[k].Name#, 120) ,'NULL') + '|---|'
+				<cfelse>
+					COALESCE( CONVERT( varchar, #stTableMetadata.fields[k].Name#),'=???=')
+				</cfif>
+				
+				<cfif j NEQ structCount(stTableMetadata.fields)>
+					 + ','
+				</cfif>
+
+				<cfset j++>
+			</cfloop>
+			) as insertValues
+		FROM (
+		    SELECT *, ROW_NUMBER() OVER (ORDER BY #arguments.orderBy# desc) AS RowNum
+		    FROM #arguments.table#
+		) AS MyDerivedTable
+		WHERE MyDerivedTable.RowNum BETWEEN #arguments.from# AND #arguments.to#
+		</cfoutput>
+		
+		</cfsavecontent>
+				
+		<cfreturn resultSQL>	
+	</cffunction>
+
 	<!--- DATABASE INTROSPECTION --->
 	<cffunction name="introspectTable" returntype="struct" access="private" output="false" hint="Constructs a metadata struct for the table">
 		<cfargument name="tablename" type="string" required="True" hint="The table to introspect" />
