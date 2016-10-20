@@ -316,7 +316,9 @@
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
-										<cfoutput>AND lower(#i#) = '#j#'</cfoutput>
+										<cfif j>
+											<cfoutput>AND lower(#i#) = '#j#'</cfoutput>
+                                        					</cfif>
 									</cfloop>
 								</cfif>
 							</cfcase>
