@@ -672,11 +672,13 @@
 		
 		<cfloop list="#attributes.lFilterFields#" index="criteria">
 			<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
-				<cfset thisCriteria = lcase(criteria)>
-				<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
-					<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
+				<cfif (evaluate('application.types.#attributes.typename#.stProps.#criteria#.metadata.type') NEQ 'boolean') OR (evaluate('application.types.#attributes.typename#.stProps.#criteria#.metadata.type') EQ 'boolean' AND session.objectadminFilterObjects[attributes.typename].stObject[criteria])>
+					<cfset thisCriteria = lcase(criteria)>
+					<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
+						<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
+					</cfif>
+					<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
 				</cfif>
-				<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
 			</cfif>
 		</cfloop>
 	
