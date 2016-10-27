@@ -9,6 +9,7 @@
 	<cfproperty name="ftAddBodyView" default="editReverseUUIDObjectAdd" type="string" />
 	<cfproperty name="ftConfirmDeleteText" default="Are you sure?" type="string" />
 	<cfproperty name="ftManageInOverview" default="false" type="boolean" hint="Should the relationship be managed in the overview tab?" />
+	<cfproperty name="ftLibraryDataSQLWhere" required="false" default="" hint="Filter other table by these extra clauses"/>
 	<cfproperty name="ftLibraryDataSQLOrderBy" required="false" default="datetimecreated" hint="Nominate a specific property to order library results by."/>
 
 	
@@ -40,6 +41,9 @@
 			SELECT *
 			FROM #arguments.stMetadata.ftJoin#
 			WHERE #arguments.stMetadata.ftJoinProperty# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stObject.objectid#" />
+			<cfif len(arguments.stMetadata.ftLibraryDataSQLWhere)>
+				AND #preserveSingleQuotes(arguments.stMetadata.ftLibraryDataSQLWhere)#
+			</cfif>
 			ORDER BY 
 			<cfif structKeyExists(application.stCoapi['#arguments.stMetadata.ftJoin#'].stProps, "seq")>
 				seq,
