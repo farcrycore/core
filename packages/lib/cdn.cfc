@@ -149,6 +149,9 @@
 				<cfcase value="mp3" delimiters=",">
 					<cfset stLocals["content_type"] = "audio/mpeg" />
 				</cfcase>
+                                <cfdefaultcase>
+                                        <cfset stLocals["content_type"] = "text/plain" />
+                                </cfdefaultcase>
 			</cfswitch>
 		</cfif>
 		
