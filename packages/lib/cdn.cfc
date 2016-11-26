@@ -132,6 +132,12 @@
 
 		<cfset stLocals.content_type = getPageContext().getServletContext().getMimeType(lcase(arguments.file)) />
 		
+		<!--- Fails if result above is null which is the same as not existing in CFML --->
+		<!--- the value from key [CONTENT_TYPE] is NULL, which is the same as not existing in CFML --->
+		<cfif isNull(stLocals.content_type)>
+			<cfset stLocals["content_type"] = "text/plain" />
+		</cfif>
+		
 		<cfif not isdefined("stLocals.content_type")>
 			<cfswitch expression="#listlast(lcase(arguments.file),".")#">
 				<cfcase value="jpg,jpeg" delimiters=",">
