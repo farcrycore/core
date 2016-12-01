@@ -745,13 +745,18 @@
 		
 		<!--- Normalise bodyView fuAlias in query string --->
 		<cfif structkeyexists(stResult,"bodyView")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
+			<cfif structKeyExists(stResult, "type") AND structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
 				<cfset stResult.bodyView = "#this.webskinFU[stResult.type][stResult.bodyView]#" />
-			<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.bodyView)>
+			<cfelseif structKeyExists(stResult, "type") AND structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.bodyView)>
 				<!--- parameter is already the webskin name --->
 			<cfelse>
 				<!--- If the view is not a valid webskin for this type ... return immediately --->
-				<cfset stResult["404"] = "Webskin [#stResult.bodyView#] does not exist for type [#stResult.type#]" />
+				<cfif structKeyExists(stResult, "bodyView") AND structKeyExists(stResult, "type")>
+					<cfset stResult["404"] = "Webskin [#stResult.bodyView#] does not exist for type [#stResult.type#]" />
+				<cfelse>
+					<cfset stResult["404"] = "Webskin [#stResult.bodyView#] does not exist, type is missing" />
+				</cfif>
+
 				<cfreturn stResult />
 			</cfif>
 			
