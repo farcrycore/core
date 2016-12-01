@@ -155,6 +155,9 @@
 				<cfcase value="mp3" delimiters=",">
 					<cfset stLocals["content_type"] = "audio/mpeg" />
 				</cfcase>
+                                <cfdefaultcase>
+                                        <cfset stLocals["content_type"] = "text/plain" />
+                                </cfdefaultcase>
 			</cfswitch>
 		</cfif>
 		
@@ -540,7 +543,7 @@
 		@@examples:
 		<code>
 			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
-			    location="securefiles",
+			    location="privatefiles",
 			    destination=arguments.stMetadata.ftDestination,
 			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
 			    nameconflict="makeunique",
@@ -592,7 +595,7 @@
 		@@examples:
 		<code>
 			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
-			    location="securefiles",
+			    location="privatefiles",
 			    destination=arguments.stMetadata.ftDestination,
 			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
 			    nameconflict="makeunique",

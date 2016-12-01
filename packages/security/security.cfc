@@ -813,7 +813,8 @@
 		<cfset request.lValidStatus = request.mode.lValidStatus />
 		
 		<!--- ajax mode --->
-		<cfif (structKeyExists(arguments.stURL,"ajaxmode") and listlast(arguments.stURL.ajaxmode)) or (isdefined("form.ajaxmode") and listlast(form.ajaxmode))>
+		<cfif (structKeyExists(arguments.stURL,"ajaxmode") AND isBoolean(listlast(arguments.stURL.ajaxmode)) AND listlast(arguments.stURL.ajaxmode))
+            OR (isdefined("form.ajaxmode") AND isBoolean(listlast(form.ajaxmode)) AND listlast(form.ajaxmode))>
 			<cfset request.mode.ajax = 1 />
 		</cfif>
 		
