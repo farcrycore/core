@@ -51,7 +51,7 @@
 		lfields="firstname,lastname,avatar,emailaddress,breceiveemail" 
 		legend="Personal Details" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
-		lfields="locale" 
+		lfields="locale,timeFormat" 
 		legend="Webtop Settings" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
 		lfields="userName,lastLogin" format="display" 

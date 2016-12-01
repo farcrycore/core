@@ -52,7 +52,7 @@ VIEW
 		lhiddenFields="username,userdirectory"
 		legend="Profile Details" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
-		lfields="locale,overviewHome"
+		lfields="locale,timeFormat,overviewHome"
 		legend="Webtop Settings" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
 		lFields="username,userdirectory,lastLogin" format="display"
