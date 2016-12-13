@@ -1032,7 +1032,7 @@ default handlers
 			<ft:processForm action="Save" Exit="true">
 				<cfif len(form.copyrelated)>
 					<cfquery dbtype="query" name="qAllRelated">
-						select objectid,typename from qAllRelated where typename in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#form.copyrelated#" />)
+						select objectid, typename, jointypename, joinproperty from qAllRelated where typename in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#form.copyrelated#" />)
 					</cfquery>
 					<cfset duplicateID = duplicateObject(objectid=stObj.objectid,qRelated=qAllRelated) />
 					
