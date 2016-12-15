@@ -339,11 +339,17 @@
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="datatype" type="string" required="false" default="text" options="text,binary,image" />
 		
-		<cfset var config = this.locations[arguments.location] />
-		
-		<cfset arguments.file = normalizePath(arguments.file) />
-		
-		<cfreturn this.cdns[config.cdn].ioReadFile(config=config,argumentCollection=arguments) />
+		<cftry>
+			<cfset var config = this.locations[arguments.location] />
+			
+			<cfset arguments.file = normalizePath(arguments.file) />
+			
+			<cfreturn this.cdns[config.cdn].ioReadFile(config=config,argumentCollection=arguments) />
+
+			<cfcatch>
+				<cfrethrow>
+			</cfcatch>
+		</cftry>
 	</cffunction>
 	
 	<!--- @@description: 

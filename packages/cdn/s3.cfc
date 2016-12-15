@@ -594,6 +594,7 @@
 
 			<cfcatch>
 				<cflog file="#application.applicationname#_s3" text="Error reading [#arguments.config.name#] #sanitiseS3URL(arguments.file)#: #cfcatch.message#" />
+				<cfrethrow>
 			</cfcatch>
 		</cftry>
 			
