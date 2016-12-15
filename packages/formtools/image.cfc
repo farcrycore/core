@@ -145,6 +145,7 @@
 	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
+	    <cfset var readImageError = "" />
 	    <cfset var imageMaxWidth = 400 />
 		
 		
@@ -199,8 +200,12 @@
 	    
 		<cfif bFileExists>
 			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
-			<cfif stImage.width lt imageMaxWidth>
-				<cfset imageMaxWidth = stImage.width>
+			<cfif isdefined("stImage.stError.message") and len(stImage.stError.message)>
+				<cfset readImageError = "Error ""#stImage.stError.message#"" because the image file is invalid or corrupted. You can upload a new image to replace it." />
+			<cfelse>
+				<cfif stImage.width lt imageMaxWidth>
+					<cfset imageMaxWidth = stImage.width>
+				</cfif>
 			</cfif>
 		</cfif>
 
@@ -261,6 +266,7 @@
 						</div>
 						<cfif bFileExists>
 							<div id="#arguments.fieldname#_complete" class="complete-view">
+								<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="alert alert-error alert-error-readimg" style="margin-top:0.7em;margin-bottom:0.7em;">#readImageError#</div></cfif>
 								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
 								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
@@ -312,6 +318,7 @@
 						</div>
 						<cfif bFileExists>
 							<div id="#arguments.fieldname#_complete" class="complete-view">
+		    					<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="alert alert-error alert-error-readimg" style="margin-top:0.7em;margin-bottom:0.7em;">#readImageError#</div></cfif>
 								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
 								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
