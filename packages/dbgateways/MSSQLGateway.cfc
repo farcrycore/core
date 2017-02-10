@@ -52,7 +52,7 @@
 					<cfset stResult.cfsqltype = "cf_sql_integer" />
 				<cfelse>
 					<cfset stResult.cfsqltype = "cf_sql_decimal" />
-                    <cfset stResult.status = listlast(arguments.schema.precision) />
+					<cfset stResult.scale = listlast(arguments.schema.precision) />
 				</cfif>
 				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
 					<cfset stResult.value = 0 />
