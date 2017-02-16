@@ -27,6 +27,7 @@
 					<cfset stResult.cfsqltype = "cf_sql_integer" />
 				<cfelse>
 					<cfset stResult.cfsqltype = "cf_sql_decimal" />
+					<cfset stResult.scale = listlast(arguments.schema.precision) />
 				</cfif>
 				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
 					<cfset stResult.value = 0 />
@@ -216,7 +217,7 @@
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" /></cfif>
+				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
@@ -277,7 +278,7 @@
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" /></cfif>
+				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
