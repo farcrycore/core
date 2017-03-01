@@ -106,80 +106,69 @@
 
 		<cfset var stLocal = StructNew()>
 		
-		<cfset stLocal.stReturn = StructNew()>
-		<cfset stLocal.stReturn.bSuccess = 1>
-		<cfset stLocal.stReturn.message = "">
-
 		<cfset stLocal.stProperties = getData(objectID="#arguments.objectID#") />
 		
-		<!--- See if there is already an archive version of this friendly URL for the same refObjectID --->
-		<cfquery datasource="#application.dsn#" name="stLocal.qDuplicate">
-		SELECT objectid
-		FROM farFU
-		WHERE refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stLocal.stProperties.refObjectID#">
-		AND friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stLocal.stProperties.friendlyURL#">
-		AND fuStatus = 0
-		</cfquery>
-		
-		<!--- If no duplicate, archive it --->
-		<cfif NOT stLocal.qDuplicate.recordCount>
-			<!--- SET THE STATUS OF THE FU OBJECT TO 0 (archived) --->
-			<cfset stLocal.stProperties.objectid = application.fc.utils.createJavaUUID() />
-			<cfset stLocal.stProperties.fuStatus = 0 />
-			<cfset stLocal.stProperties.bDefault = 0 />
-			<cfset stLocal.stProperties.redirectionType = "301" />
-			<cfset stLocal.stProperties.redirectTo =  "default" />
-			<cfset stLocal.stResult = setData(stProperties="#stLocal.stProperties#") />
-		</cfif>
-		<cfreturn stLocal.stReturn>
+		<!--- SET THE STATUS OF THE FU OBJECT TO 0 (archived) --->
+		<cfset stLocal.stProperties.objectid = application.fc.utils.createJavaUUID() />
+		<cfset stLocal.stProperties.fuStatus = 0 />
+		<cfset stLocal.stProperties.bDefault = 0 />
+		<cfset stLocal.stProperties.redirectionType = "301" />
+		<cfset stLocal.stProperties.redirectTo =  "default" />
+		<cfset stLocal.stResult = setData(stProperties=stLocal.stProperties) />
+
+		<cfreturn {
+			bSuccess = 1,
+			message = ""
+		} />
 	</cffunction>
 	
 			
 	<cffunction name="setDefaultFU" returnType="struct" access="public" output="false" hint="Returns successful status of attempt to make a FU the default for that objectid">
 		<cfargument name="objectid" required="yes" hint="Objectid of Friendly URL to make the default" />
-			
-		<cfset var stLocal = structNew() />
 
-		<cfset stLocal.stReturn = StructNew()>
-		<cfset stLocal.stReturn.bSuccess = 1>
-		<cfset stLocal.stReturn.message = "">
+		<cfset var stFU = getData(objectid=arguments.objectID) />
+		<cfset var qFUs = "" />
+		<cfset var stProps = {} />
+		<cfset var stResult = {} />
 		
-		<cfset stLocal.stFU = getData(objectid="#arguments.objectID#") />
-		
-		<cfif stLocal.stFU.fuStatus GT 0>
-			<cfset stLocal.qFUs = getFUList(objectID="#stLocal.stFU.refobjectid#", status="current") />
-			
-			<!--- REMOVE THE CURRENT DEFAULT FU --->
-			<cfloop query="stLocal.qFUs">
-				<cfif stLocal.qFUs.bDefault>
-					<cfset stLocal.stProps = structNew() />
-					<cfset stLocal.stProps.objectID = stLocal.qFUs.objectid />
-					<cfset stLocal.stProps.bDefault = 0 />
-					<cfset stLocal.stProps.redirectionType = "301" />
-					<cfset stLocal.stProps.redirectTo = "default" />					
-					<cfset stLocal.stResult = setData(stProperties="#stLocal.stProps#") />
-				</cfif>
-			</cfloop>
-			<cfset setMapping(objectid=stLocal.stProps.objectID) />
-
-			<!--- SET THE NEW DEFAULT FU --->
-			<cfset stLocal.stProps = structNew() />
-			<cfset stLocal.stProps.objectID = stLocal.stFU.objectid />
-			<cfset stLocal.stProps.bDefault = 1 />
-			<!--- JUST IN CASE THE USER ASKED TO REDIRECT TO THE DEFAULT, WE DONT WANT THEM REDIRECTING TO THE DEFAULT (WHICH IS NOW THIS OBJECT) --->
-			<cfif stLocal.stFU.redirectTo EQ "default">
-				<cfset stLocal.stProps.redirectionType = "none" />
-				<cfset stLocal.stProps.redirectTo = "objectid" />
-			</cfif>
-			
-			<cfset stLocal.stResult = setData(stProperties="#stLocal.stProps#") />
-			
+		<cfif stFU.fuStatus EQ 0>
+			<cfreturn {
+				"bSuccess" = 0,
+				"message" = "Specified FU is archived"
+			} />
 		</cfif>
-		
-		<cfset setMapping(objectid=stLocal.stFU.objectid) />
 
-		<cfreturn stLocal.stReturn />
+		<cfset qFUs = getFUList(objectID=stFU.refobjectid, status="current") />
 		
+		<cfloop query="qFUs">
+			<cfset stProps = getData(qFUs.objectid) />
+
+			<cfif stProps.objectid eq arguments.objectid>
+				<!--- This is the new default --->
+				<cfset stProps.bDefault = 1 />
+
+				<!--- JUST IN CASE THE USER ASKED TO REDIRECT TO THE DEFAULT, WE DONT WANT THEM REDIRECTING TO THE DEFAULT (WHICH IS NOW THIS OBJECT) --->
+				<cfif stProps.redirectTo EQ "default">
+					<cfset stProps.redirectionType = "none" />
+					<cfset stProps.redirectTo = "objectid" />
+				</cfif>
+			<cfelseif stProps.bDefault>
+				<!--- This is set as default and shouldn't be --->
+				<cfset stProps.bDefault = 0 />
+				<cfset stProps.redirectionType = "301" />
+				<cfset stProps.redirectTo = "default" />
+				<cfset stProps.refObjectID = qFUs.refobjectid />
+			</cfif>
+
+			<cfset stResult = setData(stProperties=stProps) />
+		</cfloop>
+
+		<cfset setMapping(objectid=stProps.objectID) />
+		
+		<cfreturn {
+			"bSuccess" = 1,
+			"message" = ""
+		} />
 	</cffunction>
 
 	<cffunction name="getDefaultFUObject" returnType="struct" access="public" output="false" hint="Returns the default FU objectid for an object. Returns empty string if no default is set.">
@@ -232,18 +221,18 @@
 		<cfset var stResult = structNew() />
 		<cfset var stDefaultFU = structNew() />
 		
-		<cfset arguments.friendlyURL = cleanFU(friendlyURL="#arguments.friendlyURL#", bCheckUnique="true") />
+		<cfset arguments.friendlyURL = cleanFU(friendlyURL=arguments.friendlyURL, bCheckUnique="true") />
 
 		<!--- If there is currently no default, set this as the default --->
-		<cfset stDefaultFU = getDefaultFUObject(refObjectID="#arguments.refObjectID#") />
+		<cfset stDefaultFU = getDefaultFUObject(refObjectID=arguments.refObjectID) />
 		<cfif structIsEmpty(stDefaultFU) or NOT stDefaultFU.bDefault>
 			<cfset arguments.bDefault = 1 />
 		</cfif>
 				
-		<cfset stResult = setData(stProperties="#arguments#") />
+		<cfset stResult = setData(stProperties=arguments) />
 		
 		<cfif arguments.bDefault EQ 1>
-			<cfset stResult = setDefaultFU(objectid="#arguments.objectid#") />
+			<cfset stResult = setDefaultFU(objectid=arguments.objectid) />
 		</cfif>
 		
 		<cfreturn stResult />
@@ -422,7 +411,7 @@
 				<cfset stLocal.stCurrentSystemObject.bDefault = 1 />
 			</cfif>
 			<cftry>
-			<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
+			<cfset stLocal.stResult = setData(stProperties=stLocal.stCurrentSystemObject) />
 			<cfcatch type="any">
 				<cfoutput><p>#getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#")#</p></cfoutput>
 				<cfdump var="#stLocal#" expand="false" label="stLocal" />
@@ -1523,15 +1512,41 @@
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
-		
-		<!--- We need to make sure we update our stDBLookup anytime we save an FU --->
-		<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND listlen(arguments.stProperties.friendlyURL, "/") eq 1>
-			<cfset cacheExistsTypeFU(listgetat(arguments.stProperties.friendlyURL,1,"/"), true) />
+
+		<cfif not arguments.bSessionOnly>
+			<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND listlen(arguments.stProperties.friendlyURL, "/") eq 1>
+				<cfset uncacheExistsTypeFU(listgetat(arguments.stProperties.friendlyURL,1,"/"), true) />
+			</cfif>
+			<cfif len(arguments.stProperties.refObjectID)>
+				<cfset uncacheFUStructByObjectID(objectid=arguments.stProperties.refObjectID) />
+			</cfif>
+			<cfif len(arguments.stProperties.friendlyURL)>
+				<cfset uncacheURLStructByURL(friendlyURL=arguments.stProperties.friendlyURL) />
+			</cfif>
 		</cfif>
-		
-		<cfreturn super.setData(argumentCollection="#arguments#") />
+
+		<cfreturn super.setData(argumentCollection=arguments) />
 	</cffunction>
 	
+	<cffunction name="delete" access="public" hint="Basic delete method for all objects. Deletes content item and removes Verity entries." returntype="struct" output="false">
+		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
+
+		<cfset var stData = getData(objectid=arguments.objectid) />
+
+		<cfif structKeyExists(stData, "friendlyURL") AND listlen(stData.friendlyURL, "/") eq 1>
+			<cfset uncacheExistsTypeFU(listgetat(stData.friendlyURL,1,"/"), true) />
+		</cfif>
+		<cfif len(stData.refObjectID)>
+			<cfset uncacheFUStructByObjectID(objectid=stData.refObjectID) />
+		</cfif>
+		<cfif len(stData.friendlyURL)>
+			<cfset uncacheURLStructByURL(friendlyURL=stData.friendlyURL) />
+		</cfif>
+
+		<cfreturn super.delete(argumentCollection=arguments) />
+	</cffunction>
 
 	<cffunction name="getExistsTypeFU" access="public" output="false" returntype="boolean">
 		<cfargument name="typename" type="string" required="true" />
@@ -1572,6 +1587,14 @@
 		<cfreturn arguments.data />
 	</cffunction>
 	
+	<cffunction name="uncacheExistsTypeFU" access="public" output="false" returntype="boolean">
+		<cfargument name="typename" type="string" required="true" />
+		
+		<cfset application.fc.lib.objectBroker.RemoveFromObjectBroker("exists-"&arguments.typename, "fuLookup") />
+
+		<cfreturn arguments.data />
+	</cffunction>
+	
 	<cffunction name="getFUStructByObjectID" access="public" output="false" returntype="struct">
 		<cfargument name="objectid" type="uuid" required="true" />
 		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" />
@@ -1607,6 +1630,12 @@
 		<cfreturn duplicate(arguments.data) />
 	</cffunction>
 
+	<cffunction name="uncacheFUStructByObjectID" access="public" output="false" returntype="void">
+		<cfargument name="objectid" type="uuid" required="true" />
+		
+		<cfset application.fc.lib.objectBroker.RemoveFromObjectBroker("fu-"&arguments.objectid, "fuLookup") />
+	</cffunction>
+
 	<cffunction name="getURLStructByURL" access="public" output="false" returntype="struct">
 		<cfargument name="friendlyURL" type="string" required="true" />
 		<cfargument name="bIgnoreCache" type="boolean" default="false" required="false" />
@@ -1621,7 +1650,7 @@
 		<cfset var stReturnFU = {} />
 
 		<cfif not arguments.bIgnoreCache>
-			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us-" & hash(lcase(arguments.friendlyURL)),"fuLookup") />
+			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us-" & lcase(arguments.friendlyURL),"fuLookup") />
 		</cfif>
 		
 		<cfif structIsEmpty(stReturnFU)>
@@ -1632,10 +1661,11 @@
 							INNER JOIN 
 							refObjects 
 							on farFU.refobjectid = refObjects.objectid 
-				WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" /> 
+				WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
+							and fuStatus > 0
 				ORDER BY 	farFU.bDefault DESC, farFU.fuStatus DESC 
 			</cfquery>
-			
+
 			<cfif stLocal.qGet.recordcount>
 				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGet.typename[1])) />
 			</cfif>
@@ -1685,10 +1715,16 @@
 	<cffunction name="cacheURLStructByURL" access="public" output="false" returntype="struct">
 		<cfargument name="friendlyURL" type="string" required="true" />
 		<cfargument name="data" type="struct" required="true" />
-		
-		<cfset application.fc.lib.objectBroker.AddToObjectBroker(arguments.data,"fuLookup","us-" & hash(lcase(arguments.friendlyURL))) />
+
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker(stObj=arguments.data, typename="fuLookup", key="us-" & lcase(arguments.friendlyURL)) />
 
 		<cfreturn duplicate(arguments.data) />
+	</cffunction>
+
+	<cffunction name="uncacheURLStructByURL" access="public" output="false" returntype="void">
+		<cfargument name="friendlyURL" type="string" required="true" />
+		
+		<cfreturn application.fc.lib.objectBroker.RemoveFromObjectBroker(lObjectIDs="us-" & lcase(arguments.friendlyURL),typename="fuLookup") />
 	</cffunction>
 
 </cfcomponent>

@@ -28,8 +28,6 @@ manage friendly urls for a particular object id
 		<cfif structKeyExists(stProperties, "friendlyURL")>
 			<cfset stProperties.friendlyURL = application.fc.factory.farFU.cleanFU(friendlyURL="#stProperties.friendlyURL#",fuID="#stProperties.objectid#", bCheckUnique="true") />
 		</cfif>
-		<cfset application.fc.factory.farFU.setMapping(objectid="#stProperties.objectid#") />
-		
 	</ft:processFormObjects>
 </ft:processForm>
 
@@ -121,15 +119,17 @@ manage friendly urls for a particular object id
 				<cfoutput><table class="table table-striped"></cfoutput>
 				
 				<cfoutput query="qFUCurrent" group="fuStatus">
-					<cfset stPropMetdata="#structNew()#" />
-					<cfset stPropMetdata.redirectionType="#structNew()#" />
-					<cfset stPropMetdata.friendlyurl.ftStyle="width:280px;" />
-					<cfset stPropMetdata.redirectionType="#structNew()#" />
-					<cfset stPropMetdata.redirectionType.ftStyle="width:210;" />
-					<cfset stPropMetdata.redirectTo="#structNew()#" />
-					<cfset stPropMetdata.redirectTo.ftStyle="width:210px;" />
-					
-					<ft:object objectid="#qFUCurrent.objectid[currentRow]#" typename="farFU" r_stFields="stFields" stPropMetadata="#stPropMetdata#" r_stPrefix="prefix" />
+					<cfset stPropMetdata = {
+						"friendlyurl" = {
+							"ftStyle" = "width:280px;"
+						},
+						"redirectionType" = {
+							"ftStyle" = "width:210;"
+						},
+						"redirectTo" = {
+							"ftStyle" = "width:210px;"
+						}
+					} />
 					
 					<thead>
 						<tr>
@@ -153,6 +153,8 @@ manage friendly urls for a particular object id
 					</thead>
 					<tbody>
 						<cfoutput>
+							<ft:object objectid="#qFUCurrent.objectid[currentRow]#" typename="farFU" r_stFields="stFields" stPropMetadata="#stPropMetdata#" r_stPrefix="prefix" />
+							
 							<tr class="alt">
 								<cfif qFUCurrent.bDefault EQ 1>
 									<td>&nbsp;</td>
