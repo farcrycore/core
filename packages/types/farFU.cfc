@@ -666,15 +666,10 @@
 		<cfset var i = "" />
 		<cfset var stResult = structNew() />
 		
-		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
-		<cfif structKeyExists(stLocalURL, "furl") AND len(stLocalURL.furl) GT 1 AND right(stLocalURL.furl,1) EQ "/">
-			<cfset stLocalURL.furl = left(stLocalURL.furl,len(stLocalURL.furl) -1) />
-		</cfif>
-		
-		<cfif structkeyexists(stLocalURL, "furl") and len(stLocalURL.furl) gt 1>
+		<cfif structKeyExists(stLocalURL, "furl") and len(stLocalURL.furl) gt 1>
 			<cfset stResult = getURLStructByURL(stLocalURL.furl) />
 		</cfif>
-		
+
 		<!--- Merge the FU data with the URL data --->
 		<cfset StructAppend(stResult, stLocalURL, "true") />
 		
@@ -802,6 +797,7 @@
 	</cffunction>
 	
 	<cffunction name="createURLStruct" access="public" returntype="struct" hint="Creates a set of URL variables from a farFU object and/or a fuParametersString">
+		<cfargument name="furl" type="string" required="false" hint="The requested URL" />
 		<cfargument name="farFUID" type="uuid" required="false" hint="The objectid of a farFU object" />
 		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
 		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
@@ -840,7 +836,28 @@
 			<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@type")) />
 			
 			<!--- Redirect information --->
-			<cfif arguments.stFU.redirectionType NEQ "none">
+			<cfif arguments.stFU.redirectionType EQ "none" and structKeyExists(arguments, "furl")>
+				<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
+				<cfif right(arguments.furl,1) EQ "/">
+					<cfset arguments.furl = left(arguments.furl,len(arguments.furl) -1) />
+					<cfset stResult.__redirectionType = 301 />
+					<cfset stResult.__redirectionURL = arguments.furl />
+				</cfif>
+
+				<!--- If the URL has upper case letters, remove them --->
+				<cfif reFind("[A-Z]", arguments.furl)>
+					<cfset arguments.furl = lcase(arguments.furl) />
+					<cfset stResult.__redirectionType = 301 />
+					<cfset stResult.__redirectionURL = arguments.furl />
+				</cfif>
+
+				<!--- If the URL consequitive slashes, remove them --->
+				<cfif find("//", arguments.furl)>
+					<cfset arguments.furl = reReplace(arguments.furl, "/{2,}", "/", "ALL") />
+					<cfset stResult.__redirectionType = 301 />
+					<cfset stResult.__redirectionURL = arguments.furl />
+				</cfif>
+			<cfelseif arguments.stFU.redirectionType NEQ "none">
 				<!--- NOTE: URL information is still included in a redirect struct as the redirect will not be honoured for ajax requests --->
 				
 				<cfif arguments.stFU.redirectTo EQ "default" AND NOT arguments.stFU.bDefault eq 1 AND NOT arguments.bForce>
@@ -1667,7 +1684,7 @@
 			</cfquery>
 
 			<cfif stLocal.qGet.recordcount>
-				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGet.typename[1])) />
+				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(furl=arguments.friendlyURL, farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGet.typename[1])) />
 			</cfif>
 		</cfif>
 		
@@ -1695,7 +1712,7 @@
 				ORDER BY 	friendlyURL desc, bDefault DESC, fuStatus DESC
 			</cfquery>
 			<cfif stLocal.qGet.recordcount>
-				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(farFUID=stLocal.qGet.objectid[1],fuParameters=replacenocase(arguments.friendlyURL,stLocal.qGet.friendlyURL,""))) />
+				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(furl=arguments.friendlyURL, farFUID=stLocal.qGet.objectid[1],fuParameters=replacenocase(arguments.friendlyURL,stLocal.qGet.friendlyURL,""))) />
 			</cfif>
 		</cfif>
 		
@@ -1704,7 +1721,7 @@
 			<cfif isvalid("uuid",listfirst(arguments.friendlyURL,"/")) 
 					or structkeyexists(this.typeFU,listfirst(arguments.friendlyURL,"/")) 
 					or structkeyexists(application.stCOAPI,listfirst(arguments.friendlyURL,"/"))>
-				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(fuParameters=arguments.friendlyURL)) />
+				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(furl=arguments.friendlyURL, fuParameters=arguments.friendlyURL)) />
 			</cfif>
 		</cfif>
 		
