@@ -1590,12 +1590,10 @@
 		<cfreturn arguments.data />
 	</cffunction>
 	
-	<cffunction name="uncacheExistsTypeFU" access="public" output="false" returntype="boolean">
+	<cffunction name="uncacheExistsTypeFU" access="public" output="false" returntype="void">
 		<cfargument name="typename" type="string" required="true" />
 		
 		<cfset application.fc.lib.objectBroker.RemoveFromObjectBroker("exists-"&arguments.typename, "fuLookup") />
-
-		<cfreturn arguments.data />
 	</cffunction>
 	
 	<cffunction name="getFUStructByObjectID" access="public" output="false" returntype="struct">
