@@ -838,24 +838,10 @@
 			<!--- Redirect information --->
 			<cfif arguments.stFU.redirectionType EQ "none" and structKeyExists(arguments, "furl")>
 				<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
-				<cfif right(arguments.furl,1) EQ "/">
-					<cfset arguments.furl = left(arguments.furl,len(arguments.furl) -1) />
-					<cfset stResult.__redirectionType = 301 />
-					<cfset stResult.__redirectionURL = arguments.furl />
-				</cfif>
-
-				<!--- If the URL has upper case letters, remove them --->
-				<cfif reFind("[A-Z]", arguments.furl)>
-					<cfset arguments.furl = lcase(arguments.furl) />
-					<cfset stResult.__redirectionType = 301 />
-					<cfset stResult.__redirectionURL = arguments.furl />
-				</cfif>
-
-				<!--- If the URL consequitive slashes, remove them --->
-				<cfif find("//", arguments.furl)>
+				<cfif right(arguments.furl,1) EQ "/" OR compare(arguments.stFU.friendlyURL, left(arguments.furl, len(arguments.stFU.friendlyURL))) neq 0 OR find("//", arguments.furl)>
 					<cfset arguments.furl = reReplace(arguments.furl, "/{2,}", "/", "ALL") />
 					<cfset stResult.__redirectionType = 301 />
-					<cfset stResult.__redirectionURL = arguments.furl />
+					<cfset stResult.__redirectionURL = arguments.stFU.friendlyURL />
 				</cfif>
 			<cfelseif arguments.stFU.redirectionType NEQ "none">
 				<!--- NOTE: URL information is still included in a redirect struct as the redirect will not be honoured for ajax requests --->
