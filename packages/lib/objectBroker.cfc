@@ -53,7 +53,7 @@
 		<cfargument name="typename" required="true" type="string">
 		
 		<cfif isCacheable(typename=arguments.typename,action="read")>
-			<cfreturn cachePull("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.objectid#") />
+			<cfreturn cachePull("#rereplace(application.applicationname,'[^a-zA-Z\d]','','ALL')#_#arguments.typename#_#arguments.objectid#") />
 		<cfelse>
 			<cfreturn structnew() />
 		</cfif>
@@ -99,7 +99,7 @@
 					hashKey="#arguments.hashKey#"
 			) />
 			
-			<cfset stCacheWebskin = cachePull("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#webskinTypename#_#arguments.objectid#_#dateformat(arguments.datetimeLastUpdated,'yyyymmdd')##timeformat(arguments.datetimeLastUpdated,'hhmmss')#_#arguments.template#_#hash(stResult.webskinCacheID)#") />
+			<cfset stCacheWebskin = cachePull("#rereplace(application.applicationname,'[^a-zA-Z\d]','','ALL')#_#webskinTypename#_#arguments.objectid#_#dateformat(arguments.datetimeLastUpdated,'yyyymmdd')##timeformat(arguments.datetimeLastUpdated,'hhmmss')#_#arguments.template#_#hash(stResult.webskinCacheID)#") />
 			
 			<cfif not structisempty(stCacheWebskin) AND 
 				structKeyExists(stCacheWebskin, "datetimecreated") AND
@@ -611,7 +611,7 @@
 													hashKey="#arguments.stCurrentView.hashKey#"
 										) />
 			
-			<cfset cacheAdd("#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.objectid#_#dateformat(arguments.datetimeLastUpdated,'yyyymmdd')##timeformat(arguments.datetimeLastUpdated,'hhmmss')#_#arguments.template#_#hash(stCacheWebskin.webskinCacheID)#",stCacheWebskin,stCacheWebskin.cacheTimeout*60) />
+			<cfset cacheAdd("#rereplace(application.applicationname,'[^a-zA-Z\d]','','ALL')#_#arguments.typename#_#arguments.objectid#_#dateformat(arguments.datetimeLastUpdated,'yyyymmdd')##timeformat(arguments.datetimeLastUpdated,'hhmmss')#_#arguments.template#_#hash(stCacheWebskin.webskinCacheID)#",stCacheWebskin,stCacheWebskin.cacheTimeout*60) />
 			
 			<cfreturn true />
 				
@@ -626,7 +626,7 @@
 		<cfargument name="template" required="true" type="string">
 		
 		<cfset var i = "" />
-		<cfset var regex = "^#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.objectid#_[^_]+_#arguments.template#" />
+		<cfset var regex = "^#rereplace(application.applicationname,'[^a-zA-Z\d]','','ALL')#_#arguments.typename#_#arguments.objectid#_[^_]+_#arguments.template#" />
 		<cfset var aRemove = arraynew(1) />
 
 		<cfif not isdefined("application.objectbroker.#arguments.typename#")>
@@ -653,7 +653,7 @@
 
 		<cfif isCacheable(typename=arguments.typename,action="write") and structkeyexists(arguments,"key")>
 			<cfset cacheAdd(
-				"#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#arguments.key#",
+				"#rereplace(application.applicationname,'[^a-zA-Z\d]','','ALL')#_#arguments.typename#_#arguments.key#",
 				arguments.stObj,
 				application.objectbroker[arguments.typename].timeout
 			) />
@@ -737,7 +737,7 @@
 				</cfif>
 
 				<!--- Remove the object itself and it's webskins --->
-				<cfset key = "#rereplace(application.applicationname,'[^\w\d]','','ALL')#_#arguments.typename#_#i#" />
+				<cfset key = "#rereplace(application.applicationname,'[^a-zA-Z\d]','','ALL')#_#arguments.typename#_#i#" />
 				<cfset cacheFlush(key) />
 
 			</cfloop>
