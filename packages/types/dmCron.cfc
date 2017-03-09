@@ -173,7 +173,7 @@ type properties
 	<cfset var stAttributes = structNew()>
 
 	<cfset stAttributes.action = "list">
-	<cfset stAttributes.returnvariable = "qJobs">
+	<cfset stAttributes.result = "qJobs">
 
 	<cftry>
 		<cfschedule action="#stAttributes.action#" attributeCollection="#stAttributes#">
