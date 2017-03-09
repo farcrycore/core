@@ -21,7 +21,7 @@ Download the latest community build or get a "ready-to-go" express version for a
 - [FarCry Dev Support Forum](http://discourse.farcrycore.org/)
 - [Google+ Community](https://plus.google.com/communities/107650642291146266954)
 - [FarCry Documentation WIKI](https://farcry.jira.com/wiki/display/FCDEV60/Home)
-- [FarCry Committers Blog](http://blog.farcrycore.org)
+- [FarCry Committers Blog](http://discourse.farcrycore.org/c/blog)
 - [Daemon: Commercial Support/Training/Development](http://www.daemon.com.au)
 
 ### Code
