@@ -1651,7 +1651,7 @@
 		<cfset var stReturnFU = {} />
 
 		<cfif not arguments.bIgnoreCache>
-			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us-" & lcase(arguments.friendlyURL),"fuLookup") />
+			<cfset stReturnFU = application.fc.lib.objectbroker.GetFromObjectBroker("us-" & hash(lcase(arguments.friendlyURL)),"fuLookup") />
 		</cfif>
 		
 		<cfif structIsEmpty(stReturnFU)>
@@ -1717,7 +1717,7 @@
 		<cfargument name="friendlyURL" type="string" required="true" />
 		<cfargument name="data" type="struct" required="true" />
 
-		<cfset application.fc.lib.objectBroker.AddToObjectBroker(stObj=arguments.data, typename="fuLookup", key="us-" & lcase(arguments.friendlyURL)) />
+		<cfset application.fc.lib.objectBroker.AddToObjectBroker(stObj=arguments.data, typename="fuLookup", key="us-" & hash(lcase(arguments.friendlyURL))) />
 
 		<cfreturn duplicate(arguments.data) />
 	</cffunction>
@@ -1725,7 +1725,7 @@
 	<cffunction name="uncacheURLStructByURL" access="public" output="false" returntype="void">
 		<cfargument name="friendlyURL" type="string" required="true" />
 		
-		<cfreturn application.fc.lib.objectBroker.RemoveFromObjectBroker(lObjectIDs="us-" & lcase(arguments.friendlyURL),typename="fuLookup") />
+		<cfreturn application.fc.lib.objectBroker.RemoveFromObjectBroker(lObjectIDs="us-" & hash(lcase(arguments.friendlyURL)), typename="fuLookup") />
 	</cffunction>
 
 </cfcomponent>
