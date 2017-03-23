@@ -798,7 +798,7 @@
 				</cfif>
 			</cfcase>
 			<cfcase value="json">
-				<cfset arguments.type = "text/json" />
+				<cfset arguments.type = "application/json" />
 				<cfif not issimplevalue(arguments.content)>
 					<cfset arguments.content = serializeJSON(arguments.content) />
 				</cfif>

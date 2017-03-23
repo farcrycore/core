@@ -539,56 +539,64 @@
 		<cfset var data = "" />
 		<cfset var tmpfile = getCachedFile(config=arguments.config,file=arguments.file) />
 		
-		<cfif len(tmpfile)>
+		<cftry>
 			
-			<!--- Read cache file --->
-			<cfswitch expression="#arguments.datatype#">
-				<cfcase value="text">
-					<cffile action="read" file="#tmpfile#" variable="data" />
-				</cfcase>
+			<cfif len(tmpfile)>
 				
-				<cfcase value="binary">
-					<cffile action="readBinary" file="#tmpfile#" variable="data" />
-				</cfcase>
+				<!--- Read cache file --->
+				<cfswitch expression="#arguments.datatype#">
+					<cfcase value="text">
+						<cffile action="read" file="#tmpfile#" variable="data" />
+					</cfcase>
+					
+					<cfcase value="binary">
+						<cffile action="readBinary" file="#tmpfile#" variable="data" />
+					</cfcase>
+					
+					<cfcase value="image">
+						<cfset data = imageread(tmpfile) />
+					</cfcase>
+				</cfswitch>
 				
-				<cfcase value="image">
-					<cfset data = imageread(tmpfile) />
-				</cfcase>
-			</cfswitch>
-			
-			<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
-			
-		<cfelse>
-
-			<cfset tmpfile = getTemporaryFile(config=arguments.config,file=arguments.file) />
-			
-			<cfset ioCopyFile(source_config=arguments.config,source_file=arguments.file,dest_localpath=tmpfile) />
-			
-			<!--- Read cache file --->
-			<cfswitch expression="#arguments.datatype#">
-				<cfcase value="text">
-					<cffile action="read" file="#tmpfile#" variable="data" />
-				</cfcase>
+				<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
 				
-				<cfcase value="binary">
-					<cffile action="readBinary" file="#tmpfile#" variable="data" />
-				</cfcase>
-				
-				<cfcase value="image">
-					<cfset data = imageread(tmpfile) />
-				</cfcase>
-			</cfswitch>
-			
-			<cfif arguments.config.localCacheSize>
-				<cfset addCachedFile(config=arguments.config,file=arguments.file,path=tmpfile) />
 			<cfelse>
-				<!--- Delete temporary file --->
-				<cfset deleteTemporaryFile(tmpfile) />
+
+				<cfset tmpfile = getTemporaryFile(config=arguments.config,file=arguments.file) />
+				
+				<cfset ioCopyFile(source_config=arguments.config,source_file=arguments.file,dest_localpath=tmpfile) />
+				
+				<!--- Read cache file --->
+				<cfswitch expression="#arguments.datatype#">
+					<cfcase value="text">
+						<cffile action="read" file="#tmpfile#" variable="data" />
+					</cfcase>
+					
+					<cfcase value="binary">
+						<cffile action="readBinary" file="#tmpfile#" variable="data" />
+					</cfcase>
+					
+					<cfcase value="image">
+						<cfset data = imageread(tmpfile) />
+					</cfcase>
+				</cfswitch>
+				
+				<cfif arguments.config.localCacheSize>
+					<cfset addCachedFile(config=arguments.config,file=arguments.file,path=tmpfile) />
+				<cfelse>
+					<!--- Delete temporary file --->
+					<cfset deleteTemporaryFile(tmpfile) />
+				</cfif>
+				
+				<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from S3" />
+				
 			</cfif>
-			
-			<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from S3" />
-			
-		</cfif>
+
+			<cfcatch>
+				<cflog file="#application.applicationname#_s3" text="Error reading [#arguments.config.name#] #sanitiseS3URL(arguments.file)#: #cfcatch.message#" />
+				<cfrethrow>
+			</cfcatch>
+		</cftry>
 			
 		<cfreturn data />
 	</cffunction>

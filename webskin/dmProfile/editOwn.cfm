@@ -20,7 +20,7 @@
  // process form  
 --------------------------------------------------------------------------------->
 <ft:processform action="Save" url="refresh">
-	<ft:processformobjects objectid="#stobj.objectid#">
+	<ft:processformobjects typename="#stObj.typename#" objectid="#stobj.objectid#">
 		<cfset structappend(session.dmProfile,stProperties,true) />
 
 		<skin:bubble title="Profile Saved" bAutoHide="false" tags="type,dmProfile,update,info">

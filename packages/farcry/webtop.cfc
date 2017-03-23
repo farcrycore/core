@@ -65,6 +65,18 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfreturn this>
 	</cffunction>
 	
+	<cffunction name="fluchCache" access="public" returntype="void" output="false" hint="flush cached webtop setting for roles">
+
+		<cfif structKeyExists(application, 'security') && structKeyExists(application.security, 'stPermissions') >	
+			<cfset var currentRoles = application.security.getCurrentRoles()>
+			<cfset var rolesHash    = hash("webtop-#currentRoles#")>
+		
+			<cfif structKeyExists(application.security.stPermissions, rolesHash)>
+				<cfset StructDelete(application.security.stPermissions, rolesHash)>	
+			</cfif>
+		</cfif>	
+	</cffunction>
+	
 	<cffunction name="loadWebtopFile" access="private" output="false" returntype="xml" hint="Loads a webtop xml file and returns is">
 		<cfargument name="file" type="string" required="true" hint="The file to load" />
 		

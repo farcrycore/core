@@ -265,6 +265,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 		    				if (imageformtool.inputs.base.val().length){
 			    				$j(this).find(".image-cancel-upload").show();
 			    				$j(this).find(".image-cancel-replace").show();
+			    				$j(this).find(".alert-error-readimg").remove();
 			    			}
 		    			},
 	    				"autogenerate" : function onImageFormtoolOpenAutogenerate(event){ 

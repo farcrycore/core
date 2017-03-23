@@ -115,6 +115,25 @@
 
 	<cfparam name="attributes.emptymessage" default="You do not currently have any content. Use the [Add] button above to begin." />
 
+<!--- fix up any boolean values --->
+    <cfloop index="i" list="#attributes.lFilterFields#">
+                <cfif evaluate('application.types.#attributes.typename#.stProps.#i#.metadata.type') EQ 'boolean'>
+					<cfif NOT structKeyExists(attributes.stFilterMetadata,i)>
+                        <cfset attributes.stFilterMetadata[i] = structNew()>
+                    </cfif>
+                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftType")>
+                        <cfset attributes.stFilterMetadata[i].ftType = "list">
+                    </cfif>
+                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftList")>
+                        <cfset attributes.stFilterMetadata[i].ftList = ":...Any,0:No,1:Yes">
+                    </cfif>
+                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftDefault")>
+                     <cfset attributes.stFilterMetadata[i].ftDefault = "">
+                    </cfif>
+				</cfif>
+   </cfloop>
+
+
 	<!--- Convert attributes.lCustomColumns to array of structs --->
 	<cfif listLen(attributes.lCustomColumns)>
 		<cfloop list="#attributes.lCustomColumns#" index="i">
@@ -316,7 +335,7 @@
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
-										<cfoutput>AND lower(#i#) = '#j#'</cfoutput>
+											<cfoutput>AND lower(#i#) = '#j#'</cfoutput>
 									</cfloop>
 								</cfif>
 							</cfcase>
@@ -672,11 +691,11 @@
 		
 		<cfloop list="#attributes.lFilterFields#" index="criteria">
 			<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
-				<cfset thisCriteria = lcase(criteria)>
-				<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
-					<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
-				</cfif>
-				<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
+					<cfset thisCriteria = lcase(criteria)>
+					<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
+						<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
+					</cfif>
+					<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
 			</cfif>
 		</cfloop>
 	

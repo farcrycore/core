@@ -39,6 +39,7 @@
 
 	<cffunction name="processWebtop" access="public" returntype="boolean" description="Resets the webtop" output="false">
 		<cfset application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init() />
+		<cfset application.factory.oWebtop.fluchCache()>
 		
 		<cfreturn true />
 	</cffunction>

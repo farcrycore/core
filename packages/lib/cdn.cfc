@@ -149,24 +149,24 @@
 				<cfcase value="mp3" delimiters=",">
 					<cfset stLocals["content_type"] = "audio/mpeg" />
 				</cfcase>
-                                <cfdefaultcase>
-                                        <cfset stLocals["content_type"] = "text/plain" />
-                                </cfdefaultcase>
+				<cfdefaultcase>
+					<cfset stLocals["content_type"] = "application/octet-stream" />
+				</cfdefaultcase>
 			</cfswitch>
 		</cfif>
-		
+
 		<!--- corrections --->
 		<cfif stLocals.content_type eq "application/javascript">
 			<cfset stLocals.content_type = "text/javascript" />
 		</cfif>
-		
+
 		<cfreturn stLocals.content_type />
 	</cffunction>
 
-	
-	<!--- @@description: 
+
+	<!--- @@description:
 		<p>Does what it says on the box. Checks a single location to see if a file exists.</p>
-		
+
 		@@examples:
 		<code>
 			<cfif application.fc.lib.cdn.ioFileExists(location="cache",file=sCacheFileName)>
@@ -339,11 +339,17 @@
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="datatype" type="string" required="false" default="text" options="text,binary,image" />
 		
-		<cfset var config = this.locations[arguments.location] />
-		
-		<cfset arguments.file = normalizePath(arguments.file) />
-		
-		<cfreturn this.cdns[config.cdn].ioReadFile(config=config,argumentCollection=arguments) />
+		<cftry>
+			<cfset var config = this.locations[arguments.location] />
+			
+			<cfset arguments.file = normalizePath(arguments.file) />
+			
+			<cfreturn this.cdns[config.cdn].ioReadFile(config=config,argumentCollection=arguments) />
+
+			<cfcatch>
+				<cfrethrow>
+			</cfcatch>
+		</cftry>
 	</cffunction>
 	
 	<!--- @@description: 
@@ -537,7 +543,7 @@
 		@@examples:
 		<code>
 			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
-			    location="securefiles",
+			    location="privatefiles",
 			    destination=arguments.stMetadata.ftDestination,
 			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
 			    nameconflict="makeunique",
@@ -589,7 +595,7 @@
 		@@examples:
 		<code>
 			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
-			    location="securefiles",
+			    location="privatefiles",
 			    destination=arguments.stMetadata.ftDestination,
 			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
 			    nameconflict="makeunique",
