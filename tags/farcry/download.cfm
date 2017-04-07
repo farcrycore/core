@@ -77,7 +77,13 @@ accommodate legacy implementations
 </cfif>
 
 <!--- get content item --->
-<cfset oType = createObject("component", application.types[attributes.typename].packagePath) />
+<cftry>
+	<cfset oType = application.fapi.getContentType(attributes.typename) />
+	<cfcatch>
+		<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object does not exist")) />
+		<cfexit method="exittag" />
+	</cfcatch>
+</cftry>
 <cfset stFile = oType.getData(objectid=attributes.objectid) />
 
 <!--- check status and permissions on file --->
