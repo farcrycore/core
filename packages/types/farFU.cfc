@@ -1662,10 +1662,7 @@
 							INNER JOIN 
 							refObjects 
 							on farFU.refobjectid = refObjects.objectid 
-				WHERE		(
-								farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
-								or farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#replace(arguments.friendlyURL, '//', '/', 'ALL')#" />
-							)
+				WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
 							and fuStatus > 0
 				ORDER BY 	farFU.bDefault DESC, farFU.fuStatus DESC 
 			</cfquery>
