@@ -636,16 +636,16 @@
 		<!--- load mappings to application scope --->
 		<cfloop query="stLocal.q">
 			<cfset stFU = structnew() />
-			<cfset stFU.objectid = stLocal.q.objectid />
-			<cfset stFU.refObjectID = stLocal.q.refObjectID />
-			<cfset stFU.friendlyURL = stLocal.q.friendlyURL />
-			<cfset stFU.querystring = stLocal.q.querystring />
-			<cfset stFU.fuStatus = stLocal.q.fuStatus />
-			<cfset stFU.redirectionType = stLocal.q.redirectionType />
-			<cfset stFU.redirectTo = stLocal.q.redirectTo />
-			<cfset stFU.bDefault = stLocal.q.bDefault />
-			<cfset stFU.applicationname = stLocal.q.applicationname />
-			<cfset stFU.refTypename = stLocal.q.typename />
+			<cfset stFU.objectid = stLocal.q.objectid[stLocal.q.currentrow] />
+			<cfset stFU.refObjectID = stLocal.q.refObjectID[stLocal.q.currentrow] />
+			<cfset stFU.friendlyURL = stLocal.q.friendlyURL[stLocal.q.currentrow] />
+			<cfset stFU.querystring = stLocal.q.querystring[stLocal.q.currentrow] />
+			<cfset stFU.fuStatus = stLocal.q.fuStatus[stLocal.q.currentrow] />
+			<cfset stFU.redirectionType = stLocal.q.redirectionType[stLocal.q.currentrow] />
+			<cfset stFU.redirectTo = stLocal.q.redirectTo[stLocal.q.currentrow] />
+			<cfset stFU.bDefault = stLocal.q.bDefault[stLocal.q.currentrow] />
+			<cfset stFU.applicationname = stLocal.q.applicationname[stLocal.q.currentrow] />
+			<cfset stFU.refTypename = stLocal.q.typename[stLocal.q.currentrow] />
 			
 			<cfset cacheURLStructByURL(stFU.friendlyURL,createURLStruct(stFU=stFU)) />
 			
@@ -834,7 +834,7 @@
 			<!--- If extra fURL parameters are provided, do not attempt to extract objectid or type --->
 			<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@objectid")) />
 			<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@type")) />
-			
+
 			<!--- Redirect information --->
 			<cfif arguments.stFU.redirectionType EQ "none" and structKeyExists(arguments, "furl")>
 				<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
@@ -1662,7 +1662,10 @@
 							INNER JOIN 
 							refObjects 
 							on farFU.refobjectid = refObjects.objectid 
-				WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
+				WHERE		(
+								farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
+								or farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#replace(arguments.friendlyURL, '//', '/', 'ALL')#" />
+							)
 							and fuStatus > 0
 				ORDER BY 	farFU.bDefault DESC, farFU.fuStatus DESC 
 			</cfquery>
