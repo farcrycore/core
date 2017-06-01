@@ -242,6 +242,7 @@
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="admin" type="boolean" required="false" default="false" />
 		<cfargument name="bRetrieve" type="boolean" required="false" default="false" />
+		<cfargument name="protocol" type="string" require="false" />
 
 		<cfset var config = this.locations[arguments.location] />
 		

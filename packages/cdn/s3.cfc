@@ -237,7 +237,8 @@
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="method" type="string" required="false" default="GET" />
 		<cfargument name="s3Path" type="boolean" required="false" default="false" />
-		
+		<cfargument name="protocol" type="string" require="false" />
+
 		<cfset var urlpath = arguments.file />
 		<cfset var epochTime = 0 />
 		<cfset var signature = "" />
@@ -265,10 +266,16 @@
 		</cfif>
 		
 		<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
-			<cfreturn "//#arguments.config.bucket#.s3.amazonaws.com" & urlpath />
+			<cfset urlpath = "//#arguments.config.bucket#.s3.amazonaws.com" & urlpath />
 		<cfelse>
-			<cfreturn "//" & arguments.config.domain & urlpath />
+			<cfset urlpath = "//" & arguments.config.domain & urlpath />
 		</cfif>
+
+		<cfif structkeyexists(arguments,"protocol")>
+			<cfset urlpath = arguments.protocol & ":" & urlpath />
+		</cfif>
+
+		<cfreturn urlpath />
 	</cffunction>
 	
 	<cffunction name="getMeta" output="false" access="public" returntype="struct" hint="Returns a metadata struct for setting S3 metadata">
@@ -353,11 +360,12 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="admin" type="boolean" required="false" default="false" />
+		<cfargument name="protocol" type="string" require="false" />
 		
 		<cfset var stResult = structnew() />
 		
 		<cfset stResult["method"] = "redirect" />
-		<cfset stResult["path"] = getURLPath(config=arguments.config,file=arguments.file,s3Path=arguments.admin) />
+		<cfset stResult["path"] = getURLPath(config=arguments.config,file=arguments.file,s3Path=arguments.admin,protocol=arguments.protocol) />
 		<cfset stResult["mimetype"] = getPageContext().getServletContext().getMimeType(arguments.file) />
 		
 		<cfreturn stResult />
