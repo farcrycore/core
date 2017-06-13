@@ -1048,7 +1048,7 @@
 		<cfargument name="file" type="string" required="true" />
 
 		<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-			<cfset putFile(config=arguments.config, file=arguments.file) />
+			<cfset putObject(config=arguments.config, file=arguments.file) />
 		<cfelse>
 			<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
 		</cfif>
