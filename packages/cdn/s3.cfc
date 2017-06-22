@@ -795,7 +795,7 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
 		
-		<cfif this.engine eq "railo" or this.engine eq "lucee">
+		<cfif this.engine eq "railo">
 			<cfreturn directoryexists(getS3Path(config=arguments.config,file=arguments.dir)) />
 		<cfelse>
 			<!--- on ColdFusion directories are implicit --->
@@ -809,7 +809,7 @@
 		
 		<cfset var s3path = "" />
 		
-		<cfif (this.engine eq "railo" AND listFirst(server.railo.version, ".") lt 4) or this.engine eq "lucee">
+		<cfif this.engine eq "railo" AND listFirst(server.railo.version, ".") lt 4>
 			<cfset s3path = getS3Path(config=arguments.config,file=arguments.dir) />
 			<cfdirectory action="create" directory="#s3path#" mode="777" />
 			<cfset updateACL(config=arguments.config, file=arguments.dir) />
