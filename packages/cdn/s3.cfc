@@ -660,18 +660,8 @@
 			
 		<cfelseif structkeyexists(arguments,"dest_config")>
 			
-			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
-				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
-			</cfif>
-			
 			<cftry>
-
-				<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-					<cffile action="write" output="#fileReadBinary(arguments.source_localpath)#" file="#getS3Path(config=arguments.dest_config,file=arguments.dest_file)#">
-				<cfelse>
-					<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />									
-				</cfif>
-
+				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
@@ -801,12 +791,11 @@
 		<cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" />
 	</cffunction>
 	
-	
 	<cffunction name="ioDirectoryExists" returntype="boolean" access="public" output="false" hint="Checks that a specified path exists">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
 		
-		<cfif this.engine eq "railo">
+		<cfif this.engine eq "railo" or this.engine eq "lucee">
 			<cfreturn directoryexists(getS3Path(config=arguments.config,file=arguments.dir)) />
 		<cfelse>
 			<!--- on ColdFusion directories are implicit --->
@@ -820,7 +809,7 @@
 		
 		<cfset var s3path = "" />
 		
-		<cfif this.engine eq "railo" AND listFirst(server.railo.version, ".") lt 4>
+		<cfif (this.engine eq "railo" AND listFirst(server.railo.version, ".") lt 4) or this.engine eq "lucee">
 			<cfset s3path = getS3Path(config=arguments.config,file=arguments.dir) />
 			<cfdirectory action="create" directory="#s3path#" mode="777" />
 			<cfset updateACL(config=arguments.config, file=arguments.dir) />
@@ -1048,7 +1037,7 @@
 		<cfargument name="file" type="string" required="true" />
 
 		<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-			<cfset putObject(config=arguments.config, file=arguments.file) />
+			<cfset putACL(config=arguments.config, file=arguments.file) />
 		<cfelse>
 			<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
 		</cfif>
