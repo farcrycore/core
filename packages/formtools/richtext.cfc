@@ -312,6 +312,7 @@
 		<cfset var stRelatedMetadata = "" />
 		<cfset var item = "" />
 		<cfset var lAdded = "" />
+		<cfset var thisfield = "" />
 		
 		<!--- items --->
 		<cfset stResult["items"] = arraynew(1) />
@@ -322,7 +323,7 @@
 				AND listContainsNoCase(stProps[fieldname].metadata.ftJoin,arguments.relatedtypename)>
 
 				<cfif stProps[fieldname].metadata.type EQ "array" and arraylen(arguments.stObject[fieldname])>
-					<cfloop array="#arguments.stObject[fieldname]#" item="thisfield">
+					<cfloop array="#arguments.stObject[fieldname]#" index="thisfield">
 						<cfif isStruct(thisfield)>
 							<cfset lRelated = listAppend(lRelated, thisfield.data) />
 						<cfelse>
