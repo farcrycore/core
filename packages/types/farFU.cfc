@@ -1520,10 +1520,10 @@
 			<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND listlen(arguments.stProperties.friendlyURL, "/") eq 1>
 				<cfset uncacheExistsTypeFU(listgetat(arguments.stProperties.friendlyURL,1,"/"), true) />
 			</cfif>
-			<cfif len(arguments.stProperties.refObjectID)>
+			<cfif structKeyExists(arguments.stProperties, "refObjectID") AND len(arguments.stProperties.refObjectID)>
 				<cfset uncacheFUStructByObjectID(objectid=arguments.stProperties.refObjectID) />
 			</cfif>
-			<cfif len(arguments.stProperties.friendlyURL)>
+			<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND len(arguments.stProperties.friendlyURL)>
 				<cfset uncacheURLStructByURL(friendlyURL=arguments.stProperties.friendlyURL) />
 			</cfif>
 		</cfif>
