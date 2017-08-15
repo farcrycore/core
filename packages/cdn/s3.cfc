@@ -1036,10 +1036,12 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 
-		<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-			<cfset putACL(config=arguments.config, file=arguments.file) />
-		<cfelse>
-			<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
+		<cfif arrayLen(arguments.config.acl)>
+			<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
+				<cfset putACL(config=arguments.config, file=arguments.file) />
+			<cfelse>
+				<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
+			</cfif>
 		</cfif>
 	</cffunction>
 
