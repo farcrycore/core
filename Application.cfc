@@ -315,15 +315,6 @@
 		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
 		
 		<cfset application.fc.lib.objectbroker.init() />
-		<cfloop collection="#application.stcoapi#" item="typename">
-			<cfif application.stcoapi[typename].bObjectBroker>
-				<cfset application.fc.lib.objectbroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
-			</cfif>
-		</cfloop>
-		<cfset application.fc.lib.objectbroker.configureType("config", 100) />
-		<cfset application.fc.lib.objectbroker.configureType("navid", 1) />
-		<cfset application.fc.lib.objectbroker.configureType("catid", 1) />
-		<cfset application.fc.lib.objectbroker.configureType("fuLookup", 10000) />
 
 		<!----------------------------------- 
 		SETUP CATEGORY APPLICATION STRUCTURE
