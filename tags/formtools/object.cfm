@@ -664,6 +664,7 @@
 								errorMessage="#ftFieldMetadata.errorMessage#"
 								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
 								formTheme="#attributes.formTheme#"
+								format="#attributes.format#"
 								ftFieldMetadata="#ftFieldMetadata#">
 
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
