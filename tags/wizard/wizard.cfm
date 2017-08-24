@@ -195,7 +195,23 @@
 		<skin:onReady>
 			<cfoutput>		
 			$fc.wizardSubmission = function(formname,state) {
+				var valid = true; 
+
+				if (state === 'Save') {
+					if ( $j('##' + formname).attr('fc:validate') == 'false' ) {
+	                    $j('##' + formname).attr('fc:validate',true);                    
+	                } else {
+	                    valid = $j('##' + formname).valid();
+	                }
+
+	                if(valid){
+	                	$j('.li-complete a').attr("rel", $j('.li-complete a').attr("href"));
+                		$j('.li-complete a').attr("href", "javascript:void(0)");
+	                }
+				}
+
 				btnSubmit(formname,state);	
+
 			}
 			
 			$fc.wizardCancelConfirm = function(formname,confirmtext) {

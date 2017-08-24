@@ -275,7 +275,7 @@
 							<cfif NOT bFirst>,</cfif><cfset bFirst = false />
 							
 							<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
-							<cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" />
+							<cfqueryparam attributeCollection="#stVal#" />
 						</cfif>
 					</cfloop>
 				)			
@@ -341,7 +341,7 @@
 						<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
 						
 						<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
-						#thisfield#=<cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" />
+						#thisfield#=<cfqueryparam attributeCollection="#stVal#" />
 					</cfloop>
 		</cfquery>
 		
@@ -362,7 +362,7 @@
 									<cfif NOT bFirst>,</cfif><cfset bFirst = false />
 									
 									<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
-									#thisfield#=<cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" />
+									#thisfield#=<cfqueryparam attributeCollection="#stVal#" />
 								</cfif>
 							</cfloop>
 					WHERE	<cfset bFirst = true />
@@ -370,7 +370,7 @@
 								<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
 								
 								<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
-								#thisfield#=<cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" />
+								#thisfield#=<cfqueryparam attributeCollection="#stVal#" />
 							</cfloop>
 				</cfquery>
 				

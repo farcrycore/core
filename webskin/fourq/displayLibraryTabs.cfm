@@ -39,10 +39,6 @@
 	<!-- summary pod with green arrow -->
 	<div class="summary-pod" style="margin-bottom: 10px;">
 		<div id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;"></div>
-		
-		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrarySelected', urlParameters="property=#url.property#&ajaxmode=1") />
-		<!---<ft:button value="show selected" renderType="link" type="button" onclick="farcryForm_ajaxSubmission('#request.farcryform.name#','#formAction#')" class="green" />--->
-
 	</div>
 	<!-- summary pod end -->
 	</cfoutput>

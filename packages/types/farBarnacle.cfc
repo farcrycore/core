@@ -46,7 +46,7 @@
 		<cfelse>
 			<!--- Barnacle didn't exist - create it --->
 			<cfset stBarnacle = structNew() />
-			<cfset stBarnacle.objectid = application.fc.utils.createJavaUUID() />
+			<cfset stBarnacle.objectid = createUUID() />
 			<cfset stBarnacle.typename = "farBarnacle" />
 			<cfset stBarnacle.roleid = arguments.role />
 			<cfset stBarnacle.permissionid = arguments.permission />
@@ -144,12 +144,19 @@
 			<cfset arguments.objecttype = findType(arguments.object) />
 		</cfif>
 		<cfif len(arguments.objecttype)>
-			<cfquery datasource="#application.dsn#" name="qSecured">
-				select	count(parentid) as secured
-				from	#application.dbowner#farPermission_aRelatedtypes
-				where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-						and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objecttype#" />
-			</cfquery>
+			<cfparam name="request.webtopCachePermissionObjectType" default="#structNew()#">
+			<cfif NOT structKeyExists(request.webtopCachePermissionObjectType, "#arguments.permission#_#arguments.objecttype#")>
+				<cfquery datasource="#application.dsn#" name="qSecured">
+					select	count(parentid) as secured
+					from	#application.dbowner#farPermission_aRelatedtypes
+					where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+							and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objecttype#" />
+				</cfquery>
+				<cfset request.webtopCachePermissionObjectType["#arguments.permission#_#arguments.objecttype#"] = qSecured>
+			<cfelse>
+				<cfset qSecured = request.webtopCachePermissionObjectType["#arguments.permission#_#arguments.objecttype#"]>
+			</cfif>
+
 			<cfif not qSecured.secured>
 				<cfreturn 1 />
 			</cfif>

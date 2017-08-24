@@ -155,24 +155,24 @@
 				<cfcase value="mp3" delimiters=",">
 					<cfset stLocals["content_type"] = "audio/mpeg" />
 				</cfcase>
-                                <cfdefaultcase>
-                                        <cfset stLocals["content_type"] = "text/plain" />
-                                </cfdefaultcase>
+				<cfdefaultcase>
+					<cfset stLocals["content_type"] = "application/octet-stream" />
+				</cfdefaultcase>
 			</cfswitch>
 		</cfif>
-		
+
 		<!--- corrections --->
 		<cfif stLocals.content_type eq "application/javascript">
 			<cfset stLocals.content_type = "text/javascript" />
 		</cfif>
-		
+
 		<cfreturn stLocals.content_type />
 	</cffunction>
 
-	
-	<!--- @@description: 
+
+	<!--- @@description:
 		<p>Does what it says on the box. Checks a single location to see if a file exists.</p>
-		
+
 		@@examples:
 		<code>
 			<cfif application.fc.lib.cdn.ioFileExists(location="cache",file=sCacheFileName)>

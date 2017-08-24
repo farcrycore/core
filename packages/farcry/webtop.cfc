@@ -65,6 +65,18 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfreturn this>
 	</cffunction>
 	
+	<cffunction name="fluchCache" access="public" returntype="void" output="false" hint="flush cached webtop setting for roles">
+
+		<cfif structKeyExists(application, 'security') && structKeyExists(application.security, 'stPermissions') >	
+			<cfset var currentRoles = application.security.getCurrentRoles()>
+			<cfset var rolesHash    = hash("webtop-#currentRoles#")>
+		
+			<cfif structKeyExists(application.security.stPermissions, rolesHash)>
+				<cfset StructDelete(application.security.stPermissions, rolesHash)>	
+			</cfif>
+		</cfif>	
+	</cffunction>
+	
 	<cffunction name="loadWebtopFile" access="private" output="false" returntype="xml" hint="Loads a webtop xml file and returns is">
 		<cfargument name="file" type="string" required="true" hint="The file to load" />
 		
@@ -403,6 +415,13 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		
 		<!--- Remove children that the user doesn't have permission for --->
 
+		<cfparam name="request.webtopCacheCurrentRole" default="#structNew()#">
+		<cfloop list="#currentRoles#" index="iRole">
+			<cfif NOT structKeyExists(request.webtopCacheCurrentRole, iRole)>
+				<cfset request.webtopCacheCurrentRole[iRole] = application.fapi.getContentObject(typename="farRole", objectid=iRole)>
+			</cfif>
+		</cfloop>
+
 		<cfloop collection="#stResult.children#" item="id">
 			
 			<cfset bPermitted = -1 />
@@ -415,7 +434,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 				
 				<cfloop list="#currentRoles#" index="iRole">
 					
-					<cfset stCurrentRole = application.fapi.getContentObject(typename="farRole", objectid="#iRole#")>
+					<cfset stCurrentRole = request.webtopCacheCurrentRole[iRole]>
 					
 					<cfif application.fapi.arrayFind(stCurrentRole.aPermissions, webtopAccessPermissionID)>
 						<cfset bRight = arguments.oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>

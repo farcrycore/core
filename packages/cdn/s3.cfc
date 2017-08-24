@@ -660,18 +660,8 @@
 			
 		<cfelseif structkeyexists(arguments,"dest_config")>
 			
-			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
-				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
-			</cfif>
-			
 			<cftry>
-
-				<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-					<cffile action="write" output="#fileReadBinary(arguments.source_localpath)#" file="#getS3Path(config=arguments.dest_config,file=arguments.dest_file)#">
-				<cfelse>
-					<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />									
-				</cfif>
-
+				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
@@ -800,7 +790,6 @@
 		
 		<cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" />
 	</cffunction>
-	
 	
 	<cffunction name="ioDirectoryExists" returntype="boolean" access="public" output="false" hint="Checks that a specified path exists">
 		<cfargument name="config" type="struct" required="true" />
@@ -1047,10 +1036,12 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 
-		<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-			<cfset putFile(config=arguments.config, file=arguments.file) />
-		<cfelse>
-			<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
+		<cfif arrayLen(arguments.config.acl)>
+			<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
+				<cfset putACL(config=arguments.config, file=arguments.file) />
+			<cfelse>
+				<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
+			</cfif>
 		</cfif>
 	</cffunction>
 
