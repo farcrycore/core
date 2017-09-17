@@ -799,7 +799,7 @@ default handlers
 		<cfset var newLabel = "" />
 		
 		<cfif not isdefined("request.inthread") and structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
-			<cfset newLabel = getView(stObject=arguments.stProperties,template="displayLabel",alternateHTML="") />
+			<cfset newLabel = getView(stObject=arguments.stProperties,template="displayLabel",alternateHTML="",bIgnoreSecurity=true) />
 		</cfif>
 		
 		<cfreturn trim(newLabel) />
