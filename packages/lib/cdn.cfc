@@ -113,7 +113,7 @@
 		<cfreturn arguments.path />
 	</cffunction>
 		
-	<cffunction name="sanitizeFilename" returntype="string" access="public" output="false" hint="Sanitizes filename character set, removing invalid characters">
+	<cffunction name="sanitizeFilename" returntype="string" access="public" output="false" hint="Sanitizes filename character set, removing invalid characters. Converts filename (not path) to lowercase">
 		<cfargument name="filename" type="string" required="true" />
 
 		<!--- Replace consecutive whitespace with a single dash --->
@@ -122,6 +122,9 @@
 		<!--- Remove potentially invalid characters --->
 		<cfset arguments.filename = reReplaceNoCase(arguments.filename, "[^a-z0-9\.\-\_/]","", "all") />
 
+		<!--- Convert filename (not path) to lowercase --->
+		<cfset arguments.filename = replace(arguments.filename, ListLast(arguments.filename, '/'), LCase(ListLast(arguments.filename, '/')))>
+		
 		<cfreturn arguments.filename />
 	</cffunction>
 
@@ -224,29 +227,31 @@
 		</code>
 	 --->
 	<cffunction name="ioGetUniqueFilename" returntype="string" access="public" output="false" hint="Returns a version of the specified filename which is unique among every listed location.">
-		<cfargument name="locations" type="string" required="false" hint="The returned file will be unique for all the specified locations. If this is not specified, the file will be treated as an absolute local file" />
-		<cfargument name="file" type="string" required="true" />
-		
-		<cfset var i = 0 />
-		<cfset var currentfile = arguments.file />
-		
-		<cfset arguments.file = normalizePath(arguments.file) />
-		
-		<cfif structkeyexists(arguments,"locations")>
-			<cfset arguments.file = sanitizeFilename(arguments.file) />
-			<cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
-				<cfset i = i + 1 />
-				<cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
-			</cfloop>
-		<cfelse>
-			<cfloop condition="fileExists(currentfile)">
-				<cfset i = i + 1 />
-				<cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
-			</cfloop>
-		</cfif>
-		
-		<cfreturn currentfile />
-	</cffunction>
+        <cfargument name="locations" type="string" required="false" hint="The returned file will be unique for all the specified locations. If this is not specified, the file will be treated as an absolute local file" />
+        <cfargument name="file" type="string" required="true" />
+        
+        <cfset var i = 0 />
+        <cfset var currentfile = "" />
+        
+        <cfset arguments.file = normalizePath(arguments.file) />
+        <cfset arguments.file = sanitizeFilename(arguments.file) />
+
+        <cfset currentfile = arguments.file />
+
+        <cfif structkeyexists(arguments,"locations")>
+            <cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
+                <cfset i = i + 1 />
+                <cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
+            </cfloop>
+        <cfelse>
+            <cfloop condition="fileExists(currentfile)">
+                <cfset i = i + 1 />
+                <cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
+            </cfloop>
+        </cfif>
+        
+        <cfreturn currentfile />
+    </cffunction>	 
 	
 	<!--- @@description: 
 		<p>Returns the size of the file in bytes.</p>
@@ -678,7 +683,7 @@
 		<cfset var config = this.locations[arguments.location] />
 		
 		<cfset arguments.file = normalizePath(arguments.file) />
-		
+	
 		<cfset this.cdns[config.cdn].ioDeleteFile(config=config,file=arguments.file) />
 	</cffunction>
 	
