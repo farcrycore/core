@@ -635,7 +635,7 @@
 		<cfset var aRemove = arraynew(1) />
 
 		<cfif not isdefined("application.objectbroker.#arguments.typename#")>
-			<cfreturn />
+			<cfreturn false />
 		</cfif>
 
 		<cfloop collection="#application.objectbroker[arguments.typename]#" item="i">
