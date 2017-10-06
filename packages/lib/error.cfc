@@ -583,6 +583,7 @@
 		
 		<!--- in the case of data views (json, xml, etc), return stream the data back in that type --->
 		<cfif isdefined("url.type") and len(url.type) and isdefined("url.view") and len(url.view)
+			and structkeyexists(application.stCOAPI[url.type].stWebskins,url.view)
 			and isdefined("application.stCOAPI.#url.type#.stWebskins.#url.view#.viewStack") 
 			and application.stCOAPI[url.type].stWebskins[url.view].viewStack eq "data" 
 			and isdefined("application.stCOAPI.#url.type#.stWebskins.#url.view#.mimeType")>
