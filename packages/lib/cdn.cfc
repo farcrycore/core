@@ -673,7 +673,7 @@
 		
 		@@examples:
 		<code>
-			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#") />
+			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="#arguments.stObject[arguments.stMetadata.name]#") />
 		</code>
 	 --->
 	<cffunction name="ioDeleteFile" returntype="void" output="false" hint="Deletes the specified file">
@@ -696,7 +696,7 @@
 		
 		@@examples:
 		<code>
-			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="/#stMetadata.ftDestination#")>
+			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="#stMetadata.ftDestination#")>
 			    <!--- something here --->
 			</cfif>
 		</code>
@@ -721,7 +721,7 @@
 		
 		@@examples:
 		<code>
-			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="/#stMetadata.ftDestination#")>
+			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="#stMetadata.ftDestination#")>
 			    <!--- something here --->
 			</cfif>
 		</code>
