@@ -11,7 +11,6 @@
 
 			<!--- This Java object gathers objects that were put in the broker but marked for garbage collection --->
 			<cfset application.objectrecycler =  createObject("java", "java.lang.ref.ReferenceQueue") />
-			<cfif structKeyExists(application,'stcoapi')>
 
 			<!--- Reset existing caches --->
 			<cfloop collection="#application.objectbroker#" item="typename">
