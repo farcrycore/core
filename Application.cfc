@@ -526,7 +526,7 @@
 		<cfset var oError = "" />
 
 		<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
-		<cfif structkeyexists(server,"railo")>
+		<cfif structkeyexists(server,"lucee") OR structkeyexists(server,"railo")>
 			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 10000#" />
 		<cfelseif structkeyexists(server,"coldfusion")>
 			<cfsetting requesttimeout="#CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout() + 10#" />
