@@ -660,18 +660,8 @@
 			
 		<cfelseif structkeyexists(arguments,"dest_config")>
 			
-			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
-				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
-			</cfif>
-			
 			<cftry>
-
-				<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-					<cffile action="write" output="#fileReadBinary(arguments.source_localpath)#" file="#getS3Path(config=arguments.dest_config,file=arguments.dest_file)#">
-				<cfelse>
-					<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />									
-				</cfif>
-
+				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
@@ -792,7 +782,7 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		
-		<cffile action="delete" file="#getS3Path(config=arguments.config,file=arguments.file)#" />
+		<cfset deleteObject(argumentCollection=arguments) />
 		
 		<cfif arguments.config.localCacheSize>
 			<cfset removeCachedFile(config=arguments.config,file=arguments.file) />
@@ -800,7 +790,6 @@
 		
 		<cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" />
 	</cffunction>
-	
 	
 	<cffunction name="ioDirectoryExists" returntype="boolean" access="public" output="false" hint="Checks that a specified path exists">
 		<cfargument name="config" type="struct" required="true" />
@@ -1043,14 +1032,68 @@
 		</cfif>
 	</cffunction>
 
+	<cffunction name="deleteObject" access="public" output="false" returntype="string" hint="Uses the S3 rest API to delete an object's ACL">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset var signature = "" />
+		<cfset var timestamp = GetHTTPTimeString(Now()) />
+		<cfset var cfhttp = "" />
+		<cfset var results = "" />
+		<cfset var path = "" />
+		<cfset var stDetail = structNew() />
+		<cfset var substituteValues = arrayNew(1) />
+		<cfset var header = "" />
+
+		<cfif left(arguments.file,1) neq "/">
+			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
+		<cfelse>
+			<cfset path = arguments.config.pathPrefix & arguments.file />
+		</cfif>
+
+		<!--- create signature --->
+		<cfset signature = replace("DELETE\n\napplication/x-www-form-urlencoded; charset=utf-8\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%3F,%2F,%2D,%2E,%5F","?,/,-,.,_")#","\n","#chr(10)#","all") />
+
+		<!--- REST call --->
+		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
+			<!--- Amazon Global Headers --->
+			<cfhttpparam type="header" name="Date" value="#timestamp#" />
+			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+		</cfhttp>
+
+		<!--- check XML parsing --->
+		<cfif isXML(cfhttp.fileContent)>
+			<cfset results = XMLParse(cfhttp.fileContent) />
+
+			<!--- check for errors --->
+			<cfif structkeyexists(results,"error")>
+				<!--- check error xml --->
+				<cfset stDetail = structNew()>
+				<cfset stDetail["signature"] = replace(signature, chr(10), "\n", "ALL")>
+				<cfset stDetail["result"] = results>
+				<cfset substituteValues = arrayNew(1)>
+				<cfset substituteValues[1] = results.error.message.XMLText>
+				<cfset substituteValues[2] = signature>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+			</cfif>
+		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
+			<cfset substituteValues = arrayNew(1)>
+			<cfset substituteValues[1] = cfhttp.statuscode>
+			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
+		</cfif>
+	</cffunction>
+
 	<cffunction name="updateACL" access="public" output="false" returntype="void">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 
-		<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-			<cfset putFile(config=arguments.config, file=arguments.file) />
-		<cfelse>
-			<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
+		<cfif arrayLen(arguments.config.acl)>
+			<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
+				<cfset putACL(config=arguments.config, file=arguments.file) />
+			<cfelse>
+				<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
+			</cfif>
 		</cfif>
 	</cffunction>
 

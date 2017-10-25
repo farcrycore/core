@@ -237,7 +237,7 @@
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
 		<cfset var result = "" />
 		
-		<cfif structKeyExists(url, "ud")>
+		<cfif structKeyExists(url, "ud") AND structKeyExists(this.userdirectories, "#url.ud#")>
 			<cfset result = url.ud />
 		<cfelse>			
 			<cfif len(application.fapi.getConfig("security","defaultUserDirectory",""))>

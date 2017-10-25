@@ -48,8 +48,8 @@
 
 	<cfset qResult = application.fapi.getContentType(stMetadata.ftLibraryDataTypename).getLibraryRecordset(primaryID=stObj.objectid, primaryTypename=stObj.typename, stMetadata=stMetadata, filterType=url.filterTypename, filter=form.searchTypename) />
 
-	<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1") />
-	
+	<cfset formAction = application.url.webroot & "index.cfm?type=#stobj.typename#&objectid=#stobj.objectid#&view=displayLibrary&filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1" />
+
 	<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#">		
 		<grid:div style="margin:0 0 10px auto;"><!---  style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; " --->
 			<cfoutput>
