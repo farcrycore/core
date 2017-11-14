@@ -1052,7 +1052,7 @@
 		</cfif>
 
 		<!--- create signature --->
-		<cfset signature = replace("DELETE\n\napplication/x-www-form-urlencoded; charset=utf-8\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%3F,%2F,%2D,%2E,%5F","?,/,-,.,_")#","\n","#chr(10)#","all") />
+		<cfset signature = replace("DELETE\n\n\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%3F,%2F,%2D,%2E,%5F","?,/,-,.,_")#","\n","#chr(10)#","all") />
 
 		<!--- REST call --->
 		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
