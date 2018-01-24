@@ -148,7 +148,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 			<skin:loadJS id="fc-jquery" />
 			
-			<skin:loadJS id="webskinAjaxLoader">
+			<skin:loadJS id="webskinAjaxLoader" core="true">
 			<cfoutput>		
 				$j.fn.loadAjaxWebskin = function (config){
 					var self = this;

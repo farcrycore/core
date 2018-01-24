@@ -7,8 +7,8 @@
 		<cfset var bSuccess = true />
 		
 		<cfif not structKeyExists(application,"bInit") OR not application.bInit OR arguments.bFlush OR NOT structKeyExists(application, "objectBroker") OR NOT structKeyExists(application, "objectrecycler")>
-			<cfset application.objectbroker =  structNew() />
-			
+			<cfparam name="application.objectbroker" default="#structNew()#">
+
 			<!--- This Java object gathers objects that were put in the broker but marked for garbage collection --->
 			<cfset application.objectrecycler =  createObject("java", "java.lang.ref.ReferenceQueue") />
 
@@ -630,7 +630,7 @@
 		<cfset var aRemove = arraynew(1) />
 
 		<cfif not isdefined("application.objectbroker.#arguments.typename#")>
-			<cfreturn />
+			<cfreturn false />
 		</cfif>
 
 		<cfloop collection="#application.objectbroker[arguments.typename]#" item="i">

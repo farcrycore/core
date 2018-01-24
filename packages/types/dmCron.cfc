@@ -173,7 +173,13 @@ type properties
 	<cfset var stAttributes = structNew()>
 
 	<cfset stAttributes.action = "list">
-	<cfset stAttributes.returnvariable = "qJobs">
+	<cfif isDefined("application.sysinfo.engine.engine") and application.sysinfo.engine.engine eq "coldfusion">
+		<cfset stAttributes.result = "qJobs">
+	<cfelseif isDefined("application.sysinfo.engine.engine") and application.sysinfo.engine.engine eq "lucee">
+		<cfset stAttributes.result = "qJobs">
+	<cfelse>
+		<cfset stAttributes.returnvariable = "qJobs">
+	</cfif>
 
 	<cftry>
 		<cfschedule action="#stAttributes.action#" attributeCollection="#stAttributes#">
