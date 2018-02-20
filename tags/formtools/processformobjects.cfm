@@ -192,7 +192,7 @@
 		</cfif>
 		
 		
-		<cfset stObj = stType.getData(Caller[attributes.r_stProperties].ObjectID) />
+		<cfset stObj = stType.getData(objectid=Caller[attributes.r_stProperties].ObjectID, bUseInstanceCache=false) />
 		<cfset bResult = structAppend(Caller[attributes.r_stProperties], stObj, false )  />
 		
 		
