@@ -138,7 +138,7 @@
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 		<cfif isdefined("url.resolvelabels")>
-			<cfloop list="#convertPropertyToValue(listtoarray(url.resolvelabels),arguments.stMetadata.ftJoin)#" index="id">
+			<cfloop list="#convertPropertyToValue(listtoarray(url.resolvelabels),arguments.stMetadata.ftJoin)#" index="id" delimiters=";">
 				<cfset st = structnew() />
 				<cfset st["id"] = listfirst(id,"|") />
 				<cfset st["text"] = listlast(id,"|") />
@@ -280,16 +280,16 @@
 		<cfset var q = "" />
 		
 		<cfif not isarray(arguments.value)>
-			<cfset arguments.value = listtoarray(arguments.value) />
+			<cfset arguments.value = listtoarray(arguments.value, ";") />
 		</cfif>
 		
 		<cfloop from="1" to="#arraylen(arguments.value)#" index="i">
 			<cfif listlen(arguments.value[i],"|") eq 2>
-				<cfset result = listappend(result,arguments.value[i]) />
+				<cfset result = listappend(result,arguments.value[i], ";") />
 			<cfelse>
 				<cfif isValid("uuid", arguments.value[i])>
 					<cfset st = application.fapi.getContentObject(objectid=arguments.value[i]) />
-					<cfset result = listappend(result,"#st.objectid#|#st.label#") />
+					<cfset result = listappend(result,"#st.objectid#|#st.label#", ";") />
 				</cfif>
 			</cfif>
 		</cfloop>

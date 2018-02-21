@@ -1055,8 +1055,9 @@
 		<cfset signature = replace("DELETE\n\n\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%3F,%2F,%2D,%2E,%5F","?,/,-,.,_")#","\n","#chr(10)#","all") />
 
 		<!--- REST call --->
-		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
+		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
+			<cfhttpparam type="header" name="Content-Type" value="" />
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
 		</cfhttp>
