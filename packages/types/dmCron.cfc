@@ -266,7 +266,16 @@ type properties
 	<cfreturn super.setData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.bAudit,arguments.dsn,arguments.bSessionOnly,arguments.bAfterSave) />
 </cffunction>
 
+<cffunction name="delete" access="public" hint="Remove task from CFML Engine, then remove from database" returntype="struct" output="false">
+	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+	<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+	<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
+		
+	<cfset removeJob(arguments.objectid)>
 
+	<cfreturn super.delete(argumentCollection = arguments) />
+</cffunction>
+	
 <!--- 
  // private functions 
 --------------------------------------------------------------------------------->
