@@ -139,6 +139,7 @@ type properties
 		startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#"
 		starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#"
 		enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#"
+		endtime= "#timeFormat(stobject.endDate,'hh:mm tt')#"
 		requesttimeout = "#stobject.timeout#">
 
 	<cfreturn true>
