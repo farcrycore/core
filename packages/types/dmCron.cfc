@@ -253,7 +253,7 @@ type properties
 		<cfif stExistingObj.title neq arguments.stProperties.title>
 			<cftry>
 				<!--- delete old task --->
-				<cfschedule	action="Delete"	task = "#application.applicationName#_#stExistingObj.title#">
+				<cfschedule	action="Delete"	task = "#application.applicationName#: #stExistingObj.title#">
 				<cfcatch></cfcatch>
 			</cftry>
 		</cfif>
