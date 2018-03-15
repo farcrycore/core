@@ -79,6 +79,20 @@
 		<cfreturn result />
 	</cffunction>
 	
+	
+
+	<cffunction name="compareStrings" returntype="struct" access="public" output="false" hint="Takes two strings and returns a left and right highlighted result">
+		<cfargument name="string1" type="string" required="true">
+		<cfargument name="string2" type="string" required="true">
+
+		<cfset var aResult = getDiff(arguments.string1,arguments.string2)>
+		<cfset var stResult = convertDiffToHighlights(aResult)>
+		
+		<cfreturn stResult>
+		
+	</cffunction>
+
+
 	<cffunction name="convertDiffToHighlights" returntype="struct" access="private" output="false" hint="Takes a diff array and returns a left and right highlighted result">
 		<cfargument name="aDiff" type="array" required="true" />
 		
