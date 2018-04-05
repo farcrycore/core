@@ -275,7 +275,9 @@
 		$j.ajax({
 		   type: "POST",
 		   url: a,
-		   data: $j("##" + formname).serialize(),
+		   data: new FormData($j("##" + formname)[0]),
+		   processData: false, 
+                   contentType: false,
 		   dataType: "html",
 		   cache: false,
 		   timeout: ajaxTimeout,
