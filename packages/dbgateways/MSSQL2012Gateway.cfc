@@ -1,5 +1,57 @@
 <cfcomponent extends="MSSQL2005Gateway" dbType="mssql2012:Microsoft SQL 2012" usesDBOwner="true">
 	
+	<!--- UTILITY FUNCTIONS --->
+	<cffunction name="getValueForDB" access="public" output="false" returntype="struct" hint="Returns cfsqltype, null, and value for specified metadata and value">
+		<cfargument name="schema" type="struct" required="true" />
+		<cfargument name="value" type="any" required="true" />
+		
+		<cfset var stResult = structnew() />
+		
+		<cfswitch expression="#arguments.schema.type#">
+			<cfcase value="datetime">
+				<cfset stResult.cfsqltype = "cf_sql_timestamp" />
+				<cfset stResult.null = false />
+				<cfif (arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL") and arguments.schema.nullable>
+					<cfset stResult.null = true />
+					<cfset stResult.value = "" />
+				<cfelseif arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL">
+					<cfset stResult.value = dateadd('yyyy',200,now()) />
+				<cfelse>
+					<cfset stResult.value = arguments.value />
+				</cfif>
+			</cfcase>
+			<cfcase value="numeric">
+				<cfif listlast(arguments.schema.precision) eq 0 and listfirst(arguments.schema.precision) gt 10>
+					<cfset stResult.cfsqltype = "cf_sql_bigint" />
+				<cfelseif listlast(arguments.schema.precision) eq 0>
+					<cfset stResult.cfsqltype = "cf_sql_integer" />
+				<cfelse>
+					<cfset stResult.cfsqltype = "cf_sql_decimal" />
+					<cfset stResult.scale = listlast(arguments.schema.precision) />
+				</cfif>
+				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
+					<cfset stResult.value = 0 />
+					<cfset stResult.null = true />
+				<cfelse>
+					<cfset stResult.value = arguments.value />
+					<cfset stResult.null = false />
+				</cfif>
+			</cfcase>
+			<cfcase value="string,longchar" delimiters=",">
+				<cfset stResult.cfsqltype = "cf_sql_varchar" />
+				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
+					<cfset stResult.value = "" />
+					<cfset stResult.null = true />
+				<cfelse>
+					<cfset stResult.value = arguments.value />
+					<cfset stResult.null = false />
+				</cfif>
+			</cfcase>
+		</cfswitch>
+		
+		<cfreturn stResult />
+	</cffunction>
+
 	<!--- DEPLOYMENT --->
 	
 	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into the database.">
