@@ -116,7 +116,7 @@ START WEBSKIN
 		<cfelseif stOverviewParams.stPermissions.iDeveloperPermission eq 1>
 			<!--- locked by another user --->
 			<ft:button 	value="Unlock" 
-						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by {1}')#"
+						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', [stLockedBy.label, application.fapi.prettyDate(stLockedBy.LASTLOGIN)],'Locked by {1}<br><small>last logged in {2}</small>')#"
 						title="Unlock this content item"
 						class="primary span3  btn-block"
 						priority="primary"
@@ -125,7 +125,7 @@ START WEBSKIN
 		<cfelse>
 			<!--- locked by another user --->
 			<ft:button	value="Unlock" 
-						text="<h1>LOCKED</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label', stLockedBy.label,'<span style="color:red">Locked by {1}</span>'))#"
+						text="<h1>LOCKED</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label', [stLockedBy.label, application.fapi.prettyDate(stLockedBy.LASTLOGIN)],'<span style="color:red">Locked by {1}</span><br><small>last logged in {2}</small>'))#"
 						title="Unlock this content item"
 						class="primary span3  btn-block"
 						priority="primary"
