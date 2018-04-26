@@ -838,7 +838,7 @@
 			<!--- Redirect information --->
 			<cfif arguments.stFU.redirectionType EQ "none" and structKeyExists(arguments, "furl")>
 				<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
-				<cfif right(arguments.furl,1) EQ "/" OR compare(arguments.stFU.friendlyURL, left(arguments.furl, len(arguments.stFU.friendlyURL))) neq 0 OR find("//", arguments.furl)>
+				<cfif right(arguments.furl,1) EQ "/" OR find("//", arguments.furl)>
 					<cfset arguments.furl = arguments.stFU.friendlyURL & arguments.fuParameters />
 					<cfset stResult.__redirectionType = 301 />
 					<cfset stResult.__redirectionURL = arguments.stFU.friendlyURL />
