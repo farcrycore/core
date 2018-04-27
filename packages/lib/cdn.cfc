@@ -709,7 +709,7 @@
 		
 		<cfset arguments.dir = normalizePath(arguments.dir) />
 		
-		<cfset this.cdns[config.cdn].ioDirectoryExists(config=config,dir=arguments.dir) />
+		<cfreturn this.cdns[config.cdn].ioDirectoryExists(config=config,dir=arguments.dir) />
 	</cffunction>
 	
 	<!--- @@description: 
