@@ -68,15 +68,9 @@
 <cfparam name="url.type" default="" />
 <cfparam name="url.view" default="" />
 
-<!--- ensure there is a (application.stCOAPI record for URL.type --->
-<cfif StructKeyExists(URL, 'type') AND Trim(URL.type) != '' AND NOT StructKeyExists(application.stCOAPI, url.type)>
+<!--- AJM FC-3138 HPC-1132 --->
+<cfif NOT StructKeyExists(application.stCOAPI, url.type)>
 	<cfset url.type = ''>
-</cfif>
-
-<!--- ensure view is only alpha numeric characters --->
-<cfif StructKeyExists(URL, 'view') AND Trim(URL.view) != '' AND reFind('[^([:alnum:]_)-]', URL.view) GT 0>
-	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Invalid view")) />
-	<cfexit method="exittag" />
 </cfif>
 
 <!--- get standard webskin names by device type --->
@@ -236,11 +230,14 @@
 		
 	</cfif>
 
+<!--- AJM FC-3138 HPC-1132 --->	
 	<!--- either stream the webskin result with an appropriate mime type, or output it normally --->
-	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax">
+<!--- 	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax"> --->
+	<cfif len(url.type) AND len(url.view) AND structKeyExists(application.stCOAPI, url.type) AND structKeyExists(application.stCOAPI[url.type].stWebskins, url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax">
 		<cfset request.mode.ajax = true />
 	</cfif>
-	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
+<!--- 	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")> --->
+	<cfif len(url.type) AND len(url.view) AND structKeyExists(application.stCOAPI, url.type) AND structKeyExists(application.stCOAPI[url.type].stWebskins, url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
 		<cfset request.mode.ajax = true />
 
 		<cfinvoke component="#application.fapi#" method="stream">
