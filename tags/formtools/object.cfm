@@ -683,15 +683,11 @@
 	
 	
 	
-			<!--- WRAPPER --->
-			<cfif len(attributes.class) OR len(attributes.style)>
-				<div class="#attributes.class#" style="#attributes.style#">
-			</cfif>
+		<!--- WRAPPER --->
+		<cfif len(attributes.class) OR len(attributes.style)>
+			<cfoutput><div class="#attributes.class#" style="#attributes.style#"></cfoutput>
+		</cfif>
 			
-			<!--- END WRAPPER --->
-			<cfif len(attributes.class)>
-				</div>
-			</cfif>		
 			
 	<!--- 
 	-Wrap		
@@ -708,6 +704,10 @@
 			<cfoutput>#fieldsHTML#</cfoutput>
 		</cfif>
 		
+		<!--- END WRAPPER --->
+		<cfif len(attributes.class) OR len(attributes.style)>
+			<cfoutput></div></cfoutput>
+		</cfif>		
 	</cfif>
 	
 	

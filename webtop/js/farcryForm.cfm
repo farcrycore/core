@@ -29,7 +29,7 @@
 		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",{ prefix:prefix, property: property },ajaxUpdate);
 		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",{ prefix:prefix, property: property },ajaxUpdate);
 		var el = $j("input[name="+prefix+property+"][type=hidden]");
-		if (el.size()){
+		if (el.length){
 			var lastvalue = el.val();
 			setInterval(function(){
 				var el = $j("input[name="+prefix+property+"][type=hidden]");
