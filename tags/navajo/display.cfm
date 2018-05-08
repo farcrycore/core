@@ -68,8 +68,8 @@
 <cfparam name="url.type" default="" />
 <cfparam name="url.view" default="" />
 
-<!--- AJM FC-3138 HPC-1132 --->
-<cfif NOT StructKeyExists(application.stCOAPI, url.type)>
+<!--- ensure application.stCOAPI record exists for url.type --->
+<cfif StructKeyExists(URL, 'type') AND NOT StructKeyExists(application.stCOAPI, url.type)>
 	<cfset url.type = ''>
 </cfif>
 
