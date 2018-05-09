@@ -230,13 +230,10 @@
 		
 	</cfif>
 
-<!--- AJM FC-3138 HPC-1132 --->	
 	<!--- either stream the webskin result with an appropriate mime type, or output it normally --->
-<!--- 	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax"> --->
 	<cfif len(url.type) AND len(url.view) AND structKeyExists(application.stCOAPI, url.type) AND structKeyExists(application.stCOAPI[url.type].stWebskins, url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax">
 		<cfset request.mode.ajax = true />
 	</cfif>
-<!--- 	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")> --->
 	<cfif len(url.type) AND len(url.view) AND structKeyExists(application.stCOAPI, url.type) AND structKeyExists(application.stCOAPI[url.type].stWebskins, url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
 		<cfset request.mode.ajax = true />
 
