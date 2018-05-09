@@ -114,7 +114,8 @@
 		<cfparam name="cookie.hasSessionScope" default="false" />
 
 		<cfif NOT isBoolean(cookie.sessionScopeTested)>
-			<cfset cookie.sessionScopeTested = false>
+			<cfcookie name="sessionScopeTested" value="false" expires="never"  httpOnly="true" /> <!--- AJM: HPC-1190 --->
+			<!--- <cfset cookie.sessionScopeTested = false> --->
 		</cfif>
 
 		<cfif NOT isBoolean(cookie.hasSessionScope)>
@@ -127,7 +128,7 @@
 			
 			<cfif not cookie.sessionScopeTested>
 				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never" />
+					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" /> <!--- AJM: HPC-1190 --->
 					<cfcookie name="hasSessionScope" value="false" expires="never" />
 					<cfcatch></cfcatch>
 				</cftry>
@@ -137,7 +138,8 @@
 			
 			<cfif not cookie.sessionScopeTested><!--- Sessions are OK for this user, set the cookie --->
 				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never" />
+					<!--- <cfcookie name="sessionScopeTested" value="true" expires="never" /> --->
+					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" /> <!--- AJM: HPC-1190 --->
 					<cfcookie name="hasSessionScope" value="true" expires="never" />
 					<cfcatch></cfcatch>
 				</cftry>
