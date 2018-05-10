@@ -114,12 +114,15 @@
 		<cfparam name="cookie.hasSessionScope" default="false" />
 
 		<cfif NOT isBoolean(cookie.sessionScopeTested)>
-			<cfcookie name="sessionScopeTested" value="false" expires="never"  httpOnly="true" /> <!--- AJM: HPC-1190 --->
-			<!--- <cfset cookie.sessionScopeTested = false> --->
+			<cfcookie name="sessionScopeTested" value="false" expires="never"  httpOnly="true" />
+		<cfelse>
+			<cfcookie name="sessionScopeTested" value="#cookie.hasSessionScope#" expires="never"  httpOnly="true" />
 		</cfif>
 
 		<cfif NOT isBoolean(cookie.hasSessionScope)>
-			<cfset cookie.hasSessionScope = false>
+			<cfcookie name="hasSessionScope" value="false" httpOnly="true">
+		<cfelse>
+			<cfcookie name="hasSessionScope" value="#cookie.hasSessionScope#" httpOnly="true">
 		</cfif>
 
 		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or arrayFind(this.botIPs,cgi.remote_addr)>
@@ -128,7 +131,7 @@
 			
 			<cfif not cookie.sessionScopeTested>
 				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" /> <!--- AJM: HPC-1190 --->
+					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" />
 					<cfcookie name="hasSessionScope" value="false" expires="never" />
 					<cfcatch></cfcatch>
 				</cftry>
@@ -138,9 +141,8 @@
 			
 			<cfif not cookie.sessionScopeTested><!--- Sessions are OK for this user, set the cookie --->
 				<cftry>
-					<!--- <cfcookie name="sessionScopeTested" value="true" expires="never" /> --->
-					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" /> <!--- AJM: HPC-1190 --->
-					<cfcookie name="hasSessionScope" value="true" expires="never" />
+					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" />
+					<cfcookie name="hasSessionScope" value="true" expires="never" httpOnly="true" />
 					<cfcatch></cfcatch>
 				</cftry>
 			</cfif>
@@ -464,7 +466,7 @@
 		<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
 			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
 		</cfif>
-		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
+		<cfcookie name="currentFarcryProject" value="#application.projectDirectoryName#" httpOnly="true">	
 	
 		<!--- Checks to see if the user has attempted to flick over to administrate a different project on this server. --->		
 		<cfif 	structKeyExists(url, "farcryProject") 
@@ -760,7 +762,7 @@
 			<!--- If all else fails... --->
 			<!--- 1. See if the user has a cookie telling us what project to look at. --->
 			<cfif structKeyExists(url, "farcryProject") AND len(url.farcryProject)>
-				<cfset cookie.currentFarcryProject = url.farcryProject />
+				<cfcookie name="currentFarcryProject" value="#url.farcryProject#" httpOnly="true">
 			</cfif>
 			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
 				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#"))>
