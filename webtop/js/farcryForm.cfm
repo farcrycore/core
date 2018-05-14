@@ -315,7 +315,14 @@
 			curvals.push(this.value);
 		
 		input.val(curvals.join(","));
-	}		
+	}
+
+	function show_confirmation(){
+		event.preventDefault();
+		if( !confirm( 'Are You Sure' ) ) {
+			parent.$j('##fcModal').modal('hide');
+		}
+	}
 
 
 	<!--- DIALOGS --->
@@ -383,12 +390,12 @@
 			},
 			onHidden: function() {
 				window.location.href = window.location.href.split('##')[0];
-				return true;
+				return false;
 			}
 		}, $settings);
 
 		var modalLeftPos = 0;
-		var fcModalTPL = $j("<div id='fcModal' class='modal hide fade fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;-webkit-overflow-scrolling:touch;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div>");
+		var fcModalTPL = $j("<div id='fcModal' class='modal hide fade fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true' onclick='show_confirmation();'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;-webkit-overflow-scrolling:touch;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div>");
 
 		var $fcModal = $j("##fcModal");
 
