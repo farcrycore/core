@@ -54,7 +54,7 @@
 			<skin:loadJS id="fc-jquery" />
 			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength", {rangelength:[0,#arguments.stMetadata.ftMaxLength#]});</cfoutput></skin:onReady>
 			<cfsavecontent variable="html">
-				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" maxLength="#arguments.stMetadata.ftMaxLength#" /></cfoutput>
+				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" maxLength="#arguments.stMetadata.ftMaxLength#" <cfif findNoCase('lNavIDAlias', arguments.fieldname) AND len(application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value))> disabled </cfif>/></cfoutput>
 			</cfsavecontent>
 		<cfelse>
 			<cfsavecontent variable="html">
