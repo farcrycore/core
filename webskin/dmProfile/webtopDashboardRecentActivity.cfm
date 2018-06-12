@@ -38,7 +38,7 @@
 				<cfset eventTypename=application.fapi.findType(qActivity.object) />
 				<cfif len(eventTypename) AND eventTypename neq "container">
 					<cfset stObj = application.fapi.getContentObject(qActivity.object) />
-					<cfif stObj.label != "(incomplete)">
+					<cfif stObj.label NEQ "(incomplete)">
 					<cfset stProfile = oProfile.getProfile(qActivity.userid)>
 					<tr>
 						<td nowrap="true"><i class="fa #application.fapi.getContentTypeMetadata(typename="#stObj.Typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#stObj.Typename#", md="displayname", default="Unknown")#"></i> #stObj.Typename#</td>
