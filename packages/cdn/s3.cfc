@@ -433,6 +433,9 @@
 		<!--- create signature --->
 		<cfset signature = replace("HEAD\n\n\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%2F,%2D,%2E,%5F","/,-,.,_")#","\n","#chr(10)#","all") />
 
+		<!--- fix path with special char like space --->
+        <cfset path = replacelist(urlencodedformat(path),"%2F,%2D,%2E,%5F","/,-,.,_") />
+        
 		<!--- REST call --->
 		<cfhttp method="HEAD" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="stResponse" timeout="10">
 			<!--- Amazon Global Headers --->
