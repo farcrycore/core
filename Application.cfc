@@ -27,8 +27,13 @@
 	<cfif structKeyExists(url, "furl") AND url.furl EQ "/pingFU">				
 		<cfcontent type="text/plain" variable="#ToBinary( ToBase64('PING FU SUCCESS') )#" reset="Yes">
 	</cfif>
-	
-	
+
+	<!--- healthcheck live endpoint --->
+	<cfif structKeyExists(url, "furl") AND url.furl eq "/healthcheck/live">
+		<cfset healthcheckLive()>
+	</cfif>
+
+
 	<!--- run the active project's constructor --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 	<cfinclude template="#this.projectConstructorLocation#" />
@@ -246,8 +251,35 @@
 		
 		<cfreturn false />
 	</cffunction>
-	
-	
+
+
+	<cffunction name="healthcheckReady" output="false">
+		<!---
+			readiness indicates that the application has been initialised and is ready to handle requests
+			(e.g. ready to be brought into a load balancer)
+		--->
+		<!--- test the application --->
+		<cfif NOT structKeyExists(application, "bInit") OR application.bInit eq false>
+			<cfheader statuscode="503" statustext="Unavailable: Application has not started">
+			<cfabort>
+		</cfif>
+
+		<!--- return a 200 OK --->
+		<cfheader statuscode="200" statustext="OK">
+		<cfabort>
+	</cffunction>
+
+	<cffunction name="healthcheckLive" output="false">
+		<!---
+			liveness indicates that the application is in a healthy, live state (and the JVM is healthy)
+			failing this test means that the application server may need to be restarted
+		--->
+		<!--- return a 200 OK --->
+		<cfheader statuscode="200" statustext="OK">
+		<cfabort>
+	</cffunction>
+
+
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
 
 		<cfset var qServerSpecific = queryNew("blah") />
@@ -419,6 +451,11 @@
  
 	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false" hint="Fires at first part of page processing.">
 		<cfargument name="TargetPage" type="string" required="true" />
+
+		<!--- healthcheck ready endpoint --->
+		<cfif structKeyExists(url, "furl") AND url.furl eq "/healthcheck/ready">				
+			<cfset healthcheckReady()>
+		</cfif>
 
 		<!--- If a session switch was requested, do that now --->
 		<cfif structKeyExists(url, "switchsession")>
