@@ -127,8 +127,8 @@
 			
 			<cfif not cookie.sessionScopeTested>
 				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" />
-					<cfcookie name="hasSessionScope" value="false" expires="never" />
+					<cfcookie name="sessionScopeTested" value="true" expires="never" httpOnly="true" />
+					<cfcookie name="hasSessionScope" value="false" expires="never" httpOnly="true" />
 					<cfcatch></cfcatch>
 				</cftry>
 			</cfif>
@@ -137,7 +137,7 @@
 			
 			<cfif not cookie.sessionScopeTested><!--- Sessions are OK for this user, set the cookie --->
 				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never"  httpOnly="true" />
+					<cfcookie name="sessionScopeTested" value="true" expires="never" httpOnly="true" />
 					<cfcookie name="hasSessionScope" value="true" expires="never" httpOnly="true" />
 					<cfcatch></cfcatch>
 				</cftry>
