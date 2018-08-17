@@ -121,7 +121,9 @@ type properties
 <cffunction name="addJob" returntype="boolean" output="false" hint="Schedules a task on app server jobs list.">
 	<cfargument name="objectid" type="uuid" required="false">
 	<cfargument name="stobject" type="struct" required="false">
-
+	
+	<cfset var attr = structnew() />
+	
 	<cfif structKeyExists(arguments, "objectid")>
 		<cfset arguments.stobject = getData(objectid=arguments.objectid)>	
 	</cfif>
@@ -129,19 +131,22 @@ type properties
 	<cfif structIsEmpty(stobject)>
 		<cfthrow type="Application" message="Argument *stobject* is empty.">
 	</cfif>
+	
+	<cfscript>
+	attr.action = "UPDATE";
+	attr.task = "#application.applicationName#: #stobject.title#";
+	attr.operation = "HTTPRequest";
+	attr.url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#";
+	attr.interval = "#stobject.frequency#";
+	attr.startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#";
+	attr.starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#";
+	attr.enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#";
+	attr.endtime= "#timeFormat(stobject.endDate,'hh:mm tt')#";
+	attr.requesttimeout = "#stobject.timeout#";
+	</cfscript>
 
-	<cfschedule 
-		action="UPDATE" 
-		task = "#application.applicationName#: #stobject.title#"
-		operation = "HTTPRequest"
-		url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#"
-		interval = "#stobject.frequency#"
-		startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#"
-		starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#"
-		enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#"
-		endtime= "#timeFormat(stobject.endDate,'hh:mm tt')#"
-		requesttimeout = "#stobject.timeout#">
-
+	<cfschedule attributeCollection="#attr#">
+		
 	<cfreturn true>
 </cffunction>
 
