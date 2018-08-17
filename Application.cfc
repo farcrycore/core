@@ -114,15 +114,11 @@
 		<cfparam name="cookie.hasSessionScope" default="false" />
 
 		<cfif NOT isBoolean(cookie.sessionScopeTested)>
-			<cfcookie name="sessionScopeTested" value="false" expires="never"  httpOnly="true" />
-		<cfelse>
-			<cfcookie name="sessionScopeTested" value="#cookie.hasSessionScope#" expires="never"  httpOnly="true" />
+			<cfcookie name="sessionScopeTested" value="false" expires="never" httpOnly="true" />
 		</cfif>
 
 		<cfif NOT isBoolean(cookie.hasSessionScope)>
 			<cfcookie name="hasSessionScope" value="false" httpOnly="true">
-		<cfelse>
-			<cfcookie name="hasSessionScope" value="#cookie.hasSessionScope#" httpOnly="true">
 		</cfif>
 
 		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or arrayFind(this.botIPs,cgi.remote_addr)>
