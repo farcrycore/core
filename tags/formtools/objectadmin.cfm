@@ -320,13 +320,23 @@
 					
 					<cfloop list="#attributes.lFilterFields#" index="i">
 						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+							<cfif structKeyExists(attributes.stFilterMetadata,i) AND StructKeyExists(attributes.stFilterMetadata[i], 'ftFilterMatch')>
+								<cfset ftFilterMatch = attributes.stFilterMetadata[i]['ftFilterMatch']>
+							<cfelse>
+								<cfset ftFilterMatch = 'like'>
+							</cfif>
 							<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
 							
 							<cfcase value="string,nstring,list,uuid">	
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
-										<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+										
+										<cfif ftFilterMatch == 'exact'>
+											<cfoutput>AND lower(#i#) = '#whereValue#'</cfoutput> 
+										<cfelse>
+											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+										</cfif>
 									</cfloop>
 								</cfif>
 							</cfcase>
@@ -355,7 +365,12 @@
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
-											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+											
+											<cfif ftFilterMatch == 'exact'>
+												<cfoutput>AND lower(#i#) = '#whereValue#'</cfoutput> 
+											<cfelse>
+												<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+											</cfif>
 										<cfelseif listcontains("numeric,integer", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
 											<cfif isNumeric(whereValue)>
@@ -386,7 +401,7 @@
 				</cfoutput>
 
 			</cfsavecontent>
-	
+
 	</cfif>
 	
 	
