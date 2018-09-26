@@ -157,7 +157,7 @@
 		<cfset stObj.typename = variables.typename />
 		
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfif structKeyExists(tempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
+		<cfif isDefined("tempObjectStore") AND structKeyExists(tempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 			
 			<!--- get from the temp object stroe --->
 			<cfset stObj = tempObjectStore[arguments.objectid] />
