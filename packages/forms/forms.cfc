@@ -150,6 +150,7 @@
 			<cfset tempObjectStore = Session.TempObjectStore />
 			<cfcatch type="any">
 				<!--- ignore the error and assume it just doesnt exist yet.  --->
+				<cfset tempObjectStore = structNew() />
 			</cfcatch>
 		</cftry>
 				
