@@ -499,6 +499,7 @@
 		<cfset stResult["method"] = "redirect" />
 		<cfset stResult["path"] = getURLPath(argumentCollection=arguments) />
 		<cfset stResult["mimetype"] = getPageContext().getServletContext().getMimeType(arguments.file) />
+		<cfset stResult["s3Path"] = getS3Path(config=arguments.config,file=arguments.file) />
 		
 		<cfreturn stResult />
 	</cffunction>
