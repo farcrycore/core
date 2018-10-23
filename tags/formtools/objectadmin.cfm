@@ -412,12 +412,12 @@
 	<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = "" />
 	<cfif len(attributes.sortableColumns)>
 		<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
-			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
+			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = sanitizeSQLOrderBy(form.sqlOrderby) />
 		</cfif>
 	</cfif>
 	
 	<cfif not len(session.objectadminFilterObjects[attributes.typename].sqlOrderBy) >
-		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
+		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = sanitizeSQLOrderBy(attributes.sqlorderby) />
 	</cfif>
 	
 			
@@ -1270,6 +1270,23 @@
 	</cfoutput>
 
 </cfif> 
+
+
+<cffunction name="sanitizeSQLOrderBy" returntype="string">
+	<cfargument name="sqlorderby" type="string" required="true">
+
+	<cfset resultColumn = attributes.defaultorderby>
+	<cfset resultDirection = attributes.defaultorder>
+
+	<cfif listLen(arguments.sqlorderby, " ") gte 1 AND listFindNoCase(attributes.sortableColumns, listFirst(arguments.sqlorderby, " "))>
+		<cfset resultColumn = listFirst(arguments.sqlorderby, " ")>
+	</cfif>
+	<cfif listLen(arguments.sqlorderby, " ") eq 2 AND listFindNoCase("ASC,DESC", listLast(arguments.sqlorderby, " "))>
+		<cfset resultDirection = listLast(arguments.sqlorderby, " ")>
+	</cfif>
+
+	<cfreturn "#resultColumn# #resultDirection#">
+</cffunction>
 
 <cffunction name="getObjectAdminData" returntype="struct">
 	
