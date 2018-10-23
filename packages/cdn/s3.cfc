@@ -1215,6 +1215,10 @@
 		<cfset var stDetail = structNew() />
 		<cfset var substituteValues = arrayNew(1) />
 		<cfset var header = "" />
+		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
+		<cfset var stHeaders = {
+			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
+		} />
 
 		<cfif left(arguments.file,1) neq "/">
 			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
@@ -1223,14 +1227,25 @@
 		</cfif>
 
 		<!--- create signature --->
-		<cfset signature = replace("DELETE\n\n\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%3F,%2F,%2D,%2E,%5F","?,/,-,.,_")#","\n","#chr(10)#","all") />
+		<cfset signature = getAWSAuthorization(
+			config=arguments.config,
+			timestamp=timestamp,
+			method="DELETE",
+			path=path,
+			headers=stHeaders,
+			unsignedPayload=true
+		) />
 
 		<!--- REST call --->
 		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
-			<cfhttpparam type="header" name="Content-Type" value="" />
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
-			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+			<cfhttpparam type="header" name="Authorization" value="#signature#" />
+
+			<!--- Headers --->
+			<cfloop collection="#stHeaders#" item="i">
+				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+			</cfloop>
 		</cfhttp>
 
 		<!--- check XML parsing --->
