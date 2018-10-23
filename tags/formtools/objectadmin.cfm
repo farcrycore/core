@@ -332,7 +332,7 @@
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
 										
-										<cfif ftFilterMatch == 'exact'>
+										<cfif ftFilterMatch eq "exact">
 											<cfoutput>AND lower(#i#) = '#whereValue#'</cfoutput> 
 										<cfelse>
 											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
@@ -366,7 +366,7 @@
 										<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
 											
-											<cfif ftFilterMatch == 'exact'>
+											<cfif ftFilterMatch eq "exact">
 												<cfoutput>AND lower(#i#) = '#whereValue#'</cfoutput> 
 											<cfelse>
 												<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
