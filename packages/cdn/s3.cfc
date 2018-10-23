@@ -577,10 +577,34 @@
 		<cfset var path = "" />
 		<cfset var stDetail = structNew() />
 		<cfset var substituteValues = arrayNew(1) />
-		<cfset var urlPath = getURLPath(method="HEAD", requireSignedURL=true, argumentCollection=arguments) />
+		<cfset var urlPath = arguments.config.pathPrefix & arguments.file />
+		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
+		<cfset var stHeaders = {
+			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
+		} />
+		<cfset var i = "" />
+
+		<!--- create signature --->
+		<cfset var signature = getAWSAuthorization(
+			config=arguments.config,
+			timestamp=timestamp,
+			method="HEAD",
+			path=urlPath,
+			headers=stHeaders,
+			unsignedPayload=true
+		) />
 
 		<!--- REST call --->
-		<cfhttp method="HEAD" url="#urlPath#" result="stResponse"></cfhttp>
+		<cfhttp method="HEAD" url="https://#arguments.config.bucket#.s3.amazonaws.com#urlPath#" charset="utf-8" result="stResponse" timeout="1800">
+			<!--- Amazon Global Headers --->
+			<cfhttpparam type="header" name="Date" value="#timestamp#" />
+			<cfhttpparam type="header" name="Authorization" value="#signature#" />
+
+			<!--- Headers --->
+			<cfloop collection="#stHeaders#" item="i">
+				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+			</cfloop>
+		</cfhttp>
 
 		<cfif listfirst(stResponse.statuscode," ") eq "200">
 			<!--- file exists --->
