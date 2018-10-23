@@ -72,6 +72,7 @@
 
 	<!--- validate options --->
 	<cfproperty name="ftSecure" default="false" hint="Store files securely outside of public webspace." />
+	<cfproperty name="ftLocation" default="" hint="set to 'temp' to save to local CDN location" />
 	<cfproperty name="ftDestination" default="" hint="Destination of file store relative of secure/public locations." />
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
@@ -362,6 +363,7 @@
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
+		<cfparam name="arguments.stMetadata.ftLocation" default="" />
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" />
 		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
@@ -378,6 +380,7 @@
 					uploadField="#stMetadata.FormFieldPrefix##stMetadata.Name#NEW",
 					destination=arguments.stMetadata.ftDestination,
 					secure=arguments.stMetadata.ftSecure,
+					ftLocation=arguments.stMetadata.ftLocation,
 					status=objStatus,
 					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
 					sizeLimit=arguments.stMetadata.ftMaxsize,
@@ -421,6 +424,7 @@
 		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
 		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
 		<cfargument name="stFieldPost" type="struct" required="false" default="#structnew()#" hint="The supplementary data" />
+		<cfargument name="ftLocation" type="string" required="false" default="" hint="set to 'temp' to save to local CDN location" />
 		
 		<cfset var filelocation = "" />
 		<cfset var stResult = structNew()>
@@ -439,7 +443,9 @@
 		</cfif>
 		
 		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
-		<cfif arguments.secure eq "false" and not listfindnocase("draft,pending",arguments.status) and filepermission>
+		<cfif len(arguments.ftLocation)>
+			<cfset filelocation = arguments.ftLocation />
+		<cfelseif arguments.secure eq "false" and not listfindnocase("draft,pending",arguments.status) and filepermission>
 			<cfset filelocation = "publicfiles" />
 		<cfelse>
 			<cfset filelocation = "privatefiles" />
