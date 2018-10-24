@@ -333,10 +333,10 @@
 		<cfset var result = [
 			arguments.method,
 			S3URLEncode(arguments.path, false),
-			"", // query parameters,
-			"", // canonical headers
-			"", // header list
-			"" // payload hash
+			"", <!--- query parameters --->
+			"", <!--- canonical headers --->
+			"", <!--- header list --->
+			"" <!--- payload hash --->
 		] />
 		<cfset var key = "" />
 		<cfset var intermed = [] />
