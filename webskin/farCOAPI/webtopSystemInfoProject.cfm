@@ -11,7 +11,7 @@
 </ft:field>
 
 <cfset projectLastModified = createdatetime(1970,1,1,0,0,0) />
-<cfdirectory action="list" directory="#projectPath#" recurse="true" type="file" name="q" />
+<cfdirectory action="list" directory="#projectPath#" recurse="true" type="file" name="q" filter="*.cf?" />
 <cfloop query="q">
 	<cfif projectLastModified lt q.dateLastModified and q.dateLastModified lte now()>
 		<cfset projectLastModified = q.dateLastModified />

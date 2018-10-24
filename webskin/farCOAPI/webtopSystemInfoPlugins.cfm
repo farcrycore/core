@@ -6,7 +6,7 @@
 
 
 <cfset coreLastModified = createdatetime(1970,1,1,0,0,0) />
-<cfdirectory action="list" directory="#expandpath('/farcry/core')#" recurse="true" type="file" name="q" />
+<cfdirectory action="list" directory="#expandpath('/farcry/core')#" recurse="true" type="file" name="q" filter="*.cf?" />
 <cfloop query="q">
 	<cfif coreLastModified lt q.dateLastModified and q.dateLastModified lte now()>
 		<cfset coreLastModified = q.dateLastModified />
