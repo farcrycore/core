@@ -310,6 +310,10 @@
 		<cfargument name="countries" type="string" required="false" hint="Including this argument restricts the countries to certain countries or country codes" />
 		
 		<cfset var q = querynew("code,name") />
+
+		<cfif not structkeyexists(this,"qCountries")>
+			<cfset init()>
+		</cfif>
 		
 		<cfquery dbtype="query" name="q">
 			select		code,name
