@@ -75,7 +75,7 @@
 		<cfset var html = "" />
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#arguments.stMetadata.value#</cfoutput>
+			<cfoutput>#application.fc.lib.esapi.encodeForHTML(arguments.stMetadata.value)#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
