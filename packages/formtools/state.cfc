@@ -258,7 +258,7 @@
 			<cfset html = q.name[1] />
 		</cfif>
 		
-		<cfreturn html>
+		<cfreturn application.fc.lib.esapi.encodeForHTML(html)>
 	</cffunction>
 
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
@@ -268,11 +268,18 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
 		<cfset var stResult = passed(value=stFieldPost.Value) />
+		<cfset var qStates = "">
 		
 		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
 		</cfif>
-	
+		<cfif len(stFieldPost.Value)>
+			<cfset qStates = getStates()>
+			<cfif NOT (listFindNoCase(valueList(qStates.code), stFieldPost.Value) OR listFindNoCase(valueList(qStates.name), stFieldPost.Value) OR listFindNoCase(valueList(qStates.fullcode), stFieldPost.Value))>
+				<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="Select a state from the list.") />
+			</cfif>
+		</cfif>
+
 		<cfreturn stResult />
 	</cffunction>
 	
