@@ -276,18 +276,18 @@
 	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Returns a query of the directory containing a 'file' column only. This filename will be equivilent to what is passed into other CDN functions.">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
+		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var qDir = "" />
 		
-		<cfdirectory action="list" directory="#getFullPath(config=arguments.config,file=arguments.dir)#" recurse="true" type="file" listinfo="name" name="qDir" />
+		<cfdirectory action="list" directory="#getFullPath(config=arguments.config,file=arguments.dir)#" recurse="true" type="file" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
 		
 		<cfquery dbtype="query" name="qDir">
-			SELECT 		'#arguments.dir#/' + name AS file 
+			SELECT 		'#arguments.dir#/' + name AS file, *
 			FROM 		qDir 
 			WHERE		not name like '%/.%'
-			ORDER BY 	name
 		</cfquery>
-		
+
 		<cfreturn qDir />
 	</cffunction>
 	

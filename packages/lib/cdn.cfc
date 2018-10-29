@@ -784,12 +784,13 @@
 	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Lists the files the specfied directory.">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="dir" type="string" required="false" default="" />
+		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var config = this.locations[arguments.location] />
 		
 		<cfset arguments.dir = normalizePath(arguments.dir) />
 		
-		<cfreturn this.cdns[config.cdn].ioGetDirectoryListing(config=config,dir=arguments.dir) />
+		<cfreturn this.cdns[config.cdn].ioGetDirectoryListing(config=config,dir=arguments.dir, listinfo=arguments.listinfo) />
 	</cffunction>
 	
 </cfcomponent>

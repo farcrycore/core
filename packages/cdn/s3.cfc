@@ -978,6 +978,7 @@
 	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Returns a query of the directory containing a 'file' column only. This filename will be equivilent to what is passed into other CDN functions.">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
+		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var qDir = "" />
 		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#" />
@@ -986,13 +987,14 @@
 			<cfreturn querynew("file") />
 		</cfif>
 
-		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="name" name="qDir" />
+		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
 		
-		<cfquery dbtype="query" name="qDir">
-			SELECT 		'/' + name AS file
-			FROM 		qDir 
-			ORDER BY 	name
-		</cfquery>
+		<cfif arguments.listinfo EQ "name">
+			<cfset QueryAddColumn( qDir, "file")>
+			<cfloop query="qDir">
+				<cfset querysetcell(qDir,"file","/" & qDir.name, qDir.CurrentRow) />
+			</cfloop>
+		</cfif>
 		
 		<cfreturn qDir />
 	</cffunction>
