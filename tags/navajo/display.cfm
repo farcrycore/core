@@ -69,8 +69,8 @@
 <cfparam name="url.view" default="" />
 
 <!--- ensure application.stCOAPI record exists for url.type --->
-<cfif StructKeyExists(URL, 'type') AND NOT StructKeyExists(application.stCOAPI, url.type)>
-	<cfset url.type = ''>
+<cfif NOT structKeyExists(application.stCOAPI, url.type)>
+	<cfset url.type = "">
 </cfif>
 
 <!--- get standard webskin names by device type --->
