@@ -990,7 +990,7 @@
 		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
 		
 		<cfif arguments.listinfo EQ "name">
-			<cfset QueryAddColumn( qDir, "file")>
+			<cfset QueryAddColumn( qDir, "file", [])>
 			<cfloop query="qDir">
 				<cfset querysetcell(qDir,"file","/" & qDir.name, qDir.CurrentRow) />
 			</cfloop>
