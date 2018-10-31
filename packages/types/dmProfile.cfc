@@ -109,6 +109,26 @@ TYPE PROPERTIES
 <!------------------------------
 OBJECT METHODS
 -------------------------------->
+	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+		<cfargument name="stProperties" required="true">
+		<cfargument name="dsn" type="string" required="false" default="">
+		<cfargument name="bSessionOnly" type="string" required="false" default="false">
+		<cfargument name="bSetDefaultCoreProperties" type="boolean" required="false" default="true" hint="This allows the developer to skip defaulting the core properties if they dont exist.">
+		<cfargument name="auditNote" type="string" required="false" default="">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+
+		<cfset var stOld = {} />
+
+		<cfif structKeyExists(arguments.stProperties, "objectid") and structKeyExists(arguments.stProperties, "userdirectory")>
+			<cfset stOld = getData(arguments.stProperties.objectid) />
+			<cfif structKeyExists(stOld, "bDefaultObject")>
+				<cfset arguments.stProperties.userdirectory = stOld.userdirectory />
+			</cfif>
+		</cfif>
+
+		<cfreturn super.setData(argumentCollection=arguments) />
+	</cffunction>
+
 	<cffunction name="getLocales" access="public" output="false" returntype="string" hint="Returns the list of supported locales">
 		<cfset var locales = application.i18nUtils.getLocales() />
 		<cfset var localeNames = application.i18nUtils.getLocaleNames() />
@@ -136,7 +156,7 @@ OBJECT METHODS
 		<cfif not structkeyexists(stProfile, "userdirectory") and find("_",stProfile.username)>
 			<cfset stProfile.userdirectory = listlast(stProfile.username,"_") />
 		<cfelseif not structkeyexists(stProfile,"userdirectory")>
-			<cfset stProfile.userdirectory = "CLIENTUD" />
+			<cfthrow message="Missing directory key" />
 		</cfif>
 		<cfif not structkeyexists(stProfile,"userlogin")>
 			<cfset stProfile.userlogin = stProfile.username />
@@ -165,7 +185,7 @@ OBJECT METHODS
 		<cfparam name="stProfile.lockedBy" default="" />
 		
 		<cfset stResult = createData(stProperties=stProfile, User=stProfile.username) />
-			
+
 		<cfif stResult.bSuccess>
 			<cfreturn getProfile(userName=stProfile.username) />
 		<cfelse>

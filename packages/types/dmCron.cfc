@@ -121,7 +121,9 @@ type properties
 <cffunction name="addJob" returntype="boolean" output="false" hint="Schedules a task on app server jobs list.">
 	<cfargument name="objectid" type="uuid" required="false">
 	<cfargument name="stobject" type="struct" required="false">
-
+	
+	<cfset var attr = structnew() />
+	
 	<cfif structKeyExists(arguments, "objectid")>
 		<cfset arguments.stobject = getData(objectid=arguments.objectid)>	
 	</cfif>
@@ -129,18 +131,22 @@ type properties
 	<cfif structIsEmpty(stobject)>
 		<cfthrow type="Application" message="Argument *stobject* is empty.">
 	</cfif>
+	
+	<cfscript>
+	attr.action = "UPDATE";
+	attr.task = "#application.applicationName#: #stobject.title#";
+	attr.operation = "HTTPRequest";
+	attr.url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#";
+	attr.interval = "#stobject.frequency#";
+	attr.startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#";
+	attr.starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#";
+	attr.enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#";
+	attr.endtime= "#timeFormat(stobject.endDate,'hh:mm tt')#";
+	attr.requesttimeout = "#stobject.timeout#";
+	</cfscript>
 
-	<cfschedule 
-		action="UPDATE" 
-		task = "#application.applicationName#: #stobject.title#"
-		operation = "HTTPRequest"
-		url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#"
-		interval = "#stobject.frequency#"
-		startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#"
-		starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#"
-		enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#"
-		requesttimeout = "#stobject.timeout#">
-
+	<cfschedule attributeCollection="#attr#">
+		
 	<cfreturn true>
 </cffunction>
 
@@ -252,7 +258,7 @@ type properties
 		<cfif stExistingObj.title neq arguments.stProperties.title>
 			<cftry>
 				<!--- delete old task --->
-				<cfschedule	action="Delete"	task = "#application.applicationName#_#stExistingObj.title#">
+				<cfschedule	action="Delete"	task = "#application.applicationName#: #stExistingObj.title#">
 				<cfcatch></cfcatch>
 			</cftry>
 		</cfif>
@@ -265,7 +271,16 @@ type properties
 	<cfreturn super.setData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.bAudit,arguments.dsn,arguments.bSessionOnly,arguments.bAfterSave) />
 </cffunction>
 
+<cffunction name="delete" access="public" hint="Remove task from CFML Engine, then remove from database" returntype="struct" output="false">
+	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+	<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+	<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
+		
+	<cfset removeJob(arguments.objectid)>
 
+	<cfreturn super.delete(argumentCollection = arguments) />
+</cffunction>
+	
 <!--- 
  // private functions 
 --------------------------------------------------------------------------------->

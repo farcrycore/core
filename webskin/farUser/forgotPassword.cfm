@@ -27,14 +27,12 @@
 				<cfcatch>
 					<!--- error sending email --->
 					<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
-					<cfset errormsg = "There was an error sending your password reset link by email. Please contact your administrator.">
 				</cfcatch>
 			</cftry>
-		<cfelse>
-			<cfsavecontent variable="errormsg">
-				<cfoutput><admin:resource key="coapi.farUser.forgotpassword.unknownuser@text">We do not have that username on record. Please try again</admin:resource></cfoutput>
-			</cfsavecontent>
 		</cfif>
+		<cfsavecontent variable="errormsg">
+			<cfoutput><admin:resource key="coapi.farUser.forgotpassword.passwordreset@text">A link to change your password has been sent to your email address and should arrive shortly.</admin:resource></cfoutput>
+		</cfsavecontent>
 
 		<ft:break />
 	</ft:processformobjects>
@@ -62,11 +60,11 @@
 	<ft:form>
 		
 		<cfif len(trim(errormsg))>
-			<p class="alert alert-error">#trim(errormsg)#</p>
+			<p class="alert alert-warning">#trim(errormsg)#</p>
 		</cfif>	
 
 		<cfif structKeyExists(request, "passwordChanged")>
-			<p class="alert alert-success"><admin:resource key="coapi.farUser.forgotpassword.passwordreset@text">A link to change your password has been sent to your email address and should arrive shortly.</admin:resource></p>
+			<p class="alert alert-warning"><admin:resource key="coapi.farUser.forgotpassword.passwordreset@text">A link to change your password has been sent to your email address and should arrive shortly.</admin:resource></p>
 		<cfelse>
 			<p><admin:resource key="coapi.farUser.forgotpassword.blurb@text"><strong>Forgot your password?</strong> Please enter your username below and a link to change your password will be sent to your email address.</admin:resource></p>
 
