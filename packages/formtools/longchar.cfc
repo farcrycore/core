@@ -192,9 +192,7 @@
 		<cfset var html = "" />
 		
 		<cfsavecontent variable="html">
-			<!--- Place custom code here! --->
-			<cfoutput>#ReplaceNoCase(arguments.stMetadata.value, chr(10), "<br>" , "All")#</cfoutput>
-			
+			<cfoutput>#replaceNoCase(application.fc.lib.esapi.encodeForHTML(arguments.stMetadata.value), chr(10), "<br>" , "all")#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>

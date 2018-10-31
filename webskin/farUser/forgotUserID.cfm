@@ -32,15 +32,15 @@
 					<cfset request.emailSent = true />
 					<cfcatch>
 						<!--- error sending email --->
-						<cfset errormsg = "There was an error sending your username by email. Please contact your administrator.">
+						<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
 					</cfcatch>
 				</cftry>
 			<cfelse>
 				<cfset request.notFound = true />
-				<cfsavecontent variable="errormsg">
-					<cfoutput><admin:resource key="coapi.farUser.forgotuserid.emailnotonrecord@text">We do not have that email address on record. Please try again or contact your administrator.</admin:resource></cfoutput>
-				</cfsavecontent>
 			</cfif>
+			<cfsavecontent variable="errormsg">
+				<cfoutput><admin:resource key="coapi.farUser.forgotuserid.confirmationsent@text">A confirmation email with your username has been sent to your email address and should arrive shortly.</admin:resource></cfoutput>
+			</cfsavecontent>
 		</cfif>
 		<ft:break />
 	</ft:processFormObjects>
@@ -66,11 +66,11 @@
 
 	<ft:form>
 		<cfif len(trim(errormsg))>
-			<p class="alert alert-error">#trim(errormsg)#</p>
+			<p class="alert alert-warning">#trim(errormsg)#</p>
 		</cfif>	
 			
 		<cfif structKeyExists(request, "emailSent")>
-			<p class="alert alert-success"><admin:resource key="coapi.farUser.forgotuserid.confirmationsent@text">A confirmation email with your username has been sent to your email address and should arrive shortly.</admin:resource></p>
+			<p class="alert alert-warning"><admin:resource key="coapi.farUser.forgotuserid.confirmationsent@text">A confirmation email with your username has been sent to your email address and should arrive shortly.</admin:resource></p>
 		<cfelse>
 			<p style="padding-bottom: 0.5em;"><admin:resource key="coapi.farUser.forgotuserid.blurb@text"><strong>Forgot your Username?</strong> Please enter your email address below and your username will be sent to your email address.</admin:resource></p>
 

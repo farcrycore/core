@@ -20,6 +20,7 @@
 	<cfproperty name="ftWatchFields" required="false" default="" hint="If any of these fields change, then update the current field? Use the format 'typename.property' if you wish to update all field regardless of object. Use just 'property' if you wish to update just that object." />
 	<cfproperty name="ftReloadOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the entire page be refreshed?" />
 	<cfproperty name="ftRefreshPropertyOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the field be refreshed?" />
+	<cfproperty name="ftFilterMatch" required="false" hint="[like|exact] used in advance search filter. Example: stFilterMetadata={myField={ftFilterMatch='exact'}}" default="like" />
 	
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.field" output="false" hint="Returns a copy of this initialised object">
@@ -74,7 +75,7 @@
 		<cfset var html = "" />
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#arguments.stMetadata.value#</cfoutput>
+			<cfoutput>#application.fc.lib.esapi.encodeForHTML(arguments.stMetadata.value)#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>

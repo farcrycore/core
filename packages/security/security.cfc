@@ -237,7 +237,7 @@
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
 		<cfset var result = "" />
 		
-		<cfif structKeyExists(url, "ud")>
+		<cfif structKeyExists(url, "ud") AND structKeyExists(this.userdirectories, "#url.ud#")>
 			<cfset result = url.ud />
 		<cfelse>			
 			<cfif len(application.fapi.getConfig("security","defaultUserDirectory",""))>
@@ -402,6 +402,8 @@
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stDefaultProfile = structnew() />
 		
+		<cfset sessionRotate()>
+
 		<!--- Get user groups and convert them to Farcry roles --->
 		<cfset aUserGroups = this.userdirectories[arguments.ud].getUserGroups(arguments.userid) />
 		<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
@@ -485,7 +487,9 @@
 		
 		<!--- DEPRECIATED VARIABLE --->
 		<cfset structdelete(session,"dmSec") />
-		
+
+		<cfset sessionInvalidate()>
+
 		<!--- Security has changed so we need to re-initialise our request.mode struct --->
 		<cfset initRequestMode() />
 	</cffunction>

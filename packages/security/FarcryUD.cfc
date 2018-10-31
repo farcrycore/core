@@ -81,6 +81,59 @@
 		<cfreturn qUser />
 	</cffunction>
 	
+
+	<cffunction name="getUserAccountStatus" access="private" output="false" returntype="struct" hint="Return a struct representing the status of the user account">
+		<cfargument name="username" type="string" required="true">
+		<cfargument name="qUser" required="false">
+		
+		<cfset var stResult = structNew()>
+		<cfset var qUserRecord = "">
+		<cfset var failedLogins = arraynew(1)>
+		<cfset var i = 0>
+		<cfset var failureCount = 0>
+
+		<cfset var dateTolerance = DateAdd("n","-#application.fapi.getConfig("general","loginAttemptsTimeOut")#",Now())>
+
+		<cfset stResult["objectid"] = "">
+		<cfset stResult["userid"] = trim(arguments.username)>
+		<cfset stResult["userstatus"] = "active">
+		<cfset stResult["locked"] = false>
+
+		<!--- look up the user by userid if arguments.qUser is empty --->
+		<cfif isQuery(arguments.qUser) AND arguments.qUser.recordcount gt 0>
+			<cfset qUserRecord = arguments.qUser>
+		<cfelse>
+			<cfquery datasource="#application.dsn#" name="qUserRecord">
+				SELECT objectid, userid, userstatus, failedLogins
+				FROM #application.dbowner#farUser
+				WHERE userid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(arguments.username)#">
+			</cfquery>
+		</cfif>
+
+		<cfif qUserRecord.recordcount>
+			<cfset stResult["objectid"] = qUserRecord.objectid>
+			<cfset stResult["userid"] = qUserRecord.userid>
+			<cfset stResult["userstatus"] = qUserRecord.userstatus>
+
+			<!--- count failed logins --->
+			<cfif isJSON(qUserRecord.failedLogins)>
+				<cfset failedLogins = deserializeJSON(qUserRecord.failedLogins)>
+			</cfif>
+			<cfloop from="1" to="#arraylen(failedLogins)#" index="i">
+				<cfif failedLogins[i].timestamp gte dateTolerance>
+					<cfset failureCount = failureCount + 1>
+				</cfif>
+			</cfloop>
+
+			<cfif failureCount gte application.fapi.getConfig("general","loginAttemptsAllowed")>
+				<cfset stResult["locked"] = true>
+			</cfif>
+		</cfif>
+
+		<cfreturn stResult>
+	</cffunction>
+
+
 	<!--- ====================
 	  UD Interface functions
 	===================== --->
@@ -93,10 +146,7 @@
 		<cfset var stResult = structnew() />
 		<cfset var stProperties = structnew() />
 		<cfset var qUser = "" />
-		<cfset var failedLogins = arraynew(1) />
-		<cfset var i = 0 />
-		<cfset var failureCount = 0 />
-		<cfset var dateTolerance = 0 />
+		<cfset var stUserAccountStatus = structnew() />
 
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
@@ -122,24 +172,19 @@
 			<cfset stResult.authenticated = false />
 			<cfset stResult.message = "" />
 			<cfset stResult.UD = "CLIENTUD" />
-			
-			<!--- Count failed logins --->
-	        <cfset dateTolerance = DateAdd("n","-#application.fapi.getConfig("general","loginAttemptsTimeOut")#",Now()) />
-	        <cfif isJSON(qUser.failedLogins)>
-		        <cfset failedLogins = deserializeJSON(qUser.failedLogins) />
-	        </cfif>
-	        <cfloop from="1" to="#arraylen(failedLogins)#" index="i">
-	        	<cfif failedLogins[i].timestamp gte dateTolerance>
-	        		<cfset failureCount = failureCount + 1 />
-	        	</cfif>
-	        </cfloop>
+
+			<cfset stUserAccountStatus = getUserAccountStatus(stResult.userid, qUser)>
 			
 			<!--- Set the result --->
-			<cfif failureCount gte application.fapi.getConfig("general","loginAttemptsAllowed")>
+			<cfif stUserAccountStatus.locked>
 				<!--- User is locked out due to high number of failed logins recently --->
 				<cfset stResult.authenticated = false />
 				<cfset stResult.message = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.fapi.getConfig("general","loginAttemptsTimeOut")# minutes." />
-				<cfset application.fapi.getContentType("farUser").addLoginFailure(objectid=qUser.objectid,reason="Locked account due to failed logins") />
+				<cfset application.fapi.getContentType("farUser").addLoginFailure(objectid=stUserAccountStatus.objectid,reason="Locked account due to failed logins") />
+			<cfelseif stUserAccountStatus.userstatus neq "active">
+				<!--- User's account is disabled --->
+				<cfset stResult.authenticated = false />
+				<cfset stResult.message = "Your account is disabled" />
 			<cfelseif qUser.recordcount and qUser.userstatus eq "active">
 				<!--- User successfully logged in --->
 				<cfset stResult.authenticated = true />
@@ -147,10 +192,6 @@
 				<cfif qUser.failedLogins neq "[]">
 					<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=qUser.objectid) />
 				</cfif>
-			<cfelseif qUser.recordcount>
-				<!--- User's account is disabled --->
-				<cfset stResult.authenticated = false />
-				<cfset stResult.message = "Your account is disabled" />
 			<cfelse>
 				<!--- User login or password is incorrect --->
 				<cfset stResult.authenticated = false />

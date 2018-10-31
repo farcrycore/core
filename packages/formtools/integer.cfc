@@ -40,7 +40,7 @@
 		<cfparam name="arguments.stMetadata.ftSuffix" default="">
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#</cfoutput>
+			<cfoutput>#application.fc.lib.esapi.encodeForHTML("#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#")#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html />

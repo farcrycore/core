@@ -222,12 +222,12 @@
 		<cfif bGitDirExists>
 			<cfif findNoCase("windows", server.os.name)>
 				<!--- for windows --->
-				<cfset gitExecutable = application.fapi.getConfig("repo", "gitExecutable")>
+				<cfset gitExecutable = sanitizeCommand(application.fapi.getConfig("repo", "gitExecutable"))>
 				<cfset execName = "C:\windows\system32\cmd.exe">
 				<cfset execArgs = '/c """#gitExecutable#""" --git-dir """#pathGitDir#""" --work-tree """#pathWorkTree#""" #arguments.command#'>
 			<cfelse>
 				<!--- for nix --->
-				<cfset gitExecutable = application.fapi.getConfig("repo", "gitExecutable")>
+				<cfset gitExecutable = sanitizeCommand(application.fapi.getConfig("repo", "gitExecutable"))>
 				<cfset execName = gitExecutable>
 				<cfset execArgs = '--git-dir "#pathGitDir#" --work-tree "#pathWorkTree#" #arguments.command#'>
 			</cfif>
@@ -243,7 +243,7 @@
 					</cfcatch>
 				</cftry>
 			<cfelse>
-				<cfset outputError = "Git executable path not configured">
+				<cfset outputError = "Git executable path not configured or invalid">
 			</cfif>
 		</cfif>
 
@@ -274,12 +274,12 @@
 		<cfif bSVNDirExists>
 			<cfif findNoCase("windows", server.os.name)>
 				<!--- for windows --->
-				<cfset svnExecutable = application.fapi.getConfig("repo", "svnExecutable")>
+				<cfset svnExecutable = sanitizeCommand(application.fapi.getConfig("repo", "svnExecutable"))>
 				<cfset execName = "C:\windows\system32\cmd.exe">
 				<cfset execArgs = '/c """#svnExecutable#""" #arguments.command# """#arguments.path#"""'>
 			<cfelse>
 				<!--- for nix --->
-				<cfset svnExecutable = application.fapi.getConfig("repo", "svnExecutable")>
+				<cfset svnExecutable = sanitizeCommand(application.fapi.getConfig("repo", "svnExecutable"))>
 				<cfset execName = svnExecutable>
 				<cfset execArgs = '#arguments.command# "#arguments.path#"'>
 			</cfif>
@@ -295,7 +295,7 @@
 					</cfcatch>
 				</cftry>
 			<cfelse>
-				<cfset outputError = "SVN executable path not configured">
+				<cfset outputError = "SVN executable path not configured or invalid">
 			</cfif>
 		</cfif>
 
@@ -306,6 +306,22 @@
 		<cfset stResult["success"] = bSVNDirExists AND NOT len(stResult.error) ? true : false>
 
 		<cfreturn stResult>
+	</cffunction>
+
+	<cffunction name="sanitizeCommand" returntype="string">
+		<cfargument name="command" required="true">
+
+		<cfset var result = replaceList(arguments.command, "! ## $ % & ( ) * + , ; < = > ? @ [ ] ^ ` { | } ~ – ‘ ”", "", " ")>
+
+		<cfif findNoCase(".exe", result)>
+		    <cfif NOT listFindNoCase("git.exe,svn.exe", listLast(result, "\/"))>
+		        <cfset result = "">
+			</cfif>
+		<cfelseif NOT listFindNoCase("git,svn", listLast(result, "\/"))>
+			<cfset result = "">
+		</cfif>
+
+		<cfreturn result>
 	</cffunction>
 
 	<cffunction name="appendError" returntype="string">

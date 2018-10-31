@@ -89,6 +89,8 @@
 			<cfset application.fapi.throw(message="no 'urlExpiry' value defined for private location",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		<cfelseif structkeyexists(st,"urlExpiry") and (not isnumeric(st.urlExpiry) or st.urlExpiry lt 0)>
 			<cfset application.fapi.throw(message="the 'urlExpiry' value must be a positive integer",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
+		<cfelse>
+			<cfparam name="st.urlExpiry" default="60" />
 		</cfif>
 		
 		<cfif structkeyexists(st,"readers") and not isarray(st.readers)>
@@ -281,7 +283,7 @@
 
 	<cffunction name="getSigningKey" access="public" returntype="binary" output="false">
 		<cfargument name="secret" type="string" required="true" />
-		<cfargument name="date" type="datetime" required="true" />
+		<cfargument name="date" type="any" required="true" />
 		<cfargument name="region" type="string" required="true" />
 		<cfargument name="service" type="string" required="true" />
 		<cfargument name="validate" type="struct" required="false" />
@@ -293,7 +295,11 @@
 		    <cfthrow message="Secret stage did not match" detail='{ "expected":"#arguments.validate.secret#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
 
-	    <cfset k_key = HMAC_SHA256(dateformat(arguments.date,"YYYYmmdd"), k_secret) />
+	    <cfif isDate(arguments.date)>
+		    <cfset k_key = HMAC_SHA256(dateformat(arguments.date,"YYYYmmdd"), k_secret) />
+		<cfelse>
+		    <cfset k_key = HMAC_SHA256(arguments.date, k_secret) />
+		</cfif>
 	    <cfif isdefined("arguments.validate.date") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.date>
 		    <cfthrow message="Date stage [#dateformat(arguments.date,"YYYYmmdd")#] did not match" detail='{ "expected":"#arguments.validate.secret#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
@@ -305,7 +311,7 @@
 
 	    <cfset k_key = HMAC_SHA256(arguments.service, k_key) />
 	    <cfif isdefined("arguments.validate.service") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.service>
-		    <cfthrow message="Region stage [#arguments.service#] did not match" detail='{ "expected":"#arguments.validate.service#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
+		    <cfthrow message="Service stage [#arguments.service#] did not match" detail='{ "expected":"#arguments.validate.service#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
 
 	    <cfset k_key = HMAC_SHA256("aws4_request", k_key) />
@@ -314,6 +320,129 @@
 	    </cfif>
 
 	    <cfreturn k_key />
+	</cffunction>
+
+	<cffunction name="getCanonicalRequest" access="public" output="false" returntype="string">
+		<cfargument name="method" type="string" required="true" />
+		<cfargument name="path" type="string" required="true" />
+		<cfargument name="queryParams" type="any" required="false" default="#structNew()#" />
+		<cfargument name="headers" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="payload" type="any" required="false" />
+		<cfargument name="unsignedPayload" type="boolean" required="false" />
+
+		<cfset var result = [
+			arguments.method,
+			S3URLEncode(arguments.path, false),
+			"", <!--- query parameters --->
+			"", <!--- canonical headers --->
+			"", <!--- header list --->
+			"" <!--- payload hash --->
+		] />
+		<cfset var key = "" />
+		<cfset var intermed = [] />
+
+
+		<!--- Query parameters --->
+		<cfif isStruct(arguments.queryParams)>
+			<cfloop list="#listSort(structKeyList(arguments.queryParams), 'textnocase')#" index="key">
+				<cfif key eq "acl" and arguments.queryParams[key] eq "">
+					<cfset result[3] = listAppend(result[3], S3URLEncode(key) & "=" & S3URLEncode(arguments.queryParams[key]), "&") />
+				<cfelse>
+					<cfset result[3] = listAppend(result[3], S3URLEncode(key)) />
+				</cfif>
+			</cfloop>
+		</cfif>
+
+		<!--- Headers --->
+		<cfloop list="#listSort(structKeyList(arguments.headers), 'textnocase')#" index="key">
+			<cfset result[4] = result[4] & lcase(key) & ":" & trim(arguments.headers[key]) & chr(10) />
+			<cfset result[5] = listAppend(result[5], lcase(key), ";") />
+		</cfloop>
+
+		<cfif (structKeyExists(arguments, "unsignedPayload") AND arguments.unsignedPayload) OR NOT structKeyExists(arguments, "payload") OR (structKeyExists(arguments.headers, "x-amz-content-sha256") and arguments.headers["x-amz-content-sha256"] eq "UNSIGNED-PAYLOAD")>
+			<cfset result[6] = "UNSIGNED-PAYLOAD" />
+		<cfelse>
+			<cfset result[6] = lcase( hash( arguments.payload, 'SHA-256' ) ) />
+		</cfif>
+
+		<cfreturn arrayToList(result, chr(10)) />
+	</cffunction>
+
+	<cffunction name="getStringToSign" access="public" output="false" returntype="string">
+		<cfargument name="timestamp" type="string" required="true" />
+		<cfargument name="scope" type="string" required="true" />
+		<cfargument name="canonicalRequest" type="string" required="true" />
+
+		<cfreturn arrayToList([
+			"AWS4-HMAC-SHA256",
+			arguments.timestamp,
+			arguments.scope,
+			lcase(hash(arguments.canonicalRequest, "SHA-256"))
+		], chr(10)) />
+	</cffunction>
+
+	<cffunction name="getAWSSignature" access="public" output="false" returntype="string">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="timestamp" type="string" required="true" />
+		<cfargument name="method" type="string" required="true" />
+		<cfargument name="path" type="string" required="true" />
+		<cfargument name="queryParams" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="headers" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="payload" type="any" required="false" />
+		<cfargument name="unsignedPayload" type="boolean" required="false" />
+
+		<cfset var scope = left(arguments.timestamp, 8) & "/" & arguments.config.region & "/s3/aws4_request" />
+		<cfset var canonicalRequest = "" />
+		<cfset var stringToSign = "" />
+		<cfset var signingKey = "" />
+		<cfset var signature = "" />
+
+		<cfset arguments.headers["host"] = "#arguments.config.bucket#.s3.amazonaws.com" />
+
+		<cfset canonicalRequest = getCanonicalRequest(argumentCollection=arguments) />
+		<cfset stringToSign = getStringToSign(arguments.timestamp, scope, canonicalRequest) />
+		<cfset signingKey = getSigningKey(arguments.config.awsSecretKey, left(arguments.timestamp, 8), arguments.config.region, "s3") />
+		<cfset signature = HMAC_SHA256(stringToSign, signingKey) />
+
+		<cfreturn lcase(binaryEncode(signature, 'hex')) />
+	</cffunction>
+
+	<cffunction name="getAWSAuthorization" access="public" output="false" returntype="string">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="timestamp" type="string" required="true" />
+		<cfargument name="method" type="string" required="true" />
+		<cfargument name="path" type="string" required="true" />
+		<cfargument name="queryParams" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="headers" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="payload" type="any" required="false" />
+		<cfargument name="unsignedPayload" type="boolean" required="false" />
+
+		<cfset var signature = getAWSSignature(argumentCollection=arguments) />
+		<cfset var signedHeaders = listSort(structKeyList(arguments.headers, ';'), 'textnocase', 'asc', ';') />
+
+		<cfreturn "AWS4-HMAC-SHA256 Credential=#arguments.config.accessKeyId#/#left(arguments.timestamp, 8)#/#arguments.config.region#/s3/aws4_request,SignedHeaders=#signedHeaders#,Signature=#signature#" />
+	</cffunction>
+
+	<cffunction name="S3URLEncode" access="public" output="false" returntype="string">
+		<cfargument name="input" type="string" required="true" />
+		<cfargument name="encodeSlash" type="boolean" required="false" default="true" />
+
+		<cfset var result = urlEncodedFormat(arguments.input) />
+
+		<cfif arguments.encodeSlash>
+			<cfreturn replaceList(result, "%2E,%5F,%2D,%7E", ".,_,-,~") />
+		<cfelse>
+			<cfreturn replaceList(result, "%2E,%5F,%2D,%7E,%2F", ".,_,-,~,/") />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="HashSHA256" access="public" output="false" returntype="string">
+		<cfargument name="input" type="string" required="true" />
+
+		<cfset var digest = createobject("java", "java.security.MessageDigest").getInstance("SHA-256") />
+		<cfset var binaryHash = digest.digest(JavaCast("string",arguments.input).getBytes("UTF8")) />
+
+		<cfreturn lcase(binaryEncode(binaryHash, 'hex')) />
 	</cffunction>
 
 	
@@ -337,40 +466,67 @@
 		
 		<cfreturn fullpath />
 	</cffunction>
+
+	<cffunction name="structToQueryParams" output="false" access="public" returntype="string">
+		<cfargument name="queryParams" type="struct" required="true" />
+
+		<cfset var k = "" />
+		<cfset var result = "" />
+
+		<cfloop collection="#arguments.queryParams#" item="k">
+			<cfset result = listAppend(result, S3URLEncode(k) & "=" & S3URLEncode(arguments.queryParams[k]), "&") />
+		</cfloop>
+
+		<cfreturn result />
+	</cffunction>
 	
 	<cffunction name="getURLPath" output="false" access="public" returntype="string" hint="Returns full internal path. Works for files and directories.">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="method" type="string" required="false" default="GET" />
 		<cfargument name="s3Path" type="boolean" required="false" default="false" />
-		<cfargument name="protocol" type="string" require="false" />
+		<cfargument name="protocol" type="string" required="false" />
+		<cfargument name="requireSignedURL" type="boolean" required="false" default="false" />
 		
 		<cfset var urlpath = arguments.file />
 		<cfset var epochTime = 0 />
 		<cfset var signature = "" />
+		<cfset var timestamp = "" />
+		<cfset var scope = "" />
+		<cfset var canonicalRequest = [] />
+		<cfset var stringToSign = [] />
+		<cfset var signingKey = "" />
+		<cfset var queryParams = "" />
+		<cfset var headers = "" />
 		
 		<cfif not left(urlpath,1) eq "/">
 			<cfset urlpath = "/" & urlpath />
 		</cfif>
 		
 		<cfif NOT left(urlpath,2) eq "//">
-	
 			<!--- Prepend bucket and pathPrefix --->
 			<cfset urlpath = "#arguments.config.pathPrefix##urlpath#" />
-		
-			<!--- URL encode the filename --->
-			<cfset urlpath = replacelist(urlencodedformat(urlpath),"%2F,%2B,%2D,%2E,%5F,%27","/, ,-,.,_,'")>
-			
-			<cfif structkeyexists(arguments.config,"security") and arguments.config.security eq "private">
-				<cfset epochTime = DateDiff("s", DateConvert("utc2Local", "January 1 1970 00:00"), now()) + arguments.config.urlExpiry />
-				
-				<!--- Create a canonical string to send --->
-				<cfset signature = "#arguments.method#\n\n\n#epochTime#\n/#arguments.config.bucket##urlpath#" />
-				
-				<!--- Replace "\n" with "chr(10) to get a correct digest --->
-				<cfset signature = replace(signature,"\n","#chr(10)#","all") />
-				
-				<cfset urlpath = urlpath & "?AWSAccessKeyId=#arguments.config.accessKeyId#&Expires=#epochTime#&Signature=#urlencodedformat(HMAC_SHA1(signature,arguments.config.awsSecretKey))#" />
+
+			<cfif (structkeyexists(arguments.config,"security") and arguments.config.security eq "private") or arguments.requireSignedURL>
+				<!--- Current date --->
+				<cfset currentDate = application.fapi.dateToISO8601(now()) />
+
+				<cfset queryParams = {
+					"X-Amz-Algorithm"="AWS4-HMAC-SHA256",
+					"X-Amz-Credential"="#arguments.config.accessKeyId#/#left(currentDate, 8)#/#arguments.config.region#/s3/aws4_request",
+					"X-Amz-Date"=currentDate,
+					"X-Amz-Expires"=numberFormat(arguments.config.urlExpiry*60, "0"),
+					"X-Amz-SignedHeaders"="host"
+				} />
+				<cfset signature = getAWSSignature(
+					config=arguments.config,
+					timestamp=currentDate,
+					method=arguments.method,
+					path=urlpath,
+					queryParams=queryParams
+				) />
+
+				<cfset urlpath = urlpath & "?#structToQueryParams(queryParams)#&X-Amz-Signature=#signature#" />
 			</cfif>
 			
 			<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
@@ -413,31 +569,41 @@
 	<cffunction name="ioFileExists" returntype="boolean" access="public" output="false" hint="Checks that a specified path exists">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
-		<cfargument name="protocol" type="string" require="false" />
+		<cfargument name="protocol" type="string" require="false" default="https" />
 
 		<cfset var bExists = false />
-		<cfset var signature = "" />
-		<cfset var timestamp = GetHTTPTimeString(Now()) />
 		<cfset var stResponse = structNew() />
 		<cfset var results = "" />
 		<cfset var path = "" />
 		<cfset var stDetail = structNew() />
 		<cfset var substituteValues = arrayNew(1) />
+		<cfset var urlPath = arguments.config.pathPrefix & arguments.file />
+		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
+		<cfset var stHeaders = {
+			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
+		} />
+		<cfset var i = "" />
 
-		<cfif left(arguments.file,1) neq "/">
-			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
-		<cfelse>
-			<cfset path = arguments.config.pathPrefix & arguments.file />
-		</cfif>
-				
 		<!--- create signature --->
-		<cfset signature = replace("HEAD\n\n\n#timestamp#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%2F,%2D,%2E,%5F","/,-,.,_")#","\n","#chr(10)#","all") />
+		<cfset var signature = getAWSAuthorization(
+			config=arguments.config,
+			timestamp=timestamp,
+			method="HEAD",
+			path=urlPath,
+			headers=stHeaders,
+			unsignedPayload=true
+		) />
 
 		<!--- REST call --->
-		<cfhttp method="HEAD" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="stResponse" timeout="10">
+		<cfhttp method="HEAD" url="https://#arguments.config.bucket#.s3.amazonaws.com#urlPath#" charset="utf-8" result="stResponse" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
-			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+			<cfhttpparam type="header" name="Authorization" value="#signature#" />
+
+			<!--- Headers --->
+			<cfloop collection="#stHeaders#" item="i">
+				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+			</cfloop>
 		</cfhttp>
 
 		<cfif listfirst(stResponse.statuscode," ") eq "200">
@@ -455,17 +621,15 @@
 				<cfif structkeyexists(results,"error")>
 					<!--- check error xml --->
 					<cfset stDetail = structNew()>
-					<cfset stDetail["signature"] = signature>
 					<cfset stDetail["result"] = results>
 					<cfset substituteValues = arrayNew(1)>
 					<cfset substituteValues[1] = results.error.message.XMLText>
-					<cfset substituteValues[2] = signature>
-					<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+					<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 				</cfif>
 			<cfelseif NOT listFindNoCase("200,204",listfirst(stResponse.statuscode," "))>
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = stResponse.statuscode>
-				<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+				<cfset substituteValues[2] = urlPath>
 				<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=stResponse.filecontent,substituteValues=substituteValues) />
 			</cfif>
 
@@ -496,6 +660,7 @@
 		<cfset stResult["method"] = "redirect" />
 		<cfset stResult["path"] = getURLPath(argumentCollection=arguments) />
 		<cfset stResult["mimetype"] = getPageContext().getServletContext().getMimeType(arguments.file) />
+		<cfset stResult["s3Path"] = getS3Path(config=arguments.config,file=arguments.file) />
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -752,13 +917,7 @@
 			</cfif>
 			
 			<cftry>
-
-				<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-					<cffile action="write" output="#fileReadBinary(arguments.source_localpath)#" file="#getS3Path(config=arguments.dest_config,file=arguments.dest_file)#">
-				<cfelse>
-					<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />									
-				</cfif>
-
+				<cfset putObject(config=arguments.dest_config,file=dest_file,localfile=arguments.source_localpath) />
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
@@ -766,7 +925,7 @@
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
-			
+
 			<cfif arguments.dest_config.localCacheSize>
 				<cfset tmpfile = getTemporaryFile(config=arguments.dest_config,file=arguments.dest_file) />
 				<cffile action="copy" source="#arguments.source_localpath#" destination="#tmpfile#" mode="664" nameconflict="overwrite" />
@@ -782,7 +941,7 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		
-		<cffile action="delete" file="#getS3Path(config=arguments.config,file=arguments.file)#" />
+		<cfset deleteObject(argumentCollection=arguments) />
 		
 		<cfif arguments.config.localCacheSize>
 			<cfset removeCachedFile(config=arguments.config,file=arguments.file) />
@@ -819,6 +978,7 @@
 	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Returns a query of the directory containing a 'file' column only. This filename will be equivilent to what is passed into other CDN functions.">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
+		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var qDir = "" />
 		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#" />
@@ -827,13 +987,14 @@
 			<cfreturn querynew("file") />
 		</cfif>
 
-		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="name" name="qDir" />
+		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
 		
-		<cfquery dbtype="query" name="qDir">
-			SELECT 		'/' + name AS file
-			FROM 		qDir 
-			ORDER BY 	name
-		</cfquery>
+		<cfif arguments.listinfo EQ "name">
+			<cfset QueryAddColumn( qDir, "file", [])>
+			<cfloop query="qDir">
+				<cfset querysetcell(qDir,"file","/" & qDir.name, qDir.CurrentRow) />
+			</cfloop>
+		</cfif>
 		
 		<cfreturn qDir />
 	</cffunction>
@@ -853,7 +1014,7 @@
 		<cfset var sortedAMZ = "" />
 		<cfset var amz = "" />
 		<cfset var signature = "" />
-		<cfset var timestamp = GetHTTPTimeString(Now()) />
+		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
 		<cfset var cfhttp = "" />
 		<cfset var results = "" />
 		<cfset var path = "" />
@@ -899,15 +1060,24 @@
 			<cfset stHeaders[sortedAMZ[i]] = stAMZHeaders[sortedAMZ[i]] />
 			<cfset amz = amz & "\n" & sortedAMZ[i] & ":" & stAMZHeaders[sortedAMZ[i]] />
 		</cfloop>
-		
+
+		<cfset stHeaders["x-amz-content-sha256"] = "UNSIGNED-PAYLOAD" />
+
 		<!--- create signature --->
-		<cfset signature = replace("PUT\n\n#stHeaders['content-type']#\n#timestamp##amz#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%2F,%2D,%2E,%5F","/,-,.,_")#","\n","#chr(10)#","all") />
-		
+		<cfset signature = getAWSAuthorization(
+			config=arguments.config,
+			timestamp=timestamp,
+			method="PUT",
+			path=path,
+			headers=stHeaders,
+			unsignedPayload=true
+		) />
+
 		<!--- REST call --->
 		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
-			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+			<cfhttpparam type="header" name="Authorization" value="#signature#" />
 			
 			<!--- Headers --->
 			<cfloop collection="#stHeaders#" item="i">
@@ -946,12 +1116,11 @@
 		<cfargument name="file" type="string" required="true" />
 
 		<cfset var stHeaders = structnew() />
-		<cfset var stAMZHeaders = structnew() />
 		<cfset var i = 0 />
 		<cfset var sortedAMZ = "" />
 		<cfset var amz = "" />
 		<cfset var signature = "" />
-		<cfset var timestamp = GetHTTPTimeString(Now()) />
+		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
 		<cfset var cfhttp = "" />
 		<cfset var results = "" />
 		<cfset var path = "" />
@@ -964,7 +1133,6 @@
 		<cfelse>
 			<cfset path = arguments.config.pathPrefix & arguments.file />
 		</cfif>
-		<cfset path = path & "?acl" />
 
 		<!--- add ACL --->
 		<cfloop from="1" to="#arraylen(arguments.config.acl)#" index="i">
@@ -973,35 +1141,108 @@
 			<cfelseif arguments.config.acl[i].permission eq "full_control">
 				<cfset header = "x-amz-grant-full-control" />
 			</cfif>
-			<cfif NOT structKeyExists(stAMZHeaders, header)>
-				<cfset stAMZHeaders[header] = "" />
+			<cfif NOT structKeyExists(stHeaders, header)>
+				<cfset stHeaders[header] = "" />
 			</cfif>
 			<cfif isvalid("email",arguments.config.acl[i])>
-				<cfset stAMZHeaders[header] = listappend(stAMZHeaders[header],'emailAddress="#arguments.config.acl[i]#"',', ') />
+				<cfset stHeaders[header] = listappend(stHeaders[header],'emailAddress="#arguments.config.acl[i]#"',', ') />
 			<cfelseif isstruct(arguments.config.acl[i]) and structKeyExists(arguments.config.acl[i], "id")>
-				<cfset stAMZHeaders[header] = listappend(stAMZHeaders[header],'id="#arguments.config.acl[i].id#"',', ') />
+				<cfset stHeaders[header] = listappend(stHeaders[header],'id="#arguments.config.acl[i].id#"',', ') />
 			<cfelseif isStruct(arguments.config.acl[i]) and structKeyExists(arguments.config.acl[i], "group") and arguments.config.acl[i].group eq "all">
-				<cfset stAMZHeaders[header] = listAppend(stAMZHeaders[header],'uri=http://acs.amazonaws.com/groups/global/AllUsers') />
+				<cfset stHeaders[header] = listAppend(stHeaders[header],'uri=http://acs.amazonaws.com/groups/global/AllUsers') />
 			<cfelseif isSimpleValue(arguments.config.acl[i])>
-				<cfset stAMZHeaders[header] = listappend(stAMZHeaders[header],'id="#arguments.config.acl[i]#"',', ') />
+				<cfset stHeaders[header] = listappend(stHeaders[header],'id="#arguments.config.acl[i]#"',', ') />
 			</cfif>
 		</cfloop>
 
-		<!--- prepare amz headers in sorted order --->
-		<cfset sortedAMZ = listToArray(listSort(structKeyList(stAMZHeaders),'textnocase')) />
-		<cfloop from="1" to="#arraylen(sortedAMZ)#" index="i">
-			<cfset stHeaders[sortedAMZ[i]] = stAMZHeaders[sortedAMZ[i]] />
-			<cfset amz = amz & "\n" & sortedAMZ[i] & ":" & stAMZHeaders[sortedAMZ[i]] />
-		</cfloop>
+		<cfset stHeaders["x-amz-content-sha256"] = "UNSIGNED-PAYLOAD" />
 
 		<!--- create signature --->
-		<cfset signature = replace("PUT\n\napplication/x-www-form-urlencoded; charset=utf-8\n#timestamp##amz#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%3F,%2F,%2D,%2E,%5F","?,/,-,.,_")#","\n","#chr(10)#","all") />
+		<cfset signature = getAWSAuthorization(
+			config=arguments.config,
+			timestamp=timestamp,
+			method="PUT",
+			path=path,
+			queryParams={
+				"acl"=""
+			},
+			headers=stHeaders,
+			unsignedPayload=true
+		) />
 
 		<!--- REST call --->
-		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
+		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
-			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+			<cfhttpparam type="header" name="Authorization" value="#signature#" />
+
+			<!--- Headers --->
+			<cfloop collection="#stHeaders#" item="i">
+				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+			</cfloop>
+		</cfhttp>
+
+		<!--- check XML parsing --->
+		<cfif isXML(cfhttp.fileContent)>
+			<cfset results = XMLParse(cfhttp.fileContent) />
+
+			<!--- check for errors --->
+			<cfif structkeyexists(results,"error")>
+				<!--- check error xml --->
+				<cfset stDetail = structNew()>
+				<cfset stDetail["signature"] = replace(signature, chr(10), "\n", "ALL")>
+				<cfset stDetail["result"] = results>
+				<cfset substituteValues = arrayNew(1)>
+				<cfset substituteValues[1] = results.error.message.XMLText>
+				<cfset substituteValues[2] = signature>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+			</cfif>
+		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
+			<cfset substituteValues = arrayNew(1)>
+			<cfset substituteValues[1] = cfhttp.statuscode>
+			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="deleteObject" access="public" output="false" returntype="string" hint="Uses the S3 rest API to delete an object's ACL">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset var signature = "" />
+		<cfset var timestamp = GetHTTPTimeString(Now()) />
+		<cfset var cfhttp = "" />
+		<cfset var results = "" />
+		<cfset var path = "" />
+		<cfset var stDetail = structNew() />
+		<cfset var substituteValues = arrayNew(1) />
+		<cfset var header = "" />
+		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
+		<cfset var stHeaders = {
+			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
+		} />
+
+		<cfif left(arguments.file,1) neq "/">
+			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
+		<cfelse>
+			<cfset path = arguments.config.pathPrefix & arguments.file />
+		</cfif>
+
+		<!--- create signature --->
+		<cfset signature = getAWSAuthorization(
+			config=arguments.config,
+			timestamp=timestamp,
+			method="DELETE",
+			path=path,
+			headers=stHeaders,
+			unsignedPayload=true
+		) />
+
+		<!--- REST call --->
+		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" result="cfhttp" timeout="1800">
+			<!--- Amazon Global Headers --->
+			<cfhttpparam type="header" name="Date" value="#timestamp#" />
+			<cfhttpparam type="header" name="Authorization" value="#signature#" />
 
 			<!--- Headers --->
 			<cfloop collection="#stHeaders#" item="i">
@@ -1037,11 +1278,7 @@
 		<cfargument name="file" type="string" required="true" />
 
 		<cfif arrayLen(arguments.config.acl)>
-			<cfif structKeyExists(server, "lucee") AND listFirst(server.lucee.version, ".") gte 5>
-				<cfset putACL(config=arguments.config, file=arguments.file) />
-			<cfelse>
-				<cfset storeSetACL(getS3Path(config=arguments.config, file=arguments.file), arguments.config.acl) />
-			</cfif>
+			<cfset putACL(config=arguments.config, file=arguments.file) />
 		</cfif>
 	</cffunction>
 
