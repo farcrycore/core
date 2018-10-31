@@ -27,6 +27,10 @@
 			<cfset st.urlpath = rereplacenocase(st.urlpath,"^https?:","") />
 		</cfif>
 		
+		<cfif not structkeyexists(st,"bDebug")>
+			<cfset st["bDebug"] = false />
+		</cfif>
+		
 		<cfreturn st />
 	</cffunction>
 	
