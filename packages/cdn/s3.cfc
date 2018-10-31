@@ -16,7 +16,7 @@
 			
 			<cfloop query="qLeftovers">
 				<cffile action="delete" file="#qLeftovers.Directory#/#qLeftovers.name#" />
-				<cflog file="s3" text="Init: removed cached file #qLeftovers.Directory#/#qLeftovers.name#">
+				<cflog file="#application.applicationname#_s3" text="Init: removed cached file #qLeftovers.Directory#/#qLeftovers.name#" type="information">
 			</cfloop>
 		</cfif>
 		
@@ -141,6 +141,10 @@
 			<cfset application.fapi.throw(message="the 'sMaxAge' value must be an integer",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		</cfif>
 		
+		<cfif not structkeyexists(st,"bDebug")>
+			<cfset st["bDebug"] = false />
+		</cfif>
+		
 		<cfreturn st />
 	</cffunction>
 	
@@ -189,7 +193,7 @@
 		<cfset this.cacheMap[arguments.config.name][arguments.file].touch = now() />
 		<cfset this.cacheMap[arguments.config.name][arguments.file].path = arguments.path />
 		
-		<cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" /></cfif>
 		
 		<!--- Remove old files --->
 		<cfif structcount(this.cacheMap[arguments.config.name]) gte arguments.config.localCacheSize>
@@ -220,7 +224,7 @@
 			
 			<cfset structdelete(this.cacheMap[arguments.config.name],arguments.file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Removed [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
+			<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Removed [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" /></cfif>
 		</cfif>
 	</cffunction>
 	
@@ -238,10 +242,11 @@
 	</cffunction>
 	
 	<cffunction name="deleteTemporaryFile" returntype="void" access="public" output="false" hint="Removes the specified temporary file">
+		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		
 		<cffile action="delete" file="#arguments.file#" />
-		<cflog file="debug" text="deleting #arguments.file# #serializeJSON(appliation.fc.lib.error.getStack(bIgnoreJava=true))#">
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="deleting #arguments.file# #serializeJSON(appliation.fc.lib.error.getStack(bIgnoreJava=true))#"></cfif>
 	</cffunction>
 	
 	
@@ -689,11 +694,11 @@
 				<cfset imageWrite(arguments.data,tmpfile,arguments.quality,true) />
 			</cfcase>
 		</cfswitch>
-		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to temporary file #tmpfile#" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to temporary file #tmpfile#" /></cfif>
 		
 		<!--- Move file to S3 --->
 		<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.config,dest_file=arguments.file) />
-		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to S3" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to S3" /></cfif>
 	</cffunction>
 	
 	<cffunction name="ioReadFile" returntype="any" access="public" output="false" hint="Reads from the specified file">
@@ -723,7 +728,7 @@
 					</cfcase>
 				</cfswitch>
 				
-				<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
+				<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" /></cfif>
 				
 			<cfelse>
 
@@ -750,15 +755,15 @@
 					<cfset addCachedFile(config=arguments.config,file=arguments.file,path=tmpfile) />
 				<cfelse>
 					<!--- Delete temporary file --->
-					<cfset deleteTemporaryFile(tmpfile) />
+					<cfset deleteTemporaryFile(arguments.config, tmpfile) />
 				</cfif>
 				
-				<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from S3" />
+				<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from S3" /></cfif>
 				
 			</cfif>
 
 			<cfcatch>
-				<cflog file="#application.applicationname#_s3" text="Error reading [#arguments.config.name#] #sanitiseS3URL(arguments.file)#: #cfcatch.message#" />
+				<cflog file="#application.applicationname#_s3" text="Error reading [#arguments.config.name#] #sanitiseS3URL(arguments.file)#: #cfcatch.message# #cfcatch.detail#" type="error" />
 				<cfrethrow>
 			</cfcatch>
 		</cftry>
@@ -792,7 +797,7 @@
 			<cfset ioMoveFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -804,7 +809,7 @@
 				
 				<cfset ioDeleteFile(config=arguments.source_config,file=arguments.source_file) />
 				
-				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" />
+				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
 				
 			<cfelse>
 			
@@ -819,7 +824,7 @@
 				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
 				<cffile action="delete" file="#sourcefile#" />
 				
-				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" />	
+				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
 				
 			</cfif>
 			
@@ -830,7 +835,7 @@
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error moving #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#: #cfcatch.message#" />
+					<cflog file="#application.applicationname#_s3" text="Error moving #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#: #cfcatch.message#" type="error" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
@@ -845,7 +850,7 @@
 				<cffile action="delete" file="#arguments.source_localpath#" />
 			</cfif>
 			
-			<cflog file="#application.applicationname#_s3" text="Moved #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		</cfif>
 		
@@ -877,7 +882,7 @@
 			<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -887,7 +892,7 @@
 				
 				<cffile action="copy" source="#cachePath#" destination="#arguments.dest_localpath#" mode="664" nameconflict="overwrite" />
 				
-				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" />
+				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
 				
 			<cfelse>
 			
@@ -907,7 +912,7 @@
 					<cfset addCachedFile(config=arguments.source_config,file=arguments.source_file,path=tmpfile) />
 				</cfif>
 				
-				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" />
+				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
 				
 			</cfif>
 			
@@ -921,7 +926,7 @@
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error copying #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.source_file)#: #cfcatch.message#" />
+					<cflog file="#application.applicationname#_s3" text="Error copying #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.source_file)#: #cfcatch.message#" type="error" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
@@ -932,7 +937,7 @@
 				<cfset addCachedFile(config=arguments.dest_config,file=arguments.dest_file,path=tmpfile) />
 			</cfif>
 			
-			<cflog file="#application.applicationname#_s3" text="Copied #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		</cfif>
 	</cffunction>
@@ -947,7 +952,7 @@
 			<cfset removeCachedFile(config=arguments.config,file=arguments.file) />
 		</cfif>
 		
-		<cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" /></cfif>
 	</cffunction>
 	
 	<cffunction name="ioDirectoryExists" returntype="boolean" access="public" output="false" hint="Checks that a specified path exists">

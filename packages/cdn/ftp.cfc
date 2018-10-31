@@ -91,6 +91,10 @@
 		<cfelse>
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'urlPathPrefix' ]) />
 		</cfif>
+
+		<cfif not structkeyexists(st,"bDebug")>
+			<cfset st["bDebug"] = false />
+		</cfif>
 		
 		<cfreturn st />
 	</cffunction>
