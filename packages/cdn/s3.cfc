@@ -785,7 +785,18 @@
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
 		<cfset var cachePath = "" />
-		
+		<cfif IsNull(arguments.source_config)>
+			<cfset var sDebug = false>
+		<cfelse>
+			<cfset var sDebug = arguments.source_config.bDebug>
+		</cfif>
+		<cfif IsNull(arguments.dest_config)>
+			<cfset var dDebug = false>
+		<cfelse>
+			<cfset var dDebug = arguments.dest_config.bDebug>
+		</cfif>		
+		<cfset var bDebug = sDebug OR dDebug>
+
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 			
 			<!--- Inter-bucket move --->
@@ -797,7 +808,7 @@
 			<cfset ioMoveFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -809,7 +820,7 @@
 				
 				<cfset ioDeleteFile(config=arguments.source_config,file=arguments.source_file) />
 				
-				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
 				
 			<cfelse>
 			
@@ -824,7 +835,7 @@
 				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
 				<cffile action="delete" file="#sourcefile#" />
 				
-				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
 				
 			</cfif>
 			
@@ -850,7 +861,7 @@
 				<cffile action="delete" file="#arguments.source_localpath#" />
 			</cfif>
 			
-			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Moved #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		</cfif>
 		
@@ -870,7 +881,19 @@
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
 		<cfset var cachePath = "" />
-		
+
+		<cfif IsNull(arguments.source_config)>
+			<cfset var sDebug = false>
+		<cfelse>
+			<cfset var sDebug = arguments.source_config.bDebug>
+		</cfif>
+		<cfif IsNull(arguments.dest_config)>
+			<cfset var dDebug = false>
+		<cfelse>
+			<cfset var dDebug = arguments.dest_config.bDebug>
+		</cfif>		
+		<cfset var bDebug = sDebug OR dDebug>
+
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
 			<!--- Inter-bucket copy --->
@@ -882,7 +905,7 @@
 			<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -892,7 +915,7 @@
 				
 				<cffile action="copy" source="#cachePath#" destination="#arguments.dest_localpath#" mode="664" nameconflict="overwrite" />
 				
-				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
 				
 			<cfelse>
 			
@@ -912,7 +935,7 @@
 					<cfset addCachedFile(config=arguments.source_config,file=arguments.source_file,path=tmpfile) />
 				</cfif>
 				
-				<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
 				
 			</cfif>
 			
@@ -937,7 +960,7 @@
 				<cfset addCachedFile(config=arguments.dest_config,file=arguments.dest_file,path=tmpfile) />
 			</cfif>
 			
-			<cfif arguments.source_config.bDebug OR arguments.dest_config.bDebug><cflog file="#application.applicationname#_s3" text="Copied #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		</cfif>
 	</cffunction>
