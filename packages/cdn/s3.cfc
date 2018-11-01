@@ -986,7 +986,7 @@
 		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var qDir = "" />
-		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#" />
+		<cfset var s3path = getS3Path(config=arguments.config,file=arguments.dir) />
 		
 		<cfif not directoryExists(s3Path)>
 			<cfreturn querynew("file") />
