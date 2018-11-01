@@ -992,7 +992,7 @@
 			<cfreturn querynew("file") />
 		</cfif>
 
-		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
+		<cfdirectory action="list" directory="#s3path#" recurse="true" type="file" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
 		
 		<cfif arguments.listinfo EQ "name">
 			<cfset QueryAddColumn( qDir, "file", [])>
