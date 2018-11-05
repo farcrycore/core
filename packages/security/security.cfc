@@ -401,8 +401,6 @@
 		<cfset var i = 0 />
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stDefaultProfile = structnew() />
-		
-		<cfset sessionRotate()>
 
 		<!--- Get user groups and convert them to Farcry roles --->
 		<cfset aUserGroups = this.userdirectories[arguments.ud].getUserGroups(arguments.userid) />
@@ -469,7 +467,9 @@
 			<!--- DEPRECATED --->
 			<cfset session.firstLogin = false />
 		</cfif>
-		
+
+		<cfset sessionRotate()>
+
 		<!--- Log the result --->
 		<cfif structKeyExists(session, "impersonator")>
 			<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
