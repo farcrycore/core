@@ -58,9 +58,9 @@
 					<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=dmNavigation&objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
 					<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
 				</cfloop>
-				<cfoutput>#stobj.label#</cfoutput>
+				<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 			<cfelse>
-				<cfoutput>#stobj.label#</cfoutput>
+				<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 			</cfif>
 		</cfif>
 		
@@ -191,7 +191,7 @@
 	<cfelseif stObj.navType eq "externalRedirectURL">
 		
 		<ft:field label="External Redirect" bMultiField="true" hint="This navigation item redirects to a page on another website.">
-			<cfoutput><a href="#stObj.externalRedirectURL#" target="_blank">#stObj.externalRedirectURL#</a></cfoutput>
+			<cfoutput><a href="#application.fc.lib.esapi.encodeForHTMLAttribute(stObj.externalRedirectURL)#" target="_blank">#application.fc.lib.esapi.encodeForHTML(stObj.externalRedirectURL)#</a></cfoutput>
 		</ft:field>
 
 	</cfif>
@@ -199,7 +199,7 @@
 	
 	<ft:field label="Alias" hint="The alias is used by the programmers to refer to this navigation item in their code.">
 		<cfif len(stobj.lNavIDAlias)>
-			<cfoutput>#stobj.lNavIDAlias#</cfoutput>
+			<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.lNavIDAlias)#</cfoutput>
 		<cfelse>
 			<cfoutput>-- No Alias Provided --</cfoutput>
 		</cfif>
