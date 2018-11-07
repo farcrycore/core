@@ -90,7 +90,8 @@
 								<cfelse>
 									<i class="fa fa-file-o fa-fw"></i>
 								</cfif>
-								<skin:view typename="#contentTypename#" objectid="#stobj.externalLink#" webskin="displayLabel" />
+								<skin:view typename="#contentTypename#" objectid="#stobj.externalLink#" webskin="displayLabel" r_html="labelHTML" />
+								#application.fc.lib.esapi.encodeForHTML(trim(labelHTML))#
 							</cfif>
 						</td>	
 					</tr>	
@@ -123,7 +124,8 @@
 								<cfelse>
 									<i class="fa fa-file-o fa-fw"></i>
 								</cfif>
-								<skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" />
+								<skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" r_html="labelHTML" />
+								#application.fc.lib.esapi.encodeForHTML(trim(labelHTML))#
 							</td>	
 						</tr>
 							
@@ -180,7 +182,8 @@
 								<cfelse>
 									<i class="fa fa-file-o fa-fw"></i>
 								</cfif>
-								<skin:view typename="#contentTypename#" objectid="#stobj.internalRedirectID#" webskin="displayLabel" />
+								<skin:view typename="#contentTypename#" objectid="#stobj.internalRedirectID#" webskin="displayLabel" r_html="labelHTML" />
+								#application.fc.lib.esapi.encodeForHTML(trim(labelHTML))#
 							</cfif>
 						</td>	
 					</tr>	
