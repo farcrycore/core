@@ -351,7 +351,7 @@
 		<cfif isStruct(arguments.queryParams)>
 			<cfloop list="#listSort(structKeyList(arguments.queryParams), 'textnocase')#" index="key">
 				<cfif key eq "acl" and arguments.queryParams[key] eq "">
-					<cfset result[3] = listAppend(result[3], S3URLEncode(key)) />
+					<cfset result[3] = listAppend(result[3], S3URLEncode(key), "&") />
 				<cfelse>
 					<cfset result[3] = listAppend(result[3], S3URLEncode(key) & "=" & S3URLEncode(arguments.queryParams[key]), "&") />
 				</cfif>
