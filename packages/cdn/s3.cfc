@@ -350,11 +350,7 @@
 		<!--- Query parameters --->
 		<cfif isStruct(arguments.queryParams)>
 			<cfloop list="#listSort(structKeyList(arguments.queryParams), 'textnocase')#" index="key">
-				<cfif key eq "acl" and arguments.queryParams[key] eq "">
-					<cfset result[3] = listAppend(result[3], S3URLEncode(key), "&") />
-				<cfelse>
-					<cfset result[3] = listAppend(result[3], S3URLEncode(key) & "=" & S3URLEncode(arguments.queryParams[key]), "&") />
-				</cfif>
+				<cfset result[3] = listAppend(result[3], S3URLEncode(key) & "=" & S3URLEncode(arguments.queryParams[key]), "&") />
 			</cfloop>
 		</cfif>
 
@@ -632,6 +628,8 @@
 					<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 				</cfif>
 			<cfelseif NOT listFindNoCase("200,204",listfirst(stResponse.statuscode," "))>
+<cflog file="ajm-s3" text="ioFileExists() url=https://#arguments.config.bucket#.s3.amazonaws.com#urlPath#">
+<cflog file="ajm-s3" text="ioFileExists() #serializeJSON(stResponse)#">
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = stResponse.statuscode>
 				<cfset substituteValues[2] = urlPath>
@@ -1197,7 +1195,7 @@
 			headers=stHeaders,
 			unsignedPayload=true
 		) />
-
+<cflog file="ajm-s3" text="putACL() url=https://#arguments.config.bucket#.s3.amazonaws.com#path#?acl">
 		<!--- REST call --->
 		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
@@ -1209,7 +1207,8 @@
 				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
 			</cfloop>
 		</cfhttp>
-
+<cflog file="ajm-s3" text="putACL() config=#serializeJSON(arguments.config)#">
+<cflog file="ajm-s3" text="putACL() cfhttp=#serializeJSON(cfhttp)#">
 		<!--- check XML parsing --->
 		<cfif isXML(cfhttp.fileContent)>
 			<cfset results = XMLParse(cfhttp.fileContent) />
