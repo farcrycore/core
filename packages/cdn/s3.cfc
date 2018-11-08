@@ -47,14 +47,27 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"domain")>
+			<cfset st.domainType = "s3" />
 			<cfif not structkeyexists(arguments.config,"region") or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
 				<cfset st.domain = "s3.amazonaws.com" />
 			<cfelse>
 				<cfset st.domain = "s3-#st.region#.amazonaws.com" />
 			</cfif>
-			<cfset st.domainType = "s3" />
+			<cfif find(".", st.bucket)>
+				<cfset st.apiEndpoint = st.domain />
+				<cfset st.apiEndpointPrefix = "/#st.bucket#">
+			<cfelse>
+				<cfset st.apiEndpoint = "#st.bucket#.s3.amazonaws.com">
+				<cfset st.apiEndpointPrefix = "">
+			</cfif>
 		<cfelse>
 			<cfset st.domainType = "custom" />
+			<cfif not structkeyexists(arguments.config,"region") or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
+				<cfset st.apiEndpoint = "s3.amazonaws.com" />
+			<cfelse>
+				<cfset st.apiEndpoint = "s3-#st.region#.amazonaws.com" />
+			</cfif>
+			<cfset st.apiEndpointPrefix = "/#st.bucket#">
 		</cfif>
 		
 		<cfif structkeyexists(st,"acl") and not isarray(arguments.config.acl)>
@@ -398,7 +411,7 @@
 		<cfset var signingKey = "" />
 		<cfset var signature = "" />
 
-		<cfset arguments.headers["host"] = "#arguments.config.bucket#.s3.amazonaws.com" />
+		<cfset arguments.headers["host"] = "#arguments.config.apiEndpoint#" />
 
 		<cfset canonicalRequest = getCanonicalRequest(argumentCollection=arguments) />
 		<cfset stringToSign = getStringToSign(arguments.timestamp, scope, canonicalRequest) />
@@ -523,7 +536,7 @@
 					config=arguments.config,
 					timestamp=currentDate,
 					method=arguments.method,
-					path=urlpath,
+					path=arguments.config.apiEndpointPrefix & urlPath,
 					queryParams=queryParams
 				) />
 
@@ -531,7 +544,7 @@
 			</cfif>
 			
 			<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
-				<cfset urlpath = "//#arguments.config.bucket#.s3.amazonaws.com" & urlpath />
+				<cfset urlpath = "//#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix#" & urlpath />
 			<cfelse>
 				<cfset urlpath = "//" & arguments.config.domain & urlpath />
 			</cfif>
@@ -590,13 +603,13 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="HEAD",
-			path=urlPath,
+			path=arguments.config.apiEndpointPrefix & urlPath,
 			headers=stHeaders,
 			unsignedPayload=true
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="HEAD" url="https://#arguments.config.bucket#.s3.amazonaws.com#urlPath#" charset="utf-8" result="stResponse" timeout="1800">
+		<cfhttp method="HEAD" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##urlPath#" charset="utf-8" result="stResponse" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1092,13 +1105,13 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="PUT",
-			path=path,
+			path=arguments.config.apiEndpointPrefix & path,
 			headers=stHeaders,
 			unsignedPayload=true
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
+		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" charset="utf-8" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1130,7 +1143,7 @@
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
 			<cfset substituteValues[1] = cfhttp.statuscode>
-			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset substituteValues[2] = "https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#">
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
@@ -1186,7 +1199,7 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="PUT",
-			path=path,
+			path=arguments.config.apiEndpointPrefix & path,
 			queryParams={
 				"acl"=""
 			},
@@ -1195,7 +1208,7 @@
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
+		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1224,7 +1237,7 @@
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
 			<cfset substituteValues[1] = cfhttp.statuscode>
-			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset substituteValues[2] = "https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#">
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
@@ -1257,13 +1270,13 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="DELETE",
-			path=path,
+			path=arguments.config.apiEndpointPrefix & path,
 			headers=stHeaders,
 			unsignedPayload=true
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" result="cfhttp" timeout="1800">
+		<cfhttp method="DELETE" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1292,7 +1305,7 @@
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
 			<cfset substituteValues[1] = cfhttp.statuscode>
-			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset substituteValues[2] = "https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#">
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
