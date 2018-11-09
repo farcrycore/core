@@ -54,7 +54,7 @@
 					
 					<cfif qAncestors.recordCount>
 						<cfloop query="qAncestors">
-								<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=dmNavigation&objectID=#qAncestors.objectid#" linktext="#application.fc.lib.esapi.encodeForHTML(qAncestors.objectName)#" />
+								<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=dmNavigation&objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
 							<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
 						</cfloop>
 						<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
