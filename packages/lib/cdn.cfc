@@ -658,7 +658,7 @@
 			</cfif>
 		<cfelse>
 			<!--- original filename in temp folder must stay as is. filename will be sanitised when it is moved to a CDN location --->
-			<cfset filename = normalizePath(arguments.destination & "/") & cffile.ServerFile />
+			<cfset filename = normalizePath(arguments.destination) & "/" & cffile.ServerFile />
 		</cfif>
 
 		<!--- move the file if the destination location is different to the current temp location, or if the destination filename is different to the current temp filename --->
