@@ -859,7 +859,7 @@
 		<cfset var objectid = listgetat(arguments.key,3,"_") />
 		<cfset var oldobject = "" />
 		<cfset var i = "" />
-		<cfset var stCacheEntry = { value=arguments.data, key=arguments.key } />
+		<cfset var stCacheEntry = { value=duplicate(arguments.data), key=arguments.key } />
 
 		<cfset arguments.key = listDeleteAt(listDeleteAt(arguments.key,1,"_"),1,"_") />
 		
