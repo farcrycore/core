@@ -209,15 +209,18 @@
 		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" /></cfif>
 		
 		<!--- Remove old files --->
+		<cflock name="s3addCachedFile_#application.applicationname#" type="exclusive" timeout="5">
 		<cfif structcount(this.cacheMap[arguments.config.name]) gte arguments.config.localCacheSize>
 			<cfloop collection="#this.cacheMap[arguments.config.name]#" item="thisfile">
 				<cfif this.cacheMap[arguments.config.name][thisfile].touch lt oldesttouch>
 					<cfset oldest = thisfile />
+					<cfset oldesttouch = this.cacheMap[arguments.config.name][thisfile].touch>
 				</cfif>
 			</cfloop>
 			
 			<cfset removeCachedFile(config=arguments.config,file=oldest) />
 		</cfif>
+		</cflock>
 	</cffunction>
 	
 	<cffunction name="removeCachedFile" returntype="void" access="public" output="false" hint="Removes a file from the local cache">
@@ -1343,3 +1346,4 @@
 	</cffunction>
 
 </cfcomponent>
+
