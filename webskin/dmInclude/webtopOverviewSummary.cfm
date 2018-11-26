@@ -52,9 +52,9 @@ START WEBSKIN
 					<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=dmNavigation&objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
 					<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
 				</cfloop>
-				<cfoutput>#stobj.label#</cfoutput>
+				<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 			<cfelse>
-				<cfoutput>#stobj.label#</cfoutput>
+				<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 			</cfif>
 		</cfif>
 			

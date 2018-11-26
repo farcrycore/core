@@ -33,7 +33,7 @@
 	</cfif>
 	
 	<ft:field label="Label" bMultiField="true">
-		<cfoutput>#stobj.label#</cfoutput>
+		<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 	</ft:field>	
 	
 	
@@ -57,9 +57,9 @@
 								<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=dmNavigation&objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
 							<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
 						</cfloop>
-						<cfoutput>#stobj.label#</cfoutput>
+						<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 					<cfelse>
-						<cfoutput>#stobj.label#</cfoutput>
+						<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 					</cfif>
 				</cfif>
 			
@@ -90,7 +90,7 @@
 	<!--- show common properties --->
 	<cfif structKeyExists(stobj, "teaser")>
 		<ft:field label="Teaser" bMultiField="true">
-			<cfoutput><cfif len(stobj.teaser)>#stobj.teaser#<cfelse>-- none --</cfif></cfoutput>
+			<cfoutput><cfif len(stobj.teaser)>#application.fc.lib.esapi.encodeForHTML(stobj.teaser)#<cfelse>-- none --</cfif></cfoutput>
 		</ft:field>
 	</cfif>
 	<cfif structKeyExists(stobj, "displayMethod")>

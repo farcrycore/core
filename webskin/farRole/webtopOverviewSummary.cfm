@@ -38,14 +38,14 @@ START WEBSKIN
 <ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">
 	
 	<ft:field label="Title">
-		<cfoutput>#stobj.title#</cfoutput>
+		<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.title)#</cfoutput>
 	</ft:field>	
 	<ft:field label="Groups" bMultiField="true">
 		<cfif arrayLen(stobj.aGroups)>
 			<cfoutput>
 			<ul>
 			<cfloop from="1" to="#arrayLen(stobj.aGroups)#" index="i">
-				<li>#stobj.aGroups[i]#</li>
+				<li>#application.fc.lib.esapi.encodeForHTML(stobj.aGroups[i])#</li>
 			</cfloop>
 			</ul>
 			</cfoutput>

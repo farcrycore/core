@@ -980,7 +980,7 @@ default handlers
 						<cfelse>
 							<i class="fa fa-file-o"></i>
 						</cfif>
-						#stobj.label#
+						#application.fc.lib.esapi.encodeForHTML(stobj.label)#
 					</h1>
 				</cfoutput>
 				
@@ -1070,7 +1070,7 @@ default handlers
 						<cfelse>
 							<i class="fa fa-file-o"></i>
 						</cfif>
-						#stobj.label#
+						#application.fc.lib.esapi.encodeForHTML(stobj.label)#
 					</h1>
 				</cfoutput>
 				

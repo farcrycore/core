@@ -457,13 +457,6 @@
 			<cfset healthcheckReady()>
 		</cfif>
 
-		<!--- block requests to /farcry paths with the exception of webtop --->
-		<cfif left(cgi.script_name, 7) eq "/farcry" AND NOT left(cgi.script_name, len(application.url.webtop)) eq application.url.webtop>
-			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
-			<cfset oError.showErrorPage("404 Page missing",oError.create404Error("Bad request")) />
-			<cfabort />
-		</cfif>
-
 		<!--- If a session switch was requested, do that now --->
 		<cfif structKeyExists(url, "switchsession")>
 			<cfset application.fc.lib.session.switchSession(url.switchsession) />
@@ -489,6 +482,13 @@
 		
 		<!--- Initialize the request as a farcry application --->
 		<cfset farcryRequestInit() />
+
+		<!--- block requests to /farcry paths with the exception of webtop --->
+		<cfif left(cgi.script_name, 8) eq "/farcry/" AND NOT left(cgi.script_name, len(application.url.webtop)) eq application.url.webtop>
+			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
+			<cfset oError.showErrorPage("404 Page missing",oError.create404Error("Bad request")) />
+			<cfabort />
+		</cfif>
 	
 		
 		<!---

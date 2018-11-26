@@ -16,7 +16,7 @@
 			
 			<cfloop query="qLeftovers">
 				<cffile action="delete" file="#qLeftovers.Directory#/#qLeftovers.name#" />
-				<cflog file="s3" text="Init: removed cached file #qLeftovers.Directory#/#qLeftovers.name#">
+				<cflog file="#application.applicationname#_s3" text="Init: removed cached file #qLeftovers.Directory#/#qLeftovers.name#" type="information">
 			</cfloop>
 		</cfif>
 		
@@ -47,14 +47,27 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"domain")>
+			<cfset st.domainType = "s3" />
 			<cfif not structkeyexists(arguments.config,"region") or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
 				<cfset st.domain = "s3.amazonaws.com" />
 			<cfelse>
 				<cfset st.domain = "s3-#st.region#.amazonaws.com" />
 			</cfif>
-			<cfset st.domainType = "s3" />
+			<cfif find(".", st.bucket)>
+				<cfset st.apiEndpoint = st.domain />
+				<cfset st.apiEndpointPrefix = "/#st.bucket#">
+			<cfelse>
+				<cfset st.apiEndpoint = "#st.bucket#.s3.amazonaws.com">
+				<cfset st.apiEndpointPrefix = "">
+			</cfif>
 		<cfelse>
 			<cfset st.domainType = "custom" />
+			<cfif not structkeyexists(arguments.config,"region") or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
+				<cfset st.apiEndpoint = "s3.amazonaws.com" />
+			<cfelse>
+				<cfset st.apiEndpoint = "s3-#st.region#.amazonaws.com" />
+			</cfif>
+			<cfset st.apiEndpointPrefix = "/#st.bucket#">
 		</cfif>
 		
 		<cfif structkeyexists(st,"acl") and not isarray(arguments.config.acl)>
@@ -141,6 +154,10 @@
 			<cfset application.fapi.throw(message="the 'sMaxAge' value must be an integer",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		</cfif>
 		
+		<cfif not structkeyexists(st,"bDebug")>
+			<cfset st["bDebug"] = false />
+		</cfif>
+		
 		<cfreturn st />
 	</cffunction>
 	
@@ -189,18 +206,21 @@
 		<cfset this.cacheMap[arguments.config.name][arguments.file].touch = now() />
 		<cfset this.cacheMap[arguments.config.name][arguments.file].path = arguments.path />
 		
-		<cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" /></cfif>
 		
 		<!--- Remove old files --->
+		<cflock name="s3addCachedFile_#application.applicationname#" type="exclusive" timeout="5">
 		<cfif structcount(this.cacheMap[arguments.config.name]) gte arguments.config.localCacheSize>
 			<cfloop collection="#this.cacheMap[arguments.config.name]#" item="thisfile">
 				<cfif this.cacheMap[arguments.config.name][thisfile].touch lt oldesttouch>
 					<cfset oldest = thisfile />
+					<cfset oldesttouch = this.cacheMap[arguments.config.name][thisfile].touch>
 				</cfif>
 			</cfloop>
 			
 			<cfset removeCachedFile(config=arguments.config,file=oldest) />
 		</cfif>
+		</cflock>
 	</cffunction>
 	
 	<cffunction name="removeCachedFile" returntype="void" access="public" output="false" hint="Removes a file from the local cache">
@@ -220,7 +240,7 @@
 			
 			<cfset structdelete(this.cacheMap[arguments.config.name],arguments.file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Removed [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
+			<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Removed [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" /></cfif>
 		</cfif>
 	</cffunction>
 	
@@ -238,10 +258,11 @@
 	</cffunction>
 	
 	<cffunction name="deleteTemporaryFile" returntype="void" access="public" output="false" hint="Removes the specified temporary file">
+		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		
 		<cffile action="delete" file="#arguments.file#" />
-		<cflog file="debug" text="deleting #arguments.file# #serializeJSON(appliation.fc.lib.error.getStack(bIgnoreJava=true))#">
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="deleting #arguments.file# #serializeJSON(appliation.fc.lib.error.getStack(bIgnoreJava=true))#"></cfif>
 	</cffunction>
 	
 	
@@ -345,11 +366,7 @@
 		<!--- Query parameters --->
 		<cfif isStruct(arguments.queryParams)>
 			<cfloop list="#listSort(structKeyList(arguments.queryParams), 'textnocase')#" index="key">
-				<cfif key eq "acl" and arguments.queryParams[key] eq "">
-					<cfset result[3] = listAppend(result[3], S3URLEncode(key) & "=" & S3URLEncode(arguments.queryParams[key]), "&") />
-				<cfelse>
-					<cfset result[3] = listAppend(result[3], S3URLEncode(key)) />
-				</cfif>
+				<cfset result[3] = listAppend(result[3], S3URLEncode(key) & "=" & S3URLEncode(arguments.queryParams[key]), "&") />
 			</cfloop>
 		</cfif>
 
@@ -397,7 +414,7 @@
 		<cfset var signingKey = "" />
 		<cfset var signature = "" />
 
-		<cfset arguments.headers["host"] = "#arguments.config.bucket#.s3.amazonaws.com" />
+		<cfset arguments.headers["host"] = "#arguments.config.apiEndpoint#" />
 
 		<cfset canonicalRequest = getCanonicalRequest(argumentCollection=arguments) />
 		<cfset stringToSign = getStringToSign(arguments.timestamp, scope, canonicalRequest) />
@@ -522,7 +539,7 @@
 					config=arguments.config,
 					timestamp=currentDate,
 					method=arguments.method,
-					path=urlpath,
+					path=arguments.config.apiEndpointPrefix & urlPath,
 					queryParams=queryParams
 				) />
 
@@ -530,7 +547,7 @@
 			</cfif>
 			
 			<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
-				<cfset urlpath = "//#arguments.config.bucket#.s3.amazonaws.com" & urlpath />
+				<cfset urlpath = "//#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix#" & urlpath />
 			<cfelse>
 				<cfset urlpath = "//" & arguments.config.domain & urlpath />
 			</cfif>
@@ -589,13 +606,13 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="HEAD",
-			path=urlPath,
+			path=arguments.config.apiEndpointPrefix & urlPath,
 			headers=stHeaders,
 			unsignedPayload=true
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="HEAD" url="https://#arguments.config.bucket#.s3.amazonaws.com#urlPath#" charset="utf-8" result="stResponse" timeout="1800">
+		<cfhttp method="HEAD" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##urlPath#" charset="utf-8" result="stResponse" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -689,11 +706,11 @@
 				<cfset imageWrite(arguments.data,tmpfile,arguments.quality,true) />
 			</cfcase>
 		</cfswitch>
-		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to temporary file #tmpfile#" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to temporary file #tmpfile#" /></cfif>
 		
 		<!--- Move file to S3 --->
 		<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.config,dest_file=arguments.file) />
-		<cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to S3" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Wrote [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to S3" /></cfif>
 	</cffunction>
 	
 	<cffunction name="ioReadFile" returntype="any" access="public" output="false" hint="Reads from the specified file">
@@ -723,7 +740,7 @@
 					</cfcase>
 				</cfswitch>
 				
-				<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" />
+				<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" /></cfif>
 				
 			<cfelse>
 
@@ -750,15 +767,15 @@
 					<cfset addCachedFile(config=arguments.config,file=arguments.file,path=tmpfile) />
 				<cfelse>
 					<!--- Delete temporary file --->
-					<cfset deleteTemporaryFile(tmpfile) />
+					<cfset deleteTemporaryFile(arguments.config, tmpfile) />
 				</cfif>
 				
-				<cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from S3" />
+				<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Read [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from S3" /></cfif>
 				
 			</cfif>
 
 			<cfcatch>
-				<cflog file="#application.applicationname#_s3" text="Error reading [#arguments.config.name#] #sanitiseS3URL(arguments.file)#: #cfcatch.message#" />
+				<cflog file="#application.applicationname#_s3" text="Error reading [#arguments.config.name#] #sanitiseS3URL(arguments.file)#: #cfcatch.message# #cfcatch.detail#" type="error" />
 				<cfrethrow>
 			</cfcatch>
 		</cftry>
@@ -780,7 +797,18 @@
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
 		<cfset var cachePath = "" />
-		
+		<cfif IsNull(arguments.source_config)>
+			<cfset var sDebug = false>
+		<cfelse>
+			<cfset var sDebug = arguments.source_config.bDebug>
+		</cfif>
+		<cfif IsNull(arguments.dest_config)>
+			<cfset var dDebug = false>
+		<cfelse>
+			<cfset var dDebug = arguments.dest_config.bDebug>
+		</cfif>		
+		<cfset var bDebug = sDebug OR dDebug>
+
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 			
 			<!--- Inter-bucket move --->
@@ -792,7 +820,7 @@
 			<cfset ioMoveFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -804,7 +832,7 @@
 				
 				<cfset ioDeleteFile(config=arguments.source_config,file=arguments.source_file) />
 				
-				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" />
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
 				
 			<cfelse>
 			
@@ -819,7 +847,7 @@
 				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
 				<cffile action="delete" file="#sourcefile#" />
 				
-				<cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" />	
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
 				
 			</cfif>
 			
@@ -830,7 +858,7 @@
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error moving #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#: #cfcatch.message#" />
+					<cflog file="#application.applicationname#_s3" text="Error moving #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#: #cfcatch.message#" type="error" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
@@ -845,7 +873,7 @@
 				<cffile action="delete" file="#arguments.source_localpath#" />
 			</cfif>
 			
-			<cflog file="#application.applicationname#_s3" text="Moved #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		</cfif>
 		
@@ -865,7 +893,19 @@
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
 		<cfset var cachePath = "" />
-		
+
+		<cfif IsNull(arguments.source_config)>
+			<cfset var sDebug = false>
+		<cfelse>
+			<cfset var sDebug = arguments.source_config.bDebug>
+		</cfif>
+		<cfif IsNull(arguments.dest_config)>
+			<cfset var dDebug = false>
+		<cfelse>
+			<cfset var dDebug = arguments.dest_config.bDebug>
+		</cfif>		
+		<cfset var bDebug = sDebug OR dDebug>
+
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
 			<!--- Inter-bucket copy --->
@@ -877,7 +917,7 @@
 			<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-			<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		<cfelseif structkeyexists(arguments,"source_config")>
 			
@@ -887,7 +927,7 @@
 				
 				<cffile action="copy" source="#cachePath#" destination="#arguments.dest_localpath#" mode="664" nameconflict="overwrite" />
 				
-				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" />
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
 				
 			<cfelse>
 			
@@ -907,7 +947,7 @@
 					<cfset addCachedFile(config=arguments.source_config,file=arguments.source_file,path=tmpfile) />
 				</cfif>
 				
-				<cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" />
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
 				
 			</cfif>
 			
@@ -921,7 +961,7 @@
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error copying #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.source_file)#: #cfcatch.message#" />
+					<cflog file="#application.applicationname#_s3" text="Error copying #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.source_file)#: #cfcatch.message#" type="error" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
@@ -932,7 +972,7 @@
 				<cfset addCachedFile(config=arguments.dest_config,file=arguments.dest_file,path=tmpfile) />
 			</cfif>
 			
-			<cflog file="#application.applicationname#_s3" text="Copied #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" />
+			<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.dest_file)#" /></cfif>
 			
 		</cfif>
 	</cffunction>
@@ -947,7 +987,7 @@
 			<cfset removeCachedFile(config=arguments.config,file=arguments.file) />
 		</cfif>
 		
-		<cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" />
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Deleted [#arguments.config.name#] #sanitiseS3URL(arguments.file)#" /></cfif>
 	</cffunction>
 	
 	<cffunction name="ioDirectoryExists" returntype="boolean" access="public" output="false" hint="Checks that a specified path exists">
@@ -981,13 +1021,13 @@
 		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var qDir = "" />
-		<cfset var s3path = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##lcase(arguments.config.pathPrefix)##lcase(arguments.dir)#" />
+		<cfset var s3path = getS3Path(config=arguments.config,file=arguments.dir) />
 		
 		<cfif not directoryExists(s3Path)>
 			<cfreturn querynew("file") />
 		</cfif>
 
-		<cfdirectory action="list" directory="#s3path#" recurse="true" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
+		<cfdirectory action="list" directory="#s3path#" recurse="true" type="file" listinfo="#arguments.listinfo#" name="qDir" sort="name" />
 		
 		<cfif arguments.listinfo EQ "name">
 			<cfset QueryAddColumn( qDir, "file", [])>
@@ -1068,13 +1108,13 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="PUT",
-			path=path,
+			path=arguments.config.apiEndpointPrefix & path,
 			headers=stHeaders,
 			unsignedPayload=true
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
+		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" charset="utf-8" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1106,7 +1146,7 @@
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
 			<cfset substituteValues[1] = cfhttp.statuscode>
-			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset substituteValues[2] = "https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#">
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
@@ -1162,7 +1202,7 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="PUT",
-			path=path,
+			path=arguments.config.apiEndpointPrefix & path,
 			queryParams={
 				"acl"=""
 			},
@@ -1171,7 +1211,7 @@
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
+		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1200,7 +1240,7 @@
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
 			<cfset substituteValues[1] = cfhttp.statuscode>
-			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset substituteValues[2] = "https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#">
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
@@ -1233,13 +1273,13 @@
 			config=arguments.config,
 			timestamp=timestamp,
 			method="DELETE",
-			path=path,
+			path=arguments.config.apiEndpointPrefix & path,
 			headers=stHeaders,
 			unsignedPayload=true
 		) />
 
 		<!--- REST call --->
-		<cfhttp method="DELETE" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" result="cfhttp" timeout="1800">
+		<cfhttp method="DELETE" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" result="cfhttp" timeout="1800">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1268,7 +1308,7 @@
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
 			<cfset substituteValues[1] = cfhttp.statuscode>
-			<cfset substituteValues[2] = "https://#arguments.config.bucket#.s3.amazonaws.com#path#">
+			<cfset substituteValues[2] = "https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#">
 			<cfset application.fapi.throw(message="Error accessing S3 API: {1} {2}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
@@ -1306,3 +1346,4 @@
 	</cffunction>
 
 </cfcomponent>
+

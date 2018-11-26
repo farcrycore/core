@@ -242,11 +242,11 @@
 					<i class="fa #attributes.icon#"></i>
 				</cfif>
 				<cfif len(attributes.title)>
-					#attributes.title#
+					#application.fc.lib.esapi.encodeForHTML(attributes.title)#
 				<cfelse>
 										
 					<cfif structKeyExists(stWizard.data, stWizard.primaryObjectID) and structKeyExists(stWizard.data[stWizard.primaryObjectID], "label")>
-						#stWizard.data['#stWizard.primaryObjectID#'].label#
+						#application.fc.lib.esapi.encodeForHTML(stWizard.data['#stWizard.primaryObjectID#'].label)#
 					<cfelse>
 						#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#
 					</cfif>
