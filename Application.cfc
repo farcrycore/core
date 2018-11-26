@@ -38,6 +38,8 @@
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 	<cfinclude template="#this.projectConstructorLocation#" />
 
+	<!--- lucee session cluster should be false and sticky sessions are required to avoid session rotate / csrf token bugs --->
+	<cfset this.sessioncluster = "false">
 
 	<!--- set up the farcry dsn from the environment --->
 	<cfif structKeyExists(THIS, "bUseEnv") AND THIS.bUseEnv eq "true">
