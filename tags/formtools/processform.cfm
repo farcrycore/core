@@ -39,12 +39,13 @@
 	<cfparam name="attributes.Exit" default="false"><!--- @@hint: If set to true the ft:form on the page will not show it's contents after this process runs. Note this doesn't stop page execution, just does not render ft:form contents. @@default: false --->
 	<cfparam name="attributes.bSpamProtect" default="false"><!--- Instantiates cfformprotection to ensure the button is not clicked by spam. --->
 	<cfparam name="attributes.stSpamProtectConfig" default="#structNew()#" /><!--- config data that will override the config set in the webtop. --->
+	<cfparam name="attributes.bValidateCSRFToken" default="#application.fapi.getConfig("security", "bCSRFTokens", "true")#" /><!--- Validate CSRF token on the form --->
 	
 	
 	<cfset variables.EnterFormProcess = false>
 
 	<cfif structKeyExists(form, "FarcryFormSubmitted")>
-	
+
 		<!--- I18 conversion of action and exludeAction lists --->
 		<cfloop from="1" to="#listlen(attributes.action)#" index="i">
 			<cfif listlen(attributes.rbkey) lt i>
@@ -81,7 +82,7 @@
 		
 			
 		<cfif isDefined("FORM.FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton)>
-	
+
 			<cfif listFindNoCase(attributes.action,FORM.FarcryFormSubmitButton) OR attributes.action EQ "*">
 				<cfif NOT listFindNoCase(attributes.excludeAction,FORM.FarcryFormSubmitButton)>
 					<cfset variables.EnterFormProcess = true />
@@ -95,7 +96,15 @@
 	<cfif NOT variables.EnterFormProcess>
 		<cfexit>
 	<cfelse>
-		
+
+		<cfif attributes.bValidateCSRFToken>
+			<cfif NOT structKeyExists(form, "FarcryFormToken") OR NOT csrfVerifyToken(form.FarcryFormToken, form.FarcryFormSubmitted)>
+				<!--- csrf token not found or invalid --->
+				<skin:bubble message="There was a problem with the form submission. Please try again." tags="error" />
+				<cfexit method="exittag">
+			</cfif>
+		</cfif>
+
 		<cfif attributes.bSpamProtect>
 			<cfif not structkeyexists(session,"stFarCryFormSpamProtection") or not structkeyexists(session.stFarCryFormSpamProtection,form.farcryFormSubmitted) or not structkeyexists(session.stFarCryFormSpamProtection[form.farcryFormSubmitted],FORM.FarcryFormSubmitButton)>
 				<!--- User was sessionless until they POST'd (happens behind reverse proxies) - set up as best we can here --->

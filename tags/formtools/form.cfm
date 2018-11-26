@@ -58,6 +58,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.ajaxTimeout" default="30">
 		<cfparam name="attributes.ajaxTarget" default=""><!--- jQuery selector specifying the target element for the form response. Defaults to the FORM element. --->
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Add relevent form layout css --->
+		<cfparam name="attributes.bGenerateCSRFToken" default="#application.fapi.getConfig("security", "bCSRFTokens", "true")#" /><!--- Generate CSRF token to the form --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 		<cfparam name="attributes.bFocusFirstField" default="false" /><!--- Focus on first form element. --->
 		<cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->
@@ -184,8 +185,11 @@ It just ignores the inner ones.
 				<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" #tagEnding#><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
 			
 				<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.Name#" class="fc-server-side-validation" value="#attributes.Validation#" #tagEnding#><!--- Let the form submission know if it to perform serverside validation --->
-		
-			
+
+				<cfif attributes.bGenerateCSRFToken>
+					<input type="hidden" name="FarcryFormToken" value="#csrfGenerateToken(attributes.Name)#">
+				</cfif>
+
 			</cfoutput>		
 	
 		</cfmodule>
