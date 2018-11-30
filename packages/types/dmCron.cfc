@@ -181,7 +181,7 @@ type properties
 	<cfset stAttributes.action = "list">
 	<cfif isDefined("application.sysinfo.engine.engine") and application.sysinfo.engine.engine eq "coldfusion">
 		<cfset stAttributes.result = "qJobs">
-	<cfelseif isDefined("application.sysinfo.engine.engine") and application.sysinfo.engine.engine eq "lucee">
+	<cfelseif isDefined("application.sysinfo.engine.engine") and application.sysinfo.engine.engine eq "lucee" and application.sysinfo.engine.productversion gte 5>
 		<cfset stAttributes.result = "qJobs">
 	<cfelse>
 		<cfset stAttributes.returnvariable = "qJobs">
