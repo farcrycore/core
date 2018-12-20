@@ -70,7 +70,7 @@ VIEW
 	title="Manage Configuration" 
 	columnList="configkey,datetimelastupdated" 
 	sqlorderby="label asc" 
-	sortableColumns=""
+	sortableColumns="label"
 	aCustomColumns="#aCustomColumns#" 
 	bSelectCol="true" 
 	bShowActionList="false"

@@ -256,7 +256,7 @@
 		<cfset stFolderRow["nodetype"] = "folder">
 		<cfset stFolderRow["protectednode"] = bProtectedNode>
 		<cfset stFolderRow["parentid"] = qTree.parentid>
-		<cfset stFolderRow["label"] = stNav.label>
+		<cfset stFolderRow["label"] = application.fc.lib.esapi.encodeForHTML(stNav.label)>
 		<cfset stFolderRow["datetimelastupdated"] = "#dateFormat(stNav.datetimelastupdated, "yyyy-mm-dd")# #timeFormat(stNav.datetimelastupdated, "HH:mm:ss")#">
 		<cfset stFolderRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stNav.datetimelastupdated)>
 		<cfset stFolderRow["expandable"] = expandable>
@@ -374,7 +374,7 @@
 			<cfset stLeafRow["nodetype"] = "leaf">
 			<cfset stLeafRow["parentid"] = stNav.objectid>
 			<cfset stLeafRow["versionobjectid"] = stLeafNode.versionObjectid>
-			<cfset stLeafRow["label"] = stLeafNode.label>
+			<cfset stLeafRow["label"] = application.fc.lib.esapi.encodeForHTML(stLeafNode.label)>
 			<cfset stLeafRow["datetimelastupdated"] = "#dateFormat(lastupdated, "yyyy-mm-dd")# #timeFormat(lastupdated, "HH:mm:ss")#">
 			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
 			<cfset stLeafRow["expandable"] = 0>

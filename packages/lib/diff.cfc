@@ -93,17 +93,17 @@
 		<cfloop from="1" to="#arraylen(arguments.aDiff)#" index="i">
 			<cfif arguments.aDiff[i].diff neq leftStatus>
 				<cfif arguments.aDiff[i].diff eq "-"><!--- Moving into deleted text --->
-					<cfset stResult.leftHighlighted = stResult.leftHighlighted & "<span style='color:##CC2504;font-weight:bold;'>" />
+					<cfset stResult.leftHighlighted = stResult.leftHighlighted & "___DIFF_HIGHLIGHT_REMOVE___" />
 				<cfelseif leftStatus eq "-"><!--- Moving out of deleted text --->
-					<cfset stResult.leftHighlighted = stResult.leftHighlighted & "</span>" />
+					<cfset stResult.leftHighlighted = stResult.leftHighlighted & "___DIFF_HIGHLIGHT_END___" />
 				</cfif>
 				<cfset leftStatus = arguments.aDiff[i].diff />
 			</cfif>
 			<cfif arguments.aDiff[i].diff neq rightStatus>
 				<cfif arguments.aDiff[i].diff eq "+"><!--- Moving into added text --->
-					<cfset stResult.rightHighlighted = stResult.rightHighlighted & "<span style='color:##00BF0D;font-weight:bold;'>" />
+					<cfset stResult.rightHighlighted = stResult.rightHighlighted & "___DIFF_HIGHLIGHT_ADD___" />
 				<cfelseif rightStatus eq "+"><!--- Moving out of added text --->
-					<cfset stResult.rightHighlighted = stResult.rightHighlighted & "</span>" />
+					<cfset stResult.rightHighlighted = stResult.rightHighlighted & "___DIFF_HIGHLIGHT_END___" />
 				</cfif>
 				<cfset rightStatus = arguments.aDiff[i].diff />
 			</cfif>
@@ -116,11 +116,14 @@
 		</cfloop>
 		
 		<cfif leftStatus eq "-"><!--- Moving out of deleted text --->
-			<cfset stResult.leftHighlighted = stResult.leftHighlighted & "</span>" />
+			<cfset stResult.leftHighlighted = stResult.leftHighlighted & "___DIFF_HIGHLIGHT_END___" />
 		</cfif>
 		<cfif rightStatus eq "+"><!--- Moving out of added text --->
-			<cfset stResult.rightHighlighted = stResult.rightHighlighted & "</span>" />
+			<cfset stResult.rightHighlighted = stResult.rightHighlighted & "___DIFF_HIGHLIGHT_END___" />
 		</cfif>
+
+		<cfset stResult.leftHighlighted = replaceList(application.fc.lib.esapi.encodeForHTML(stResult.leftHighlighted), "___DIFF_HIGHLIGHT_REMOVE___,___DIFF_HIGHLIGHT_END___", "<span style='color:##CC2504;font-weight:bold;'>,</span>")>
+		<cfset stResult.rightHighlighted = replaceList(application.fc.lib.esapi.encodeForHTML(stResult.rightHighlighted), "___DIFF_HIGHLIGHT_ADD___,___DIFF_HIGHLIGHT_END___", "<span style='color:##00BF0D;font-weight:bold;'>,</span>")>
 		
 		<cfreturn stResult />
 	</cffunction>

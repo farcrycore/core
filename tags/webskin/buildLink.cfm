@@ -52,7 +52,7 @@
 	<cfset href = application.fapi.getLink(argumentCollection="#attributes#") />
 
 	<cfif attributes.bModal>
-		<cfset attributes.onClick = listAppend( attributes.onClick , "$fc.openBootstrapModal({title: '#attributes.title#', url: '#href#'});return false;" , ";" )>
+		<cfset attributes.onClick = listAppend( attributes.onClick , "$fc.openBootstrapModal({title: '#application.fc.lib.esapi.encodeForJavaScript(application.fc.lib.esapi.encodeForHTML(attributes.title))#', url: '#href#'});return false;" , ";" )>
 		<cfset href = "##" />
 	</cfif>
 
@@ -80,7 +80,7 @@
 			<cfset tagoutput=tagoutput & ' style="#attributes.style#"'>
 		</cfif>
 		<cfif len(attributes.title)>
-			<cfset tagoutput=tagoutput & ' title="#attributes.title#"'>
+			<cfset tagoutput=tagoutput & ' title="#application.fc.lib.esapi.encodeForHTMLAttribute(attributes.title)#"'>
 		</cfif>
 		<cfif len(attributes.xCode)>
 			<cfset tagoutput=tagoutput & ' #attributes.xCode#'>
@@ -89,7 +89,7 @@
 			<cfset tagoutput=tagoutput & ' target="#attributes.target#"'>
 		</cfif>
 		<cfif len(attributes.onclick)>
-			<cfset tagoutput=tagoutput & ' onclick="#attributes.onclick#"'>
+			<cfset tagoutput=tagoutput & ' onclick="#application.fc.lib.esapi.encodeForHTMLAttribute(attributes.onclick)#"'>
 		</cfif>
 		<cfset tagoutput=tagoutput & '>'>
 	</cfif>
@@ -104,7 +104,7 @@
 			
 			<!--- USE THE LINKTEXT AS GENERATED CONTENT IF AVAILABLE --->
 			<cfif len(attributes.linktext)>
-				<cfset thistag.GeneratedContent = attributes.linktext />
+				<cfset thistag.GeneratedContent = application.fc.lib.esapi.encodeForHTML(attributes.linktext) />
 			</cfif>
 			
 			<!--- TRANSLATE THE TEXT --->
