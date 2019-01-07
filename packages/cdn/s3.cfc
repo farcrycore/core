@@ -594,12 +594,18 @@
 		<cfset var path = "" />
 		<cfset var stDetail = structNew() />
 		<cfset var substituteValues = arrayNew(1) />
-		<cfset var urlPath = arguments.config.pathPrefix & arguments.file />
 		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
 		<cfset var stHeaders = {
 			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
 		} />
 		<cfset var i = "" />
+
+		<cfset var urlPath = arguments.config.pathPrefix & arguments.file />
+		<cfif left(arguments.file,1) neq "/">
+			<cfset urlPath = arguments.config.pathPrefix & "/" & arguments.file />
+		<cfelse>
+			<cfset urlPath = arguments.config.pathPrefix & arguments.file />
+		</cfif>
 
 		<!--- create signature --->
 		<cfset var signature = getAWSAuthorization(
