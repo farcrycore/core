@@ -407,6 +407,7 @@
 		<cfargument name="headers" type="struct" required="false" default="#structNew()#" />
 		<cfargument name="payload" type="any" required="false" />
 		<cfargument name="unsignedPayload" type="boolean" required="false" />
+		<cfargument name="s3Path" type="boolean" required="false" default="false" />
 
 		<cfset var scope = left(arguments.timestamp, 8) & "/" & arguments.config.region & "/s3/aws4_request" />
 		<cfset var canonicalRequest = "" />
@@ -414,7 +415,11 @@
 		<cfset var signingKey = "" />
 		<cfset var signature = "" />
 
-		<cfset arguments.headers["host"] = "#arguments.config.apiEndpoint#" />
+		<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
+			<cfset arguments.headers["host"] = arguments.config.apiEndpoint />
+		<cfelse>
+			<cfset arguments.headers["host"] = arguments.config.domain & ".s3.amazonaws.com" />
+		</cfif>
 
 		<cfset canonicalRequest = getCanonicalRequest(argumentCollection=arguments) />
 		<cfset stringToSign = getStringToSign(arguments.timestamp, scope, canonicalRequest) />
@@ -539,8 +544,9 @@
 					config=arguments.config,
 					timestamp=currentDate,
 					method=arguments.method,
-					path=arguments.config.apiEndpointPrefix & urlPath,
-					queryParams=queryParams
+					path=urlPath,
+					queryParams=queryParams,
+					s3Path=arguments.s3Path
 				) />
 
 				<cfset urlpath = urlpath & "?#structToQueryParams(queryParams)#&X-Amz-Signature=#signature#" />
