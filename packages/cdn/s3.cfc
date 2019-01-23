@@ -350,6 +350,7 @@
 		<cfargument name="headers" type="struct" required="false" default="#structNew()#" />
 		<cfargument name="payload" type="any" required="false" />
 		<cfargument name="unsignedPayload" type="boolean" required="false" />
+		<cfargument name="s3Path" type="boolean" required="false" default="false" />
 
 		<cfset var result = [
 			arguments.method,
@@ -361,6 +362,12 @@
 		] />
 		<cfset var key = "" />
 		<cfset var intermed = [] />
+
+		<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
+			<cfset arguments.headers["host"] = arguments.config.apiEndpoint />
+		<cfelse>
+			<cfset arguments.headers["host"] = arguments.config.domain & ".s3.amazonaws.com" />
+		</cfif>
 
 
 		<!--- Query parameters --->
@@ -415,12 +422,6 @@
 		<cfset var signingKey = "" />
 		<cfset var signature = "" />
 
-		<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
-			<cfset arguments.headers["host"] = arguments.config.apiEndpoint />
-		<cfelse>
-			<cfset arguments.headers["host"] = arguments.config.domain & ".s3.amazonaws.com" />
-		</cfif>
-
 		<cfset canonicalRequest = getCanonicalRequest(argumentCollection=arguments) />
 		<cfset stringToSign = getStringToSign(arguments.timestamp, scope, canonicalRequest) />
 		<cfset signingKey = getSigningKey(arguments.config.awsSecretKey, left(arguments.timestamp, 8), arguments.config.region, "s3") />
@@ -438,6 +439,7 @@
 		<cfargument name="headers" type="struct" required="false" default="#structNew()#" />
 		<cfargument name="payload" type="any" required="false" />
 		<cfargument name="unsignedPayload" type="boolean" required="false" />
+		<cfargument name="s3Path" type="boolean" required="false" default="false" />
 
 		<cfset var signature = getAWSSignature(argumentCollection=arguments) />
 		<cfset var signedHeaders = listSort(structKeyList(arguments.headers, ';'), 'textnocase', 'asc', ';') />
@@ -605,6 +607,7 @@
 			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
 		} />
 		<cfset var i = "" />
+		<cfset var authArgs = {} />
 
 		<cfset var urlPath = arguments.config.pathPrefix & arguments.file />
 		<cfif left(arguments.file,1) neq "/">
@@ -614,14 +617,16 @@
 		</cfif>
 
 		<!--- create signature --->
-		<cfset var signature = getAWSAuthorization(
+		<cfset var authArgs = {
 			config=arguments.config,
 			timestamp=timestamp,
 			method="HEAD",
 			path=arguments.config.apiEndpointPrefix & urlPath,
 			headers=stHeaders,
-			unsignedPayload=true
-		) />
+			unsignedPayload=true,
+			s3Path=true
+		} />
+		<cfset var signature = getAWSAuthorization(argumentCollection=authArgs) />
 
 		<!--- REST call --->
 		<cfhttp method="HEAD" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##urlPath#" charset="utf-8" result="stResponse" timeout="1800">
@@ -653,7 +658,9 @@
 					<cfset stDetail["result"] = results>
 					<cfset substituteValues = arrayNew(1)>
 					<cfset substituteValues[1] = results.error.message.XMLText>
-					<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+					<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+					<cfset substituteValues[3] = signature>
+					<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request={2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 				</cfif>
 			<cfelseif NOT listFindNoCase("200,204",listfirst(stResponse.statuscode," "))>
 				<cfset substituteValues = arrayNew(1)>
@@ -1072,6 +1079,7 @@
 		<cfset var path = "" />
 		<cfset var stDetail = structNew() />
 		<cfset var substituteValues = arrayNew(1) />
+		<cfset var authArgs = {} />
 
 
 		<cfif structkeyexists(arguments,"localfile")>
@@ -1116,14 +1124,16 @@
 		<cfset stHeaders["x-amz-content-sha256"] = "UNSIGNED-PAYLOAD" />
 
 		<!--- create signature --->
-		<cfset signature = getAWSAuthorization(
+		<cfset authArgs = {
 			config=arguments.config,
 			timestamp=timestamp,
 			method="PUT",
 			path=arguments.config.apiEndpointPrefix & path,
 			headers=stHeaders,
-			unsignedPayload=true
-		) />
+			unsignedPayload=true,
+			s3Path=true
+		} />
+		<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
 
 		<!--- REST call --->
 		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" charset="utf-8" result="cfhttp" timeout="1800">
@@ -1152,8 +1162,9 @@
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = results.error.message.XMLText>
-				<cfset substituteValues[2] = signature>
-				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+				<cfset substituteValues[3] = signature>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request={2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
@@ -1179,6 +1190,7 @@
 		<cfset var stDetail = structNew() />
 		<cfset var substituteValues = arrayNew(1) />
 		<cfset var header = "" />
+		<cfset var authArgs = {} />
 
 		<cfif left(arguments.file,1) neq "/">
 			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
@@ -1210,7 +1222,7 @@
 		<cfset stHeaders["x-amz-content-sha256"] = "UNSIGNED-PAYLOAD" />
 
 		<!--- create signature --->
-		<cfset signature = getAWSAuthorization(
+		<cfset authArgs = {
 			config=arguments.config,
 			timestamp=timestamp,
 			method="PUT",
@@ -1219,8 +1231,10 @@
 				"acl"=""
 			},
 			headers=stHeaders,
-			unsignedPayload=true
-		) />
+			unsignedPayload=true,
+			s3Path=true
+		} />
+		<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
 
 		<!--- REST call --->
 		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
@@ -1246,8 +1260,9 @@
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = results.error.message.XMLText>
-				<cfset substituteValues[2] = signature>
-				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+				<cfset substituteValues[3] = signature>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request: {2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
@@ -1273,6 +1288,7 @@
 		<cfset var stHeaders = {
 			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
 		} />
+		<cfset var authArgs = {} />
 
 		<cfif left(arguments.file,1) neq "/">
 			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
@@ -1281,14 +1297,15 @@
 		</cfif>
 
 		<!--- create signature --->
-		<cfset signature = getAWSAuthorization(
+		<cfset authArgs = {
 			config=arguments.config,
 			timestamp=timestamp,
 			method="DELETE",
 			path=arguments.config.apiEndpointPrefix & path,
 			headers=stHeaders,
 			unsignedPayload=true
-		) />
+		} />
+		<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
 
 		<!--- REST call --->
 		<cfhttp method="DELETE" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" result="cfhttp" timeout="1800">
@@ -1313,9 +1330,9 @@
 				<cfset stDetail["signature"] = replace(signature, chr(10), "\n", "ALL")>
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
-				<cfset substituteValues[1] = results.error.message.XMLText>
-				<cfset substituteValues[2] = signature>
-				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+				<cfset substituteValues[3] = signature>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request: {2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
