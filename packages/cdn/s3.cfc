@@ -1303,7 +1303,8 @@
 			method="DELETE",
 			path=arguments.config.apiEndpointPrefix & path,
 			headers=stHeaders,
-			unsignedPayload=true
+			unsignedPayload=true,
+			s3Path=true
 		} />
 		<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
 
