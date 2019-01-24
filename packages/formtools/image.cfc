@@ -1324,7 +1324,7 @@
 				<!--- Check if either the new height or new width is smaller than the arugments width and height. If yes, then padding is needed --->
 				<cfif newImage.height lt arguments.Height or newImage.width lt arguments.Width>
 					<!--- Create a temp image with background color = PadColor --->
-					<cfset padImage = ImageNew("",arguments.Width,arguments.Height,"argb",arguments.PadColor) />
+					<cfset padImage = ImageNew("",arguments.Width,arguments.Height,"rgb",arguments.PadColor) />
 					<!--- Because ImageScaleToFit doesn't always work correctly (it may make the width or height it used to scale by smaller than it should have been... usually by 1 pixel) we need to account for that becfore we paste --->
 					<!--- Either use ceiling() or fix() depending on which side you want the extra pixeled padding on (This won't be a problem if Adobe fixes the bug in ImageScaleToFit in a future version of ColdFusion) --->
 					<cfset XCoordinate = ceiling((arguments.Width - newImage.Width)/2) />
@@ -1544,7 +1544,7 @@
 		<cfargument name="backgroundColor" type="string" required="false" default="white" hint="background color of image." />
 		
 		<cfset var imgInfo = imageInfo(arguments.oImage)/>
-		<cfset var myImage = imageNew("", imgInfo.width, imgInfo.height, "argb", arguments.backgroundColor) />
+		<cfset var myImage = imageNew("", imgInfo.width, imgInfo.height, "rgb", arguments.backgroundColor) />
 		<cfset imagePaste(myImage, arguments.oImage, 0, 0) />
 		
 		<cfreturn myImage />
@@ -1571,8 +1571,8 @@
 			<cfreturn /><!--- No file attached --->
 		</cfif>
 
-		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and application.fc.lib.cdn.ioFileExists(location="images",file="#arguments.stObject[arguments.stMetadata.name]#")>
-			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="#arguments.stObject[arguments.stMetadata.name]#") />
+		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and application.fc.lib.cdn.ioFileExists(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#")>
+			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#") />
 		<cfelse>
 			<cfreturn /><!--- File doesn't actually exist --->
 		</cfif>
