@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-
+<cfcontent type="application/javascript" />
 <cfoutput>
 <cfsilent><script></cfsilent><!--- trick editor to highlight syntax --->
 
@@ -820,113 +820,111 @@
 		
 		$j(document).on("click",".fc-btn, .fc-btn-link", function(e) {
 			
-			var fcSettings = $j(this).data('fcSettings');
-
-			if (!fcSettings) {
-				return true;
-			}
+			//var fcSettings = $j(this).data('fcSettings');
+			// if (!fcSettings) {
+			// 	return true;
+			// }
 			
-			if( fcSettings.CLICK ) {
+			if( $j(this).attr('fcdata:CLICK') ) {
 				
-				if( fcSettings.TEXTONCLICK ) {
+				if( $j(this).attr('fcdata:TEXTONCLICK') ) {
 					$j(this).find('.ui-button-text')
 						.css('width', $j(this).find('.ui-button-text').width())
 						.css('height', $j(this).find('.ui-button-text').height())
 						.html( "<img src='/wsimages/ajax-loader.gif' style='width:16px;height:16px;' />");
 						//.html( $j(this).attr('fc:textOnClick') );
 				};
-				
-				btnClick( $j(this).closest('form').attr('id') , fcSettings.CLICK );
+				btnClick( $j(this).closest('form').attr('id') , $j(this).attr('fcdata:CLICK') );
 			};
 			
-			if( fcSettings.SELECTEDOBJECTID ) {
-				selectedObjectID( fcSettings.SELECTEDOBJECTID );
+			if( $j(this).attr('fcdata:SELECTEDOBJECTID') ) {
+				selectedObjectID( $j(this).attr('fcdata:SELECTEDOBJECTID') );
 			};
 					
 						
-			if( fcSettings.TURNOFFSERVERSIDEVALIDATION ) {
+			if( $j(this).attr('fcdata:TURNOFFSERVERSIDEVALIDATION') ) {
 				btnTurnOffServerSideValidation();
 			};
 			
-			if( fcSettings.TURNONSERVERSIDEVALIDATION ) {
+			if( $j(this).attr('fcdata:TURNONSERVERSIDEVALIDATION') ) {
 				btnTurnOnServerSideValidation();
 			};
 			
 			
-			if( fcSettings.TURNOFFCLIENTSIDEVALIDATION ) {
+			if( $j(this).attr('fcdata:TURNOFFCLIENTSIDEVALIDATION') ) {
 				$j(this).closest('form').attr('fc:validate',false);
 			};				
 			
 			
-			if( fcSettings.CONFIRMTEXT ) {
-				if( !confirm( fcSettings.CONFIRMTEXT ) ) {
+			if( $j(this).attr('fcdata:CONFIRMTEXT') ) {
+				if( !confirm( $j(this).attr('fcdata:CONFIRMTEXT') ) ) {
 					return false;
 				}
 			};				
 			
-			if( fcSettings.URL ) {
-				btnURL( fcSettings.URL , fcSettings.TARGET )
+			if( $j(this).attr('fcdata:URL') ) {
+				btnURL( fcSet$j(this).attr('fcdata:URL') , $j(this).attr('fcdata:TARGET') )
 			};
 			
-			if( fcSettings.TEXTONCLICK ) {
+			if( $j(this).attr('fcdata:TEXTONCLICK') ) {
 				$j(this).find('.ui-button-text')
 					.css('width', $j(this).find('.ui-button-text').width())
 					.css('height', $j(this).find('.ui-button-text').height())
-					.html( fcSettings.TEXTONCLICK );
+					.html( $j(this).attr('fcdata:TEXTONCLICK') );
 			};
 			
-			if( fcSettings.ONCLICK ) {
-				eval("var fn = function(){ "+fcSettings.ONCLICK+" }");
+			if( $j(this).attr('fcdata:ONCLICK') ) {
+				eval("var fn = function(){ "+$j(this).attr('fcdata:ONCLICK')+" }");
 				if (fn.call(this,e)===false) return false;
 			};
 			
 			
-			if( fcSettings.SUBMIT ) {
+			if( $j(this).attr('fcdata:SUBMIT') ) {
 			
 				
-				if( fcSettings.TEXTONSUBMIT ) {
+				if( $j(this).attr('fcdata:TEXTONSUBMIT') ) {
 					$j(this).find('.ui-button-text')
 						.css('width', $j(this).find('.ui-button-text').width())
 						.css('height', $j(this).find('.ui-button-text').height())
-						.html( fcSettings.TEXTONSUBMIT );
+						.html( $j(this).attr('fcdata:TEXTONSUBMIT') );
 				};
 				
 				
-				btnSubmit( $j(this).closest('form').attr('id') , fcSettings.SUBMIT );
+				btnSubmit( $j(this).closest('form').attr('id') , $j(this).attr('fcdata:SUBMIT') );
 			};
 			return false;
 		});	
 	});		
 	
-	$fc.refreshProperty = function(propertyWrap,focusFieldID) {
+$fc.refreshProperty = function(propertyWrap,focusFieldID) {
 
-		$j(propertyWrap).mask('');
-		var $wrap = $j(propertyWrap);
-		
-		var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&formtheme=' + $wrap.attr('ft:formtheme') + '&view=displayAjaxRefreshAutoSaveProperty';
-		
-		if (typeof($wrap) == 'undefined'){
-			// ignore
-		} else {
-			//if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
-				$j.ajaxq('AutoSave',{
-				    url: refreshPropertyURL,
-				    cache: false,
-				    success: function(html)
-				    {
-				    	$wrap.html(html);
-				    }
-				});
-			//}
-		}
-		
-		//$wrap.load(refreshPropertyURL, 
-		//	function(data){
-		//		$j('##' + focusFieldID).focus();
-		//	});
+	$j(propertyWrap).toromask('');
+	var $wrap = $j(propertyWrap);
+	
+	var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&view=displayAjaxRefreshAutoSaveProperty';
+	
+	if (typeof($wrap.attr('ft:type')) == 'undefined'){
+		// ignore
+	} else {
+		//if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
+			$j.ajaxq('AutoSave',{
+			    url: refreshPropertyURL,
+			    cache: false,
+			    success: function(html)
+			    {
+			    	$wrap.html(html);
+			    }
+			});
+		//}
+	}
+	
+	//$wrap.load(refreshPropertyURL, 
+	//	function(data){
+	//		$j('##' + focusFieldID).focus();
+	//	});
 
-		$j(propertyWrap).unmask('');			
-	};	
+	$j(propertyWrap).torounmask('');			
+};
 
 
 

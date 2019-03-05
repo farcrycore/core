@@ -60,7 +60,7 @@
 		 	<cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> 
 		 	<cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>
 		 	<cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>
-		 >
+		 	<cfloop collection="#attributes.stButtonAttributes#" item="iAttr">fcdata:#iAttr#="#attributes.stButtonAttributes[iAttr]#" </cfloop> >
 		 
 		<cfif listLen(attributes.icon)>
 			<cfif len(trim(listFirst(attributes.icon)))>
