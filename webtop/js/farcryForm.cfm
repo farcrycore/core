@@ -863,7 +863,7 @@
 			};				
 			
 			if( $j(this).attr('fcdata:URL') ) {
-				btnURL( fcSet$j(this).attr('fcdata:URL') , $j(this).attr('fcdata:TARGET') )
+				btnURL( $j(this).attr('fcdata:URL') , $j(this).attr('fcdata:TARGET') )
 			};
 			
 			if( $j(this).attr('fcdata:TEXTONCLICK') ) {
@@ -898,7 +898,7 @@
 	
 $fc.refreshProperty = function(propertyWrap,focusFieldID) {
 
-	$j(propertyWrap).toromask('');
+	$j(propertyWrap).mask('');
 	var $wrap = $j(propertyWrap);
 	
 	var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&view=displayAjaxRefreshAutoSaveProperty';
@@ -923,7 +923,7 @@ $fc.refreshProperty = function(propertyWrap,focusFieldID) {
 	//		$j('##' + focusFieldID).focus();
 	//	});
 
-	$j(propertyWrap).torounmask('');			
+	$j(propertyWrap).unmask('');			
 };
 
 
