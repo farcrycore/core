@@ -41,6 +41,10 @@
 	<!--- lucee session cluster should be false and sticky sessions are required to avoid session rotate / csrf token bugs --->
 	<cfset this.sessioncluster = "false">
 
+	<!--- set up jar paths --->
+	<cfset setupJARPaths()>
+
+
 	<!--- set up the farcry dsn from the environment --->
 	<cfif structKeyExists(THIS, "bUseEnv") AND THIS.bUseEnv eq "true">
 		<cfset system = createObject("java", "java.lang.System")>
@@ -155,6 +159,50 @@
 		<cfset request.fc.hasSessionScope = true />
 	</cfif>
 	
+
+	<cffunction name="setupJARPaths" access="private">
+		<!--- param these once per request --->
+		<cfparam name="this.javaSettings" default="#structNew()#">
+		<cfparam name="this.javaSettings.loadPaths" default="#arrayNew(1)#">
+		<cfparam name="application.farcryPathExpanded" default="#expandpath("/farcry")#">
+		<cfparam name="application.farcryUseJARPath" default="true">
+
+		<!--- core --->
+		<cfset addJARPath([
+			"core/packages/farcry/combine/lib",
+			"core/packages/lib/diff",
+			"core/packages/resources",
+			"core/packages/security/crypt"
+		])>
+
+		<!--- plugins --->
+		<cfset var plugin = "">
+		<cfloop list="#(this.plugins ?: "")#" index="plugin">
+			<cfset addJARPath("plugins/#plugin#/jars")>			
+		</cfloop>
+
+		<!--- project --->
+		<cfset addJARPath(("projects/#(this.projectDirectoryName ?: this.name)#/jars"))>
+
+	</cffunction>
+
+	<cffunction name="addJARPath" access="package">
+		<cfargument name="path" required="true">
+
+		<cfset var i = 0>
+
+		<cfif NOT isArray(arguments.path)>
+			<cfset arguments.path = [ arguments.path ]>
+		</cfif>
+
+		<cfloop from="1" to="#arrayLen(arguments.path)#" index="i">
+			<cfset var path = application.farcryPathExpanded & "/" & arguments.path[i]>
+			<cfif NOT arrayFindNoCase(this.javaSettings.loadPaths, path)>
+				<cfset arrayAppend(this.javaSettings.loadPaths, path)>
+			</cfif>
+		</cfloop>
+	</cffunction>
+
 	
 	<!--- ////////////////////////////////////////////// --->
 	
