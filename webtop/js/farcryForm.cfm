@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-<cfcontent type="application/javascript" />
+
 <cfoutput>
 <cfsilent><script></cfsilent><!--- trick editor to highlight syntax --->
 
