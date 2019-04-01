@@ -1,7 +1,6 @@
 <cfcomponent title="bcrypt (strong; recommended)" hint="I encode passwords using a popular secure password hashing algorithm called bcrypt. I am very slow, but that makes me very secure!" extends="PasswordHash"
 			alias="bcrypt" seq="9001" workFactor="10">
 
-	<cfset variables.loadPaths = [expandPath("/farcry/core/packages/security/crypt/jbcrypt-0.3m.jar")] />
 
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">
 		

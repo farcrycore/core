@@ -10,9 +10,6 @@
 		<cfargument name="outputSeperator" type="string" required="false" default="#chr(13)#" hint="seperates the output of different file content" />
 		<cfargument name="skipMissingFiles" type="boolean" required="false" default="true" hint="skip files that don't exists? If false, non-existent files will cause an error" />
 		<cfargument name="getFileModifiedMethod" type="string" required="false" default="java" hint="java or com. Which technique to use to get the last modified times for files." />
-		<!--- optional - use Mark Mandel's Java Loader to instantiate Java classes. This means you don't need to add the .jar files to the classpath --->
-		<cfargument name="javaLoader" type="any" required="false" default="" hint="a JavaLoader instance. If provided, this will be used to load the Java objects; if not provided, Java objects are loaded as normal via createObject()" />
-		<cfargument name="jarPath" type="string" required="false" default="path of the directory where the .jar files are located" />
 		<!--- experimental - use with care! You may want to tweak these values if your webserver has a caching layer that either causes problems, or adds potential performance gains. Disabling 304s will let the caching layer handle the caching according to its configuration. Setting cache-control to 'private' will bypass the caching layer and put the responsibility in the hands of Combine. --->
 		<cfargument name="enable304s" type="boolean" required="false" default="true" hint="304 (not-modified) is returned when the request's etag matches the current response, so we return a 304 instead of the content, instructing the browser to use it's cache. A valid reason for disabling this would be if you have an effective caching layer on your web server, which handles 304s more efficiently. However, unlike Combine the caching layer will not check the modified state of each individual css/js file. Note that to enable 304s, you must also enable eTags." />
 		<cfargument name="cacheControl" type="string" required="false" default="" hint="specify an optional cache-control header, which will be returned in each response. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html. An example use is to specify 'private' which will disable proxy caching, only allowing browser caching." />
@@ -42,45 +39,19 @@
 		// return 304s when conditional requests are made with matching Etags?
 		variables.bEnable304s = arguments.enable304s;
 		
-		
-		// optional: use JavaLoader for loading external java files
-		variables.bUseJavaLoader = isObject(arguments.javaLoader) AND len(arguments.jarPath);
-		if(variables.bUseJavaLoader)
-		{
-			variables.jarFileArray = arrayNew(1);
-			arrayAppend(variables.jarFileArray, arguments.jarPath & "/combine.jar");
-			arrayAppend(variables.jarFileArray, arguments.jarPath & "/yuicompressor-2.4.6.jar");
-			arguments.javaLoader.init(variables.jarFileArray);
-		}
-		
 		variables.jOutputStream = createObject("java","java.io.ByteArrayOutputStream");
 		variables.jStringReader = createObject("java","java.io.StringReader");
 		
 		// If using jsMin, we need to load the required Java objects
 		if(variables.bJsMin)
 		{
-			if(variables.bUseJavaLoader)
-			{
-				variables.jJSMin = arguments.javaLoader.create("com.magnoliabox.jsmin.JSMin");
-			}
-			else
-			{
-				variables.jJSMin = createObject("java","com.magnoliabox.jsmin.JSMin");
-			}
-		
+			variables.jJSMin = createObject("java","com.magnoliabox.jsmin.JSMin");
 		}
 		// If using the YUI CSS Compressor, we need to load the required Java objects
 		if(variables.bYuiCss)
 		{
 			variables.jStringWriter = createObject("java","java.io.StringWriter");
-			if (variables.bUseJavaLoader)
-			{
-				variables.jYuiCssCompressor = arguments.javaLoader.create("com.yahoo.platform.yui.compressor.CssCompressor");
-			}
-			else
-			{
-				variables.jYuiCssCompressor = createObject("java","com.yahoo.platform.yui.compressor.CssCompressor");
-			}		
+			variables.jYuiCssCompressor = createObject("java","com.yahoo.platform.yui.compressor.CssCompressor");
 		}
 		
 		// determine which method to use for getting the file last modified dates

@@ -28,16 +28,6 @@
 <cfcomponent>
 	
 	<cffunction name="init" access="public" returntype="struct" output="false">
-		<cfargument name="javaloader" required="false" />
-		
-		<!--- load java-class with javaloader if not already provided --->
-		<cfif not isDefined('arguments.javaloader')>
-			<cfset this.javaloader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init(listtoarray(
-				expandPath('/farcry/core/packages/lib/diff/diff_match_patch-current.jar')
-			)) />
-		<cfelse>
-			<cfset this.javaloader = arguments.javaloader />
-		</cfif>
 		
 		<!--- get and save diff-match-patch instance --->
 		<cfset this.dmp = getDiffMatchPatchInstance() />
@@ -50,7 +40,7 @@
 	
 	<cffunction name="getDiffMatchPatchInstance" access="private" returntype="any" output="false">
 		
-		<cfreturn this.javaloader.create('name.fraser.neil.plaintext.diff_match_patch').init() />
+		<cfreturn createObject('java', 'name.fraser.neil.plaintext.diff_match_patch').init() />
 	</cffunction>
 	
 	

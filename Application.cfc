@@ -165,7 +165,6 @@
 		<cfparam name="this.javaSettings" default="#structNew()#">
 		<cfparam name="this.javaSettings.loadPaths" default="#arrayNew(1)#">
 		<cfparam name="application.farcryPathExpanded" default="#expandpath("/farcry")#">
-		<cfparam name="application.farcryUseJARPath" default="true">
 
 		<!--- core --->
 		<cfset addJARPath([
@@ -934,6 +933,8 @@
 		<cfif not isDefined("this.name")>
 			<cfabort showerror="this.name not defined in your projects farcryConstructor.">
 		</cfif>
+
+		<cfset application.farcryUseJARPath = true />
 
 		<cfparam name="this.dsn" default="#this.name#" />
 		<cfif not isDefined("this.dbtype")>

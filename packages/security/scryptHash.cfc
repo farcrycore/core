@@ -1,7 +1,6 @@
 <cfcomponent displayname="scrypt (very strong; not as heavily tested as bcrypt)" hint="I encode passwords using scrypt, which was designed to be far stronger than bcrypt." extends="PasswordHash"
 			alias="scrypt" seq="9500" workFactor="14" memoryCost="8" parallelFactor="1">
 
-	<cfset variables.loadPaths = [expandPath("/farcry/core/packages/security/crypt/scrypt-1.3.1.jar")] />
 
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">
 		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />
