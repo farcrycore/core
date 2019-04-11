@@ -39,23 +39,6 @@ FARCRY IMPORT FILES
 	<cfset stLocal.loginparams = '' />
 </cfif>
 
-<cfif structKeyExists(server, "stFarcryProjects") AND structcount(server.stFarcryProjects) GT 1>
-	<cfset aDomainProjects = arraynew(1) />
-	<cfloop collection="#server.stFarcryProjects#" item="thisproject">
-		<cfif isstruct(server.stFarcryProjects[thisproject]) and listcontains(server.stFarcryProjects[thisproject].domains,cgi.http_host)>
-			<cfset arrayappend(aDomainProjects,thisproject) />
-		</cfif>
-	</cfloop>
-	
-	<cfif arraylen(aDomainProjects) gt 1>
-		<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
-			<cfset queryaddrow(qExtraOptions) />
-			<cfset querysetcell(qExtraOptions,"label",server.stFarcryProjects[aDomainProjects[i]].displayname) />
-			<cfset querysetcell(qExtraOptions,"url",application.fapi.getLink(href=application.url.webtoplogin,urlParameters="#stLocal.loginparams#&farcryProject=#aDomainProjects[i]#")) />
-			<cfset querysetcell(qExtraOptions,"selected",cookie.currentFarcryProject eq aDomainProjects[i]) />
-		</cfloop>
-	</cfif>
-</cfif>			
 
 <cfif listlen(application.security.getAllUD()) gt 1>
 	<cfif qExtraOptions.recordcount>

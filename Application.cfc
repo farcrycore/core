@@ -35,8 +35,7 @@
 
 
 	<!--- run the active project's constructor --->
-	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
-	<cfinclude template="#this.projectConstructorLocation#" />
+	<cfinclude template="/farcryConstructor.cfm" />
 
 	<!--- lucee session cluster should be false and sticky sessions are required to avoid session rotate / csrf token bugs --->
 	<cfset this.sessioncluster = "false">
@@ -540,35 +539,6 @@
 		</cfif>
 	
 		
-		<!---
-		SHARED WEBTOP LOGIN 
-		This sets up a cookie on the users system so that if they try and login to
-		the webtop and the webtop can't determine which project it is trying to update,
-		it will know what projects they will be potentially trying to edit.  
-		--->
-		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
-		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName) or not isstruct(server.stFarcryProjects[application.projectDirectoryName])>
-			<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
-			<cfset server.stFarcryProjects[application.projectDirectoryName].displayname = application.displayName />
-			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = "" />
-		</cfif>
-		<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
-			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
-		</cfif>
-		<cfcookie name="currentFarcryProject" value="#application.projectDirectoryName#" httpOnly="true">	
-	
-		<!--- Checks to see if the user has attempted to flick over to administrate a different project on this server. --->		
-		<cfif 	structKeyExists(url, "farcryProject") 
-				AND len(url.farcryProject) 
-				AND structKeyExists(server, "stFarcryProjects") 
-				AND structKeyExists(cookie, "currentFarcryProject") 
-				AND structKeyExists(server.stFarcryProjects, url.farcryProject) 
-				AND cookie.currentFarcryProject NEQ url.farcryProject>
-					
-					<cfset cookie.currentFarcryProject = url.farcryProject />
-					<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
-		</cfif>
-		
 		<cfif isdefined("session")>
 			<cfparam name="session.loginReturnURL" default="#application.url.webroot#" />
 			
@@ -816,71 +786,6 @@
 			<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
 		</cfif>
 
-	</cffunction>
-
-			
-	
-	<cffunction name="getProjectConstructorLocation" access="public" output="false" hint="Returns the location of the active project constructor." returntype="string">
-		<cfargument name="plugin" type="string" hint="The name of the plugin.">
-		<cfargument name="fileExtension" type="string" default="cfm" hint="'XML' if looking for the xml constructor override file">
-		
-		<cfset var loc = "" />
-		<cfset var virtualDirectory = "" />
-		
-		<!--- strip the context path first (for J2EE deployments) --->
-		<cfset var script_path = right( cgi.SCRIPT_NAME, len( cgi.SCRIPT_NAME ) - len( cgi.context_path ) )>
-
-		<!--- Get the first directory after the url if there is one (ie. if its just index.cfm then we know we are just under the webroot) --->
-		<cfif listLen(script_path, "/") GT 1>
-			<cfset virtualDirectory = listFirst(script_path, "/") />
-				
-			<!--- If the first directory name is the same name as the plugin, then we assume we are running the project from the webroot --->
-			<cfif virtualDirectory EQ arguments.plugin>
-				<cfset virtualDirectory = "" />
-			</cfif>					
-		</cfif>
-
-		<!--- If we ended up with a virtual directory we check to see if there is a farcryConstructor --->
-		<cfif len(virtualDirectory) AND fileExists(expandPath("/#virtualDirectory#/farcryConstructor.#arguments.fileExtension#"))>
-			<cfset loc = trim("/#virtualDirectory#/farcryConstructor.#arguments.fileExtension#") />
-
-		<cfelseif fileExists(expandPath("/farcryConstructor.#arguments.fileExtension#"))>
-			<!--- Otherwise we check in the webroot --->
-			<cfset loc = trim("/farcryConstructor.#arguments.fileExtension#") />
-		<cfelse>
-			<!--- If all else fails... --->
-			<!--- 1. See if the user has a cookie telling us what project to look at. --->
-			<cfif structKeyExists(url, "farcryProject") AND len(url.farcryProject)>
-				<cfcookie name="currentFarcryProject" value="#url.farcryProject#" httpOnly="true">
-			</cfif>
-			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
-				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#"))>
-					<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#") />
-				</cfif>
-			</cfif>
-			<!--- 2. If no cookie exists, see if server.stFarcryProjects holds any project names and list the first one found --->
-			<cfif loc eq "" and arguments.plugin EQ "webtop" and structKeyExists(server, "stFarcryProjects") and structcount(server.stFarcryProjects) GT 0>
-				<cfloop collection="#server.stFarcryProjects#" item="thisproject">
-					<cfif fileExists(expandPath("/#thisproject#/farcryConstructor.#arguments.fileExtension#"))>
-						<cfset loc = trim("/#thisproject#/farcryConstructor.#arguments.fileExtension#") />
-						<cfbreak />
-					</cfif>
-				</cfloop>
-			</cfif>
-		</cfif>
-
-		<cfif not len(loc) and arguments.fileExtension eq "cfm">				
-			<cfif fileExists(expandPath("#cgi.context_path#/webtop/install/index.cfm"))>
-				<cfset installLink = "#cgi.context_path#/webtop/install/index.cfm" />
-			<cfelse>
-				<cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/index.cfm" />
-			</cfif>
-
-			<cflocation url="#installLink#" addtoken="false">
-			
-		</cfif>
-	
-		<cfreturn loc />
 	</cffunction>
 
 
