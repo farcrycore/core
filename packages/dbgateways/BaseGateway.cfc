@@ -381,6 +381,8 @@
 				
 				<cfcatch type="database">
 					<cfset stResult.bSuccess = false />
+					<cfset stResult.message = cfcatch.message ?: "" />
+					<cflog file="fourq" text="Error running setData() for #arguments.stProperties.objectID# (#arguments.stProperties.typename#): #stResult.message#"  />
 					<cfset arrayappend(stResult.results,cfcatch) />
 				</cfcatch>
 			</cftry>
