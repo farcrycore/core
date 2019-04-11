@@ -332,15 +332,11 @@
 
 		<cfset var qServerSpecific = queryNew("blah") />
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
-		<cfset var machineName = "localhost" />
 		<cfset var tickBegin = getTickCount() />
 		<cfset var typename = "" />
+		<cfset var plugin = "" />
+		<cfset var qProfileLocales = "" />
 		
-		<cftry>
-			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-			
-			<cfcatch></cfcatch>
-		</cftry>
 
 		<!--- intialise application scope --->
 		<cfset initApplicationScope() />
@@ -349,13 +345,6 @@
 		CALL THE PROJECTS SERVER SPECIFIC VARIABLES
 		 ----------------------------------->
 		<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
-		
-		<!--- Add Server Specific Request Scope files --->
-		<cfif directoryExists("#application.path.project#/config/#machineName#")>
-			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVars.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVars.cfm" />
-			</cfif>
-		</cfif>
 		
 		
 		<!----------------------------------- 
@@ -459,16 +448,6 @@
 		------------------------------------>
 		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
 			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" >
-		</cfif>
-
-
-		<!----------------------------------- 
-		ADD SERVER SPECIFIC AFTER INIT VARIABLES
-		------------------------------------>
-		<cfif directoryExists("#application.path.project#/config/#machineName#")>
-			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVarsAfterInit.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVarsAfterInit.cfm" />
-			</cfif>
 		</cfif>
 
 
