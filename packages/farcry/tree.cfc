@@ -500,7 +500,9 @@ $out:$
 
 	<cfloop query="q">
 		<cfset stObj = application.fapi.getContentObject(objectid="#q.objectID#", typename="#q.Typename#") />
-		<cfset arrayappend(aObjs,stObj)>
+		<cfif NOT structIsEmpty(stObj)> <!--- filter out typename does not exists in stcoapi --->
+			<cfset arrayappend(aObjs,stObj)>
+		</cfif>
 	</cfloop>
 	
 	<cfreturn aObjs>
