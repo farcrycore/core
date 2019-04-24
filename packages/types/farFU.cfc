@@ -323,37 +323,30 @@
 		<cfargument name="fuID" required="false" default="" hint="The objectid of the farFU record to exclude from the db query" />
 		
 		<cfset var qDuplicates = "" />
-		<cfset var bDuplicate = true />
 		<cfset var duplicateCounter = "" />
 		<cfset var cleanFU = arguments.friendlyURL />
-		
-		<cfloop condition="#bDuplicate#">	
-			<cfquery datasource="#application.dsn#" name="qDuplicates">
-			SELECT objectid
+		<cfset var potentialDuplicates = "" />
+
+		<cfquery datasource="#application.dsn#" name="qDuplicates">
+			SELECT friendlyURL
 			FROM farFU
-			WHERE friendlyURL = <cfqueryparam value="#cleanFU##duplicateCounter#" cfsqltype="cf_sql_varchar">	
+			WHERE friendlyURL like <cfqueryparam value="#cleanFU#%" cfsqltype="cf_sql_varchar">
 			<cfif len(arguments.fuID)>
 				AND objectid <> <cfqueryparam value="#arguments.fuID#" cfsqltype="cf_sql_varchar">
 			</cfif>				
 			AND fuStatus > 0
-			</cfquery>
-	
-					
-			<cfset bDuplicate = qDuplicates.recordCount />
-			
-			<cfif bDuplicate GT 0>			
-				<cfif isNumeric(duplicateCounter)>
-					<cfset duplicateCounter = duplicateCounter + 1 />
-				<cfelse>
-					<cfset duplicateCounter = 1 />
-				</cfif>				
-			</cfif>	
+		</cfquery>
+		<cfset potentialDuplicates = valueList(qDuplicates.friendlyURL) />
+		
+		<cfloop condition="#listFindNoCase(potentialDuplicates, cleanFU & duplicateCounter)#">
+			<cfif duplicateCounter eq "">
+				<cfset duplicateCounter = 1 />
+			<cfelse>
+				<cfset duplicateCounter = duplicateCounter + 1 />
+			</cfif>
 		</cfloop>
 		
-		<cfset cleanFU = "#cleanFU##duplicateCounter#" />			
-		
-		<cfreturn cleanFU />	
-			
+		<cfreturn cleanFU & duplicateCounter />
 	</cffunction>
 	
 	<cffunction name="setSystemFU" access="public" returntype="struct" hint="Returns the success state of setting the System FU of an object" output="false">
