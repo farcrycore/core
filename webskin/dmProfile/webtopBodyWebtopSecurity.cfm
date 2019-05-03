@@ -25,7 +25,7 @@ ENVIRONMENT VARIABLES
 <ft:form style="width:100%;">
 <cfoutput>
 	<h1>
-		#stobj.firstName# #stobj.lastname# Webtop Security
+		#encodeForHTML(stobj.firstName)# #encodeForHTML(stobj.lastname)# Webtop Security
 		
 		<ft:button value="Print" type="button" onClick="window.print();" class="hidden-print" />
 	</h1>

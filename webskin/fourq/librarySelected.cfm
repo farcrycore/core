@@ -5,6 +5,6 @@
 <!--- @@description:   --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<cfoutput>#stobj.label#</cfoutput>
+<cfoutput>#encodeForHTML(stobj.label)#</cfoutput>
 
 <cfsetting enablecfoutputonly="false">

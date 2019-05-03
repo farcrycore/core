@@ -18,9 +18,9 @@
 	<cfset arguments.stParam.author = createobject("component",application.stCOAPI.dmProfile.packagepath).getProfile(username=stObj.createdby) />
 	
 	<cfif not structisempty(arguments.stParam.author) and len(arguments.stParam.author.emailAddress)>
-		<cfoutput><author>#arguments.stParam.author.emailAddress#<cfif len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname)> (#arguments.stParam.author.firstname# #arguments.stParam.author.lastname#)</cfif></author></cfoutput>
+		<cfoutput><author>#encodeForXML(arguments.stParam.author.emailAddress)#<cfif len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname)> (#arguments.stParam.author.firstname# #encodeForXML(arguments.stParam.author.lastname)#)</cfif></author></cfoutput>
 	<cfelseif len(arguments.stParam.author.firstname) or len(arguments.stparam.author.lastname)>
-		<cfoutput><dc:creator>#arguments.stParam.author.firstname# #arguments.stParam.author.lastname#</dc:creator></cfoutput>
+		<cfoutput><dc:creator>#encodeForXML(arguments.stParam.author.firstname)# #encodeForXML(arguments.stParam.author.lastname)#</dc:creator></cfoutput>
 	</cfif>
 </cfif>
 
@@ -36,7 +36,7 @@
 	<!--- iTunes elements --->
 	<cfif arguments.stParam.bAuthor and not len(arguments.stParam.itunesauthor) and not structisempty(arguments.stParam.author) and len(arguments.stParam.author.emailAddress)>
 		<cfoutput>
-			<itunes:author>#arguments.stParam.author.firstname# #arguments.stParam.author.lastname#<cfif len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname)> (#arguments.stParam.author.emailAddress#)</cfif></itunes:author>
+			<itunes:author>#arguments.stParam.author.firstname# #arguments.stParam.author.lastname#<cfif len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname)> (#encodeForXML(arguments.stParam.author.emailAddress)#)</cfif></itunes:author>
 		</cfoutput>
 	</cfif>
 	<cfif arguments.stParam.bAuthor and len(arguments.stParam.itunesauthor)>

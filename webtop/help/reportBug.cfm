@@ -88,11 +88,11 @@ Contact:
 		<form action="" method="post">
 		<tr>
 			<td>#application.rb.getResource("yourName")#</td>
-			<td><input type="text" name="bugFinder" value="#session.dmProfile.firstName# #session.dmProfile.lastName#" class="FormTextBox"></td>
+			<td><input type="text" name="bugFinder" value="#encodeForHTML(session.dmProfile.firstName)# #encodeForHTML(session.dmProfile.lastName)#" class="FormTextBox"></td>
 		</tr>
 		<tr>
 			<td>#application.rb.getResource("yourEmail")#</td>
-			<td><input type="text" name="emailAddress" value="#session.dmProfile.emailAddress#" class="FormTextBox"></td>
+			<td><input type="text" name="emailAddress" value="#encodeForHTML(session.dmProfile.emailAddress)#" class="FormTextBox"></td>
 		</tr>
 		<tr>
 			<td>#application.rb.getResource("descTitle")#</td>

@@ -13,31 +13,6 @@
 <cfparam name="form.bodyPlain" default="" />
 <cfparam name="form.bodyHTML" default="" />
 
-<cfif isdefined("url.search")>
-	<cfparam name="url.page" default="1" />
-	
-	<cfquery datasource="#application.dsn#" name="q">
-		select		firstname,lastname,emailaddress
-		from		dmProfile
-		where		firstname & ' ' & lastname & ' ' & ' ' & emailaddress like '%#url.search#%'
-		order by	lastname, firstname, emailaddress
-	</cfquery>
-	
-	<cfset aResult = arraynew(1) />
-	<cfloop query="q">
-		<cfset stResult = structnew() />
-		<cfset stResult.id = q.email />
-		<cfset stResult.label = "#q.firstname# #q.lastname# <#q.email#>" />
-		<cfset arrayappend(aResult,stResult) />
-		
-		<cfif q.currentrow gte 15>
-			<cfbreak />
-		</cfif>
-	</cfloop>
-	
-	<cfcontent type="application/json" variable="#ToBinary( ToBase64( serializeJSON(aResult) ) )#" reset="yes" />
-</cfif>
-
 <ft:processform action="Send Email">
 	<cfif isdefined("form.attachment") and len(form.attachment)>
 		<cffile action="upload" filefield="attachment" destination="#gettempdirectory()#" nameConflict="overwrite" />

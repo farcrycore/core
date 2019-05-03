@@ -21,7 +21,7 @@
 			<cfset stProfile = application.fapi.getContentType(typename="dmProfile").getProfile(username=arguments.stMetadata.value) />
 			
 			<cfsavecontent variable="html"><cfoutput>
-				<cfif len(stProfile.firstname) or len(stProfile.lastname)><span title="#arguments.stMetadata.value#">#stProfile.firstname# #stProfile.lastname#</span><cfelse>#arguments.stMetadata.value#</cfif>
+				<cfif len(stProfile.firstname) or len(stProfile.lastname)><span title="#arguments.stMetadata.value#">#encodeForHTML(stProfile.firstname)# #encodeForHTML(stProfile.lastname)#</span><cfelse>#arguments.stMetadata.value#</cfif>
 			</cfoutput></cfsavecontent>
 		<cfelse>
 			<cfset html = "Anonymous" />

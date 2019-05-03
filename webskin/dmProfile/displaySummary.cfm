@@ -8,9 +8,9 @@
 <cfoutput>
 	<dl id="profile" class="dl-style2">
 		<dt><admin:resource key="coapi.dmProfile.properties.name@label">Name</admin:resource></dt>
-		<dd><cfif len(trim(stObj.firstname)) or len(stObj.lastName)>#stObj.firstName# #stObj.lastName#<cfelse>-</cfif></dd>
+		<dd><cfif len(trim(stObj.firstname)) or len(stObj.lastName)>#encodeForHTML(stObj.firstName)# #encodeForHTML(stObj.lastName)#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("emailAddress")#</dt>
-		<dd><cfif len(stObj.emailAddress)>#stObj.emailAddress#<cfelse>-</cfif></dd>
+		<dd><cfif len(stObj.emailAddress)>#encodeForHTML(stObj.emailAddress)#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("position")#</dt>
 		<dd><cfif len(stObj.position)>#stObj.position#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("department")#</dt>

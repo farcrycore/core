@@ -195,7 +195,7 @@
 					<div>NOT PERMITTED TO ACTION</div>
 					<cfif len(stTask.userID)>
 						<cfset stProfile = createObject("component", application.stcoapi.dmProfile.packagePath).getData(objectid="#stTask.userID#") />
-						<div>Assigned to: #stProfile.firstName# #stProfile.lastName#</div>					
+						<div>Assigned to: #encodeForHTML(stProfile.firstName)# #encodeForHTML(stProfile.lastName)#</div>					
 					</cfif>
 				</cfif>	
 			</td>

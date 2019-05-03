@@ -17,7 +17,7 @@
 		<tr>
 			<td>
 				<cfif len(qLogins.firstname) or len(qLogins.lastname)>
-					#qLogins.firstname# #qLogins.lastname# (#qLogins.username#)
+					#encodeForHTML(qLogins.firstname)# #encodeForHTML(qLogins.lastname)# (#qLogins.username#)
 				<cfelse>
 					Unknown Name (#qLogins.username#)
 				</cfif>
