@@ -373,6 +373,11 @@
 		<cfargument name="tablename" type="string" required="true" />
 		
 		<cfset var qColumns = "" />
+		<cfset var qSchema = "" />
+
+		<cfquery datasource="#application.dsn#" name="qSchema">
+			SELECT DATABASE() AS table_schema
+		</cfquery>
 
 		<cfquery name="qColumns" datasource="#this.dsn#">
 			SELECT table_name
@@ -386,7 +391,8 @@
 				, datetime_precision
 				, is_nullable
 			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE table_name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.tablename#">
+			WHERE table_schema = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qSchema.table_schema#">
+				AND table_name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.tablename#">
 			ORDER BY table_name, ordinal_position
 		</cfquery>
 
