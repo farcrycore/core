@@ -8,7 +8,7 @@
 
 
 <cfmail from="#application.fapi.getConfig("general","adminemail")#" to="#stProfile.emailAddress#" subject="#application.fapi.getConfig("general", "sitetitle", "FarCry")# Webtop #application.fapi.getResource('coapi.farLogin.clientidreminder@subject','Username Retrieval')#" type="html">
-	<admin:resource key="coapi.farLogin.clientidreminder@html" var1="#stProfile.firstname#" var2="#stProfile.lastname#" var3="#stobj.userID#"><cfoutput>
+	<admin:resource key="coapi.farLogin.clientidreminder@html" var1="#encodeForHTML(stProfile.firstname)#" var2="#encodeForHTML(stProfile.lastname)#" var3="#stobj.userID#"><cfoutput>
 		<p>Hello {1} {2}</p>
 		<p>Your Username is: {3}</p>
 	</cfoutput></admin:resource>
