@@ -987,8 +987,7 @@
 		
 		<cftry>
 			<cfquery datasource="#this.dsn#" name="q">
-				SELECT count(*)
-				FROM #this.dbowner##arguments.schema.tablename#
+				SELECT 1 FROM #this.dbowner##arguments.schema.tablename# WHERE 1=0
 			</cfquery>
 			
 			<cfcatch type="database">
