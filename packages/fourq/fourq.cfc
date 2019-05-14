@@ -1491,7 +1491,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var oFormtools = "" />
 		<cfset var stLibraryData = {} />
 
-		<cfif len(arguments.filter) AND NOT #arguments.stmetadata.ftcustomfilter?:false#>
+		<cfif len(arguments.filter) AND (NOT isDefined("arguments.stMetadata.ftCustomFilter") OR arguments.stMetadata.ftCustomFilter eq false)>
 			<cfquery datasource="#application.dsn_read#" name="qFiltered">
 				SELECT objectid AS "key"
 				FROM #arguments.filterType#
