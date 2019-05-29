@@ -72,7 +72,7 @@ Matt Dawson (mad@daemon.com.au)
 	<CFHEADER NAME="Pragma" VALUE="no-cache">
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
 	
-	<cfif isdefined("url.debug") and url.debug>
+	<cfif isdefined("url.debug") and url.debug eq 1>
 		<cfhtmlhead text='<!-- <CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT"> <CFHEADER NAME="Pragma" VALUE="no-cache"> <CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate"> -->' />
 	</cfif>
 <cfelse>
@@ -97,7 +97,7 @@ Matt Dawson (mad@daemon.com.au)
 	
 	<CFHEADER NAME="Cache-Control" VALUE="#maxagestring#">
 	
-	<cfif isdefined("url.debug") and url.debug>
+	<cfif isdefined("url.debug") and url.debug eq 1>
 		<cfhtmlhead text='<!-- <CFHEADER NAME="Cache-Control" VALUE="#maxagestring#"> -->' />
 	</cfif>
 </cfif>
