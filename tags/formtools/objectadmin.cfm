@@ -320,13 +320,23 @@
 					
 					<cfloop list="#attributes.lFilterFields#" index="i">
 						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+							<cfif structKeyExists(attributes.stFilterMetadata,i) AND StructKeyExists(attributes.stFilterMetadata[i], 'ftFilterMatch')>
+								<cfset ftFilterMatch = attributes.stFilterMetadata[i]['ftFilterMatch']>
+							<cfelse>
+								<cfset ftFilterMatch = 'like'>
+							</cfif>
 							<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
 							
 							<cfcase value="string,nstring,list,uuid">	
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
-										<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+										
+										<cfif ftFilterMatch eq "exact">
+											<cfoutput>AND lower(#i#) = '#whereValue#'</cfoutput> 
+										<cfelse>
+											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+										</cfif>
 									</cfloop>
 								</cfif>
 							</cfcase>
@@ -355,7 +365,12 @@
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
-											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+											
+											<cfif ftFilterMatch eq "exact">
+												<cfoutput>AND lower(#i#) = '#whereValue#'</cfoutput> 
+											<cfelse>
+												<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
+											</cfif>
 										<cfelseif listcontains("numeric,integer", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
 											<cfif isNumeric(whereValue)>
@@ -386,7 +401,7 @@
 				</cfoutput>
 
 			</cfsavecontent>
-	
+
 	</cfif>
 	
 	
@@ -397,12 +412,12 @@
 	<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = "" />
 	<cfif len(attributes.sortableColumns)>
 		<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
-			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = form.sqlOrderby />
+			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = sanitizeSQLOrderBy(form.sqlOrderby) />
 		</cfif>
 	</cfif>
 	
 	<cfif not len(session.objectadminFilterObjects[attributes.typename].sqlOrderBy) >
-		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = attributes.sqlorderby />
+		<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = sanitizeSQLOrderBy(attributes.sqlorderby) />
 	</cfif>
 	
 			
@@ -1255,6 +1270,23 @@
 	</cfoutput>
 
 </cfif> 
+
+
+<cffunction name="sanitizeSQLOrderBy" returntype="string">
+	<cfargument name="sqlorderby" type="string" required="true">
+
+	<cfset resultColumn = attributes.defaultorderby>
+	<cfset resultDirection = attributes.defaultorder>
+
+	<cfif listLen(arguments.sqlorderby, " ") gte 1 AND listFindNoCase(attributes.sortableColumns, listFirst(arguments.sqlorderby, " "))>
+		<cfset resultColumn = listFirst(arguments.sqlorderby, " ")>
+	</cfif>
+	<cfif listLen(arguments.sqlorderby, " ") eq 2 AND listFindNoCase("ASC,DESC", listLast(arguments.sqlorderby, " "))>
+		<cfset resultDirection = listLast(arguments.sqlorderby, " ")>
+	</cfif>
+
+	<cfreturn "#resultColumn# #resultDirection#">
+</cffunction>
 
 <cffunction name="getObjectAdminData" returntype="struct">
 	

@@ -20,6 +20,7 @@
 	<cfproperty name="ftWatchFields" required="false" default="" hint="If any of these fields change, then update the current field? Use the format 'typename.property' if you wish to update all field regardless of object. Use just 'property' if you wish to update just that object." />
 	<cfproperty name="ftReloadOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the entire page be refreshed?" />
 	<cfproperty name="ftRefreshPropertyOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the field be refreshed?" />
+	<cfproperty name="ftFilterMatch" required="false" hint="[like|exact] used in advance search filter. Example: stFilterMetadata={myField={ftFilterMatch='exact'}}" default="like" />
 	
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.field" output="false" hint="Returns a copy of this initialised object">
@@ -49,7 +50,7 @@
 			<cfset arguments.stMetadata.ftMaxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
 		</cfif>
 
-		<cfif structKeyExists(arguments.stMetadata, "ftMaxLength")>
+		<cfif structKeyExists(arguments.stMetadata, "ftMaxLength") AND isNumeric(arguments.stMetadata.ftMaxLength)>
 			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength"," ") />
 			<skin:loadJS id="fc-jquery" />
 			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength", {rangelength:[0,#arguments.stMetadata.ftMaxLength#]});</cfoutput></skin:onReady>
@@ -74,7 +75,7 @@
 		<cfset var html = "" />
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#arguments.stMetadata.value#</cfoutput>
+			<cfoutput>#application.fc.lib.esapi.encodeForHTML(arguments.stMetadata.value)#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -106,7 +107,7 @@
 		<!--- --------------------------- --->	
 		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
-		<cfelseif structKeyExists(arguments.stMetadata, "ftMaxLength") and arguments.stMetadata.ftMaxLength and len(arguments.stFieldPost.value) gt arguments.stMetadata.ftMaxLength>
+		<cfelseif structKeyExists(arguments.stMetadata, "ftMaxLength") and isNumeric(arguments.stMetadata.ftMaxLength) and len(arguments.stFieldPost.value) gt arguments.stMetadata.ftMaxLength>
 			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="The maximum length for this field is #arguments.stMetadata.ftMaxLength# characters.") />
 		</cfif>
 	

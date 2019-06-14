@@ -145,6 +145,7 @@
 	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
+	    <cfset var readImageError = "" />
 	    <cfset var imageMaxWidth = 400 />
 		
 		
@@ -199,8 +200,12 @@
 	    
 		<cfif bFileExists>
 			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
-			<cfif stImage.width lt imageMaxWidth>
-				<cfset imageMaxWidth = stImage.width>
+			<cfif isdefined("stImage.stError.message") and len(stImage.stError.message)>
+				<cfset readImageError = "Error ""#stImage.stError.message#"" because the image file is invalid or corrupted. You can upload a new image to replace it." />
+			<cfelse>
+				<cfif stImage.width lt imageMaxWidth>
+					<cfset imageMaxWidth = stImage.width>
+				</cfif>
 			</cfif>
 		</cfif>
 
@@ -260,9 +265,15 @@
 						    <div style="margin-left:15px;">Generating image...</div>
 						</div>
 						<cfif bFileExists>
+							<cfset filename = listLast(arguments.stMetadata.value, "/") />
+							<cfif reFindNoCase("^http%3A%2F%2F", filename)>
+								<cfset filename = listLast(urlDecode(filename), "/") />
+							</cfif>
+							<cfset filename = listFirst(filename, "?") />
 							<div id="#arguments.fieldname#_complete" class="complete-view">
+								<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="alert alert-error alert-error-readimg" style="margin-top:0.7em;margin-bottom:0.7em;">#readImageError#</div></cfif>
 								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
-								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+								<span class="image-filename">#filename#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="fa fa-info-circle-o fa-fw"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
@@ -312,6 +323,7 @@
 						</div>
 						<cfif bFileExists>
 							<div id="#arguments.fieldname#_complete" class="complete-view">
+		    					<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="alert alert-error alert-error-readimg" style="margin-top:0.7em;margin-bottom:0.7em;">#readImageError#</div></cfif>
 								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
 								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
@@ -1312,7 +1324,7 @@
 				<!--- Check if either the new height or new width is smaller than the arugments width and height. If yes, then padding is needed --->
 				<cfif newImage.height lt arguments.Height or newImage.width lt arguments.Width>
 					<!--- Create a temp image with background color = PadColor --->
-					<cfset padImage = ImageNew("",arguments.Width,arguments.Height,"argb",arguments.PadColor) />
+					<cfset padImage = ImageNew("",arguments.Width,arguments.Height,"rgb",arguments.PadColor) />
 					<!--- Because ImageScaleToFit doesn't always work correctly (it may make the width or height it used to scale by smaller than it should have been... usually by 1 pixel) we need to account for that becfore we paste --->
 					<!--- Either use ceiling() or fix() depending on which side you want the extra pixeled padding on (This won't be a problem if Adobe fixes the bug in ImageScaleToFit in a future version of ColdFusion) --->
 					<cfset XCoordinate = ceiling((arguments.Width - newImage.Width)/2) />
@@ -1532,7 +1544,7 @@
 		<cfargument name="backgroundColor" type="string" required="false" default="white" hint="background color of image." />
 		
 		<cfset var imgInfo = imageInfo(arguments.oImage)/>
-		<cfset var myImage = imageNew("", imgInfo.width, imgInfo.height, "argb", arguments.backgroundColor) />
+		<cfset var myImage = imageNew("", imgInfo.width, imgInfo.height, "rgb", arguments.backgroundColor) />
 		<cfset imagePaste(myImage, arguments.oImage, 0, 0) />
 		
 		<cfreturn myImage />
@@ -1558,9 +1570,9 @@
 		<cfif not len(arguments.stObject[arguments.stMetadata.name])>
 			<cfreturn /><!--- No file attached --->
 		</cfif>
-		
-		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and application.fc.lib.cdn.ioFileExists(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#")>
-			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#") />
+
+		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and application.fc.lib.cdn.ioFileExists(location="images",file="#arguments.stObject[arguments.stMetadata.name]#")>
+			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="#arguments.stObject[arguments.stMetadata.name]#") />
 		<cfelse>
 			<cfreturn /><!--- File doesn't actually exist --->
 		</cfif>

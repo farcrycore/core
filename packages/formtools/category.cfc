@@ -166,7 +166,7 @@
 			<cfset rootID = application.fapi.getCatID(arguments.stMetadata.ftAlias) >
 		</cfif>
 
-		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=arguments.stMetadata.ftAlias) />
+		<cfset lSelectedCategoryID = arguments.stMetadata.value />
 		<cfset rootNodeText = oCategory.getCategoryNamebyID(categoryid=rootID) />
 		<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=rootID) />
 		

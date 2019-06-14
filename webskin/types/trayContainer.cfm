@@ -278,6 +278,9 @@
 			<div class="farcryTrayBodyMenu">
 				<ul>
 					<li><a href="#application.fc.lib.esapi.encodeForHTMLAttribute(application.fapi.fixURL(url='#application.url.webtop#'))#"><span class="ui-icon ui-icon-calculator"></span><admin:resource key='tray.button.webtop@label'>Webtop</admin:resource></a></li>
+					<cfif application.fapi.getContentTypeMetadata(stObj.typename, "bUseInTree", false)>
+						<li><a id="farcryTray-sitetree" href="#application.url.webtop#/index.cfm?id=site&rootobjectid=#request.navid#" target="_blank"><span class="ui-icon ui-icon-zoomin"></span><admin:resource key='tray.button.sitetree@label'>Site Tree</admin:resource></a></li>
+					</cfif>
 					<li><a href="#application.fc.lib.esapi.encodeForHTMLAttribute(application.fapi.fixURL(url='#form.refererURL#', addvalues='logout=1'))#"><span class="ui-icon ui-icon-power"></span><admin:resource key='tray.button.logout@label'>Logout</admin:resource></a></li>
 					<li class="farcryTrayPageSpeed"><a title="<admin:resource key='tray.information.renderingspeed@hint'>Page rendering speed</admin:resource>"><span class="ui-icon ui-icon-clock" style="background-position:-81px -112px;"></span> <admin:resource key='tray.information.renderingspeed@label' var1="#application.fc.lib.esapi.encodeForHTML(url.totalTickCount)#">{1} ms</admin:resource></a></li>
 				</ul>

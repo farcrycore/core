@@ -419,9 +419,11 @@
 		<cfif len(arguments.typename)>
 			<!--- Just in case the whole package path has been passed in, we only need the actual typename --->
 			<cfset arguments.typename = listLast(arguments.typename,".") />
-		
-			<cfset oCO  = createObject("component", application.stcoapi[arguments.typename].packagePath) />
-			<cfset stResult = oCO.getData(argumentCollection="#arguments#") />
+			
+			<cfif structKeyExists(application.stcoapi, arguments.typename)>
+				<cfset oCO  = createObject("component", application.stcoapi[arguments.typename].packagePath) />
+				<cfset stResult = oCO.getData(argumentCollection="#arguments#") />
+			</cfif>
 		</cfif>
 		
 		<cfreturn stResult />

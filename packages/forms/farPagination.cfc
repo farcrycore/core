@@ -160,7 +160,7 @@
 			</cfif>
 
 		<cfelse>
-			<skin:buildLink id="#arguments.id#" href="#stLink.href#" onclick="#stLink.onclick#;" class="#stLink.class# #arguments.class#" style="#arguments.style#" title="#arguments.title#" linktext="#arguments.linktext#" />
+			<skin:buildLink id="#arguments.id#" href="#stLink.href#" onclick="#stLink.onclick#;" class="#stLink.class# #arguments.class#" style="#arguments.style#" title="#arguments.title#"><cfoutput>#arguments.linktext#</cfoutput></skin:buildLink>
 		</cfif>	
 
 	</cfif>

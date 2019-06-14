@@ -799,7 +799,7 @@ default handlers
 		<cfset var newLabel = "" />
 		
 		<cfif not isdefined("request.inthread") and structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
-			<cfset newLabel = getView(stObject=arguments.stProperties,template="displayLabel",alternateHTML="") />
+			<cfset newLabel = getView(stObject=arguments.stProperties,template="displayLabel",alternateHTML="",bIgnoreSecurity=true) />
 		</cfif>
 		
 		<cfreturn trim(newLabel) />
@@ -980,7 +980,7 @@ default handlers
 						<cfelse>
 							<i class="fa fa-file-o"></i>
 						</cfif>
-						#stobj.label#
+						#application.fc.lib.esapi.encodeForHTML(stobj.label)#
 					</h1>
 				</cfoutput>
 				
@@ -1032,7 +1032,7 @@ default handlers
 			<ft:processForm action="Save" Exit="true">
 				<cfif len(form.copyrelated)>
 					<cfquery dbtype="query" name="qAllRelated">
-						select objectid,typename from qAllRelated where typename in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#form.copyrelated#" />)
+						select objectid, typename, jointypename, joinproperty from qAllRelated where typename in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#form.copyrelated#" />)
 					</cfquery>
 					<cfset duplicateID = duplicateObject(objectid=stObj.objectid,qRelated=qAllRelated) />
 					
@@ -1070,7 +1070,7 @@ default handlers
 						<cfelse>
 							<i class="fa fa-file-o"></i>
 						</cfif>
-						#stobj.label#
+						#application.fc.lib.esapi.encodeForHTML(stobj.label)#
 					</h1>
 				</cfoutput>
 				

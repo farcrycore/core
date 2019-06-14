@@ -243,7 +243,8 @@
 							<cfloop list="#joinItems#" index="i">
 								<cfset counter = counter + 1 />
 								<cftry>
-									<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
+									<cfset viewTypename=listLen(arguments.stmetadata.ftjoin) eq 1 ? arguments.stmetadata.ftjoin : "">
+									<skin:view typename="#viewTypename#" objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 									<cfcatch type="any">
 										<cfset htmlLabel = "<span title='#application.fc.lib.esapi.encodeForHTMLAttribute(cfcatch.message)#'>OBJECT NO LONGER EXISTS</span>" />
 									</cfcatch>

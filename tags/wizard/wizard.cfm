@@ -195,7 +195,23 @@
 		<skin:onReady>
 			<cfoutput>		
 			$fc.wizardSubmission = function(formname,state) {
+				var valid = true; 
+
+				if (state === 'Save') {
+					if ( $j('##' + formname).attr('fc:validate') == 'false' ) {
+	                    $j('##' + formname).attr('fc:validate',true);                    
+	                } else {
+	                    valid = $j('##' + formname).valid();
+	                }
+
+	                if(valid){
+	                	$j('.li-complete a').attr("rel", $j('.li-complete a').attr("href"));
+                		$j('.li-complete a').attr("href", "javascript:void(0)");
+	                }
+				}
+
 				btnSubmit(formname,state);	
+
 			}
 			
 			$fc.wizardCancelConfirm = function(formname,confirmtext) {
@@ -226,11 +242,11 @@
 					<i class="fa #attributes.icon#"></i>
 				</cfif>
 				<cfif len(attributes.title)>
-					#attributes.title#
+					#application.fc.lib.esapi.encodeForHTML(attributes.title)#
 				<cfelse>
 										
 					<cfif structKeyExists(stWizard.data, stWizard.primaryObjectID) and structKeyExists(stWizard.data[stWizard.primaryObjectID], "label")>
-						#stWizard.data['#stWizard.primaryObjectID#'].label#
+						#application.fc.lib.esapi.encodeForHTML(stWizard.data['#stWizard.primaryObjectID#'].label)#
 					<cfelse>
 						#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#
 					</cfif>

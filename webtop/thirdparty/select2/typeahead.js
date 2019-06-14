@@ -35,7 +35,7 @@
 			
 			var propertyname = fieldname.slice(thisconfig.prefix.length);
 			
-			var aValues = (thisconfig.values.length == 0 ? [] : thisconfig.values.split(",").map(function(v){ 
+			var aValues = (thisconfig.values.length == 0 ? [] : thisconfig.values.split(";").map(function(v){ 
 				return {
 					id: v.split("|")[0],
 					text: v.split("|")[1]

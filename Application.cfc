@@ -27,8 +27,13 @@
 	<cfif structKeyExists(url, "furl") AND url.furl EQ "/pingFU">				
 		<cfcontent type="text/plain" variable="#ToBinary( ToBase64('PING FU SUCCESS') )#" reset="Yes">
 	</cfif>
-	
-	
+
+	<!--- healthcheck live endpoint --->
+	<cfif structKeyExists(url, "furl") AND url.furl eq "/healthcheck/live">
+		<cfset healthcheckLive()>
+	</cfif>
+
+
 	<!--- run the active project's constructor --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 	<cfinclude template="#this.projectConstructorLocation#" />
@@ -112,14 +117,23 @@
 		
 		<cfparam name="cookie.sessionScopeTested" default="false" />
 		<cfparam name="cookie.hasSessionScope" default="false" />
+
+		<cfif NOT isBoolean(cookie.sessionScopeTested)>
+			<cfcookie name="sessionScopeTested" value="false" expires="never" httpOnly="true" />
+		</cfif>
+
+		<cfif NOT isBoolean(cookie.hasSessionScope)>
+			<cfcookie name="hasSessionScope" value="false" httpOnly="true">
+		</cfif>
+
 		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or arrayFind(this.botIPs,cgi.remote_addr)>
 			<cfset THIS.sessiontimeout = createTimeSpan(0,0,0,2) />
 			<cfset request.fc.hasSessionScope = false />
 			
 			<cfif not cookie.sessionScopeTested>
 				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never" />
-					<cfcookie name="hasSessionScope" value="false" expires="never" />
+					<cfcookie name="sessionScopeTested" value="true" expires="never" httpOnly="true" />
+					<cfcookie name="hasSessionScope" value="false" expires="never" httpOnly="true" />
 					<cfcatch></cfcatch>
 				</cftry>
 			</cfif>
@@ -128,8 +142,8 @@
 			
 			<cfif not cookie.sessionScopeTested><!--- Sessions are OK for this user, set the cookie --->
 				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never" />
-					<cfcookie name="hasSessionScope" value="true" expires="never" />
+					<cfcookie name="sessionScopeTested" value="true" expires="never" httpOnly="true" />
+					<cfcookie name="hasSessionScope" value="true" expires="never" httpOnly="true" />
 					<cfcatch></cfcatch>
 				</cftry>
 			</cfif>
@@ -237,8 +251,35 @@
 		
 		<cfreturn false />
 	</cffunction>
-	
-	
+
+
+	<cffunction name="healthcheckReady" output="false">
+		<!---
+			readiness indicates that the application has been initialised and is ready to handle requests
+			(e.g. ready to be brought into a load balancer)
+		--->
+		<!--- test the application --->
+		<cfif NOT structKeyExists(application, "bInit") OR application.bInit eq false>
+			<cfheader statuscode="503" statustext="Unavailable: Application has not started">
+			<cfabort>
+		</cfif>
+
+		<!--- return a 200 OK --->
+		<cfheader statuscode="200" statustext="OK">
+		<cfabort>
+	</cffunction>
+
+	<cffunction name="healthcheckLive" output="false">
+		<!---
+			liveness indicates that the application is in a healthy, live state (and the JVM is healthy)
+			failing this test means that the application server may need to be restarted
+		--->
+		<!--- return a 200 OK --->
+		<cfheader statuscode="200" statustext="OK">
+		<cfabort>
+	</cffunction>
+
+
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
 
 		<cfset var qServerSpecific = queryNew("blah") />
@@ -315,6 +356,15 @@
 		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
 		
 		<cfset application.fc.lib.objectbroker.init() />
+		<cfloop collection="#application.stcoapi#" item="typename">
+			<cfif application.stcoapi[typename].bObjectBroker>
+				<cfset application.fc.lib.objectbroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+			</cfif>
+		</cfloop>
+		<cfset application.fc.lib.objectbroker.configureType("config", 100) />
+		<cfset application.fc.lib.objectbroker.configureType("navid", 1) />
+		<cfset application.fc.lib.objectbroker.configureType("catid", 1) />
+		<cfset application.fc.lib.objectbroker.configureType("fuLookup", 10000) />
 
 		<!----------------------------------- 
 		SETUP CATEGORY APPLICATION STRUCTURE
@@ -402,6 +452,11 @@
 	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false" hint="Fires at first part of page processing.">
 		<cfargument name="TargetPage" type="string" required="true" />
 
+		<!--- healthcheck ready endpoint --->
+		<cfif structKeyExists(url, "furl") AND url.furl eq "/healthcheck/ready">				
+			<cfset healthcheckReady()>
+		</cfif>
+
 		<!--- If a session switch was requested, do that now --->
 		<cfif structKeyExists(url, "switchsession")>
 			<cfset application.fc.lib.session.switchSession(url.switchsession) />
@@ -427,6 +482,13 @@
 		
 		<!--- Initialize the request as a farcry application --->
 		<cfset farcryRequestInit() />
+
+		<!--- block requests to /farcry paths with the exception of webtop --->
+		<cfif left(cgi.script_name, 8) eq "/farcry/" AND NOT left(cgi.script_name, len(application.url.webtop)) eq application.url.webtop>
+			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
+			<cfset oError.showErrorPage("404 Page missing",oError.create404Error("Bad request")) />
+			<cfabort />
+		</cfif>
 	
 		
 		<!---
@@ -444,7 +506,7 @@
 		<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
 			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
 		</cfif>
-		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
+		<cfcookie name="currentFarcryProject" value="#application.projectDirectoryName#" httpOnly="true">	
 	
 		<!--- Checks to see if the user has attempted to flick over to administrate a different project on this server. --->		
 		<cfif 	structKeyExists(url, "farcryProject") 
@@ -517,7 +579,9 @@
 		<cfset var oError = "" />
 
 		<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
-		<cfif structkeyexists(server,"railo")>
+		<cfif structkeyexists(server,"lucee")>
+			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 10000#" />
+		<cfelseif structkeyexists(server,"railo")>
 			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 10000#" />
 		<cfelseif structkeyexists(server,"coldfusion")>
 			<cfsetting requesttimeout="#CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout() + 10#" />
@@ -738,7 +802,7 @@
 			<!--- If all else fails... --->
 			<!--- 1. See if the user has a cookie telling us what project to look at. --->
 			<cfif structKeyExists(url, "farcryProject") AND len(url.farcryProject)>
-				<cfset cookie.currentFarcryProject = url.farcryProject />
+				<cfcookie name="currentFarcryProject" value="#url.farcryProject#" httpOnly="true">
 			</cfif>
 			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
 				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#"))>

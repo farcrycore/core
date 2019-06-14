@@ -113,7 +113,7 @@
 		<cfreturn arguments.path />
 	</cffunction>
 		
-	<cffunction name="sanitizeFilename" returntype="string" access="public" output="false" hint="Sanitizes filename character set, removing invalid characters">
+	<cffunction name="sanitizeFilename" returntype="string" access="public" output="false" hint="Sanitizes filename character set, removing invalid characters. Converts filename (not path) to lowercase">
 		<cfargument name="filename" type="string" required="true" />
 
 		<!--- Replace consecutive whitespace with a single dash --->
@@ -122,6 +122,9 @@
 		<!--- Remove potentially invalid characters --->
 		<cfset arguments.filename = reReplaceNoCase(arguments.filename, "[^a-z0-9\.\-\_/]","", "all") />
 
+		<!--- Convert filename (not path) to lowercase --->
+		<cfset arguments.filename = replace(arguments.filename, ListLast(arguments.filename, '/'), LCase(ListLast(arguments.filename, '/')))>
+		
 		<cfreturn arguments.filename />
 	</cffunction>
 
@@ -149,21 +152,24 @@
 				<cfcase value="mp3" delimiters=",">
 					<cfset stLocals["content_type"] = "audio/mpeg" />
 				</cfcase>
+				<cfdefaultcase>
+					<cfset stLocals["content_type"] = "application/octet-stream" />
+				</cfdefaultcase>
 			</cfswitch>
 		</cfif>
-		
+
 		<!--- corrections --->
 		<cfif stLocals.content_type eq "application/javascript">
 			<cfset stLocals.content_type = "text/javascript" />
 		</cfif>
-		
+
 		<cfreturn stLocals.content_type />
 	</cffunction>
 
-	
-	<!--- @@description: 
+
+	<!--- @@description:
 		<p>Does what it says on the box. Checks a single location to see if a file exists.</p>
-		
+
 		@@examples:
 		<code>
 			<cfif application.fc.lib.cdn.ioFileExists(location="cache",file=sCacheFileName)>
@@ -221,29 +227,31 @@
 		</code>
 	 --->
 	<cffunction name="ioGetUniqueFilename" returntype="string" access="public" output="false" hint="Returns a version of the specified filename which is unique among every listed location.">
-		<cfargument name="locations" type="string" required="false" hint="The returned file will be unique for all the specified locations. If this is not specified, the file will be treated as an absolute local file" />
-		<cfargument name="file" type="string" required="true" />
-		
-		<cfset var i = 0 />
-		<cfset var currentfile = arguments.file />
-		
-		<cfset arguments.file = normalizePath(arguments.file) />
-		
-		<cfif structkeyexists(arguments,"locations")>
-			<cfset arguments.file = sanitizeFilename(arguments.file) />
-			<cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
-				<cfset i = i + 1 />
-				<cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
-			</cfloop>
-		<cfelse>
-			<cfloop condition="fileExists(currentfile)">
-				<cfset i = i + 1 />
-				<cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
-			</cfloop>
-		</cfif>
-		
-		<cfreturn currentfile />
-	</cffunction>
+        <cfargument name="locations" type="string" required="false" hint="The returned file will be unique for all the specified locations. If this is not specified, the file will be treated as an absolute local file" />
+        <cfargument name="file" type="string" required="true" />
+        
+        <cfset var i = 0 />
+        <cfset var currentfile = "" />
+        
+        <cfset arguments.file = normalizePath(arguments.file) />
+        <cfset arguments.file = sanitizeFilename(arguments.file) />
+
+        <cfset currentfile = arguments.file />
+
+        <cfif structkeyexists(arguments,"locations")>
+            <cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
+                <cfset i = i + 1 />
+                <cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
+            </cfloop>
+        <cfelse>
+            <cfloop condition="fileExists(currentfile)">
+                <cfset i = i + 1 />
+                <cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
+            </cfloop>
+        </cfif>
+        
+        <cfreturn currentfile />
+    </cffunction>	 
 	
 	<!--- @@description: 
 		<p>Returns the size of the file in bytes.</p>
@@ -336,11 +344,17 @@
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="datatype" type="string" required="false" default="text" options="text,binary,image" />
 		
-		<cfset var config = this.locations[arguments.location] />
-		
-		<cfset arguments.file = normalizePath(arguments.file) />
-		
-		<cfreturn this.cdns[config.cdn].ioReadFile(config=config,argumentCollection=arguments) />
+		<cftry>
+			<cfset var config = this.locations[arguments.location] />
+			
+			<cfset arguments.file = normalizePath(arguments.file) />
+			
+			<cfreturn this.cdns[config.cdn].ioReadFile(config=config,argumentCollection=arguments) />
+
+			<cfcatch>
+				<cfrethrow>
+			</cfcatch>
+		</cftry>
 	</cffunction>
 	
 	<!--- @@description: 
@@ -534,7 +548,7 @@
 		@@examples:
 		<code>
 			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
-			    location="securefiles",
+			    location="privatefiles",
 			    destination=arguments.stMetadata.ftDestination,
 			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
 			    nameconflict="makeunique",
@@ -586,7 +600,7 @@
 		@@examples:
 		<code>
 			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
-			    location="securefiles",
+			    location="privatefiles",
 			    destination=arguments.stMetadata.ftDestination,
 			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
 			    nameconflict="makeunique",
@@ -607,6 +621,7 @@
 		<cfset var filename = "" />
 		<cfset var cffile = structnew() />
 		<cfset var tmpdir = GetTempDirectory() />
+		<cfset var stLocation = getLocation(arguments.location)>
 		
 		<cfif arguments.nameconflict eq "makeunique" and not len(arguments.uniqueamong)>
 			<cfset arguments.uniqueamong = arguments.location />
@@ -642,11 +657,15 @@
 				<cfset application.fapi.throw(message="New file must have the same extension. Current extension is {1} and new extension is {2}.",type="uploaderror",substituteValues=[ listlast(arguments.destination,"."), listlast(cffile.serverFile,".") ]) />
 			</cfif>
 		<cfelse>
-			<cfset filename = normalizePath(arguments.destination & "/" & cffile.ServerFile) />
+			<!--- original filename in temp folder must stay as is. filename will be sanitised when it is moved to a CDN location --->
+			<cfset filename = normalizePath(arguments.destination) & "/" & cffile.ServerFile />
 		</cfif>
-		
-		<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />
-		
+
+		<!--- move the file if the destination location is different to the current temp location, or if the destination filename is different to the current temp filename --->
+		<cfif NOT structKeyExists(stLocation, "fullpath") OR stLocation.fullpath & "/" neq replace(tmpdir, "\", "/", "all") OR "/#cffile.serverFile#" neq filename>
+			<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />
+		</cfif>
+
 		<cfreturn filename />
 	</cffunction>
 	
@@ -655,7 +674,7 @@
 		
 		@@examples:
 		<code>
-			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#") />
+			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="#arguments.stObject[arguments.stMetadata.name]#") />
 		</code>
 	 --->
 	<cffunction name="ioDeleteFile" returntype="void" output="false" hint="Deletes the specified file">
@@ -665,7 +684,7 @@
 		<cfset var config = this.locations[arguments.location] />
 		
 		<cfset arguments.file = normalizePath(arguments.file) />
-		
+	
 		<cfset this.cdns[config.cdn].ioDeleteFile(config=config,file=arguments.file) />
 	</cffunction>
 	
@@ -678,7 +697,7 @@
 		
 		@@examples:
 		<code>
-			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="/#stMetadata.ftDestination#")>
+			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="#stMetadata.ftDestination#")>
 			    <!--- something here --->
 			</cfif>
 		</code>
@@ -691,7 +710,7 @@
 		
 		<cfset arguments.dir = normalizePath(arguments.dir) />
 		
-		<cfset this.cdns[config.cdn].ioDirectoryExists(config=config,dir=arguments.dir) />
+		<cfreturn this.cdns[config.cdn].ioDirectoryExists(config=config,dir=arguments.dir) />
 	</cffunction>
 	
 	<!--- @@description: 
@@ -703,7 +722,7 @@
 		
 		@@examples:
 		<code>
-			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="/#stMetadata.ftDestination#")>
+			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="#stMetadata.ftDestination#")>
 			    <!--- something here --->
 			</cfif>
 		</code>
@@ -766,12 +785,13 @@
 	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Lists the files the specfied directory.">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="dir" type="string" required="false" default="" />
+		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var config = this.locations[arguments.location] />
 		
 		<cfset arguments.dir = normalizePath(arguments.dir) />
 		
-		<cfreturn this.cdns[config.cdn].ioGetDirectoryListing(config=config,dir=arguments.dir) />
+		<cfreturn this.cdns[config.cdn].ioGetDirectoryListing(config=config,dir=arguments.dir, listinfo=arguments.listinfo) />
 	</cffunction>
 	
 </cfcomponent>

@@ -664,6 +664,7 @@
 								errorMessage="#ftFieldMetadata.errorMessage#"
 								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
 								formTheme="#attributes.formTheme#"
+								format="#attributes.format#"
 								ftFieldMetadata="#ftFieldMetadata#">
 
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
@@ -684,13 +685,10 @@
 	
 			<!--- WRAPPER --->
 			<cfif len(attributes.class) OR len(attributes.style)>
-				<div class="#attributes.class#" style="#attributes.style#">
+                <cfoutput><div class="#attributes.class#" style="#attributes.style#"></cfoutput>
 			</cfif>
 			
-			<!--- END WRAPPER --->
-			<cfif len(attributes.class)>
-				</div>
-			</cfif>		
+				
 			
 	<!--- 
 	-Wrap		
@@ -706,6 +704,11 @@
 		<cfelse>
 			<cfoutput>#fieldsHTML#</cfoutput>
 		</cfif>
+            
+            <!--- END WRAPPER --->
+			<cfif len(attributes.class) OR len(attributes.style)>
+				<cfoutput></div></cfoutput>
+			</cfif>	
 		
 	</cfif>
 	

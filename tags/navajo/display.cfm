@@ -68,6 +68,10 @@
 <cfparam name="url.type" default="" />
 <cfparam name="url.view" default="" />
 
+<!--- ensure application.stCOAPI record exists for url.type --->
+<cfif NOT structKeyExists(application.stCOAPI, url.type)>
+	<cfset url.type = "">
+</cfif>
 
 <!--- get standard webskin names by device type --->
 <cfset stWebskins = application.fc.lib.device.getDeviceWebskinNames()>
@@ -130,17 +134,17 @@
 	
 	<!--- 
 	CHECK TO SEE IF OBJECT IS IN DRAFT
-	- If the current user is not permitted to see draft objects, then make them login 
+	- If the current user is not permitted to see draft objects, then show a 404
 	--->
 	<cfif structkeyexists(stObj,"status") and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
 		<cfif request.mode.bAdmin>
 			<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
 			<cfset request.mode.showdraft = 1 />
 			<cfset request.mode.lValidStatus = "draft,pending,approved" />
-			<!---<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />--->
-		<cfelse>			
-			<!--- send to login page and return in draft mode --->
-			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" statusCode="302" />
+		<cfelse>	
+			<!--- show a 404 page for draft objects --->
+			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error()) />
+			<cfexit method="exittag" />
 		</cfif>
 	</cfif>
 	
@@ -227,10 +231,10 @@
 	</cfif>
 
 	<!--- either stream the webskin result with an appropriate mime type, or output it normally --->
-	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax">
+	<cfif len(url.type) AND len(url.view) AND structKeyExists(application.stCOAPI, url.type) AND structKeyExists(application.stCOAPI[url.type].stWebskins, url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "ajax">
 		<cfset request.mode.ajax = true />
 	</cfif>
-	<cfif len(url.type) AND len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
+	<cfif len(url.type) AND len(url.view) AND structKeyExists(application.stCOAPI, url.type) AND structKeyExists(application.stCOAPI[url.type].stWebskins, url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
 		<cfset request.mode.ajax = true />
 
 		<cfinvoke component="#application.fapi#" method="stream">

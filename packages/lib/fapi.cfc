@@ -798,7 +798,7 @@
 				</cfif>
 			</cfcase>
 			<cfcase value="json">
-				<cfset arguments.type = "text/json" />
+				<cfset arguments.type = "application/json" />
 				<cfif not issimplevalue(arguments.content)>
 					<cfset arguments.content = serializeJSON(arguments.content) />
 				</cfif>
@@ -2391,6 +2391,24 @@
 		<cfreturn rdate />
 	</cffunction>
 	
+	<!--- @@description:
+		Things like API authentication need to have the date displayed in ISO 8601 format:
+		20160801T083241Z. This funciton takes a coldfusion date and formats it properly.
+		
+		@@examples:
+		<code>
+			//Current ISO 8601 date for Sydney
+			var mystring = application.fapi.dateToISO8601(now())
+		</code>
+	--->
+	<cffunction name="dateToISO8601" access="public" returntype="string" output="false">
+		<cfargument name="dt" type="date" required="yes" default="#now()#" />
+
+		<cfset var utcDate = DateConvert("Local2UTC", arguments.dt) />
+
+		<cfreturn dateFormat(utcDate, "YYYYmmdd") & "T" & timeFormat(utcDate, "HHmmss") & "Z" />
+	</cffunction>
+
 	<!--- @@description: 
 		<p>
 		Attempts to strip out all MS Word chars that tend to mess up html display and cause

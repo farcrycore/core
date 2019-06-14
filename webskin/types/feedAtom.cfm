@@ -31,8 +31,8 @@
 	<cfif not structisempty(arguments.stParam.author) and (len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname))>
 		<cfoutput>
 			<author>
-				<name>#arguments.stparam.author.firstname# #arguments.stparam.author.lastname#</name>
-				<cfif len(arguments.stparam.author.emailaddress)><email>#arguments.stparam.author.emailaddress#</email></cfif>
+				<name>#encodeForXML(arguments.stparam.author.firstname)# #encodeForXML(arguments.stparam.author.lastname)#</name>
+				<cfif len(arguments.stparam.author.emailaddress)><email>#encodeForXML(arguments.stparam.author.emailaddress)#</email></cfif>
 			</author>
 		</cfoutput>
 	</cfif>

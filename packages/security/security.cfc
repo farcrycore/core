@@ -237,7 +237,7 @@
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
 		<cfset var result = "" />
 		
-		<cfif structKeyExists(url, "ud")>
+		<cfif structKeyExists(url, "ud") AND structKeyExists(this.userdirectories, "#url.ud#")>
 			<cfset result = url.ud />
 		<cfelse>			
 			<cfif len(application.fapi.getConfig("security","defaultUserDirectory",""))>
@@ -401,7 +401,7 @@
 		<cfset var i = 0 />
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stDefaultProfile = structnew() />
-		
+
 		<!--- Get user groups and convert them to Farcry roles --->
 		<cfset aUserGroups = this.userdirectories[arguments.ud].getUserGroups(arguments.userid) />
 		<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
@@ -467,7 +467,9 @@
 			<!--- DEPRECATED --->
 			<cfset session.firstLogin = false />
 		</cfif>
-		
+
+		<cfset sessionRotate()>
+
 		<!--- Log the result --->
 		<cfif structKeyExists(session, "impersonator")>
 			<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
@@ -485,7 +487,9 @@
 		
 		<!--- DEPRECIATED VARIABLE --->
 		<cfset structdelete(session,"dmSec") />
-		
+
+		<cfset sessionInvalidate()>
+
 		<!--- Security has changed so we need to re-initialise our request.mode struct --->
 		<cfset initRequestMode() />
 	</cffunction>
@@ -813,7 +817,8 @@
 		<cfset request.lValidStatus = request.mode.lValidStatus />
 		
 		<!--- ajax mode --->
-		<cfif (structKeyExists(arguments.stURL,"ajaxmode") and listlast(arguments.stURL.ajaxmode)) or (isdefined("form.ajaxmode") and listlast(form.ajaxmode))>
+		<cfif (structKeyExists(arguments.stURL,"ajaxmode") AND isBoolean(listlast(arguments.stURL.ajaxmode)) AND listlast(arguments.stURL.ajaxmode))
+            OR (isdefined("form.ajaxmode") AND isBoolean(listlast(form.ajaxmode)) AND listlast(form.ajaxmode))>
 			<cfset request.mode.ajax = 1 />
 		</cfif>
 		

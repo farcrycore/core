@@ -33,6 +33,7 @@
 <cfparam name="attributes.errorMessage" default=""><!--- This will place an errormessage above the field --->
 <cfparam name="attributes.rbkey" default="coapi.field.#rereplace(attributes.label,'[^\w]','','ALL')#" /><!--- The resource path for this field. --->
 <cfparam name="attributes.formtheme" default=""><!--- The form theme to use --->
+<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 <cfparam name="attributes.ftFieldMetadata" default="#structNew()#"><!--- all the formtool metatdata from the field --->
 
 

@@ -136,7 +136,7 @@ $out:$
 			<cfset status = 'draft'>
 			<cfset permission = "approve,canApproveOwnContent">
 			<!--- send out emails informing object has been sent back to draft --->
-			<cfset application.factory.oVersioning.appvoeEmail_draft(objectid=stObj.objectid,comment=form.commentlog) />
+			<cfset application.factory.oVersioning.approveEmail_draft(objectid=stObj.objectid,comment=form.commentlog) />
 			<cfset active = 0>
 			
 		<cfelseif url.status eq "requestApproval">

@@ -91,7 +91,7 @@
 								<i class="fa fa-user"></i>
 							</span>
 							<span class="farcry-profile-cog"><i class="fa fa-cog"></i></span>
-							<span class="farcry-profile-username">#webtopUsername#&nbsp;</span>
+							<span class="farcry-profile-username">#encodeForHTML(webtopUsername)#&nbsp;</span>
 							<b class="fa fa-caret-down"></b>
 						</div>
 						<ul class="dropdown-menu pull-right">

@@ -91,6 +91,10 @@
 		<cfelse>
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'urlPathPrefix' ]) />
 		</cfif>
+
+		<cfif not structkeyexists(st,"bDebug")>
+			<cfset st["bDebug"] = false />
+		</cfif>
 		
 		<cfreturn st />
 	</cffunction>
@@ -101,24 +105,13 @@
 		<cfset var key = "" />
 		<cfset var stAttributes = "" />
 
-		<cfif NOT isdefined("request.ftpconnections.#arguments.config.name#")>
-			<cfset request.ftpconnections[arguments.config.name] = arguments.config.name />
-
-			<cfset stAttributes = getCFFTPAttributes(arguments.config) />
-			<cfftp action="open" connection="#request.ftpconnections[arguments.config.name]#"
-				attributeCollection="#stAttributes#" />
-
-		</cfif>
-
-		<cfreturn request.ftpconnections[arguments.config.name] />
+		<cfreturn "" />
 	</cffunction>
 
 	<cffunction name="closeConnection" output="false" access="public" returntype="void" hint="Closes the specified connection">
 		<cfargument name="config" type="struct" required="true" />
 
-		<cfif listFindNoCase("railo,lucee", server.coldfusion.productname)>
-			<cfset structDelete(request.ftpconnections, arguments.config.name)>			
-		</cfif>
+		<!--- allow the cfml engine to terminal the connection when the request ends --->
 
 	</cffunction>
 
@@ -128,27 +121,21 @@
 
 		<cfset var stAttributes = structnew() />
 
-		<cfif NOT len(arguments.connection) OR listFindNoCase("railo,lucee", server.coldfusion.productname)>
-			
-			<cfset stAttributes.username = arguments.config.username />
-			<cfset stAttributes.server = arguments.config.server />
-			<cfset stAttributes.port = arguments.config.port />
-			<cfset stAttributes.retryCount = arguments.config.retryCount />
-			<cfset stAttributes.timeout = arguments.config.timeout />
-			<cfset stAttributes.secure = arguments.config.secure />
-			<cfset stAttributes.passive = arguments.config.passive />
+		<cfset stAttributes.username = arguments.config.username />
+		<cfset stAttributes.server = arguments.config.server />
+		<cfset stAttributes.port = arguments.config.port />
+		<cfset stAttributes.retryCount = arguments.config.retryCount />
+		<cfset stAttributes.timeout = arguments.config.timeout />
+		<cfset stAttributes.secure = arguments.config.secure />
+		<cfset stAttributes.passive = arguments.config.passive />
 
-			<cfset stAttributes.stopOnError = true />
+		<cfset stAttributes.stopOnError = true />
 
-			<cfloop list="password,proxyServer,fingerprint,key" index="key">
-				<cfif len(arguments.config[key])>
-					<cfset stAttributes[key] = arguments.config[key] />
-				</cfif>
-			</cfloop>
-
-		<cfelseif len(arguments.connection)>
-			<cfset stAttributes.connection = arguments.connection />
-		</cfif>
+		<cfloop list="password,proxyServer,fingerprint,key" index="key">
+			<cfif len(arguments.config[key])>
+				<cfset stAttributes[key] = arguments.config[key] />
+			</cfif>
+		</cfloop>
 
 		<cfreturn stAttributes>
 	</cffunction>
@@ -628,11 +615,11 @@
 		<cfelseif structkeyexists(arguments,"dest_config")>
 			
 			<!--- Put local file on FTP --->
-			<cfset connectionname = openConnection(config=arguments.dest_config) />
-			
 			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
 				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
 			</cfif>
+			
+			<cfset connectionname = openConnection(config=arguments.dest_config) />
 			
 			<cfftp	attributeCollection="#getCFFTPAttributes(arguments.dest_config, connectionname)#" 
 					action="putFile" 
@@ -716,12 +703,12 @@
 		<cfelseif structkeyexists(arguments,"dest_config")>
 		
 			<!--- Put local file on FTP --->
-			<cfset connectionname = openConnection(config=arguments.dest_config) />
-			
 			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
 				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
 			</cfif>
 			
+			<cfset connectionname = openConnection(config=arguments.dest_config) />
+
 			<cfftp	attributeCollection="#getCFFTPAttributes(arguments.dest_config, connectionname)#" 
 					action="putFile" 
 					transferMode="auto" 
