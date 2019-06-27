@@ -156,7 +156,7 @@
   <cfquery name="qResult" datasource="#arguments.dsn#" maxrows="#arguments.maxrows#">
     SELECT object, notes, event, datetimelastupdated, userid
     FROM #arguments.dbowner#farLog
-    INNER JOIN DBO.refObjects on DBO.farLog.object = DBO.refObjects.objectid
+    INNER JOIN #arguments.dbowner#refObjects on #arguments.dbowner#farLog.object = #arguments.dbowner#refObjects.objectid
     WHERE
       event = <cfqueryparam cfsqltype="cf_sql_varchar" value="comment" />
       OR event LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="to%" />
