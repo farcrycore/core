@@ -37,7 +37,7 @@
 					
 				<cfset eventTypename=application.fapi.findType(qActivity.object) />
 				<cfif len(eventTypename) AND eventTypename neq "container">
-					<cfset stActivityObject = application.fapi.getContentObject(qActivity.object) />
+					<cfset stActivityObject = application.fapi.getContentObject(qActivity.object,eventTypename) />
 					<cfif structKeyExists(stActivityObject, "label") AND stActivityObject.label NEQ "(incomplete)">
 					<cfset stProfile = oProfile.getProfile(qActivity.userid)>
 					<tr>
