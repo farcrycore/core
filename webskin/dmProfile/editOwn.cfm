@@ -6,15 +6,7 @@
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<cfset stProfile = getData(objectid=session.dmProfile.objectid, bUseInstanceCache=false) />
-<cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
-	<cfset stObj = stProfile />
-</cfif>
-
-<!--- You can not edit other users' profiles --->	
-<cfif NOT application.security.getCurrentUserID() eq stObj.username>
-	<cfthrow message="Invalid Profile Change" detail="You can not edit other users' profiles." />
-</cfif>
+<cfset stObj = getData(objectid=session.dmProfile.objectid, bUseInstanceCache=false) />
 
 <!--- 
  // process form  
