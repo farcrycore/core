@@ -274,7 +274,7 @@
 	<cfparam name="session.objectadminFilterObjects.#attributes.typename#.q" default="" />
 
 
-	<cfif len(attributes.lFilterFields) OR len(session.objectadminFilterObjects[attributes.typename].q)>
+	<cfif (listLen(attributes.lFilterFields) AND attributes.lFilterFields neq "label") OR len(session.objectadminFilterObjects[attributes.typename].q)>
 
 			<cfset oFilterType = createObject("component", PrimaryPackagePath) />
 
@@ -701,7 +701,7 @@
 	
 	
 	<cfset HTMLfiltersAttributes = "">
-	<cfif len(attributes.lFilterFields)>
+	<cfif listLen(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 		
 		<cfloop list="#attributes.lFilterFields#" index="criteria">
