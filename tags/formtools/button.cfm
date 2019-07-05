@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 
+
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfparam name="attributes.value" /><!--- @@hint: The event submitted and captured by an ft:processForm tag. @@required: true --->
@@ -39,12 +40,21 @@
 	
 <cfif thistag.executionMode eq "End">
 
-	<cfif not structKeyExists(request, "farcryform")>
-		<skin:loadJS id="farcry-form" />
+	<skin:loadJS id="farcry-form" />
+	
+	<cfif not len(attributes.priority) AND len(attributes.text)>	
+		<cfif listFindNoCase(GetBaseTagList(),"cf_buttonPanel")>
+			
+			<cfset THISTAG.Parent = GetBaseTagData( "cf_buttonPanel" ) />
+				
+			<cfif structKeyExists(THISTAG.Parent, "bPrimaryDefined") AND NOT THISTAG.Parent.bPrimaryDefined>
+				<cfset attributes.priority = "primary">
+				
+				<cfset THISTAG.Parent.bPrimaryDefined = true>
+			</cfif>
+		</cfif>
 	</cfif>
-	
-	
-	
+
 	<cfset stButtonAttributes = structNew()>
 
 	<!--- I18 conversion of label --->
