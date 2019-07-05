@@ -40,7 +40,7 @@
 
 <ft:form>
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
-		lfields="firstname,lastname,avatar,emailaddress,breceiveemail" 
+		lfields="firstname,lastname,avatar,emailaddress,phone,breceiveemail" 
 		legend="Personal Details" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" 
 		lfields="locale,timeFormat" 
