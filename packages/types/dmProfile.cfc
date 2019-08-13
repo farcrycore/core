@@ -125,7 +125,7 @@ OBJECT METHODS
 
 		<cfif structKeyExists(arguments.stProperties, "objectid") and structKeyExists(arguments.stProperties, "userdirectory")>
 			<cfset stOld = getData(arguments.stProperties.objectid) />
-			<cfif structKeyExists(stOld, "bDefaultObject")>
+			<cfif NOT structKeyExists(stOld, "bDefaultObject")>
 				<cfset arguments.stProperties.userdirectory = stOld.userdirectory />
 			</cfif>
 		</cfif>

@@ -3,7 +3,7 @@
 <cfheader statuscode="404" statustext="Not Found" />
 
 <cfset showError = false>
-<cfif isdefined("url.debug") AND url.debug>
+<cfif isdefined("url.debug") AND url.debug eq 1>
 	<cfset showError = true>
 </cfif>
 
