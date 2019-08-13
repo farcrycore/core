@@ -188,15 +188,16 @@
 		<cfargument name="path" required="true">
 
 		<cfset var i = 0>
+		<cfset var p = "">
 
 		<cfif NOT isArray(arguments.path)>
 			<cfset arguments.path = [ arguments.path ]>
 		</cfif>
 
 		<cfloop from="1" to="#arrayLen(arguments.path)#" index="i">
-			<cfset var path = application.farcryPathExpanded & "/" & arguments.path[i]>
-			<cfif NOT arrayFindNoCase(this.javaSettings.loadPaths, path)>
-				<cfset arrayAppend(this.javaSettings.loadPaths, path)>
+			<cfset p = application.farcryPathExpanded & "/" & arguments.path[i]>
+			<cfif NOT arrayFindNoCase(this.javaSettings.loadPaths, p)>
+				<cfset arrayAppend(this.javaSettings.loadPaths, p)>
 			</cfif>
 		</cfloop>
 	</cffunction>
