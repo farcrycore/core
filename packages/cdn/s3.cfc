@@ -584,7 +584,7 @@
 		
 		<cfif structkeyexists(arguments.config,"sMaxAge")>
 			<cfparam name="stResult.cache_control" default="" />
-			<cfset stResult.cache_control = rereplace(listappend(stResult.cache_control,"s-maxage=#arguments.config.maxAge#"),",([^ ])",", \1","ALL") />
+			<cfset stResult.cache_control = rereplace(listappend(stResult.cache_control,"s-maxage=#arguments.config.sMaxAge#"),",([^ ])",", \1","ALL") />
 		</cfif>
 		
 		<cfreturn stResult />
