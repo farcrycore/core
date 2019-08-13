@@ -253,6 +253,8 @@
 						<cfset stResult.indexes[thisindex].name = thisindex />
 						<cfif thisindex eq "primary">
 							<cfset stResult.indexes[thisindex].type = "primary" />
+						<cfelseif listLast(thisindex, "_") eq "unique">
+							<cfset stResult.indexes[thisindex].type = "unique" />
 						<cfelse>
 							<cfset stResult.indexes[thisindex].type = "unclustered" />
 						</cfif>
@@ -386,6 +388,13 @@
 			<cfcase value="integer,int" delimiters=",">
 				<cfset stResult.type = "numeric" />
 				<cfset stResult.precision = "11,0" />
+			</cfcase>
+			<cfcase value="identity">
+				<cfset stResult.type = "identity" />
+				<cfset stResult.precision = "11" />
+				<cfset stResult.nullable = false>
+				<cfset stResult.default = "">
+				<cfset stResult.index = listsort(listappend(stResult.index,"#name#_UNIQUE"),"textnocase","asc") />
 			</cfcase>
 			<cfcase value="smallint">
 				<cfset stResult.type = "numeric" />

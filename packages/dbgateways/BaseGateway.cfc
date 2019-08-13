@@ -694,6 +694,13 @@
 										(#arraytolist(stIndex.fields)#)
 					</cfquery>
 				</cfcase>
+				<cfcase value="unique">
+					<!--- NOTE: identity types have unqiue indexes added on create/repair, not with a separate addIndex call --->
+					<cfquery datasource="#this.dsn#" result="queryresult">
+						SELECT 1
+						-- dummy query result
+					</cfquery>
+				</cfcase>
 				<cfcase value="unclustered">
 					<cfquery datasource="#this.dsn#" result="queryresult">
 					 	CREATE INDEX 	#stIndex.name# 
@@ -782,7 +789,7 @@
 						DROP 			PRIMARY KEY
 					</cfquery>
 				</cfcase>
-				<cfcase value="unclustered">
+				<cfcase value="unique,unclustered" delimiters=",">
 					<cfquery datasource="#this.dsn#" result="queryresult">
 					 	DROP INDEX 		#stDB.indexes[arguments.indexname].name# 
 					 	ON 				#this.dbowner##arguments.schema.tablename#

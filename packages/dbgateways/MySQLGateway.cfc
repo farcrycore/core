@@ -78,6 +78,9 @@
 					
 					<cfoutput>#stProp.name# </cfoutput>
 					<cfswitch expression="#stProp.type#">
+						<cfcase value="identity">
+							<cfoutput>int(11) </cfoutput>
+						</cfcase>
 						<cfcase value="numeric">
 							<cfif stProp.precision eq "1,0">
 								<cfoutput>tinyint(1) </cfoutput>
@@ -104,7 +107,7 @@
 					
 					<cfif stProp.nullable><cfoutput>NULL </cfoutput><cfelse><cfoutput>NOT NULL </cfoutput></cfif>
 					
-					<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+					<cfif NOT listFindNoCase("identity,longchar", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 						<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 						<cfif stVal.null>
 							<cfoutput>DEFAULT NULL </cfoutput>
@@ -116,6 +119,7 @@
 							<cfoutput>DEFAULT #stVal.value# </cfoutput>
 						</cfif>
 					</cfif>
+					<cfif stProp.type eq "identity"><cfoutput>AUTO_INCREMENT </cfoutput></cfif>
 				</cfif>
 			</cfloop>
 			
@@ -206,6 +210,7 @@
 				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				ADD #stProp.name# 
 				<cfswitch expression="#stProp.type#">
+					<cfcase value="identity">int(11)</cfcase>
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
 							tinyint(1)
@@ -231,7 +236,8 @@
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
+				<cfif NOT listFindNoCase("identity,longchar", stProp.type)>DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
+				<cfif stProp.type eq "identity">AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE</cfif>
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
@@ -273,6 +279,7 @@
 				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				CHANGE #arguments.oldpropertyname# #stProp.name# 
 				<cfswitch expression="#stProp.type#">
+					<cfcase value="identity">int(11)</cfcase>
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
 							tinyint(1)
@@ -298,7 +305,8 @@
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
+				<cfif NOT listFindNoCase("identity,longchar", stProp.type)>DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
+				<cfif stProp.type eq "identity">AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE</cfif>
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
@@ -390,6 +398,7 @@
 				, numeric_scale AS decimal_digits
 				, datetime_precision
 				, is_nullable
+				, extra
 			FROM INFORMATION_SCHEMA.COLUMNS
 			WHERE table_schema = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qSchema.table_schema#">
 				AND table_name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.tablename#">
@@ -472,6 +481,8 @@
 				<cfset stResult[qIndexes.index_name].name = qIndexes.index_name />
 				<cfif qIndexes.index_name eq "primary">
 					<cfset stResult[qIndexes.index_name].type = "primary" />
+				<cfelseif listLast(qIndexes.index_name, "_") eq "unique">
+					<cfset stResult[qIndexes.index_name].type = "unique" />
 				<cfelse>
 					<cfset stResult[qIndexes.index_name].type = "unclustered" />
 				</cfif>
@@ -537,8 +548,14 @@
 					<cfset stColumn.precision = "#qColumns.numeric_precision#,#qColumns.decimal_digits#" />
 				</cfcase>
 				<cfcase value="int">
-					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "#qColumns.numeric_precision#,0" />
+					<cfif isDefined("qColumns.extra") AND qColumns.extra eq "auto_increment">
+						<cfset stColumn.type = "identity" />
+						<cfset stColumn.precision = "11" />
+						<cfset stColumn.nullable = false />
+					<cfelse>
+						<cfset stColumn.type = "numeric" />
+						<cfset stColumn.precision = "#qColumns.numeric_precision#,0" />
+					</cfif>
 				</cfcase>
 				<cfcase value="datetime">
 					<cfset stColumn.type = "datetime" />
