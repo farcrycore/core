@@ -22,7 +22,7 @@
 					<cfset stResult.value = arguments.value />
 				</cfif>
 			</cfcase>
-			<cfcase value="numeric">
+			<cfcase value="numeric,identity">
 				<cfif listlast(arguments.schema.precision) eq 0 and listfirst(arguments.schema.precision) gt 10>
 					<cfset stResult.cfsqltype = "cf_sql_bigint" />
 				<cfelseif listlast(arguments.schema.precision) eq 0>
