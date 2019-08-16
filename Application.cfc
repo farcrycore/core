@@ -197,6 +197,29 @@
 		<cfloop from="1" to="#arrayLen(arguments.path)#" index="i">
 			<cfset p = application.farcryPathExpanded & "/" & arguments.path[i]>
 			<cfif NOT arrayFindNoCase(this.javaSettings.loadPaths, p)>
+				<!--- ACF compatibility: check if the path exists first --->
+				<cfif server.coldfusion.productname eq "ColdFusion Server">
+					<cfparam name="server.farcryJARPathExists" default="#structNew()#">
+					<cfif NOT structKeyExists(server.farcryJARPathExists, p) OR structKeyExists(url, "updateapp")>
+						<!--- cache the directory exists result in the server scope --->
+						<cfif directoryExists(p)>
+							<!--- if a path does exist then cache the result and append to loadPaths below --->
+							<cfset server.farcryJARPathExists[p] = true>
+						<cfelse>
+							<!--- if a path doesn't exist then don't append to loadPaths, short circuit the loop --->
+							<cfset server.farcryJARPathExists[p] = false>
+							<cfcontinue>
+						</cfif>
+					<cfelse>
+						<!--- for paths that do exist in the server scope check the result --->
+						<cfif server.farcryJARPathExists[p] eq false>
+							<!--- if a path doesn't exist then don't append to loadPaths, short circuit the loop --->
+							<cfcontinue>
+						</cfif>
+					</cfif>
+				</cfif>
+				<!--- /ACF compatibility --->
+
 				<cfset arrayAppend(this.javaSettings.loadPaths, p)>
 			</cfif>
 		</cfloop>
