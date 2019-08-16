@@ -5,7 +5,7 @@
 	bObjectBroker="false"
 	icon="fa-code">
 
-	<cfproperty name="objectid" type="uuid" ftDefault="application.fc.utils.createJavaUUID()" ftDefaultType="evaluate" />
+	<cfproperty name="objectid" type="uuid" ftDefault="createUUID()" ftDefaultType="evaluate" />
 
 	<!--- 
 		The purpose of a 'form' component is to provide a way of generating formtool forms that aren't based on types or rules. 
@@ -79,7 +79,7 @@
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		
 		<cfif not structKeyExists(arguments.stProperties,"objectid")>
-			<cfset arguments.stProperties.objectid = application.fc.utils.createJavaUUID() />
+			<cfset arguments.stProperties.objectid = createUUID() />
 		</cfif>
 				
 		<cfreturn duplicate(arguments.stProperties) />

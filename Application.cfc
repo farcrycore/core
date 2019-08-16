@@ -981,7 +981,7 @@
 
 		
 		<!--- Set an application random string that can be used to force refresh of various browser caching. Restarting application will effectively flush those browser caches --->
-		<cfset application.randomID =  application.fc.utils.createJavaUUID() />
+		<cfset application.randomID =  createUUID() />
 		
 		
 		<!----------------------------------------

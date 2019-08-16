@@ -1654,28 +1654,10 @@
 	</cffunction>
 		
 	<!--- @@description:
-		<p>The native createUUID is very usefull - unfortunately it always takes 10-15ms to run. This is fine for once off calls, but not for the frequent usage that might happen during an import.</p>
-		<p>This function bypasses that problem by accessing the Java equivilent directly.</p>
-		
-		@@examples:
-		<p>Generating many UUIDs:</p>
-		<code>
-			<cftimer label="createUUID()" type="inline">
-				<cfloop from="1" to="10000" index="i">
-					<cfset anotheruuid = createuuid() />
-				</cfloop>
-			</cftimer>
-			
-			<cftimer label="application.fapi.getUUID()" type="inline">
-				<cfloop from="1" to="10000" index="i">
-					<cfset anotheruuid = application.fapi.getUUID() />
-				</cfloop>
-			</cftimer>
-		</code>
+		<p>This function calls createUUID directly. It was previously used as an alternative when createUUID performance was slow but this is generally not the case now.</p>
 	 --->
-	<cffunction name="getUUID" access="public" returntype="uuid" output="false" hint="A fast createUUID alternative." bDocument="true">
-		
-		<cfreturn application.fc.utils.createJavaUUID() />
+	<cffunction name="getUUID" access="public" returntype="uuid" output="false" hint="Calls createUUID directly." bDocument="true">
+		<cfreturn createUUID() />
 	</cffunction>
 		
 	<!--- @@description: 
