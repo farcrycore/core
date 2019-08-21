@@ -60,16 +60,7 @@
 			
 			<cfif stValidateFieldResult.bSuccess>
 				<cfset stProperties[url.propertyName] = stValidateFieldResult.value>
-				
-				<!--- 
-				IF WE HAVE A NEW OBJECT, NOT YET IN THE DATABASE, THEN WE NEED TO SAVE THE CORE PROPERTIES
-				 --->			
-				<cfif structKeyExists(stObj, "BDEFAULTOBJECT") AND stobj.BDEFAULTOBJECT>
-					<cfset bSetDefaultCoreProperties = true>
-				<cfelse>
-					<cfset bSetDefaultCoreProperties = false>
-				</cfif>
-				
+					
 
 				<cfif structKeyExists(this, "setData#url.propertyName#")>
 					<cfinvoke component="#this#" method="setData#url.propertyName#" returnvariable="stSetDataResult">
@@ -77,7 +68,6 @@
 						<cfinvokeargument name="value" value="#stValidateFieldResult.value#">			
 						<cfinvokeargument name="dsn" value="#application.dsn#">
 						<cfinvokeargument name="bSessionOnly" value="#url.bSessionOnly#">
-						<cfinvokeargument name="bSetDefaultCoreProperties" value="#bSetDefaultCoreProperties#">
 						<cfinvokeargument name="bAudit" value="false">
 					</cfinvoke>
 				<cfelse>
@@ -87,10 +77,8 @@
 
 					<cfset stSetDataResult = application.fapi.setData(	stProperties="#stProperties#", 
 																		bSessionOnly="#url.bSessionOnly#", 
-																		bSetDefaultCoreProperties="#bSetDefaultCoreProperties#", 
 																		bAudit="false") />
 				</cfif>
-				
 				
 				
 				
