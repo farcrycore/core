@@ -255,9 +255,11 @@
 				<cfset result = "<span class='undeployed field'>+ #arguments.newMetadata.name#</span>" />
 			</cfcase>
 			<cfcase value="x">
-				<cfset result = "<table>" />
-				<cfloop list="type,default,nullable,precision" index="thisprop">
-					<cfset result = "#result#<tr><td class='altered field'><strong>#thisprop#</strong>&nbsp;</td><td class='altered field'>#arguments.oldMetadata[thisprop]#</td><td class='altered field'>&nbsp;=>&nbsp;</td><td class='altered field'>#arguments.newMetadata[thisprop]#</td></tr>" />
+				<cfset result = "<table><tr><td>&nbsp;</td><td><strong>Old</strong></td><td>&nbsp;</td><td><strong>New</strong></td></tr>" />
+				<cfloop list="type,default,nullable,precision,generatedalways,virtualtype" index="thisprop">
+					<cfif structKeyExists(arguments.oldMetadata, thisprop) AND  structKeyExists(arguments.newMetadata, thisprop)>
+						<cfset result = "#result#<tr><td class='altered field'><strong>#thisprop#</strong>&nbsp;</td><td class='altered field'>#arguments.oldMetadata[thisprop]#</td><td class='altered field'>&nbsp;=>&nbsp;</td><td class='altered field'>#arguments.newMetadata[thisprop]#</td></tr>" />
+					</cfif>
 				</cfloop>
 				<cfset result = "#result#</table>" />
 			</cfcase>
