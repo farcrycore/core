@@ -116,7 +116,14 @@ accommodate legacy implementations
 
 <!--- determine the fieldname --->
 <cfif len(attributes.fieldname)>
-	<cfset stLocation = oType.getFileLocation(stObject=stFile,fieldname=attributes.fieldname) />
+	<!--- check fieldname exists --->
+	<cfset stProp = application.fapi.getPropertyMetadata(typename=stFile.typename, property=attributes.fieldname, default="")>
+	<cfif NOT isStruct(stProp) OR structIsEmpty(stProp)>
+		<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object property does not exist")) />
+		<cfexit method="exittag" />
+	<cfelse>
+		<cfset stLocation = oType.getFileLocation(stObject=stFile,fieldname=attributes.fieldname) />
+	</cfif>
 <cfelse>
 	<cfset stLocation = oType.getFileLocation(stObject=stFile) />
 </cfif>
