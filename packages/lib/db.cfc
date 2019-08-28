@@ -316,6 +316,8 @@
 		<cfargument name="default" type="any" required="false" default="" />
 		<cfargument name="index" type="string" required="false" default="" />
 		<cfargument name="savable" type="boolean" required="false" default="true" />
+		<cfargument name="generatedAlways" type="string" required="false" default="" hint="the expression used on a generated field. MySQL only." />
+		<cfargument name="virtualType" type="string" required="false" default="" hint="VIRTUAL OR STORED" />
 		
 		<cfset var stResult = structnew() />
 		
@@ -325,7 +327,13 @@
 		<cfset stResult.default = arguments.default />
 		<cfset stResult.index = arguments.index />
 		<cfset stResult.savable = arguments.savable />
+		<cfset stResult.generatedAlways = arguments.generatedAlways />
+		<cfset stResult.virtualType = arguments.virtualType />
 		
+		<cfif len(trim(arguments.generatedAlways))>
+			<cfset stResult.savable = false /> <!--- Never savable --->
+			<cfset stResult.default = "" /> <!--- Cant be used --->
+		</cfif>
 		<cfif stResult.index eq "true">
 			<cfset stResult.index = "#name#_index" />
 		</cfif>
@@ -396,6 +404,11 @@
 				<cfset stResult.default = "">
 				<cfset stResult.index = listsort(listappend(stResult.index,"#name#_UNIQUE"),"textnocase","asc") />
 			</cfcase>
+			<cfcase value="json">
+				<cfset stResult.type = "json" />
+				<cfset stResult.precision = "" />
+				<cfset stResult.default = "">
+			</cfcase>
 			<cfcase value="smallint">
 				<cfset stResult.type = "numeric" />
 				<cfset stResult.precision = "11,0" />
@@ -434,6 +447,8 @@
 		<cfset var stResult = "" />
 		<cfset var index = "" />
 		<cfset var savable = true />
+		<cfset var generatedAlways = "" />
+		<cfset var virtualType = "" />
 		<cfset var j	= '' />
 		
 		<!--- incorporate formtool specific defaults --->
@@ -480,8 +495,17 @@
 		<cfif structkeyexists(arguments.data,"bSave") and not arguments.data.bSave>
 			<cfset savable = false />
 		</cfif>
+
+		<!--- GENERATED COLUMN (MySQL and Postgresql) --->		
+		<cfif structkeyexists(arguments.data,"dbGeneratedAlways")>
+			<cfset generatedAlways = arguments.data.dbGeneratedAlways />
+		</cfif>
 		
-		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index,savable=savable) />
+		<cfif structkeyexists(arguments.data,"dbVirtualType")>
+			<cfset virtualType = arguments.data.dbVirtualType />
+		</cfif>
+		
+		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index,savable=savable,generatedAlways=generatedAlways, virtualType=virtualType) />
 		
 		<cfif type eq "array">
 			<!--- If there is an array content type for this property, that overrides everything else --->
