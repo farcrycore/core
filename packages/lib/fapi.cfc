@@ -132,6 +132,7 @@
 		<cfset propertytypemap["datetime"] = "cf_sql_timestamp" />
 		<cfset propertytypemap["numeric"] = "cf_sql_numeric" />
 		<cfset propertytypemap["integer"] = "cf_sql_numeric" />
+		<cfset propertytypemap["identity"] = "cf_sql_numeric" />
 		<cfset propertytypemap["boolean"] = "cf_sql_numeric" />
 		<cfset propertytypemap["array"] = "cf_sql_varchar" />
 		<cfset propertytypemap["category"] = "cf_sql_varchar" />
