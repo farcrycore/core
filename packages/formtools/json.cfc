@@ -1,7 +1,5 @@
-
-
 <cfcomponent extends="longchar" name="json" displayname="json" hint="Field component to liase with all json types"> 
-	
+
 	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
@@ -20,15 +18,13 @@
 		<cfset var onkeyup = "" />
 		<cfset var onkeydown = "" /> 
 		<cfset var bIsGoodBrowser = "" />
-		
+
 		<cfparam name="arguments.stMetadata.ftStyle" default="">
 		<cfparam name="arguments.stMetadata.ftLimit" default="0">
 		<cfparam name="arguments.stMetadata.ftLimitOverage" default="truncate">
 		<cfparam name="arguments.stMetadata.ftLimitWarning" default="You have exceeded the maximum number of characters">
 		<cfparam name="arguments.stMetadata.ftLimitMin" default="">
-	
 
-	
 		<cfset var stValue = {} />
 
 		<cfif isJSON(arguments.stMetadata.value)>
@@ -36,10 +32,8 @@
 		</cfif>
 		<cfparam name="stValue.jsonData" default="#structNew()#" />
 
-
-
 		<cfsavecontent variable="html">
-				
+
 			<cfoutput>
 				<input id="#arguments.fieldname#" name="#arguments.fieldname#" type="hidden" value="">
 				<div class="multiField">
@@ -50,12 +44,11 @@
 					</div>
 				</div>
 			</cfoutput>
-			
+
 		</cfsavecontent>
-		
+
 		<cfreturn html>
 	</cffunction>
-	
 
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
@@ -76,8 +69,7 @@
 			<cfset stResult = passed(value="#serializeJSON(arguments.stFieldPost.stSupporting)#") />
 		</cfif>
 
-
-
 		<cfreturn stResult />
 	</cffunction>
-</cfcomponent> 
+
+</cfcomponent>
