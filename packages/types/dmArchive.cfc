@@ -32,10 +32,12 @@
 	<cfproperty name="event" type="string" required="no" default="" ftLabel="Event"
 		hint="The event that triggered the creation of this archive">
 	
-	<cfproperty name="objectTypename" type="string" required="no" default="" ftLabel="Typename"
+	<cfproperty name="objectTypename" type="string" required="no" default="" 
+		ftLabel="Typename" dbIndex="IDX_UNDELETE:1"
 		hint="The archived type">
 	
-	<cfproperty name="bDeleted" type="boolean" required="no" default="false" ftLabel="Deleted"
+	<cfproperty name="bDeleted" type="boolean" required="no" default="false" 
+		ftLabel="Deleted" dbIndex="IDX_UNDELETE:2"
 		hint="True if this is the last archive of a deleted object">
 	
 	<cfproperty name="username" type="string" required="no" default="" ftLabel="User"
