@@ -984,6 +984,9 @@ $fc.refreshProperty = function(propertyWrap,focusFieldID) {
 							if (valueArray[i] == (propertyPrefix + propertyName) ){
 								// refresh the webskin wrap
 								$fc.reloadWebskinWrap( $currentWebskinWrap );	
+							} else if(valueArray[i] == (propertyType + '.' + propertyName)  ){
+								// refresh the webskin wrap
+								$fc.reloadWebskinWrap( $currentWebskinWrap );	
 							} else if(valueArray[i] == (propertyName) ){
 								// refresh the webskin wrap
 								$fc.reloadWebskinWrap( $currentWebskinWrap );	
