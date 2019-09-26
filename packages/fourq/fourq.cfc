@@ -807,8 +807,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 		
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfif arguments.bUseInstanceCache AND structKeyExists(tempObjectStore,arguments.objectid)>
-			<!--- get from the temp object stroe --->
+		<cfif structKeyExists(tempObjectStore,arguments.objectid) AND NOT arguments.bArraysAsStructs>
+			<!--- get from the temp object store --->
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
