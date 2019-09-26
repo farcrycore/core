@@ -171,19 +171,20 @@
 		This is done so that if the session doesn't exist yet (in the case of application.cfc applicationStart), we can trap the error and continue on our merry way.
 		 --------------------------------------------------------------->
 		<cftry>
-			<cfset tempObjectStore = Session.TempObjectStore />
+			<cfif structKeyExists(session, "TempObjectStore")>
+				<cfset tempObjectStore = Session.TempObjectStore />
+			</cfif>
 			<cfcatch type="any">
 				<!--- ignore the error and assume it just doesnt exist yet.  --->
-				<cfset tempObjectStore = structNew() />
 			</cfcatch>
 		</cftry>
-				
+
 		<cfset stObj.typename = variables.typename />
 		
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfif isDefined("tempObjectStore") AND structKeyExists(tempObjectStore,arguments.objectid) AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
+		<cfif structKeyExists(tempObjectStore,arguments.objectid) AND NOT arguments.bArraysAsStructs>
 			
-			<!--- get from the temp object stroe --->
+			<!--- get from the temp object store --->
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
