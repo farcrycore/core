@@ -907,7 +907,7 @@ $fc.refreshProperty = function(propertyWrap,focusFieldID) {
 		// ignore
 	} else {
 		//if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
-			$j.ajaxq('AutoSave',{
+			$j.ajax({
 			    url: refreshPropertyURL,
 			    cache: false,
 			    success: function(html)
