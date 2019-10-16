@@ -84,10 +84,19 @@
 					
 						<cfif stTrace.cacheStatus EQ 1>
 							<cfif structKeyExists(application.stcoapi, stTrace.typename) AND isDefined("application.stcoapi[stTrace.typename].bObjectBroker") AND application.stcoapi[stTrace.typename].bObjectBroker>										
+								<cfset typeCoapiObjectID = application.fapi.getContentType("farCoapi").getCoapiObjectID(stTrace.typename)>
+								<cfif typeCoapiObjectID eq stTrace.objectid>
+									<cfset cacheColour = "darkorange">
+								<cfelse>
+									<cfset cacheColour = "green">
+								</cfif>
+
 								<tr>
-									<th style="color:green;border-top:1px solid green;">Caching</th>
-									<td style="border-top:1px solid green;">
-										<cfif isNumeric(stTrace.cacheTimeout)>
+									<th style="color:#cacheColour#;border-top:1px solid #cacheColour#;">Caching</th>
+									<td style="border-top:1px solid #cacheColour#;">
+										<cfif cacheColour eq "darkorange">
+											<div>* Caching is enabled on this webskin but will not work. Only webskins rendered against a real objectid can be cached.</div>
+										<cfelseif isNumeric(stTrace.cacheTimeout)>
 											<cfset time = stTrace.cacheTimeout>
 											<cfset days = time \ 1440 />
 											<cfset hours = (time \ 60) - (days * 24) />
