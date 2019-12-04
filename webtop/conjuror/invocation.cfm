@@ -86,7 +86,7 @@
 		<cfset lWorkflowTypenames = createObject("component", application.stcoapi.farWorkflow.packagepath).getWorkflowList(typename="#typename#") />
 		<cfif listLen(lWorkflowTypenames) OR (StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status) and method neq "copy")>
 			<!--- any pending/approve items should go to overview --->
-			<cflocation url="#application.url.farcry#/edittabOverview.cfm?typename=#typename#&objectid=#URL.objectid#&ref=#url.ref#">
+			<cflocation addtoken="false" url="#application.url.farcry#/edittabOverview.cfm?typename=#typename#&objectid=#URL.objectid#&ref=#url.ref#">
 			<cfabort>
 		<cfelse>
 			<!--- go to edit --->

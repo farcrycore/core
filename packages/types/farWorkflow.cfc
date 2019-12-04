@@ -187,7 +187,7 @@
 		<cfset var stWorkflowDef = createobject("component", application.stcoapi.farWorkflowDef.packagePath).getData(objectid="#stWorkflow.workflowDefID#") />
 		<cfset var stResult = structNew() />
 		
-		<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stWorkflowDef.workflowStart#">
+		<cflocation addtoken="false" url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stWorkflowDef.workflowStart#">
 		
 		<cfreturn stResult />
 		
@@ -205,7 +205,7 @@
 		<cfset var stWorkflowDef = createobject("component", application.stcoapi.farWorkflowDef.packagePath).getData(objectid="#stWorkflow.workflowDefID#") />
 		<cfset var stResult = structNew() />
 				
-		<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stWorkflowDef.workflowEnd#">
+		<cflocation addtoken="false" url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stWorkflowDef.workflowEnd#">
 
 		
 	</cffunction>

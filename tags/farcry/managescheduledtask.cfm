@@ -61,7 +61,7 @@
 	
 	<skin:bubble message="Task '#attributes.title#' created" tags="sheduledtask,created,info" />
 	
-	<cflocation url="#cgi.script_name#?#rereplace(cgi.query_string,'(\?|&)createtask=[^&]*','')#" />
+	<cflocation addtoken="false" url="#cgi.script_name#?#rereplace(cgi.query_string,'(\?|&)createtask=[^&]*','')#" />
 </cfif>
 
 <cfif structkeyexists(url,"deletetask") and url.deletetask eq attributes.id>
@@ -83,7 +83,7 @@
 	
 	</cfif>
 	
-	<cflocation url="#cgi.script_name#?#rereplace(cgi.query_string,'(\?|&)deletetask=[^&]*','')#" />
+	<cflocation addtoken="false" url="#cgi.script_name#?#rereplace(cgi.query_string,'(\?|&)deletetask=[^&]*','')#" />
 </cfif>
 
 <cfquery datasource="#application.dsn#" name="qCron">
