@@ -30,7 +30,7 @@
 			<cfset stWorkflow = oWorkflow.getData(objectid="#qWorkflow.parentID#") />
 
 			<cfif len(stTask.taskWebskin)>
-				<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stTask.taskWebskin#">
+				<cflocation addtoken="false" url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stTask.taskWebskin#">
 			</cfif>
 		</cfif>
 		

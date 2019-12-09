@@ -408,7 +408,7 @@ object methods
 		<cfparam name="application.config_readonly" default="#structNew()#">
 
 		<!--- re-apply read only properties --->
-		<cfif isDefined("application.config_readonly.#arguments.configkey#")>
+		<cfif isDefined("application.config.#arguments.configkey#") and isDefined("application.config_readonly.#arguments.configkey#")>
 			<cfset structAppend(application.config[arguments.configkey], application.config_readonly[arguments.configkey], true)>
 		</cfif>
 	</cffunction>

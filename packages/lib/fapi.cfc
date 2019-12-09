@@ -1565,7 +1565,7 @@
 		<!--- @@examples:
 			<p>Redirect to the project webroot:</p>
 			<code>
-				<cflocation url="#application.fapi.getWebRoot()#" />
+				<cflocation addtoken="false" url="#application.fapi.getWebRoot()#" />
 			</code>
 		 --->
 		<cffunction name="getWebRoot" access="public" returntype="string" output="false" hint="Returns the url path to the webroot." bDocument="true">
@@ -1671,7 +1671,7 @@
 		@@examples:
 		<p>Refresh the current FarCry page:</p>
 		<code>
-			<cflocation url="#application.fapi.fixURL()#" />
+			<cflocation addtoken="false"url="#application.fapi.fixURL()#" />
 		</code>
 		
 		<p>Remove a query variable from a custom URL:</p>

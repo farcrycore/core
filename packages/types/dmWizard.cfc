@@ -50,6 +50,7 @@
 			<!--- only run this if the wddx packet has not already been extracted into a struct --->
 			<cfif not isStruct(stwizard.Data)>
 				<cfif IsWDDX(stwizard.Data)>
+					<cfset stwizard.Data = sanitizeWDDX(stwizard.Data)>
 					<cfwddx action="WDDX2CFML" input="#stwizard.Data#" output="stwizardData">
 					<cfset stwizard.Data = duplicate(stwizardData) />
 				<cfelse>
@@ -102,7 +103,9 @@
 		<cfset variables.data[st.ObjectID] = st />
 		
 		<cfwddx action="CFML2wddx" input="#variables.data#" output="stProperties.Data">
-		
+
+		<cfset stProperties.Data = sanitizeWDDX(stProperties.Data)>
+
 		<cfset stResult = createData(stProperties=stProperties,user=stProperties.UserLogin) />
 		<cfset stwizard = getData(objectID=stresult.objectid) />
 		
@@ -136,8 +139,9 @@
 		<cfif isDefined("arguments.Data")>
 			<cfwddx action="CFML2wddx" input="#arguments.data#" output="stwizard.Data">
 		</cfif>
-		
-	
+
+		<cfset stwizard.Data = sanitizeWDDX(stwizard.Data)>
+
 		<cfset stResult = setData(stProperties=stwizard,user=stwizard.UserLogin) />
 		
 		<cfset stwizard = getData(objectID=arguments.objectid) />
@@ -220,6 +224,14 @@
 		</cfif>	
 		
 		<cfreturn super.deleteData(objectid=arguments.objectid,dsn=arguments.dsn, dbowner=arguments.dbowner) />
+	</cffunction>
+
+
+	<cffunction name="sanitizeWDDX" hint="Strip illegal XML characters from WDDX data">
+		<cfargument name="data" required="true">
+
+		<cfset var p = createObject("java", "java.util.regex.Pattern").compile(javaCast("string", "[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD\u10000-\u10FFF]+"))>
+		<cfreturn p.matcher(arguments.data).replaceAll("")>
 	</cffunction>
 
 

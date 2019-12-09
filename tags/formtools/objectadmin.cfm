@@ -170,7 +170,7 @@
 	<!--- Deploy type if it has been requested --->
 	<cfif structkeyexists(url,"deploy") and url.deploy>
 		<cfset application.fc.lib.db.deployType(typename=attributes.typename,bDropTable=true,dsn=application.dsn) />
-		<cflocation url="#cgi.script_name#?#replacenocase(cgi.query_string,'deploy=true','')#" />
+		<cflocation addtoken="false" url="#cgi.script_name#?#replacenocase(cgi.query_string,'deploy=true','')#" />
 	</cfif>
 
 	<!--- If type isn't deployed, display error --->
