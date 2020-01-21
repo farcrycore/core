@@ -4,6 +4,12 @@
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
+<!--- check permissions --->
+<cfif NOT application.security.checkPermission(permission="SecurityManagement")>
+	<skin:view typename="farCOAPI" webskin="webtopBodyNotFound" />
+	<cfexit method="exittemplate">
+</cfif>
+
 <!--- if no userdirectory assign local farcry directory as default --->
 <cfif not len(stObj.userdirectory)>
 	<cfset stObj.userdirectory = "CLIENTUD" />

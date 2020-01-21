@@ -6,8 +6,13 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<cfset oUser = createobject("component",application.stCOAPI.farUser.packagepath) />
+<!--- check permissions --->
+<cfif NOT application.security.checkPermission(permission="SecurityManagement")>
+	<skin:view typename="farCOAPI" webskin="webtopBodyNotFound" />
+	<cfexit method="exittemplate">
+</cfif>
 
+<cfset oUser = createobject("component",application.stCOAPI.farUser.packagepath) />
 
 <!----------------------------- 
 ACTION	

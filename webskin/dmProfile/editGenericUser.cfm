@@ -4,6 +4,11 @@
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
+<!--- check permissions --->
+<cfif NOT application.security.checkPermission(permission="SecurityManagement")>
+	<skin:view typename="farCOAPI" webskin="webtopBodyNotFound" />
+	<cfexit method="exittemplate">
+</cfif>
 
 <!--- 
  // process form 

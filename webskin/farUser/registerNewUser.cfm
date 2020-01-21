@@ -22,7 +22,7 @@
 		<cfset newUserID = stProperties.objectid />
 		<cfset newUserName = stProperties.userid />
 
-		<cfset createObject("component", application.stcoapi["farUser"].packagePath).addGroup(user="#newUserID#", group="member") />
+		<cfset stProperties.aGroups = [ application.fapi.getContentType(typename="farGroup").getID(name="member") ]>
 	</ft:processFormObjects>
 
 
