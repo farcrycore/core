@@ -4,6 +4,12 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
+<!--- check permissions --->
+<cfif NOT application.security.checkPermission(permission="SecurityManagement")>
+	<skin:view typename="farCOAPI" webskin="webtopBodyNotFound" />
+	<cfexit method="exittemplate">
+</cfif>
+
 <ft:serverSideValidation />
 	
 <ft:processform action="Save" exit="true">

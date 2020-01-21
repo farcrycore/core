@@ -24,7 +24,13 @@ ACTION
 	<ft:validateFormObjects typename="farUser" objectid="#stobj.objectid#" />
 
 	<cfif request.stFarcryFormValidation.bSuccess>
-		<ft:processformobjects objectid="#stobj.objectid#" />
+		<ft:processformobjects typename="farUser" objectid="#stobj.objectid#" r_stProperties="stProperties">
+			<cfloop list="#structKeyList(stProperties)#" index="prop">
+				<cfif NOT listFindNoCase("objectid,typename,password", prop)>
+					<cfset structDelete(stProperties, prop)>
+				</cfif>
+			</cfloop>
+		</ft:processformobjects>
 		<skin:bubble title="Your password has been updated" rbkey="coapi.farUser.changepassword.passwordchanged" tags="security,info" />
 	</cfif>
 </ft:processform>

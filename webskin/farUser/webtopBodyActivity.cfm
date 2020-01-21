@@ -21,6 +21,12 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<!--- check permissions --->
+<cfif NOT application.security.checkPermission(permission="SecurityManagement")>
+	<skin:view typename="farCOAPI" webskin="webtopBodyNotFound" />
+	<cfexit method="exittemplate">
+</cfif>
+
 <skin:onReady id="object-admin-popup">
 	<cfoutput>
 	$j(document).ready(function(){
