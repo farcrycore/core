@@ -1220,8 +1220,6 @@
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
 		
-		<cfsetting requesttimeout="120" />
-		
 		<cfif not application.fc.lib.cdn.ioFileExists(location="images",file=arguments.source)>
 			<cfset stResult.bSuccess = False />
 			<cfset stResult.message = "File doesn't exist" />

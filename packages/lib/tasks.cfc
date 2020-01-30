@@ -488,7 +488,9 @@
 				timestamp = now()
 			} />
 			
-			<cfthread action="run" name="#thisthread#" threadID="#thisthread#" priority="LOW">
+			<cfthread action="run" name="#thisthread#" threadID="#thisthread#" priority="LOW" timeout="0">
+				<cfsetting requesttimeout="10000">
+
 				<cftry>
 					<cflog file="#application.applicationname#_tasks" text="started thread #attributes.threadID#" />
 					
