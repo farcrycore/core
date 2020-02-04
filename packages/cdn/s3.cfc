@@ -1331,6 +1331,7 @@
 				<cfset stDetail["signature"] = replace(signature, chr(10), "\n", "ALL")>
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
+				<cfset substituteValues[1] = results.error.message.XMLText>
 				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
 				<cfset substituteValues[3] = signature>
 				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request: {2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
