@@ -208,13 +208,7 @@
 			<cfset stFile.path = arguments.path />
 			<cfset this.cacheMap[arguments.config.name][arguments.file] = stFile>
 		</cflock>
-		<!---
-        <cfset this.cacheMap[arguments.config.name][arguments.file] = structnew() />
-        <cfset this.cacheMap[arguments.config.name][arguments.file].touch = now() />
-        <cfset this.cacheMap[arguments.config.name][arguments.file].path = arguments.path />
-		--->
 
-		
 		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" /></cfif>
 		
 		<!--- Remove old files --->
