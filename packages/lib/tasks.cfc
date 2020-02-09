@@ -24,19 +24,19 @@
 		<cfset var stResult	= '' />
 		
 		<!--- store an ongoing stack trace for the task --->
-		<cfif structkeyexists(request,"inthread") and isdefined("thread.task")>
+		<cfif structkeyexists(request,"inthread") and StructKeyExists(cfthread, "task")>
 			<cfif not structkeyexists(arguments,"jobType")>
-				<cfset arguments.jobType = thread.task.jobType />
+				<cfset arguments.jobType = cfthread.task.jobType />
 			</cfif>
 			<cfif not structkeyexists(arguments,"jobID")>
-				<cfset arguments.jobID = thread.task.jobID />
+				<cfset arguments.jobID = cfthread.task.jobID />
 			</cfif>
 			<cfif not structkeyexists(arguments,"ownedBy")>
-				<cfset arguments.ownedBy = thread.task.taskOwnedBy />
+				<cfset arguments.ownedBy = cfthread.task.taskOwnedBy />
 			</cfif>
 			
 			<cfif not arraylen(arguments.stacktrace)>
-				<cfwddx action="wddx2cfml" input="#thread.task.wddxStacktrace#" output="arguments.stacktrace" />
+				<cfwddx action="wddx2cfml" input="#cfthread.task.wddxStacktrace#" output="arguments.stacktrace" />
 			</cfif>
 			
 			<cfloop from="#arraylen(aStack)-3#" to="1" index="i" step="-1">
@@ -163,18 +163,18 @@
 		
 		<cfset clearTaskResults() />
 		
-		<cfif structkeyexists(request,"inthread") and isdefined("thread.task")>
+		<cfif structkeyexists(request,"inthread") and StructKeyExists(cfthread, "task")>
 			<cfif not structkeyexists(arguments,"taskID")>
-				<cfset arguments.taskID = thread.task.objectid />
+				<cfset arguments.taskID = cfthread.task.objectid />
 			</cfif>
 			<cfif not structkeyexists(arguments,"jobType")>
-				<cfset arguments.jobType = thread.task.jobType />
+				<cfset arguments.jobType = cfthread.task.jobType />
 			</cfif>
 			<cfif not structkeyexists(arguments,"jobID")>
-				<cfset arguments.jobID = thread.task.jobID />
+				<cfset arguments.jobID = cfthread.task.jobID />
 			</cfif>
 			<cfif not structkeyexists(arguments,"ownedBy")>
-				<cfset arguments.ownedBy = thread.task.taskOwnedBy />
+				<cfset arguments.ownedBy = cfthread.task.taskOwnedBy />
 			</cfif>
 		<cfelse>
 			<cfparam name="arguments.taskID" />
@@ -476,7 +476,6 @@
 	<cffunction name="startProcessingThread" output="false" access="public" returntype="string" description="If the thread limit hasn't been reached, this starts a new one">
 		<cfset var thisThread = "" />
 		<cfset var i = 0 />
-		<cfset var thread	= '' />
 		<cfset var stResult	= '' />
 		<cfset var existingtrace	= '' />
 
@@ -487,7 +486,7 @@
 				created = now(),
 				timestamp = now()
 			} />
-			
+					
 			<cfthread action="run" name="#thisthread#" threadID="#thisthread#" priority="LOW" timeout="0">
 				<cfsetting requesttimeout="10000">
 
@@ -503,7 +502,7 @@
 						<!--- Claim a task --->
 						<cfset application.fc.lib.tasks.threads[attributes.threadID].timestamp = now() />
 						<cfset application.fc.lib.tasks.threads[attributes.threadID].task = application.fc.lib.tasks.claimTask(attributes.threadID) />
-						<cfset thread.task = application.fc.lib.tasks.threads[attributes.threadID].task />
+						<cfset cfthread['task'] = application.fc.lib.tasks.threads[attributes.threadID].task />
 						
 						<cfif structcount(application.fc.lib.tasks.threads[attributes.threadID].task)>
 							
@@ -516,7 +515,14 @@
 									
 									<!--- log error result against task --->
 									<cfset stResult = structnew() />
-									<cfset stResult["task"] = duplicate(application.fc.lib.tasks.threads[attributes.threadID].task) />
+									
+									<cftry>
+										<cfset stResult["task"] = duplicate(application.fc.lib.tasks.threads[attributes.threadID].task) />
+										<cfcatch>
+											<cfset stResult["task"] = "could not get 'application.fc.lib.tasks.threads[#attributes.threadID#].task'" />
+										</cfcatch>
+									</cftry>
+									
 									<cfset stResult["error"] = application.fc.lib.error.normalizeError(cfcatch) />
 									<cfif structkeyexists(stResult.error,"detail") and isJSON(stResult.error.detail)>
 										<cfset stResult.error.detail = deserializejson(stResult.error.detail) />
@@ -531,7 +537,7 @@
 									<!--- log error normally --->
 									<cfset application.fc.lib.error.logData(stResult["error"]) />
 									
-									<cflog file="#application.applicationname#_tasks" text="processing task #stResult.task.action# [#stResult.task.objectid#] failed in thread #attributes.threadID#: #cfcatch.message#" />
+									<cflog file="#application.applicationname#_tasks" text="processing task #stResult.task.action# [#stResult.task.objectid#] failed in thread #attributes.threadID#: #cfcatch.message#" type="error" />
 									
 								</cfcatch>
 							</cftry>
@@ -559,7 +565,7 @@
 						<!--- remove thread tracker --->
 						<cfset structdelete(application.fc.lib.tasks.threads,attributes.threadID) />
 						
-						<cflog file="#application.applicationname#_tasks" text="stopped thread #attributes.threadID# with error: #cfcatch.message#" />
+						<cflog file="#application.applicationname#_tasks" text="stopped thread #attributes.threadID# with error: #cfcatch.message#" type="error" />
 						
 					</cfcatch>
 				</cftry>
