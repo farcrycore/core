@@ -552,6 +552,41 @@
 		
 		<cfreturn aResult />
 	</cffunction>
+
+	<cffunction name="canSeeErrorDetails" access="public" output="false" returntype="boolean">
+		<!--- Local access --->
+		<cfif cgi.remote_addr eq "127.0.0.1">
+			<cfreturn true />
+		</cfif>
+
+		<!--- Development environment --->
+		<cfif isDefined("application.stCOAPI.configEnvironment") and application.fapi.getContentType(typename="configEnvironment").getEnvironment() eq "development">
+			<cfreturn true />
+		</cfif>
+
+		<!--- ONLY allow other cases for application startup or users with developer permissions --->
+		<cfif isdefined("application.bInit") and application.bInit and not application.security.checkPermission("developer")>
+			<cfreturn false />
+		</cfif>
+
+		<!--- Debug enabled in URL --->
+		<cfif isdefined("url.debug") AND url.debug eq 1>
+			<cfreturn true />
+		</cfif>
+
+		<!--- Debug enabled in session --->
+		<cfif isdefined("request.mode.debug") and request.mode.debug>
+			<cfreturn true />
+		</cfif>
+
+		<!--- Webtop --->
+		<cfif ((isdefined("application.url.webtop") and reFindNoCase("^#application.url.webtop#", cgi.script_name))
+			or (structKeyExists(url,"view") and refindnocase("^webtop",url.view)))>
+			<cfreturn true />
+		</cfif>
+
+		<cfreturn false />
+	</cffunction>
 	
 	<cffunction name="showErrorPage" access="public" output="true" returntype="void" hint="Returns output of projects error page">
 		<cfargument name="type" type="string" required="true" hint="404 | 500" />
@@ -566,22 +601,7 @@
 		<cfset var instanceName = arguments.stException.instancename />
 		<cfset var bot = arguments.stException.bot />
 		<cfset var output = "" />
-		
-		<cfset var showError = false />
-
-		<cfset var viewDetailPermission = (not isdefined("application.bInit") or not application.bInit) or (isdefined("application.security") and application.security.checkPermission("developer")) />
-		
-		<cfif ((isdefined("application.url.webtop") and reFindNoCase("^#application.url.webtop#", cgi.script_name)) or (structKeyExists(url,"view") and refindnocase("^webtop",url.view))) and viewDetailPermission>
-			<cfset showError = true />
-		<cfelseif isdefined("url.debug") AND url.debug eq 1 AND viewDetailPermission>
-			<cfset showError = true />
-		<cfelseif isdefined("request.mode.debug") and request.mode.debug AND viewDetailPermission>
-			<cfset showError = true />
-		<cfelseif cgi.remote_addr eq "127.0.0.1">
-			<cfset showError = true />
-		<cfelseif isDefined("application.stCOAPI.configEnvironment") and application.fapi.getContentType(typename="configEnvironment").getEnvironment() eq "development">
-			<cfset showError = true />
-		</cfif>
+		<cfset var showError = canSeeErrorDetails() />
 		
 		<!--- in the case of data views (json, xml, etc), return stream the data back in that type --->
 		<cfif isdefined("url.type") and len(url.type) and isdefined("url.view") and len(url.view)
