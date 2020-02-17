@@ -568,12 +568,14 @@
 		<cfset var output = "" />
 		
 		<cfset var showError = false />
+
+		<cfset var viewDetailPermission = (not isdefined("application.bInit") or not application.bInit) or (isdefined("application.security") and application.security.checkPermission("developer")) />
 		
-		<cfif isdefined("application.url.webtop") and reFindNoCase("^#application.url.webtop#", cgi.script_name) or (structKeyExists(url,"view") and refindnocase("^webtop",url.view))>
+		<cfif ((isdefined("application.url.webtop") and reFindNoCase("^#application.url.webtop#", cgi.script_name)) or (structKeyExists(url,"view") and refindnocase("^webtop",url.view))) and viewDetailPermission>
 			<cfset showError = true />
-		<cfelseif isdefined("url.debug") AND url.debug eq 1>
+		<cfelseif isdefined("url.debug") AND url.debug eq 1 AND viewDetailPermission>
 			<cfset showError = true />
-		<cfelseif isdefined("request.mode.debug") and request.mode.debug>
+		<cfelseif isdefined("request.mode.debug") and request.mode.debug AND viewDetailPermission>
 			<cfset showError = true />
 		<cfelseif cgi.remote_addr eq "127.0.0.1">
 			<cfset showError = true />
