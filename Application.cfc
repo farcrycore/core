@@ -523,7 +523,7 @@
 		<cfif isdefined("session")>
 			<cfparam name="session.loginReturnURL" default="#application.url.webroot#" />
 			
-			<cfif structKeyExists(url, "returnURL") AND len(url.returnURL) AND left(url.returnURL, 1) eq "/">
+			<cfif structKeyExists(url, "returnURL") AND len(url.returnURL) AND reFind("^/[^/]", url.returnURL, 1)>
 				<cfset session.loginReturnURL = application.fapi.fixURL(url.returnURL) />
 			</cfif>
 		</cfif>
