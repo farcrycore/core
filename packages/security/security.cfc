@@ -303,7 +303,7 @@
 		<cfparam name="stResult.loginReturnURL" default="#session.loginReturnURL#" /><!--- The return url after a successful login --->
 		
 		<cfif not len(stResult.loginReturnURL)>
-			<cfset stResult.loginReturnURL = application.url.webroot />
+			<cfset stResult.loginReturnURL = application.url.webtop />
 		</cfif>
 
 		<!--- WHICH USERDIRECTORY SHOULD WE BE RENDERING THE FORM FOR --->
