@@ -117,20 +117,20 @@
 
 <!--- fix up any boolean values --->
     <cfloop index="i" list="#attributes.lFilterFields#">
-                <cfif evaluate('application.types.#attributes.typename#.stProps.#i#.metadata.type') EQ 'boolean'>
-					<cfif NOT structKeyExists(attributes.stFilterMetadata,i)>
-                        <cfset attributes.stFilterMetadata[i] = structNew()>
-                    </cfif>
-                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftType")>
-                        <cfset attributes.stFilterMetadata[i].ftType = "list">
-                    </cfif>
-                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftList")>
-                        <cfset attributes.stFilterMetadata[i].ftList = ":...Any,0:No,1:Yes">
-                    </cfif>
-                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftDefault")>
-                     <cfset attributes.stFilterMetadata[i].ftDefault = "">
-                    </cfif>
-				</cfif>
+        <cfif structKeyExists(application.types, attributes.typename) AND application.types[attributes.typename].stProps[i].metadata.type EQ 'boolean'> 
+			<cfif NOT structKeyExists(attributes.stFilterMetadata,i)>
+                <cfset attributes.stFilterMetadata[i] = structNew()>
+            </cfif>
+            <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftType")>
+                <cfset attributes.stFilterMetadata[i].ftType = "list">
+            </cfif>
+            <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftList")>
+                <cfset attributes.stFilterMetadata[i].ftList = ":...Any,0:No,1:Yes">
+            </cfif>
+            <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftDefault")>
+				<cfset attributes.stFilterMetadata[i].ftDefault = "">
+            </cfif>
+		</cfif>
    </cfloop>
 
 
