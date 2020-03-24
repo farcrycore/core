@@ -18,9 +18,12 @@
 	<cfset CRLF = chr(13) & chr(10) />
 
 	<!--- Remove alias duplicates --->
+	<cfset listSoFar = "" />
 	<cfloop list="#arraytolist(request.inHead.aJSLibraries)#" index="i">
-		<cfif len(request.inHead.stJSLibraries[i].aliasOf) and arrayfind(request.inHead.aJSLibraries,request.inHead.stJSLibraries[i].aliasOf)>
-			<cfset arraydeleteat(request.inHead.aJSLibraries,arrayfind(request.inHead.aJSLibraries,request.inHead.stJSLibraries[i].aliasOf)) />
+		<cfif len(request.inHead.stJSLibraries[i].aliasOf) and listFindNoCase(listSoFar, request.inHead.stJSLibraries[i].aliasOf)>
+			<cfset arraydeleteat(request.inHead.aJSLibraries,arrayfind(request.inHead.aJSLibraries,i)) />
+		<cfelse>
+			<cfset listSoFar = listAppend(listSoFar, i) />
 		</cfif>
 	</cfloop>
 	

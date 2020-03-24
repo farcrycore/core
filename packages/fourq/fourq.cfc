@@ -120,8 +120,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 			<skin:loadJS id="fc-jquery" />
 			
-			<skin:loadJS id="webskinAjaxLoader" core="true">
-			<cfoutput>		
+			<skin:loadJS id="webskinAjaxLoader" core="true" lDependsOn="fc-jquery"><cfoutput>
 				$j.fn.loadAjaxWebskin = function (config){
 					var self = this;
 					config = config || self.data("loadWebskinAjax") || {};
@@ -153,8 +152,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					
 					return self;
 				}
-			</cfoutput>
-			</skin:loadJS>
+			</cfoutput></skin:loadJS>
 			
 			<!--- Get the url for the ajax webskin loader --->			
 			<!--- TODO: The ampDelim variable causes the link to be in the & 
