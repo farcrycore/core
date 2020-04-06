@@ -30,6 +30,25 @@ type properties
 	<cfproperty name="aGroups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
 	<cfproperty name="aPermissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
 	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="longchar" ftHint="Filters should be in the form: [type.][prefix*|webskin]<br />e.g. display* grants access to all webskins prefixed with display<br />dmNews.stats grants access to the stats dmNews webskin<br />dmEvent.* grants access to all event webskins" />
+
+
+
+
+	<cfproperty name="aDomains" type="array" 
+				ftSeq="100" ftWizardStep="Restrictions" ftFieldset="Restrictions" ftLabel="Domains" 
+				ftRenderType="custom"
+				ftHint="A list of domains (one per line) that are allowed to be assigned this role. '*' for all users. Strict matching to the domain part of the user's email address" />
+	
+
+	<cfproperty name="aUDs" type="array" 
+				ftSeq="101"ftWizardStep="Restrictions" ftFieldset="Restrictions" ftLabel="User Directories" 
+				ftRenderType="custom"
+				ftHint="A list of User Directories (one per line) that are allowed to be assigned this role. '*' for all users." />
+
+
+	
+
+
 	
 	<!--- System Properties --->
 	<cfproperty name="sitePermissions" type="longchar" default="" hint="wddx of site permissions for this role" ftLabel="Site Permissions" bSave="false" />
@@ -37,9 +56,108 @@ type properties
 	<cfproperty name="typePermissions" type="longchar" default="" hint="wddx of type permissions for this role" ftLabel="type Permissions" bSave="false" />
 
 
+
+
+
 <!---------------------------------------------- 
 object methods
 ----------------------------------------------->
+
+	<cffunction name="ftEditADomains" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var html = "" />
+		<cfset var nl = "
+" />
+		
+		<cfsavecontent variable="html">
+			<cfoutput>
+				<div class="multiField">
+					<div id="#arguments.fieldname#DIV">
+						<div class="blockLabel">
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">#arraytolist(arguments.stMetadata.value,nl)#</textarea>
+						</div>
+					</div>
+				</div>
+			</cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="ftValidateADomains" access="public" output="false" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.It consists of value and stSupporting">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stResult = structNew()>		
+		<cfset stResult.bSuccess = true>
+		<cfset stResult.value = stFieldPost.Value>
+		<cfset stResult.stError = StructNew()>
+		
+		<!--- --------------------------- --->
+		<!--- Perform any validation here --->
+		<!--- --------------------------- --->
+		<cfset stResult.value = listtoarray(arguments.stFieldPost.value,"#chr(10)##chr(13)#") />
+
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
+		
+	</cffunction>
+
+
+
+	<cffunction name="ftEditAUDs" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var html = "" />
+		<cfset var nl = "
+" />
+		
+		<cfsavecontent variable="html">
+			<cfoutput>
+				<div class="multiField">
+					<div id="#arguments.fieldname#DIV">
+						<div class="blockLabel">
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">#arraytolist(arguments.stMetadata.value,nl)#</textarea>
+						</div>
+					</div>
+				</div>
+			</cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="ftValidateAUDs" access="public" output="false" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.It consists of value and stSupporting">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stResult = structNew()>		
+		<cfset stResult.bSuccess = true>
+		<cfset stResult.value = stFieldPost.Value>
+		<cfset stResult.stError = StructNew()>
+		
+		<!--- --------------------------- --->
+		<!--- Perform any validation here --->
+		<!--- --------------------------- --->
+		<cfset stResult.value = listtoarray(arguments.stFieldPost.value,"#chr(10)##chr(13)#") />
+
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
+		
+	</cffunction>
+
+
 	<cffunction name="getGroups" access="public" output="false" returntype="query" hint="Returns a query of UD groups">
 		<cfset var qResult = querynew("objectid,label","varchar,varchar") />
 		<cfset var ud = "" />
