@@ -824,73 +824,74 @@
 			// if (!fcSettings) {
 			// 	return true;
 			// }
-			
-			if( $j(this).attr('fcdata:CLICK') ) {
+			var fcdata = $j(this).data();
+
+			if ('click' in fcdata){
+				if ('textonclick' in fcdata){
 				
-				if( $j(this).attr('fcdata:TEXTONCLICK') ) {
 					$j(this).find('.ui-button-text')
 						.css('width', $j(this).find('.ui-button-text').width())
 						.css('height', $j(this).find('.ui-button-text').height())
 						.html( "<img src='/wsimages/ajax-loader.gif' style='width:16px;height:16px;' />");
 						//.html( $j(this).attr('fc:textOnClick') );
 				};
-				btnClick( $j(this).closest('form').attr('id') , $j(this).attr('fcdata:CLICK') );
+				btnClick( $j(this).closest('form').attr('id') , fcdata.click );
 			};
 			
-			if( $j(this).attr('fcdata:SELECTEDOBJECTID') ) {
-				selectedObjectID( $j(this).attr('fcdata:SELECTEDOBJECTID') );
+			if ('selectedobjectid' in fcdata){
+				selectedObjectID( fcdata.selectedobjectid );
 			};
 					
-						
-			if( $j(this).attr('fcdata:TURNOFFSERVERSIDEVALIDATION') ) {
+			if ('turnoffserversidevalidation' in fcdata){			
 				btnTurnOffServerSideValidation();
 			};
 			
-			if( $j(this).attr('fcdata:TURNONSERVERSIDEVALIDATION') ) {
+			if ('turnonserversidevalidation' in fcdata){	
 				btnTurnOnServerSideValidation();
 			};
 			
-			
-			if( $j(this).attr('fcdata:TURNOFFCLIENTSIDEVALIDATION') ) {
+			if ('turnoffclientsidevalidation' in fcdata){	
 				$j(this).closest('form').attr('fc:validate',false);
 			};				
 			
-			
-			if( $j(this).attr('fcdata:CONFIRMTEXT') ) {
-				if( !confirm( $j(this).attr('fcdata:CONFIRMTEXT') ) ) {
+			if ('confirmtext' in fcdata){
+				if( !confirm( fcdata.confirmtext) ) {
 					return false;
 				}
 			};				
-			
-			if( $j(this).attr('fcdata:URL') ) {
-				btnURL( $j(this).attr('fcdata:URL') , $j(this).attr('fcdata:TARGET') )
+			if ('url' in fcdata){
+				btnURL( fcdata.url , fcdata.target )
 			};
 			
-			if( $j(this).attr('fcdata:TEXTONCLICK') ) {
+			if ('textonclick' in fcdata){
 				$j(this).find('.ui-button-text')
 					.css('width', $j(this).find('.ui-button-text').width())
 					.css('height', $j(this).find('.ui-button-text').height())
-					.html( $j(this).attr('fcdata:TEXTONCLICK') );
+					.html( fcdata.textonclick );
 			};
 			
-			if( $j(this).attr('fcdata:ONCLICK') ) {
-				eval("var fn = function(){ "+$j(this).attr('fcdata:ONCLICK')+" }");
+			if ('onclick' in fcdata){
+				eval("var fn = function(){ "+fcdata.onclick+" }");
 				if (fn.call(this,e)===false) return false;
 			};
 			
 			
-			if( $j(this).attr('fcdata:SUBMIT') ) {
+			if ('submit' in fcdata){
 			
+				if ('disableonsubmit' in fcdata){
+					$j(this).attr("disabled",true);
+					console.log('disabled buton');
+				};
 				
-				if( $j(this).attr('fcdata:TEXTONSUBMIT') ) {
+				if ('textonsubmit' in fcdata){
 					$j(this).find('.ui-button-text')
 						.css('width', $j(this).find('.ui-button-text').width())
 						.css('height', $j(this).find('.ui-button-text').height())
-						.html( $j(this).attr('fcdata:TEXTONSUBMIT') );
+						.html( fcdata.textonsubmit );
 				};
 				
 				
-				btnSubmit( $j(this).closest('form').attr('id') , $j(this).attr('fcdata:SUBMIT') );
+				btnSubmit( $j(this).closest('form').attr('id') , fcdata.submit );
 			};
 			return false;
 		});	

@@ -81,10 +81,11 @@
 				<cfif len(attributes.title)> title="#attributes.title#"</cfif> 
 				class="fc-btn jquery-ui-btn #attributes.class#" 
 				style="#attributes.style#" <cfif attributes.disabled>disabled</cfif> 
-				<cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> 
-				<cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> 
-				<cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>
-		 		<cfloop collection="#attributes.stButtonAttributes#" item="iAttr">fcdata:#iAttr#="#attributes.stButtonAttributes[iAttr]#" </cfloop> >
+				<cfif len(attributes.textOnClick)>data-textOnClick="#attributes.textOnClick#"</cfif> 
+			 	<cfif len(attributes.textOnSubmit)>data-textOnSubmit="#attributes.textOnSubmit#"</cfif> 
+			 	<cfif attributes.disableOnSubmit>data-disableOnSubmit="1"</cfif>
+			 	<cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>
+		 		<cfloop collection="#attributes.stButtonAttributes#" item="iAttr">data-#lcase(iAttr)#="#attributes.stButtonAttributes[iAttr]#" </cfloop> >
 					#attributes.text#
 				</button>
 	</cfoutput>
