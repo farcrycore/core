@@ -167,10 +167,10 @@
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
 		<cfcase value="link">
-			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn-link #attributes.class#" style="#attributes.style#" href="##" <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif> <cfloop collection="#stButtonAttributes#" item="iAttr">fcdata:#iAttr#="#stButtonAttributes[iAttr]#" </cfloop> >#attributes.text#</a></cfoutput>
+			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn-link #attributes.class#" style="#attributes.style#" href="##" <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif> <cfloop collection="#stButtonAttributes#" item="iAttr">data-#lcase(iAttr)#="#stButtonAttributes[iAttr]#" </cfloop> >#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfcase value="button">
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>  <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif> <cfloop collection="#stButtonAttributes#" item="iAttr">fcdata:#iAttr#="#stButtonAttributes[iAttr]#" </cfloop> >#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>  <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif> <cfloop collection="#stButtonAttributes#" item="iAttr">data-#lcase(iAttr)#="#stButtonAttributes[iAttr]#" </cfloop> >#attributes.text#</button></cfoutput>
 		</cfcase>
 		
 		<!--- Default FarcryButton based on form theme --->
