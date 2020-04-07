@@ -315,6 +315,26 @@ OBJECT METHODS
 		
 		<cfreturn stObj />
 	</cffunction>
+
+
+	<cffunction name="getProfileRoles" access="public" returntype="string" hint="Returns a list of roleids for the given profile">
+		<cfargument name="profileID" type="uuid" required="yes" hint="The profileid we want the roles for." />
+		
+		<cfset var qProfileRoles	= '' />
+		
+		<!--- Use the  --->
+		<cfquery name="qProfileRoles">
+        SELECT dmProfile.objectid as profileID
+        , farRole.objectid as roleID
+        FROM dmProfile
+        INNER JOIN dmProfile_aRoles on dmProfile_aRoles.parentID = dmProfile.objectid
+        INNER JOIN farRole on farRole.objectid = dmProfile_aRoles.data
+        WHERE dmProfile.objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.profileID#" />
+        </cfquery>
+		
+		<cfreturn valuelist(qProfileRoles.roleID) />
+	</cffunction>
+
 	
 	<cffunction name="fListProfileByPermission" hint="returns a query of users" access="public" output="false" returntype="struct">
 		<cfargument name="permissionName" required="false" default="" type="string">
