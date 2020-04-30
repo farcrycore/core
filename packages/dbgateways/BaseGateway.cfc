@@ -319,6 +319,7 @@
 		<cfset var queryresult = "" />
 		<cfset var bFirst = true />
 		<cfset var stVal = structnew() />
+		<cfset var iSeq = 0 />
 
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
@@ -351,8 +352,18 @@
 			<cfset stResult.message = "Object does not exist" />
 			
 		<cfelse>
-			
+			<cftransaction>
 			<cftry>
+
+
+				<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
+				<cfloop collection="#arguments.schema.fields#" item="thisfield">
+					<cfif arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].savable>
+						<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
+					</cfif>
+				</cfloop>
+
+				
 				<!--- build query --->
 				<cfset bFirst = true />
 				<cfquery datasource="#this.dsn#" name="qSetData" result="queryresult">
@@ -372,14 +383,19 @@
 								<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
 								#thisfield#=<cfqueryparam attributeCollection="#stVal#" />
 							</cfloop>
+					;
+
 				</cfquery>
-				
+
 				<cfset arrayappend(stResult.results,queryresult) />
 				<cfif len(arguments.logLocation)>
 					<cfset logQuery(arguments.logLocation,queryresult) />
 				</cfif>
+
+				<cftransaction action="commit" />
 				
 				<cfcatch type="database">
+					<cftransaction action="rollback" />
 					<cfset stResult.bSuccess = false />
 					<cfset stResult.message = cfcatch.message ?: "" />
 					<cflog file="fourq" text="Error running setData() for #arguments.stProperties.objectID# (#arguments.stProperties.typename#): #stResult.message#"  />
@@ -387,13 +403,7 @@
 				</cfcatch>
 			</cftry>
 			
-			<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
-			<cfloop collection="#arguments.schema.fields#" item="thisfield">
-				<cfif arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].savable>
-					<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
-				</cfif>
-			</cfloop>
-			
+			</cftransaction>
 		</cfif>
 		
 		<cfreturn stResult />
