@@ -441,13 +441,22 @@ $out:$
 		<cfset var i = structnew() />
 		<cfset var qTypeWatcherWebskins = "" />
 		<cfset var item = "">
+		<cfset var lPackages = "">
 
 		<cfset application.stCOAPI = structnew() />
 
+
+		<!--- FORMTOOLS THEN TYPES.FARCONFIG & THEN EVERYTHING ELSE --->
 		<cfloop list="formtools,types,rules,forms,schema" index="thispackage">
 			<cfset application[thispackage] = structnew() />
+
+			<cfset lPackages = application.factory.oUtils.getComponents(thispackage) />
 			
-			<cfloop list="#application.factory.oUtils.getComponents(thispackage)#" index="thistype">
+			<cfif thispackage EQ "types">
+				<cfset lPackages = listPrepend(lPackages,"farConfig") />
+			</cfif>
+
+			<cfloop list="#lPackages#" index="thistype">
 				<cfset stMetadata = getCOAPIMetadata(thispackage,thistype) />
 				
 				<cfif not structisempty(stMetadata)>
@@ -459,7 +468,7 @@ $out:$
 				</cfif>
 			</cfloop>
 		</cfloop>
-		
+
 		<cfloop list="#structKeyList(application.stCOAPI)#" index="thistype">
 			<cfset qTypeWatcherWebskins = application.stCOAPI[thistype].qWebskins />
 			<cfquery dbtype="query" name="qTypeWatcherWebskins">
