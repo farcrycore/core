@@ -201,9 +201,15 @@ default handlers
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Set to false to disable logging" />
 		
 		<cfset var stNewObject = "" />
+		<cfset var currentProfileID	= 'anonymous' />
+
+		<cfif application.fapi.isLoggedIn()>
+			<cfset currentProfileID = application.fapi.getCurrentUsersProfile().objectid />
+		</cfif>
 		
 		
 		<cfif not len(arguments.user)>
+			
 			<cfif isDefined("session.security.userID")>
 				<cfset arguments.user = session.security.userID />
 			<cfelse>
@@ -211,7 +217,12 @@ default handlers
 			</cfif>
 		</cfif>
 		
-		<cfscript>			
+		<cfscript>		
+			arguments.stProperties.datetimecreated = createODBCDateTime(now());
+			arguments.stProperties.datetimelastupdated = createODBCDateTime(now());
+			arguments.stProperties.createdby = currentProfileID;			
+			arguments.stProperties.lastupdatedby = currentProfileID;	
+
 			if(NOT structKeyExists(arguments.stProperties,"objectid"))
 				arguments.stProperties.objectid = application.fc.utils.createJavaUUID();
 			if(NOT structKeyExists(arguments.stProperties,"datetimecreated"))
@@ -265,12 +276,18 @@ default handlers
 		<cfset var stObj = structnew() />
 		<cfset var fnStatusChange = "" />
 		<cfset var stAfterSave	= '' />
+		<cfset var currentProfileID	= 'anonymous' />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
+
+		<cfif application.fapi.isLoggedIn()>
+			<cfset currentProfileID = application.fapi.getCurrentUsersProfile().objectid />
+		</cfif>
+
 		<!--- If no user has been defined we need to manually set it here. --->
 		<cfif not len(arguments.User)>
-			
+
 			<!--- If a user has logged in then use them --->
 			<cfif application.security.isLoggedIn()>
 				<cfset arguments.User = application.security.getCurrentUserID()>
@@ -282,10 +299,14 @@ default handlers
 			<cfelse>
 				<cfset arguments.User = "anonymous" />
 			</cfif>
+
 		</cfif>
 		
 		<cfif arguments.bSetDefaultCoreProperties>
 			<cfscript>
+				arguments.stProperties.datetimelastupdated = createODBCDateTime(now());
+				arguments.stProperties.lastupdatedby = currentProfileID;	
+
 				//fill in the gaps in case user has forgotten any core properties
 				if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))
 					arguments.stProperties.datetimelastupdated = createODBCDateTime(now());		
@@ -338,7 +359,7 @@ default handlers
 															auditNote = arguments.auditNote) />
 			</cfif>
 		</cfif>
-		
+
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties,bAudit=arguments.bAudit,auditNote=arguments.auditNote) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
