@@ -166,6 +166,7 @@
 		<cfset var i = 0 />
 		<cfset var j = 0 />
 		<cfset var thistype = "" />
+		<cfset var prop = "" />
 		
 		<cfset stResult.left = arguments.left />
 		<cfset stResult.right = arguments.right />
@@ -367,6 +368,15 @@
 					<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 				</cfif>
 			</cfcase>
+			<cfdefaultcase>
+				<cfif isSimpleValue(stResult.left) AND  isSimpleValue(stResult.right)>
+					<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
+					<cfif stResult.different>
+						<cfset stResult.aDiff = getDiff(old=stResult.left,new=stResult.right) />
+						<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
+					</cfif>
+				</cfif>
+			</cfdefaultcase>
 		</cfswitch>
 		
 		<cfreturn stResult />
@@ -403,9 +413,11 @@
 							OR arguments.includeInvisibleProperties 
 						)>
 						
-						<cfset stResult[prop] = getPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
-						<cfif stResult[prop].different>
-							<cfset stResult.countDifferent = stResult.countDifferent + 1 />
+						<cfif structKeyExists(arguments.left, prop) AND structKeyExists(arguments.right, prop)>
+							<cfset stResult[prop] = getPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
+							<cfif stResult[prop].different>
+								<cfset stResult.countDifferent = stResult.countDifferent + 1 />
+							</cfif>
 						</cfif>
 					</cfif>
 				</cfif>
