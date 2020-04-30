@@ -48,6 +48,7 @@
 	<cfproperty ftSeq="35" ftFieldset="SysAdmin Properties" name="errorEmail" type="string" default="" ftLabel="Error email" ftType="email" />
 	<cfproperty ftSeq="36" ftFieldset="SysAdmin Properties" name="emailWhitelist" type="longchar" ftLabel="Email Whitelist" ftHint="Emails sent through the email library are filtered by this list (leave empty for no filtering). Each LINE can be the full email domain (e.g. daemon.com.au), or a full email address (e.g. support@daemon.com.au).">
 	<cfproperty ftSeq="37" ftFieldset="SysAdmin Properties" name="logDBChanges" type="longchar" ftLabel="Log DB Changes" ftHint="Flag specific types to say that all db changes should be logged" ftType="list" ftSelectMultiple="true" ftListData="listTypes" />
+	<cfproperty ftSeq="38" ftFieldset="SysAdmin Properties" name="isAuditTurnedOn" type="boolean" default="1" ftHint="Should Farcry Use dmArchive and farcry:logevent?" ftLabel="Audit Turned On" ftType="boolean" />
 
 
 <!--- TODO: move to security config; update references --->

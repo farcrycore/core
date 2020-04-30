@@ -1267,12 +1267,17 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.bSystem" default="false" />
 		<cfparam name="stReturnMetadata.bUseInTree" default="false" />
 		<cfparam name="stReturnMetadata.bWorkflow" default="false" />
-		
-		<cfif refindnocase("\.(types|system)\.",stReturnMetadata.fullname)>
-			<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" />
+	
+		<cfif application.fapi.getConfig('general','isAuditTurnedOn',1)>			
+			<cfif refindnocase("\.(types|system)\.",stReturnMetadata.fullname)>
+				<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" />
+			<cfelse>
+				<cfparam name="stReturnMetadata.bArchive" default="false" />
+			</cfif>
 		<cfelse>
-			<cfparam name="stReturnMetadata.bArchive" default="false" />
+			<cfset stReturnMetadata.bArchive = false />
 		</cfif>
+
 		
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />

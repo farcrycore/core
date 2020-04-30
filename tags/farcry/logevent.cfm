@@ -7,6 +7,11 @@
 	<cfexit method="exittag" />
 </cfif>
 
+<!--- If logging turned off then do not continue --->
+<cfif not application.fapi.getConfig('general','isAuditTurnedOn',1)>
+	<cfexit method="exittag" />
+</cfif>
+
 <!--- optional attributes --->
 <cfparam name="attributes.object" type="string" default="" /><!--- The uuid of the associated object --->
 <cfparam name="attributes.type" type="string" default="" /><!--- The type of the associated object (can be non-coapi, e.g. security) --->
