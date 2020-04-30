@@ -280,12 +280,15 @@
 			</cfif>
 			
 			<cfif not variables.bSessionOnly>
-				<cftry>
-					<cfset stType.setlock(objectid=Caller[attributes.r_stProperties].objectid,locked="false",lockedby=Variables.LockedBy)>
-					<cfcatch >
-						<!--- TODO: Rules do not currently have the ability to be locked. --->					
-					</cfcatch>
-				</cftry>
+				<!--- ONLY UNLOCK IF THE OBJECT IS CURRENTLY LOCKED --->
+				<cfif Caller[attributes.r_stProperties].locked?:true>
+					<cftry>
+						<cfset stType.setlock(objectid=Caller[attributes.r_stProperties].objectid,locked="false",lockedby=Variables.LockedBy)>
+						<cfcatch >
+							<!--- TODO: Rules do not currently have the ability to be locked. --->					
+						</cfcatch>
+					</cftry>
+				</cfif>
 			</cfif>
 		
 			
