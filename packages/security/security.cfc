@@ -497,17 +497,54 @@
 
 		<cfset sessionRotate()>
 
-		<!--- Log the result --->
-		<cfif structKeyExists(session, "impersonator")>
-			<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
-		<cfelseif session.firstLogin>
-			<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
+
+		<cfif application.fapi.getConfig('general','isAuditTurnedOn',1)>
+
+
+			<!--- Log the result --->
+			<cfif structKeyExists(session, "impersonator")>
+				<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
+			<cfelseif session.firstLogin>
+				<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
+			<cfelse>
+				<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
+			</cfif>
 		<cfelse>
-			<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
+			<!--- Log the result --->
+			<cfset var stSessionLog = application.fapi.getNewContentObject(typename="farSessionLog") />
+			
+			<cfif structKeyExists(session, "impersonator")>
+				<cfset stSessionLog.event = "impersonating" />
+			<cfelse>
+				<cfset stSessionLog.event = "login" />
+			</cfif>
+			<cfset stSessionLog.label = '#stSessionLog.event# - #session.dmProfile.firstname# #session.dmProfile.lastname#' />
+			<cfset stSessionLog.profileID = session.dmProfile.objectid />
+			<cfset stSessionLog.jsonProfile = serializeJSON(session.dmProfile) />
+			<cfset stSessionLog.ipAddress = '#cgi.REMOTE_ADDR#' />
+			<cfset application.fapi.setData(stProperties="#stSessionLog#") />
+			
 		</cfif>
 	</cffunction>
 
 	<cffunction name="logout" access="public" output="false" returntype="void" hint="" bDocument="true">
+
+
+		<!--- Log the result --->
+		<cfset var stSessionLog = application.fapi.getNewContentObject(typename="farSessionLog") />
+		
+		<cfset stSessionLog.event = "logout" />
+
+		<cfif structKeyExists(session, "dmProfile")>
+			<cfset stSessionLog.label = '#stSessionLog.event# - #session.dmProfile.firstname# #session.dmProfile.lastname#' />
+			<cfset stSessionLog.profileID = session.dmProfile.objectid />
+			<cfset stSessionLog.jsonProfile = serializeJSON(session.dmProfile) />
+		</cfif>
+		<cfset stSessionLog.ipAddress = '#cgi.REMOTE_ADDR#' />
+		<cfset application.fapi.setData(stProperties="#stSessionLog#") />
+
+
+		<!--- REMOVE SESSION STRUCTURES --->
 		<cfset structdelete(session,"security") />
 		<cfset structdelete(session,"dmProfile") />
 		<cfset structdelete(session.fc,"mode") />
