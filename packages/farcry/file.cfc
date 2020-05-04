@@ -418,7 +418,7 @@ $out:$
 		<cfset stMimes["pvu"] = "paleovu/x-pv" />
 		<cfset stMimes["pwz"] = "application/vnd.ms-powerpoint" />
 		<cfset stMimes["py"] = "text/x-script.phyton" />
-		<cfset stMimes["pyc"] = "applicaiton/x-bytecode.python" />
+		<cfset stMimes["pyc"] = "application/x-bytecode.python" />
 		<cfset stMimes["qcp"] = "audio/vnd.qcelp" />
 		<cfset stMimes["qd3"] = "x-world/x-3dmf" />
 		<cfset stMimes["qd3d"] = "x-world/x-3dmf" />
