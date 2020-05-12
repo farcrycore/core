@@ -880,7 +880,6 @@
 			
 				if ('disableonsubmit' in fcdata){
 					$j(this).attr("disabled",true);
-					console.log('disabled buton');
 				};
 				
 				if ('textonsubmit' in fcdata){
