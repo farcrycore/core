@@ -498,7 +498,7 @@
 					) />
 					
 					<cfif not arguments.bArchive>
-						<cffile action="delete" file="-#archivedFile#" />
+						<cffile action="delete" file="#archivedFile#" />
 					</cfif>
 				<cfelse>
 					<!--- There is no file currently so we simply upload the file and make it unique  --->
