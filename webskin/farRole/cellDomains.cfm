@@ -1,1 +1,0 @@
-<cfoutput>#arrayToList(stobj.aDomains)#</cfoutput>

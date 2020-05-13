@@ -103,10 +103,6 @@ TYPE PROPERTIES
 		ftType="longchar"
 		hint="Additional notes">
 
-	<cfproperty name="aRoles" type="array" default="" hint="The roles allocated to a user." 
-		ftSeq="20" ftFieldset="Security" ftLabel="Roles"
-		ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getLibraryDataRoles" ftLibraryDataTypename="dmProfile" />
-
 	<cfproperty name="wddxPersonalisation" type="longchar" required="no" default=""
 		ftLabel=""
 		hint="WDDX packet containing a user's personalisation settings.">
@@ -114,69 +110,9 @@ TYPE PROPERTIES
 	<cfproperty name="lastLogin" type="datetime"
 		hint="The last login date of this user">
 
-
 <!------------------------------
 OBJECT METHODS
 -------------------------------->
-	<cffunction name="getLibraryDataRoles" access="public" output="false" returntype="query" hint="A library data method that returns the types that can be associated with a permission. References the ftJoin attribute of the farBarnacle aObjects property.">
-		<cfargument name="primaryID" />
-
-		<cfset var stProfile = application.fapi.getContentObject(typename="dmProfile", objectid="#arguments.primaryID#") />
-		<cfset var profileDomain = listLast(stProfile.emailAddress,'@') />
-		<cfset var profileUD = stProfile.USERDIRECTORY />
-		<cfset var qResult = querynew("objectid,label","varchar,varchar") />
-		<cfset var ud = "" />
-		<cfset var group = "" />
-		<cfset var thistype	= '' />
-		<cfset var bPassDomainCheck = 0 />
-		<cfset var bPassUDCheck = 0 />
-		
-		<cfquery name="qRoles">
-		select farRole.objectid as roleID
-		, farRole.title as label
-		, farRole_aDomains.data as domain
-		, farRole_aUDs.data as ud
-		from farRole
-		left join farRole_aDomains on farRole_aDomains.parentID = farRole.objectid
-		left join farRole_aUDs on farRole_aUDs.parentID = farRole.objectid
-		ORDER BY farRole.objectid,farRole_aDomains.data,farRole_aUDs.data
-		</cfquery>
-
-		
-		<cfloop query="qRoles" group="roleID">
-			<cfset bPassDomainCheck = 0 />
-			<cfif len(qRoles.domain)>
-				<cfloop group="domain">
-					<cfif qRoles.domain EQ profileDomain>
-						<cfset bPassDomainCheck = 1 />
-					</cfif>
-				</cfloop>
-			<cfelse>
-				<cfset bPassDomainCheck = 1 />
-			</cfif>
-			<cfset bPassUDCheck = 0 />
-			<cfif len(qRoles.ud)>
-				<cfloop group="ud">
-					<cfif qRoles.ud EQ profileUD>
-						<cfset bPassUDCheck = 1 />
-					</cfif>
-				</cfloop>
-			<cfelse>
-				<cfset bPassUDCheck = 1 />
-			</cfif>
-
-			<cfif bPassDomainCheck AND bPassUDCheck>
-				<cfset queryaddrow(qResult) />
-				<cfset querysetcell(qResult,"objectid","#qRoles.roleID#") />
-				<cfset querysetcell(qResult,"label","#qRoles.label#")>
-			</cfif>
-
-		</cfloop>
-		
-		<cfreturn qResult />
-	</cffunction>
-
-
 	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
 		<cfargument name="dsn" type="string" required="false" default="">

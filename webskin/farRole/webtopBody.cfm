@@ -23,8 +23,7 @@
 <ft:objectadmin 
 	typename="farRole"
 	title="Role Admin"
-    lCustomColumns="Title:displayLabel,Domains:cellDomains,User Directories:cellUDs"
-    ColumnList="isdefault"
+	columnList="title,isdefault"
 	sortableColumns="title"
 	lFilterFields="title"
     bPreviewCol="false"

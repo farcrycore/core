@@ -402,7 +402,15 @@
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stDefaultProfile = structnew() />
 
-
+		<!--- Get user groups and convert them to Farcry roles --->
+		<cfset aUserGroups = this.userdirectories[arguments.ud].getUserGroups(arguments.userid) />
+		<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
+			<cfset groups = listappend(groups,"#aUserGroups[i]#_#arguments.ud#") />
+		</cfloop>
+		
+		<!--- New structure --->
+		<cfset session.security.userid = "#arguments.userid#_#arguments.ud#" />
+		<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
 		
 		<!--- Get users profile --->
 		<cfset session.dmProfile = oProfile.getProfile(userName=arguments.userid,ud=arguments.ud) />
@@ -426,41 +434,6 @@
 		<cfif not structKeyExists(session, "impersonator")>
 			<cfset oProfile.setData(stProperties=session.dmProfile, bAudit=false) />
 		</cfif>
-
-		<!--- New structure --->
-		<cfset session.security.userid = "#arguments.userid#_#arguments.ud#" />
-
-
-		<!--- Get Roles attached to profile or if none, get user groups and convert them to Farcry roles --->
-		<cfquery name="qProfileRoles">
-		SELECT dmProfile.objectid as profileID
-		, farRole.objectid as roleID
-		FROM dmProfile
-		INNER JOIN dmProfile_aRoles on dmProfile_aRoles.parentID = dmProfile.objectid
-		INNER JOIN farRole on farRole.objectid = dmProfile_aRoles.data
-		WHERE dmProfile.objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#session.dmProfile.objectid#" />
-		</cfquery>
-
-		<cfif qProfileRoles.recordcount>
-			<cfset session.security.roles = valueList(qProfileRoles.roleID) />
-		<cfelse>
-
-			<cfset aUserGroups = this.userdirectories[arguments.ud].getUserGroups(arguments.userid) />
-			<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
-				<cfset groups = listappend(groups,"#aUserGroups[i]#_#arguments.ud#") />
-			</cfloop>
-			
-			<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
-
-			<cfif listLen(session.security.roles)>
-				<cfif not structKeyExists(session, "impersonator")>
-					<cfset session.dmProfile.aRoles = listToArray(session.security.roles) />
-					<cfset oProfile.setData(stProperties=session.dmProfile, bAudit=false) />
-				</cfif>
-			</cfif>
-		</cfif>
-
-
 	
 		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
         <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>

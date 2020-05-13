@@ -321,7 +321,7 @@ PREPARE TYPE PERMISSIONS
 	
 	<wiz:step name="General">
 		
-		<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="title,isdefault,aGroups,aDomains,aUDs" format="edit" intable="false" />
+		<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="title,isdefault,aGroups" format="edit" intable="false" />
 		
 	</wiz:step>
 
