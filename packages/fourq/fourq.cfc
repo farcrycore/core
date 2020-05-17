@@ -635,9 +635,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stProps.typename = arguments.typename>
 		
 		<cfset stProps.label = "(incomplete)">
-		<cfset stProps.lastupdatedby = userlogin>
+		<cfset stProps.lastupdatedby = dmProfileID>
 		<cfset stProps.datetimelastupdated = Now()>
-		<cfset stProps.createdby = userlogin>
+		<cfset stProps.createdby = dmProfileID>
 		<cfset stProps.datetimecreated = Now()>
 		<cfset stProps.ownedby = dmProfileID>
 		
