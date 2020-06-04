@@ -49,6 +49,8 @@
 	 	DROP TRIGGER IF EXISTS `#iTable#_deletes`;
 	 	</cfquery>
 
+
+
 		<cfif application.stCoapi[iTable].isArchived?:false>
 			
 
@@ -72,7 +74,7 @@
 					
 					<cfswitch expression="#stProp.metadata.type#">
 						<cfcase value="array">
-							<cfif listLen(stProp.metadata.ftjoin) EQ 1>
+							<!--- <cfif listLen(stProp.metadata.ftjoin) EQ 1> --->
 								'#lcase(stProp.metadata.name)#',
 								(
 									select JSON_ARRAYAGG(#iTable#_#stProp.metadata.name#.data)
@@ -80,7 +82,7 @@
 									where #iTable#_#stProp.metadata.name#.parentid = #iTable#.objectid
 
 								)
-							</cfif>
+							<!--- </cfif> --->
 						</cfcase>
 						<cfcase value="json">
 							<cfif stProp.metadata.ftType eq "oneToMany">
@@ -124,7 +126,7 @@
 					
 					<cfswitch expression="#stProp.metadata.type#">
 						<cfcase value="array">
-							<cfif listLen(stProp.metadata.ftjoin) EQ 1>
+							<!--- <cfif listLen(stProp.metadata.ftjoin) EQ 1> --->
 								'#lcase(stProp.metadata.name)#',
 								(
 									select JSON_ARRAYAGG(#iTable#_#stProp.metadata.name#.data)
@@ -132,7 +134,7 @@
 									where #iTable#_#stProp.metadata.name#.parentid = #iTable#.objectid
 
 								)
-							</cfif>
+							<!--- </cfif> --->
 						</cfcase>
 						<cfcase value="json">
 							<cfif stProp.metadata.ftType eq "oneToMany">
