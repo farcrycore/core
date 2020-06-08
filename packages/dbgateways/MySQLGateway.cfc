@@ -671,11 +671,24 @@
 	<cffunction name="isFieldAltered" access="public" returntype="boolean" output="false" hint="Returns true if there is a difference">
 		<cfargument name="expected" type="struct" required="true" hint="The expected schema" />
 		<cfargument name="actual" type="struct" required="true" hint="The actual schema" />
+
+		<!--- IGNORE non alphanumeric characters as it seems mysql really wants to reformat itself by adding spaces and inverted commas and so on. --->
+		<cfset var expectedGeneratedAlways = reReplace(arguments.expected.GENERATEDALWAYS,'[^\w]', '', 'all') />
+		<cfset var actualGeneratedAlways = reReplace(arguments.actual.GENERATEDALWAYS,'[^\w]', '', 'all') />
+
+		<!--- 
+		MYSQL 8 seems to add _utf8mb4 in front of json expressions. We want to ignore this for the purpose of alteration inspections
+		 e.g.json_unquote(json_extract(`jsonPayload`,_utf8mb4'$.Data')) 
+		--->
+		<cfset expectedGeneratedAlways = replaceNoCase(expectedGeneratedAlways, "_utf8mb4", "", "all") /> 
+		<cfset actualGeneratedAlways = replaceNoCase(actualGeneratedAlways, "_utf8mb4", "", "all") />
+
+
 		<cfset var altered = arguments.expected.nullable neq arguments.actual.nullable
 				  OR (arguments.expected.type neq "longchar" and arguments.expected.default neq arguments.actual.default)
 				  OR arguments.expected.type neq arguments.actual.type
 				  OR arguments.expected.precision neq arguments.actual.precision
-				  OR #arguments.expected.GENERATEDALWAYS?:''# neq #arguments.actual.GENERATEDALWAYS?:''#
+				  OR #expectedGeneratedAlways?:''# neq #actualGeneratedAlways?:''#
 				  OR #arguments.expected.VIRTUALTYPE?:''# neq #arguments.actual.VIRTUALTYPE?:''# />
 
 		<cfreturn altered />
