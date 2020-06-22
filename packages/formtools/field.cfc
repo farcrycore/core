@@ -6,8 +6,8 @@
 	<cfproperty name="ftType" required="false" hint="Tells the framework which of the formtool ui components to use when rendering your form. This will default to the [type]." />
 	<cfproperty name="ftLabel" required="false" hint="Used by the FarCry form layout as the label of the form field. This will default to the [name]." />
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
-	<cfproperty name="ftShowLabel" required="false" default="true" hint="Set this to false to hide the label when rendering the field." />
-	<cfproperty name="ftMultiField" required="false" default="false" hint="add wrapper div with class of multiField for extra styling." />
+	<cfproperty name="ftShowLabel" required="false" default="true" type="boolean" hint="Set this to false to hide the label when rendering the field." />
+	<cfproperty name="ftMultiField" required="false" default="false" type="boolean" hint="add wrapper div with class of multiField for extra styling." />
 	<cfproperty name="ftClass" required="false" default="" hint="CSS Class that can be used on the formtool input" />
 	<cfproperty name="ftStyle" required="false" default="" hint="CSS Style that can be used on the formtool input" />
 	<cfproperty name="ftPlaceholder" required="false" default="" hint="CSS placeholder text" />
@@ -16,10 +16,10 @@
 	<cfproperty name="ftDisplayMethod" required="false" hint="The function that will be used to render the html output for displaying a property" />
 	<cfproperty name="ftValidateMethod" required="false" hint="The function that will be used to render the html output for validating (processing) a property form submission" />
 	<cfproperty name="ftAjaxMethod" required="false" hint="The function that will be used to render the html output for ajax requests of a property" />
-	<cfproperty name="ftAutoSave" required="false" default="false" hint="Should the object be saved if the field changes?" />
+	<cfproperty name="ftAutoSave" required="false" default="false" type="boolean" hint="Should the object be saved if the field changes?" />
 	<cfproperty name="ftWatchFields" required="false" default="" hint="If any of these fields change, then update the current field? Use the format 'typename.property' if you wish to update all field regardless of object. Use just 'property' if you wish to update just that object." />
-	<cfproperty name="ftReloadOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the entire page be refreshed?" />
-	<cfproperty name="ftRefreshPropertyOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the field be refreshed?" />
+	<cfproperty name="ftReloadOnAutoSave" required="false" default="false" type="boolean" hint="If the property is autosaved, should the entire page be refreshed?" />
+	<cfproperty name="ftRefreshPropertyOnAutoSave" required="false" default="false" type="boolean" hint="If the property is autosaved, should the field be refreshed?" />
 	<cfproperty name="ftFilterMatch" required="false" hint="[like|exact] used in advance search filter. Example: stFilterMetadata={myField={ftFilterMatch='exact'}}" default="like" />
 	
 	
@@ -399,11 +399,10 @@
 		<cfset var md = getMetaData(this) />		
 		<cfset var mdExtend = md />
 		<cfset var key = "" />
-		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfparam name="stReturnMetadata.stProps" default="#structnew()#" />
 		<cfset stReturnMetadata.stProps = application.factory.oUtils.structMerge(stReturnMetadata.stProps,stNewProps) />
-		
+
 		<cfloop condition="not structisempty(mdExtend)">
 			<cfloop collection="#md#" item="key">
 				<cfif key neq "PROPERTIES" AND key neq "EXTENDS" AND key neq "FUNCTIONS" AND key neq "TYPE">
@@ -438,7 +437,7 @@
 		<cfset var j = "">
 		<cfset var prop = "">
 		<cfset var success = "">
-		
+
 		<cfloop index="i" from="1" to="#ArrayLen(aAncestors)#">
 			<cfset curAncestor = duplicate(aAncestors[i])>
 			
@@ -450,7 +449,28 @@
 						<cfset stProperties[curAncestor.properties[j].name].origin = "" />
 					</cfif>
 					<cfset stProperties[curAncestor.properties[j].name].origin = curAncestor.name />
+
+					<!--- getMetaData() does not returns only string types. We need to convert booleans to a REAL boolean type --->
+					<cfswitch expression="#curAncestor.properties[j].type#">
+						<cfcase value="boolean">
+							<cfif isBoolean(curAncestor.properties[j].default)>
+								<cfset curAncestor.properties[j].default = !!curAncestor.properties[j].default  />		
+							</cfif>
+						</cfcase>
+						<cfcase value="numeric">
+							<cfif isNumeric(curAncestor.properties[j].default)>
+								<cfset curAncestor.properties[j].default = parseNumber(curAncestor.properties[j].default)  />		
+							</cfif>
+						</cfcase>
+						<cfdefaultcase>
+							<!--- ignore --->
+						</cfdefaultcase>
+					</cfswitch>
+
+
+
 					<cfset success = structAppend(stProperties[curAncestor.properties[j].name].metadata, curAncestor.properties[j]) />
+
 				</cfloop>
 			</cfif>
 		</cfloop>

@@ -1245,34 +1245,78 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var prop = '' />
 		<cfset var webskinToCache = '' />
 		<cfset var res = '' />
+		<cfset var iProp = {} />
+		<cfset var formtoolMDType = {} />
 		
-		
+
+
 		<!--- Make sure ALL properties have an ftType, ftLabel,ftStyle and ftClass set. If not explicitly set then use defaults. --->
-		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation") />
+		
+		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation,ftWatchFields,ftSeq,ftFieldset,ftWizardStep") />
 		
 		<!--- Make sure all required  the defaults are in place --->
 		<cfloop collection="#stReturnMetadata.stProps#" item="prop">
 			<cfset stFormtoolDefaults = application.coapi.coapiAdmin.getFormtoolDefaults(formtool=stReturnMetadata.stProps[prop].metadata.ftType) />
 
-			<cfset structAppend(stReturnMetadata.stProps[prop].metadata,stFormtoolDefaults,false) />
+			<!--- FORMTOOL METADATA HAS THE CORRECT DATA TYPE (TRUE/FALSE as boolean) --->
+			<!--- <cfset structAppend(stReturnMetadata.stProps[prop].metadata,stFormtoolDefaults,false) /> --->
+
+			<cfloop collection="#stFormtoolDefaults#" item="iProp">
+
+
+				<cfif !structKeyExists(stReturnMetadata.stProps[prop].metadata, iProp)>
+					<cfset stReturnMetadata.stProps[prop].metadata[iProp] = stFormtoolDefaults[iProp] />
+				<cfelse>
+
+					<cfset formtoolMDType = application.fapi.getFormtoolMetadata(formtool=stReturnMetadata.stProps[prop].metadata.ftType, property=iProp, md="type") />
+
+				
+					<!--- getMetaData() does not returns only string types. We need to convert booleans to a REAL boolean type --->
+					<cfswitch expression="#formtoolMDType#">
+						<cfcase value="boolean">
+							<cfif isBoolean(stReturnMetadata.stProps[prop].metadata[iProp])>
+								<cfset stReturnMetadata.stProps[prop].metadata[iProp] = !!stReturnMetadata.stProps[prop].metadata[iProp]  />		
+							</cfif>
+						</cfcase>
+						<cfcase value="numeric">
+							<cfif isNumeric(stReturnMetadata.stProps[prop].metadata[iProp])>
+								<cfset stReturnMetadata.stProps[prop].metadata[iProp] = parseNumber(stReturnMetadata.stProps[prop].metadata[iProp])  />		
+							</cfif>
+						</cfcase>
+						<cfdefaultcase>
+							<!--- ignore --->
+						</cfdefaultcase>
+					</cfswitch>
+
+					
+				</cfif>
+				
+			</cfloop>
+
+
+
+
+
 		</cfloop>
-		
+
+
+
 		<!--- Set up default attributes --->
-		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" />
-		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
+		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" type="boolean" />
+		<cfparam name="stReturnMetadata.bObjectBroker" default="false" type="boolean" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.objectBrokerWebskinCacheTimeout" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
  		<cfparam name="stReturnMetadata.fuAlias" default="#componentname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
-		<cfparam name="stReturnMetadata.bSystem" default="false" />
-		<cfparam name="stReturnMetadata.bUseInTree" default="false" />
-		<cfparam name="stReturnMetadata.bWorkflow" default="false" />
+		<cfparam name="stReturnMetadata.bSystem" default="false" type="boolean" />
+		<cfparam name="stReturnMetadata.bUseInTree" default="false" type="boolean" />
+		<cfparam name="stReturnMetadata.bWorkflow" default="false" type="boolean" />
 	
 		<cfif application.fapi.getConfig('general','isAuditTurnedOn',1)>			
 			<cfif refindnocase("\.(types|system)\.",stReturnMetadata.fullname)>
-				<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" />
+				<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" type="boolean" />
 			<cfelse>
-				<cfparam name="stReturnMetadata.bArchive" default="false" />
+				<cfparam name="stReturnMetadata.bArchive" default="false" type="boolean" />
 			</cfif>
 		<cfelse>
 			<cfset stReturnMetadata.bArchive = false />

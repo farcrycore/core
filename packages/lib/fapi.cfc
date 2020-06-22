@@ -767,6 +767,27 @@
 
 		<cfreturn duplicate(result) />
 	</cffunction>
+			
+	<cffunction name="getFormtoolMetadata" access="public" output="false" returntype="any" hint="Returns the value of the metadata for a formtool/property passed in. Omitting the md name, all metadata for the property will be returned.">
+		<cfargument name="formtool" required="true" type="string" hint="The formtool containing the property" />
+		<cfargument name="property" required="true" type="string" hint="The property for which we want metadata for" />
+		<cfargument name="md" required="false" type="string" default="" hint="The name of the piece of metadata we want (optional)" />
+		<cfargument name="default" required="false" default="" type="string" hint="The default value if the metadata does not exist" />
+		
+		<cfset var result = arguments.default />
+		
+		<cfif isDefined("application.formtools.#arguments.formtool#.stProps.#arguments.property#.METADATA")>
+			<cfif len(arguments.md)>
+				<cfif structKeyExists(application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA, arguments.md)>
+					<cfset result = application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
+				</cfif>
+			<cfelse>
+				<cfset result = duplicate(application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA) />
+			</cfif>
+		</cfif>
+
+		<cfreturn duplicate(result) />
+	</cffunction>
 	
 	<cffunction name="stream" access="public" output="false" returntype="void" hint="Stream content to the user with the specified mime type">
 		<cfargument name="content" type="any" required="true" />
