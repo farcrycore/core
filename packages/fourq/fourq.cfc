@@ -1261,6 +1261,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<!--- FORMTOOL METADATA HAS THE CORRECT DATA TYPE (TRUE/FALSE as boolean) --->
 			<!--- <cfset structAppend(stReturnMetadata.stProps[prop].metadata,stFormtoolDefaults,false) /> --->
 
+								
 			<cfloop collection="#stFormtoolDefaults#" item="iProp">
 
 
@@ -1280,7 +1281,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						</cfcase>
 						<cfcase value="numeric">
 							<cfif isNumeric(stReturnMetadata.stProps[prop].metadata[iProp])>
-								<cfset stReturnMetadata.stProps[prop].metadata[iProp] = parseNumber(stReturnMetadata.stProps[prop].metadata[iProp])  />		
+								<cfset stReturnMetadata.stProps[prop].metadata[iProp] = parseNumber(stReturnMetadata.stProps[prop].metadata[iProp],'dec')  />		
 							</cfif>
 						</cfcase>
 						<cfdefaultcase>
@@ -1293,7 +1294,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 			</cfloop>
 
-
+									
 
 
 
