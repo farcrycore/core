@@ -760,6 +760,12 @@
 				<cfif not isvalid("integer",stResult.__redirectionType)>
 					<cfset stResult.__redirectionType = 301>
 				</cfif>
+
+				<cfif listFindNoCase("staging,development,unknown", application.fapi.getContentType("configEnvironment").getEnvironment())>
+					<cfset trace = application.fc.lib.error.getStack(bIncludeCore=true, bIncludeJava=false, ignoreLines=1) />
+					<cfheader name="location-reason" value="#trace[1].template#:#trace[1].line#">
+				</cfif>
+
 				<cfheader statuscode="#stResult['__redirectionType']#" /><!--- statustext="Moved permanently" --->
 				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#" charset="utf-8" />
 				<cfabort />
@@ -779,6 +785,11 @@
 					<cfset structdelete(stLocalURL,"objectid") />
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
+					<cfif listFindNoCase("staging,development,unknown", application.fapi.getContentType("configEnvironment").getEnvironment())>
+						<cfset trace = application.fc.lib.error.getStack(bIncludeCore=true, bIncludeJava=false, ignoreLines=1) />
+						<cfheader name="location-reason" value="#trace[1].template#:#trace[1].line#">
+					</cfif>
+
 					<cfheader statuscode="301" /><!--- statustext="Moved permanently" --->
 					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string), ampDelim="&")#" charset="utf-8" />
 					<cfabort />
