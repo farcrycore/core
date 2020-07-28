@@ -1249,13 +1249,25 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var formtoolMDType = {} />
 		
 
-
 		<!--- Make sure ALL properties have an ftType, ftLabel,ftStyle and ftClass set. If not explicitly set then use defaults. --->
 		
-		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation,ftWatchFields,ftSeq,ftFieldset,ftWizardStep") />
+		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation,ftWatchFields,ftSeq,ftFieldset,ftWizardStep,ftPlaceholder") />
 		
 		<!--- Make sure all required  the defaults are in place --->
+		
 		<cfloop collection="#stReturnMetadata.stProps#" item="prop">
+
+			<!--- WE NEED TO TAKE A COPY OF THE BASE METADATA FROM THE COMPONENT WITHOUT THE LEGACY FORMTOOL METADATA WHICH IS NOT USED IN ADMINUI --->
+			<cfif structKeyExists(stReturnMetadata.stProps[prop], "baseMetadata")>
+				<cfset stReturnMetadata.stProps[prop].baseMetadata = duplicate(stReturnMetadata.stProps[prop].baseMetadata) />
+			<cfelse>
+				<!--- This will only be the case on the lowest level extended type --->
+				<cfset stReturnMetadata.stProps[prop].baseMetadata = duplicate(stReturnMetadata.stProps[prop].metadata) />
+			</cfif>
+
+
+
+
 			<cfset stFormtoolDefaults = application.coapi.coapiAdmin.getFormtoolDefaults(formtool=stReturnMetadata.stProps[prop].metadata.ftType) />
 
 			<!--- FORMTOOL METADATA HAS THE CORRECT DATA TYPE (TRUE/FALSE as boolean) --->
@@ -1272,7 +1284,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfset formtoolMDType = application.fapi.getFormtoolMetadata(formtool=stReturnMetadata.stProps[prop].metadata.ftType, property=iProp, md="type") />
 
 				
-					<!--- getMetaData() does not returns only string types. We need to convert booleans to a REAL boolean type --->
+					<!--- getMetaData() returns only string types. We need to convert booleans to a REAL boolean type --->
 					<cfswitch expression="#formtoolMDType#">
 						<cfcase value="boolean">
 							<cfif isBoolean(stReturnMetadata.stProps[prop].metadata[iProp])>
@@ -1289,7 +1301,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						</cfdefaultcase>
 					</cfswitch>
 
-					
+
 				</cfif>
 				
 			</cfloop>
@@ -1299,7 +1311,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 
 		</cfloop>
-
+		
 
 
 		<!--- Set up default attributes --->
