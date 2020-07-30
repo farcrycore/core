@@ -675,8 +675,8 @@
 				  OR (arguments.expected.type neq "longchar" and arguments.expected.default neq arguments.actual.default)
 				  OR arguments.expected.type neq arguments.actual.type
 				  OR arguments.expected.precision neq arguments.actual.precision
-				  OR #arguments.expected.GENERATEDALWAYS?:''# neq #arguments.actual.GENERATEDALWAYS?:''#
-				  OR #arguments.expected.VIRTUALTYPE?:''# neq #arguments.actual.VIRTUALTYPE?:''# />
+				  OR arguments.expected.GENERATEDALWAYS?:'' neq arguments.actual.GENERATEDALWAYS?:''
+				  OR arguments.expected.VIRTUALTYPE?:'' neq arguments.actual.VIRTUALTYPE?:'' />
 
 		<cfreturn altered />
 	</cffunction>
