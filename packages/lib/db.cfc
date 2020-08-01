@@ -157,6 +157,8 @@
 		<cfargument name="typename" type="any" required="true" hint="The package path or type component to process" />
 		<cfargument name="schema" type="struct" required="false" hint="Use to provide a manually generated schema" />
 		
+		<cfset var md = {} />
+
 		<cfif structkeyexists(arguments,"schema")>
 			<cfif not issimplevalue(arguments.typename)>
 				<cfthrow message="When provided your own schema, the typename must be a string" />
@@ -165,7 +167,9 @@
 				<cfset this.tablemetadata[listlast(arguments.typename,'.')] = duplicate(arguments.schema) />
 			</cfif>
 		<cfelse>
-			<cfset this.tablemetadata[arguments.typename] = parseComponentMetadata(md=getMetadata(createobject("component",arguments.typename))) />
+			<cfset md = getMetadata(createobject("component",arguments.typename)) />
+			<cfset this.tablemetadata[arguments.typename] = parseComponentMetadata(md=duplicate(md)) />
+			
 			<cfset this.tablemetadata[listlast(arguments.typename,'.')] = duplicate(this.tablemetadata[arguments.typename]) />
 		</cfif>
 		
