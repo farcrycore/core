@@ -1258,12 +1258,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfloop collection="#stReturnMetadata.stProps#" item="prop">
 
 			<!--- WE NEED TO TAKE A COPY OF THE BASE METADATA FROM THE COMPONENT WITHOUT THE LEGACY FORMTOOL METADATA WHICH IS NOT USED IN ADMINUI --->
-			<cfif structKeyExists(stReturnMetadata.stProps[prop], "baseMetadata")>
-				<cfset stReturnMetadata.stProps[prop].baseMetadata = duplicate(stReturnMetadata.stProps[prop].baseMetadata) />
-			<cfelse>
-				<!--- This will only be the case on the lowest level extended type --->
-				<cfset stReturnMetadata.stProps[prop].baseMetadata = duplicate(stReturnMetadata.stProps[prop].metadata) />
-			</cfif>
+			<cfset stReturnMetadata.stProps[prop].baseMetadata = duplicate(stReturnMetadata.stProps[prop].metadata) />
 
 
 
