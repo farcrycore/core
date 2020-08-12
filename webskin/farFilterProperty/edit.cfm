@@ -1,5 +1,5 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport tablib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <skin:loadCSS id="fc-fontawesome" />
 
