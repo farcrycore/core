@@ -1,7 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <ft:processForm action="Save,Start Workflow" url="refresh">
