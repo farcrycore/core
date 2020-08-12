@@ -100,9 +100,13 @@
 		<cfset var facade = "" />
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, flash, jquery --->
+		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, jquery --->
 		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
 		
+		<cfif NOT listfindNoCase("html,jquery", arguments.stMetadata.ftRenderType)>
+			<cfset arguments.stMetadata.ftRenderType = "html">
+		</cfif>
+
 		<skin:loadJS id="fc-jquery" />
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
@@ -284,45 +288,6 @@
 					</cfoutput>
 				</cfsavecontent>
 			</cfcase>
-			
-			<cfdefaultcase>
-				
-				<cfparam name="arguments.stMetadata.ftFacade" default="#application.url.webtop#/facade/fileupload/upload.cfm" />
-				<cfparam name="arguments.stMetadata.ftFileTypes" default="*.*" />
-				<cfparam name="arguments.stMetadata.ftFileDescription" default="File Types" />
-				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
-				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
-				
-				<skin:loadJS id="fc-jquery" />
-				
-				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#application.fc.lib.esapi.encodeForURL(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
-				
-				<cfsavecontent variable="html">
-					<cfoutput>
-						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-						<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-						<cfif len(arguments.stMetadata.value)>
-							<div id="#arguments.fieldname#previewfile">
-								<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
-									<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
-									#listLast(arguments.stMetadata.value, "/")#
-								<cfelse>
-									<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
-								</cfif>
-								
-								<ft:button type="button" value="Delete File" confirmText="Are you sure you want to remove this file?" onclick="$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());$j('###arguments.fieldname#').val('');$j('###arguments.fieldname#previewfile').hide();" />
-							</div>
-						</cfif>
-						<div style="width:420px;height:100px;">
-							<cfform name="myform" width="420" format="Flash" timeout="100">
-								<ft:flashUpload name="file" actionFile="#facade#" value="#arguments.stMetadata.value#" filetypes="#listchangedelims(arguments.stMetadata.ftFileTypes,';')#" fileDescription="#arguments.stMetadata.ftFileDescription#" maxsize="#arguments.stMetadata.ftMaxSize#" onComplete="getURL('javascript:updateField(\'#arguments.fieldname#\',#arguments.fieldname#.text)');#arguments.stMetadata.ftOnComplete#">
-									<ft:flashUploadInput chooseButtonLabel="Browse" uploadButtonLabel="Upload" />
-								</ft:flashUpload>
-							</cfform>
-						</div>
-					</cfoutput>
-				</cfsavecontent>
-			</cfdefaultcase>
 		</cfswitch>
 	
 		<cfreturn html>
