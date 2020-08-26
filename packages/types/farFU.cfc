@@ -769,7 +769,8 @@
 			<cfif (not structKeyExists(stLocalURL, "furl") or stLocalURL.furl eq "" or stLocalURL.furl EQ "/") 
 					and isUsingFU() 
 					and not structKeyExists(stResult, "ajaxmode")
-					and structKeyExists(stResult, "objectid") and stResult.objectid NEQ application.fapi.getNavID('home')>
+					and structKeyExists(stResult, "objectid") and len(stresult.objectid)
+					and stResult.objectid NEQ application.fapi.getNavID('home')>
 					
 				<cfset stLocal.stDefaultFU = getFUStructByObjectID(stResult.objectid) />
 				
