@@ -1,20 +1,3 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
-<!--- @@License:
-	This file is part of FarCry.
-
-	FarCry is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	FarCry is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
---->
 <cfcomponent
 	displayName="User Profile"
 	extends="types"
@@ -24,7 +7,7 @@
 <!------------------------------
 TYPE PROPERTIES
 -------------------------------->
-	<cfproperty name="userName" type="string" required="yes" default=""
+	<cfproperty name="userName" type="string" required="yes" default="" dbindex="true"
 		ftSeq="1" ftFieldset="Authentication" ftLabel="User ID"
 		ftType="string"
 		bLabel="true"
@@ -107,7 +90,7 @@ TYPE PROPERTIES
 		ftLabel=""
 		hint="WDDX packet containing a user's personalisation settings.">
 
-	<cfproperty name="lastLogin" type="datetime"
+	<cfproperty name="lastLogin" type="datetime" dbindex="true"
 		hint="The last login date of this user">
 
 <!------------------------------
@@ -202,20 +185,21 @@ OBJECT METHODS
 		
 		<cfset var combinedUsername = "#arguments.username#_#arguments.ud#" />
 		<cfset var profileID = "" />
-		<cfset var qProfile	= '' />
+		<cfset var qProfile	= queryNew("objectid") />
 		
-		<!--- Use the  --->
+		<!--- FIRST; check core framework combined user/ud reference  --->
 		<cfquery name="qProfile" datasource="#application.dsn#">
 			SELECT objectID
 			FROM #application.dbowner#dmProfile
-			WHERE UPPER(userName) = '#UCase(combinedUsername)#'
+			WHERE userName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#combinedUsername#" />
 		</cfquery>
-		
-		<cfif not qProfile.recordCount>
+				
+		<!--- SECOND; check random possibility that just username reference is used  --->
+		<cfif NOT qProfile.recordCount>
 			<cfquery name="qProfile" datasource="#application.dsn#">
 				SELECT objectID
 				FROM #application.dbowner#dmProfile
-				WHERE UPPER(userName) = '#UCase(arguments.userName)#'
+				WHERE userName = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userName#" />
 			</cfquery>
 		</cfif>
 		
