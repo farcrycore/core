@@ -202,14 +202,18 @@ default handlers
 		
 		<cfset var stNewObject = "" />
 		<cfset var currentProfileID	= 'anonymous' />
+		<cfset var currentUsersProfile = application.fapi.getCurrentUsersProfile()>
 
-		<cfif application.fapi.isLoggedIn()>
-			<cfset currentProfileID = application.fapi.getCurrentUsersProfile().objectid />
+		<!---
+		## determine editing user profile; 
+			note user may be logged in but not created during first-time profile creation or onboarding
+		--->
+		<cfif application.fapi.isLoggedIn() AND NOT structIsEmpty(currentUsersProfile)>
+			<cfset currentProfileID = currentUsersProfile.objectid />
 		</cfif>
 		
-		
-		<cfif not len(arguments.user)>
-			
+		<!--- ## determine user reference --->
+		<cfif not len(arguments.user)>		
 			<cfif isDefined("session.security.userID")>
 				<cfset arguments.user = session.security.userID />
 			<cfelse>
