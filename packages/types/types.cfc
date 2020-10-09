@@ -281,15 +281,22 @@ default handlers
 		<cfset var fnStatusChange = "" />
 		<cfset var stAfterSave	= '' />
 		<cfset var currentProfileID	= 'anonymous' />
+		<cfset var currentUsersProfile = application.fapi.getCurrentUsersProfile()>
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
-
-		<cfif application.fapi.isLoggedIn()>
-			<cfset currentProfileID = application.fapi.getCurrentUsersProfile().objectid />
+		<!---
+		## determine editing user profile; 
+			note user may be logged in but not created during first-time profile creation or onboarding
+		--->
+		<cfif application.fapi.isLoggedIn() AND NOT structIsEmpty(currentUsersProfile)>
+			<cfset currentProfileID = currentUsersProfile.objectid />
 		</cfif>
-
-		<!--- If no user has been defined we need to manually set it here. --->
+		
+		<!--- 
+		## determine user reference
+			If no user has been defined we need to manually set it here
+		--->
 		<cfif not len(arguments.User)>
 
 			<!--- If a user has logged in then use them --->
