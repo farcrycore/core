@@ -42,39 +42,57 @@ type properties
 		ftSeq="2" ftFieldset="General Details" ftLabel="Description"
 		fthint="Description for the scheduled task; what does it do?">
 
+
 	<cfproperty name="template" type="string" required="no" default="" 
-		ftSeq="3" ftFieldset="Task to Perform" ftLabel="Task to Perform" 
+		ftSeq="11" ftFieldset="Task to Perform" ftLabel="Task to Perform" 
 		ftType="list" 
 		ftListData="getTemplateList"
 		hint="List of available scheduled tasks.">
 
 	<cfproperty name="parameters" type="string" required="no" default="" 
-		ftSeq="4" ftFieldset="Task to Perform" ftLabel="URL Parameters"
+		ftSeq="12" ftFieldset="Task to Perform" ftLabel="URL Parameters"
 		fthint="Optional. Any URL parameters that should be appended to the task URL; for example, myvar1=value&amp;myvar2=value">
 
 	<cfproperty name="bAutoStart" type="boolean" required="true" default="true" 
-		ftSeq="5" ftFieldset="Task to Perform" ftLabel="Auto Start Job"
+		ftSeq="13" ftFieldset="Task to Perform" ftLabel="Autocreate Job"
 		fttype="boolean"
 		fthint="Task will be automatically rescheduled if it is missing when the application restarts.">
 
+
+	<cfproperty name="datetimeLastExecuted" type="date" required="false" 
+		ftSeq="21" ftFieldset="Status" ftLabel="Last Executed"
+		ftType="datetime" ftDefaultType="Evaluate" ftDefault="now()" 
+		ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" 
+		ftShowTime="true">
+
+	<cfproperty name="datetimeLastFinished" type="date" required="false" 
+		ftSeq="22" ftFieldset="Status" ftLabel="Last Finished"
+		ftType="datetime" ftDefaultType="Evaluate" ftDefault="now()" 
+		ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" 
+		ftShowTime="true">
+
+	<cfproperty name="lastExecutionOutput" type="longchar" required="false"
+		ftSeq="23" ftFieldset="Status" ftLabel="Last Execution Output">
+
+
 	<cfproperty name="frequency" type="string" required="no" default="daily" 
-		ftSeq="6" ftFieldset="Task Schedule" ftLabel="Frequency"
+		ftSeq="31" ftFieldset="Task Schedule" ftLabel="Frequency"
 		ftType="list" 
 		ftList="Once:Run once,Daily:Every day,Weekly:Every week,Monthly:Every month,3600:Every hour,1800:Every half-hour,900:Every 15. minute,60:Every minute"
 		fthint="How often the task is run.">
 
 	<cfproperty name="startDate" type="date" required="true" default=""
-		ftSeq="7" ftFieldset="Task Schedule" ftLabel="Start Date"
+		ftSeq="32" ftFieldset="Task Schedule" ftLabel="Start Date"
 		ftType="datetime" ftValidation="required"
 		fthint="Start date/time for the task.">
 
 	<cfproperty name="endDate" type="date" required="true" default=""
-		ftSeq="8" ftFieldset="Task Schedule" ftLabel="End Date"
+		ftSeq="33" ftFieldset="Task Schedule" ftLabel="End Date"
 		ftType="datetime" ftValidation="required"
 		fthint="End date/time for the task.">
 
 	<cfproperty name="timeOut" type="integer" required="no" default="60" 
-		ftSeq="9" ftFieldset="Task Schedule" ftLabel="Timeout"
+		ftSeq="34" ftFieldset="Task Schedule" ftLabel="Timeout"
 		ftType="integer"
 		fthint="How long will the task wait until it times out in seconds.">
 
@@ -123,6 +141,7 @@ type properties
 	<cfargument name="stobject" type="struct" required="false">
 	
 	<cfset var attr = structnew() />
+	<cfset var dt = dateAdd('d', -1, now()) />
 	
 	<cfif structKeyExists(arguments, "objectid")>
 		<cfset arguments.stobject = getData(objectid=arguments.objectid)>	
@@ -138,12 +157,26 @@ type properties
 	attr.operation = "HTTPRequest";
 	attr.url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#";
 	attr.interval = "#stobject.frequency#";
-	attr.startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#";
-	attr.starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#";
-	attr.enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#";
-	attr.endtime= "#timeFormat(stobject.endDate,'hh:mm tt')#";
+	if (application.fapi.getConfig('tasks', 'bEnabled')) {
+		attr.startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#";
+		attr.starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#";
+		attr.enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#";
+		attr.endtime= "#timeFormat(stobject.endDate,'hh:mm tt')#";
+	}
+	else {
+		// when scheduled tasks are "disabled", tasks are created as a run-once task in the
+		// past so that they can still be executed from the webtop
+		attr.startdate = "#dateFormat(dt,'dd/mmm/yyyy')#";
+		attr.starttime = "#timeFormat(dt,'hh:mm tt')#";
+		attr.enddate = "#dateFormat(dt,'dd/mmm/yyyy')#";
+		attr.endtime= "#timeFormat(dt,'hh:mm tt')#";
+	}
 	attr.requesttimeout = "#stobject.timeout#";
 	</cfscript>
+
+	<cfif len(application.fapi.getConfig("tasks", "executionKey"))>
+		<cfset attr.url &= "&executionKey=" & application.fapi.getConfig("tasks", "executionKey") />
+	</cfif>
 
 	<cfschedule attributeCollection="#attr#">
 		
@@ -249,7 +282,8 @@ type properties
 	<cfargument name="dsn" required="No" default="#application.dsn#">
 	<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
 	<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
-	
+	<cfargument name="bUpdateTask" type="boolean" required="false" default="true" hint="Custom flag to allow turning off the task update">
+
 	<cfset var stExistingObj	= '' />
 	
 	<cfif not arguments.bSessionOnly and structKeyExists(arguments.stProperties,"title")>
@@ -280,7 +314,143 @@ type properties
 
 	<cfreturn super.delete(argumentCollection = arguments) />
 </cffunction>
-	
+
+<cffunction name="latestRunningWindow" access="public" output="false" returntype="struct" hint="Calculates the most recent running window">
+	<cfargument name="stCron" type="struct" required="true">
+	<cfargument name="dt" type="datetime" required="false" default="#now()#">
+
+	<cfset var currentDate = arguments.dt />
+
+	<cfif currentDate lt arguments.stCron.startDate>
+		<cfreturn {}><!--- Hasn't started --->
+	</cfif>
+	<cfif currentDate gt arguments.stCron.endDate>
+		<cfset currentDate = arguments.stCron.endDate><!--- Has finished --->
+	</cfif>
+
+	<!--- Figure out most recent start time --->
+	<cfset var recentStart = currentDate />
+	<cfset var diff = 0 />
+	<cfswitch expression="#arguments.stCron.frequency#">
+		<cfcase value="Once">
+			<cfset recentStart = arguments.stCron.startDate />
+		</cfcase>
+		<cfcase value="Daily">
+			<cfset diff = dateDiff("d", arguments.stCron.startDate, recentStart) />
+			<cfset recentStart = dateAdd("d", diff, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="Weekly">
+			<cfset diff = dateDiff("ww", arguments.stCron.startDate, recentStart) />
+			<cfset recentStart = dateAdd("ww", diff, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="Monthly">
+			<cfset diff = dateDiff("m", arguments.stCron.startDate, recentStart) />
+			<cfset recentStart = dateAdd("m", diff, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="3600">
+			<cfset diff = dateDiff("h", arguments.stCron.startDate, recentStart) />
+			<cfset recentStart = dateAdd("h", diff, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="1800">
+			<cfset diff = floor(dateDiff("n", arguments.stCron.startDate, recentStart) / 30) />
+			<cfset recentStart = dateAdd("n", diff * 30, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="900">
+			<cfset diff = floor(dateDiff("n", arguments.stCron.startDate, recentStart) / 15) />
+			<cfset recentStart = dateAdd("n", diff * 15, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="60">
+			<cfset diff = dateDiff("n", arguments.stCron.startDate, recentStart) />
+			<cfset recentStart = dateAdd("n", diff, arguments.stCron.startDate) />
+		</cfcase>
+
+		<cfdefaultcase>
+			<cfreturn false>
+		</cfdefaultcase>
+	</cfswitch>
+
+	<cfreturn {
+		"start" = recentStart,
+		"end" = dateAdd("s", arguments.stCron.timeout, recentStart)
+	} />
+</cffunction>
+
+<cffunction name="nextRunningWindow" access="public" output="false" returntype="struct" hint="Calculates the next running window">
+	<cfargument name="stCron" type="struct" required="true">
+	<cfargument name="dt" type="datetime" required="false" default="#now()#">
+
+	<cfset var currentDate = arguments.dt />
+
+	<cfif currentDate lt arguments.stCron.startDate>
+		<cfreturn {
+			"start" = arguments.stCron.startDate,
+			"end" = dateAdd("s", arguments.stCron.timeout, arguments.stCron.startDate)
+		} /><!--- Scheduled for the future --->
+	</cfif>
+	<cfif currentDate gt arguments.stCron.endDate>
+		<cfreturn {}><!--- Has finished --->
+	</cfif>
+
+	<!--- Figure out most recent start time --->
+	<cfset var nextStart = currentDate />
+	<cfset var diff = 0 />
+	<cfswitch expression="#arguments.stCron.frequency#">
+		<cfcase value="Daily">
+			<cfset diff = dateDiff("d", arguments.stCron.startDate, nextStart) />
+			<cfset nextStart = dateAdd("d", diff + 1, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="Weekly">
+			<cfset diff = dateDiff("ww", arguments.stCron.startDate, nextStart) />
+			<cfset nextStart = dateAdd("ww", diff + 1, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="Monthly">
+			<cfset diff = dateDiff("m", arguments.stCron.startDate, nextStart) />
+			<cfset nextStart = dateAdd("m", diff + 1, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="3600">
+			<cfset diff = dateDiff("h", arguments.stCron.startDate, nextStart) />
+			<cfset nextStart = dateAdd("h", diff + 1, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="1800">
+			<cfset diff = floor(dateDiff("n", arguments.stCron.startDate, nextStart) / 30) />
+			<cfset nextStart = dateAdd("n", (diff + 1) * 30, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="900">
+			<cfset diff = floor(dateDiff("n", arguments.stCron.startDate, nextStart) / 15) />
+			<cfset nextStart = dateAdd("n", (diff + 1) * 15, arguments.stCron.startDate) />
+		</cfcase>
+		<cfcase value="60">
+			<cfset diff = dateDiff("n", arguments.stCron.startDate, nextStart) />
+			<cfset nextStart = dateAdd("n", diff + 1, arguments.stCron.startDate) />
+		</cfcase>
+
+		<cfdefaultcase>
+			<cfreturn false>
+		</cfdefaultcase>
+	</cfswitch>
+
+	<cfif nextStart gt arguments.stCron.endDate>
+		<cfreturn {}><!--- Will finish before next window can start --->
+	</cfif>
+
+	<cfreturn {
+		"start" = nextStart,
+		"end" = dateAdd("s", arguments.stCron.timeout, nextStart)
+	} />
+</cffunction>
+
+<cffunction name="inRunningWindow" access="public" output="false" returntype="boolean" hint="Attempts to determine if a given time is in one of a tasks execution windows">
+	<cfargument name="stCron" type="struct" required="true">
+	<cfargument name="dt" type="datetime" required="false" default="#now()#">
+
+	<cfset var recentWindow = latestRunningWindow(argumentCollection=arguments) />
+	<cfif structIsEmpty(recentWindow)>
+		<cfreturn false />
+	</cfif>
+
+	<cfreturn recentWindow.start lte now() and now() lte recentWindow.end />
+</cffunction>
+
 <!--- 
  // private functions 
 --------------------------------------------------------------------------------->
@@ -288,48 +458,28 @@ type properties
 	
 	<cfset var qTemplates	= queryNew("displayName, path") />
 	<cfset var plugin	= '' />
-	<cfset var qCore	= '' />
-	<cfset var qCustom	= '' />
+	<cfset var paths = {} />
+	<cfset var metadata = {} />
+	<cfset var fullpath = "" />
+	<cfset var pathname = "" />
+
+	<cfset paths[application.rb.getResource('coapi.dmCron.tasktype.core@label','Core')] = "#application.path.core#/webtop/scheduledTasks" />
+	<cfset paths[application.rb.getResource('coapi.dmCron.tasktype.custom@label','Custom')] = "#application.path.project#/system/dmCron" />
 
 	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
-	<!--- get core templates --->	
-	<nj:listTemplates typename="dmCron" path="#application.path.core#/webtop/scheduledTasks" prefix="" r_qMethods="qCore">
-	
-	<cfloop query="qCore">
-		<cfset queryAddRow(qTemplates, 1)>
-		<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.rb.getResource('coapi.dmCron.tasktype.core@label','Core')#")>
-		<cfset querySetCell(qTemplates, "path", "/farcry/core/webtop/scheduledTasks/#methodName#.cfm")>
+	<cfloop list="#application.plugins#" index="plugin">
+		<cfset paths["#plugin# plugin"] = "#application.path.plugins#/#plugin#/system/dmCron" />
 	</cfloop>
-	
-	<!--- get custom templates --->	
-	<cftry>
-		<cfloop list="#application.plugins#" index="plugin">
-			<nj:listTemplates typename="dmCron" path="#application.path.plugins#/#plugin#/system/dmCron" prefix="" r_qMethods="qCustom">
-			<cfloop query="qCustom">
-				<!--- ignore cvs file --->
-				<cfif methodName neq "_donotdelete">
-					<cfset queryAddRow(qTemplates, 1)>
-					<cfset querySetCell(qTemplates, "displayname", "#displayname# (#plugin# plugin)")>
-					<cfset querySetCell(qTemplates, "path", "/farcry/plugins/#plugin#/system/dmCron/#methodName#.cfm")>
-				</cfif>
-			</cfloop>
-		</cfloop>
-		
-		<nj:listTemplates typename="dmCron" path="#application.path.project#/system/dmCron" prefix="" r_qMethods="qCustom">
-		<cfloop query="qCustom">
-			<!--- ignore cvs file --->
-			<cfif methodName neq "_donotdelete">
-				<cfset queryAddRow(qTemplates, 1)>
-				<cfset querySetCell(qTemplates, "displayname", "#displayname# #application.rb.getResource('coapi.dmCron.tasktype.custom@label','Custom')#")>
-				<cfset querySetCell(qTemplates, "path", "/farcry/projects/#application.projectDirectoryName#/system/dmCron/#methodName#.cfm")>
-			</cfif>
-		</cfloop>
-		<cfcatch></cfcatch>
-	</cftry>	
-	
+
+	<!--- get core templates --->	
+	<nj:listTemplates path="#paths#" prefix="" r_metadata="metadata" r_fullpath="fullpath" r_pathname="pathname">
+		<cfset queryAddRow(qTemplates, 1)>
+		<cfset querySetCell(qTemplates, "displayname", "#metadata.displayname# (#pathname#)")>
+		<cfset querySetCell(qTemplates, "path", fullpath)>
+	</nj:listTemplates>
+
 	<cfreturn qTemplates>
 </cffunction>
-
 
 </cfcomponent>

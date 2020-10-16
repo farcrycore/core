@@ -1,4 +1,6 @@
-<!--- 
+<cfsetting enablecfoutputonly="true">
+<cfprocessingDirective pageencoding="utf-8">
+<!---
 listTemplates
  - list templates from webskin
 
@@ -7,102 +9,122 @@ attributes
 -> prefix
 -> path
  --->
-<!--- 
-TODO
-Need to work out a way of generating a suitable displayname.  Perhaps 
-this could be a special comment in the template itself picked up
-by a regular expression match here???
- --->
 
-<cfprocessingDirective pageencoding="utf-8">
-
-<cfparam name="attributes.typename">
+<cfparam name="attributes.typename" default="">
 <cfparam name="attributes.prefix" default="display">
-<cfparam name="attributes.path" default="">
-<cfparam name="attributes.r_qMethods" default="r_qMethods">
+<cfparam name="attributes.path" default="#structnew()#">
+<cfparam name="attributes.r_fullpath" default="fullpath">
+<cfparam name="attributes.r_metadata" default="metadata">
+<cfparam name="attributes.r_pathname" default="pathname">
+<cfparam name="attributes.r_qMethods" default="qMethods">
 
 <cfset qTemplates = queryNew("blah") />
 
+<cfif thistag.executionMode eq "start">
 
-<!--- if we send in a path then only get templates from that path --->
-<cfif len(attributes.path)>
-
-	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#attributes.path#">
-	
-	<cfset qMethods = queryNew("methodname, displayname")>
-	
-	<!--- This is to overcome casesensitivity issues on mac/linux machines --->
-<cfquery name="qTemplates" dbtype="query">
-	SELECT * FROM qTemplates
-	WHERE lower(qTemplates.name) LIKE '#lCase(attributes.prefix)#%'
-</cfquery>
-	
-	<cfloop query="qTemplates">
-	<!--- TODO
-	must be able to do this more neatly with a regEX, especially if we 
-	want more than one bit of template metadata --->
-		<cffile action="READ" file="#qTemplates.directory#/#qTemplates.name#" variable="template">
-	
-		<cfset pos = findNoCase('@@displayname:', template)>
-		<cfif pos eq 0>
-			<cfset displayname = listfirst(qTemplates.name, ".")>
-		<cfelse>
-			<cfset pos = pos + 14>
-			<cfset count = findNoCase('--->', template, pos)-pos>
-			<cfset displayname = listLast(mid(template,  pos, count), ":")>
-		</cfif>
-	
-		<cfset queryAddRow(qMethods, 1)>
-		<cfset querySetCell(qMethods, "methodname", listfirst(qTemplates.name, "."))>
-		<cfset querySetCell(qMethods, "displayname", displayname)>
-	</cfloop>
-	
-	<!--- 
-	<cfdump var="#qTemplates#">
-	<cfdump var="#qMethods#">
-	 --->
-	<!--- Reorder List --->
-	<cfquery name="qOrderedMethods" dbtype="query">
-	SELECT *
-	FROM qMethods
-	ORDER BY DisplayName
-	</cfquery>
-
-	<cfset caller[attributes.r_qMethods] = qOrderedMethods>
-<!---
-OTHERWISE WE NEED TO LOOP THROUGH ALL THE LIBRARIES AND GET ALL RELEVENT TEMPLATES
- --->
-<cfelse>
-	
-		
-	<cfif structKeyExists(application.stcoapi, attributes.typename)>		
-			
-		<cfset qTemplates = createObject("component", application.stcoapi[attributes.typename].packagepath).getWebskins(typename="#attributes.typename#", prefix="#attributes.prefix#") />
-		<cfset caller[attributes.r_qMethods] = qTemplates>
-	<cfelse>
-		<cfset caller[attributes.r_qMethods] = queryNew("name,directory,size,type,datelastmodified,attributes,mode,displayname,methodname") />
-			
+	<cfif isSimpleValue(attributes.path) and len(attributes.path)>
+		<cfset attributes.path = {"All":attributes.path} />
 	</cfif>
 
-<!--- 	<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#application.path.webskin#/#attributes.typename#">
-	
-	<cfset stPluginTemplates = structNew() />
-	
-	<cfif structKeyExists(application, "plugins") and listLen(application.plugins)>
-	
-		<cfloop list="#application.plugins#" index="plugin">
-			
-			<cfif directoryExists("#application.path.plugins#/#plugin#/webskin/#attributes.typename#")>
-				<cfdirectory directory="#application.path.plugins#/#plugin#/webskin/#attributes.typename#" name="stPluginTemplates.#plugin#.qTemplates" filter="*.cfm" sort="name">
-			
+	<!--- if we send in a path then only get templates from that path --->
+	<cfif not structIsEmpty(attributes.path)>
+
+		<cfset thistag.stMetadata = {} />
+
+		<cfset oCoapiAdmin = createobject("component", "farcry.core.packages.coapi.coapiadmin") />
+
+		<!--- Extract metadata --->
+		<cfset qMethods = queryNew("pathname,fullpath,methodname,displayname")>
+
+		<cfloop collection="#attributes.path#" item="pathName">
+			<cfif not directoryExists(attributes.path[pathName])>
+				<cfcontinue />
 			</cfif>
+
+			<cfdirectory action="LIST" filter="*.cfm" name="qTemplates" directory="#attributes.path[pathName]#">
+
+			<!--- This is to overcome casesensitivity issues on mac/linux machines --->
+			<cfquery name="qTemplates" dbtype="query">
+				SELECT * FROM qTemplates
+				WHERE lower(qTemplates.name) LIKE '#lCase(attributes.prefix)#%'
+			</cfquery>
+
+			<cfloop query="qTemplates">
+				<cfset methodname = listfirst(qTemplates.name, ".") />
+				<cfset thistag.stMetadata[methodname] = oCoapiAdmin.parseWebskinMetadata(template=methodname, path="#qTemplates.directory#/#qTemplates.name#", lProperties="displayname", lDefaults=listfirst(qTemplates.name, ".")) />
+
+				<cfset queryAddRow(qMethods, 1)>
+				<cfset querySetCell(qMethods, "pathname", pathName)>
+				<cfset querySetCell(qMethods, "fullpath", replace("#qTemplates.directory#/#qTemplates.name#", expandPath("/farcry"), "/farcry"))>
+				<cfset querySetCell(qMethods, "methodname", methodname)>
+				<cfset querySetCell(qMethods, "displayname", thistag.stMetadata[methodname].displayname)>
+			</cfloop>
 		</cfloop>
-	</cfif> --->
-	
-	
+		<cfif qMethods.recordcount eq 0>
+			<cfset caller[attributes.r_qMethods] = qTemplates />
+			<cfexit method="exittag" />
+		</cfif>
+
+		<!--- Reorder List --->
+		<cfquery name="qMethods" dbtype="query">
+			SELECT *
+			FROM qMethods
+			ORDER BY DisplayName
+		</cfquery>
+
+		<cfset thisTag.qOrdered = qMethods />
+
+	<cfelseif structKeyExists(application.stcoapi, attributes.typename)>
+
+		<cfset qOrderedMethods = duplicate(createObject("component", application.stcoapi[attributes.typename].packagepath).getWebskins(typename="#attributes.typename#", prefix="#attributes.prefix#")) />
+		<cfif qOrderedMethods.recordcount eq 0>
+			<cfset caller[attributes.r_qMethods] = qOrderedMethods />
+			<cfexit method="exittag" />
+		</cfif>
+
+		<cfset queryAddColumn(qOrderedMethods, "pathname") />
+		<cfset queryAddColumn(qOrderedMethods, "fullpath") />
+		<cfloop query="qOrderedMethods">
+			<cfset querySetCell(qOrderedMethods, "fullpath", "#qOrderedMethods.directory#/#qOrderedMethods.name#", qOrderedMethods.currentrow) />
+		</cfloop>
+
+		<!--- Reorder List --->
+		<cfquery name="qOrderedMethods" dbtype="query">
+			SELECT *
+			FROM qMethods
+			ORDER BY DisplayName
+		</cfquery>
+
+		<cfset thisTag.qOrdered = qOrderedMethods />
+		<cfset thisTag.stMetadata = application.stCOAPI[attributes.typename].stWebskins />
+
+	<cfelse>
+
+		<cfthrow message="nj:listTemplates requires either `path` or `typename`" />
+
+	</cfif>
+
+	<cfif thisTag.hasEndTag>
+		<cfset thisTag.currentrow = 1 />
+		<cfset caller[attributes.r_pathname] = thisTag.qOrdered.pathname[thisTag.currentrow] />
+		<cfset caller[attributes.r_fullpath] = thisTag.qOrdered.fullpath[thisTag.currentrow] />
+		<cfset caller[attributes.r_metadata] = thisTag.stMetadata[thisTag.qOrdered.methodname[thisTag.currentrow]] />
+	<cfelse>
+		<cfset caller[attributes.r_qMethods] = thisTag.qOrdered />
+	</cfif>
+
+<cfelseif thisTag.executionMode eq "end">
+
+	<cfif thisTag.currentrow lt thisTag.qOrdered.recordcount>
+		<cfset thisTag.currentrow += 1 />
+		<cfset caller[attributes.r_pathname] = thisTag.qOrdered.pathname[thisTag.currentrow] />
+		<cfset caller[attributes.r_fullpath] = thisTag.qOrdered.fullpath[thisTag.currentrow] />
+		<cfset caller[attributes.r_metadata] = thisTag.stMetadata[thisTag.qOrdered.methodname[thisTag.currentrow]] />
+		<cfexit method="loop" />
+	</cfif>
+
+	<cfset caller[attributes.r_qMethods] = thisTag.qOrdered />
+
 </cfif>
 
-
-
-
-
+<cfsetting enablecfoutputonly="false">
