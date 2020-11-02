@@ -48,6 +48,7 @@
 				</cfif>
 			</cfcase>
 			<cfcase value="numeric">
+				<cfset stResult.null = false />
 				<cfif listlast(arguments.schema.precision) eq 0 and listfirst(arguments.schema.precision) gt 10>
 					<cfset stResult.cfsqltype = "cf_sql_bigint" />
 				<cfelseif listlast(arguments.schema.precision) eq 0>
@@ -64,7 +65,7 @@
 					<cfset stResult.null = false />
 				</cfif>
 			</cfcase>
-			<cfcase value="string,longchar" delimiters=",">
+			<cfcase value="string,longchar,json" delimiters=",">
 				<cfset stResult.cfsqltype = "cf_sql_varchar" />
 				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
 					<cfset stResult.value = "" />
