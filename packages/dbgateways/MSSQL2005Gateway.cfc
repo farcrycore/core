@@ -33,12 +33,13 @@
 						</cfcase>
 						<cfcase value="string"><cfoutput>nvarchar(#stProp.precision#) </cfoutput></cfcase>
 						<cfcase value="longchar"><cfoutput>nvarchar(MAX) </cfoutput></cfcase>
+						<cfcase value="json"><cfoutput>nvarchar(MAX) </cfoutput></cfcase>
 						<cfcase value="datetime"><cfoutput>datetime </cfoutput></cfcase>
 					</cfswitch>
 					
 					<cfif stProp.nullable><cfoutput>NULL </cfoutput><cfelse><cfoutput>NOT NULL </cfoutput></cfif>
 					
-					<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+					<cfif not listFindNoCase("longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 						<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 						<cfif stVal.null>
 							<cfoutput>DEFAULT NULL </cfoutput>
@@ -149,11 +150,12 @@
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
+					<cfcase value="json">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				
-				<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+				<cfif not listFindNoCase("longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 					<cfif stVal.null>
 						DEFAULT NULL
@@ -267,6 +269,7 @@
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
+					<cfcase value="json">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
@@ -289,7 +292,7 @@
 			</cfif>
 			
 			<!--- Add new default --->
-			<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+			<cfif not listFindNoCase("longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 				<cfquery datasource="#this.dsn#" result="queryresult">
 					ALTER TABLE #this.dbowner##arguments.schema.tablename#

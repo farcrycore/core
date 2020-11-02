@@ -65,13 +65,26 @@
 					<cfset stResult.null = false />
 				</cfif>
 			</cfcase>
-			<cfcase value="string,longchar,json" delimiters=",">
+			<cfcase value="string,longchar" delimiters=",">
 				<cfset stResult.cfsqltype = "cf_sql_varchar" />
 				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
 					<cfset stResult.value = "" />
 					<cfset stResult.null = true />
 				<cfelse>
 					<cfset stResult.value = arguments.value />
+					<cfset stResult.null = false />
+				</cfif>
+			</cfcase>
+			<cfcase value="json">
+				<cfset stResult.cfsqltype = "cf_sql_varchar" />
+				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
+					<cfset stResult.value = "" />
+					<cfset stResult.null = true />
+				<cfelseif isJSON(arguments.value)>
+					<cfset stResult.value = arguments.value />
+					<cfset stResult.null = false />
+				<cfelse>
+					<cfset stResult.value = "{}" />
 					<cfset stResult.null = false />
 				</cfif>
 			</cfcase>
@@ -856,7 +869,7 @@
 		<cfset b = b or arguments.expected.nullable neq arguments.actual.nullable />
 		
 		<!--- Default --->
-		<cfif arguments.expected.type eq "longchar">
+		<cfif listFindNoCase("longchar,json", arguments.expected.type)>
 			<!--- Ignore. Longchar can't have a default. --->
 		<cfelseif arguments.expected.type eq "datetime">
 			<!--- Handle weird null values --->
@@ -868,7 +881,11 @@
 		</cfif>
 		
 		<!--- Type --->
-		<cfset b = b or arguments.expected.type neq arguments.actual.type />
+		<cfif arguments.expected.type  eq "json" and arguments.actual.type eq "longchar">
+			<!--- These count as "the same" for MS SQL --->
+		<cfelse>
+			<cfset b = b or arguments.expected.type neq arguments.actual.type />
+		</cfif>
 		
 		<!--- Precision --->
 		<cfset b = b or arguments.expected.precision neq arguments.actual.precision />
