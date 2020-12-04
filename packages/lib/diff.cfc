@@ -353,6 +353,15 @@
 					<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 				</cfif>
 			</cfcase>
+			<cfdefaultcase>
+				<cfif isSimpleValue(stResult.left) AND  isSimpleValue(stResult.right)>
+					<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
+					<cfif stResult.different>
+						<cfset stResult.aDiff = getDiff(old=stResult.left,new=stResult.right) />
+						<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
+					</cfif>
+				</cfif>
+			</cfdefaultcase>
 		</cfswitch>
 		
 		<cfreturn stResult />
