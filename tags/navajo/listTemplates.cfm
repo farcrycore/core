@@ -91,7 +91,7 @@ attributes
 		<!--- Reorder List --->
 		<cfquery name="qOrderedMethods" dbtype="query">
 			SELECT *
-			FROM qMethods
+			FROM qOrderedMethods
 			ORDER BY DisplayName
 		</cfquery>
 
