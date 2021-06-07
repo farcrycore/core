@@ -734,7 +734,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- only create a record in refObjects if one doesnt already exist --->
 		<cfif len(application.fapi.findType(objectId = stReturn.objectId, dsn=application.dsn_write)) eq 0>
-			<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#stReturn.objectid#", typename=getTypeName(), dsn=arguments.dsn, dbowner=arguments.dbowner, dbtype=arguments.dbtype) />
+			<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#stReturn.objectid#", typename=getTypeName(), dsn=application.dsn_write, dbowner=application.dbowner_write, dbtype=application.dbtype_write) />
 		</cfif>
 		
 		<cfif NOT stReturn.bSuccess>
