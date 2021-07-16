@@ -484,7 +484,8 @@
 			<cfset this.threads[thisthread] = {
 				threadID = thisThread,
 				created = now(),
-				timestamp = now()
+				timestamp = now(),
+				count=0
 			} />
 					
 			<cfthread action="run" name="#thisthread#" threadID="#thisthread#" priority="LOW" timeout="0">
@@ -499,6 +500,22 @@
 					</cfif>
 					
 					<cfloop condition="true">
+
+						<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
+						<cfif structkeyexists(server,"lucee")>
+							<cfif getPageContext().getRequestTimeout() neq 10000>
+								<cflog file="#application.applicationname#_tasks" text="timeout has been changed from 10000 to #getPageContext().getRequestTimeout()#" />
+							</cfif>
+						<cfelseif structkeyexists(server,"railo")>
+							<cfif getPageContext().getRequestTimeout() neq 10000>
+								<cflog file="#application.applicationname#_tasks" text="timeout has been changed from 10000 to #getPageContext().getRequestTimeout()#" />
+							</cfif>
+						<cfelseif structkeyexists(server,"coldfusion")>
+							<cfif getPageContext().getRequestTimeout() neq 10000>
+								<cflog file="#application.applicationname#_tasks" text="timeout has been changed from 10000 to #CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout()#" />
+							</cfif>
+						</cfif>
+
 						<!--- Claim a task --->
 						<cfset application.fc.lib.tasks.threads[attributes.threadID].timestamp = now() />
 						<cfset application.fc.lib.tasks.threads[attributes.threadID].task = application.fc.lib.tasks.claimTask(attributes.threadID) />
@@ -550,6 +567,7 @@
 							<cfbreak>
 							
 						</cfif>
+						<cfset application.fc.lib.tasks.threads[attributes.threadID].count += 1 />
 					</cfloop>
 					
 					<!--- remove thread tracker --->
