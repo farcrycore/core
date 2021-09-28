@@ -946,7 +946,7 @@
 				
 				<cffile action="copy" source="#cachePath#" destination="#arguments.dest_localpath#" mode="664" nameconflict="overwrite" />
 				
-				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #sanitiseS3URL(arguments.dest_localpath)#" /></cfif>
+				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Copied [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from cache to #arguments.dest_localpath#" /></cfif>
 				
 			<cfelse>
 			
@@ -980,7 +980,7 @@
 				<cfset updateACL(config=arguments.dest_config,file=dest_file) />
 				
 				<cfcatch>
-					<cflog file="#application.applicationname#_s3" text="Error copying #sanitiseS3URL(arguments.source_localpath)# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.source_file)#: #cfcatch.message#" type="error" />
+					<cflog file="#application.applicationname#_s3" text="Error copying #arguments.source_localpath# to [#arguments.dest_config.name#] #sanitiseS3URL(arguments.source_file)#: #cfcatch.message#" type="error" />
 					<cfrethrow>
 				</cfcatch>
 			</cftry>
