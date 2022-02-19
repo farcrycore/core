@@ -1393,13 +1393,16 @@ default handlers
 		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
 			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
 				<cfset stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
-				<cfset oFactory = application.formtools[stMetadata.ftType].oFactory />
-				<cfif structkeyexists(oFactory,"onDelete")>
-					<cfinvoke component="#oFactory#" method="onDelete">
-						<cfinvokeargument name="typename" value="#arguments.typename#" />
-						<cfinvokeargument name="stObject" value="#arguments.stObject#" />
-						<cfinvokeargument name="stMetadata" value="#stMetadata#" />
-					</cfinvoke>
+
+				<cfif structKeyExists(application.formtools, stMetadata.ftType)>
+					<cfset oFactory = application.formtools[stMetadata.ftType].oFactory />
+					<cfif structkeyexists(oFactory,"onDelete")>
+						<cfinvoke component="#oFactory#" method="onDelete">
+							<cfinvokeargument name="typename" value="#arguments.typename#" />
+							<cfinvokeargument name="stObject" value="#arguments.stObject#" />
+							<cfinvokeargument name="stMetadata" value="#stMetadata#" />
+						</cfinvoke>
+					</cfif>
 				</cfif>
 			</cfif>
 		</cfloop>
