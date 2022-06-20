@@ -122,7 +122,9 @@
 		
 		<cfsavecontent variable="JS">
 
-			<cfif structKeyExists(url, "debug") AND url.debug eq 1>
+<cfset urlDebug = application.fapi.getConfig("security","urlDebug","boolean")>
+<cfif isdefined("url.debug") AND urlDebug neq "disable">
+    <cfif (urlDebug eq "updateappkey" AND url.debug eq application.updateappKey) or (urlDebug eq "boolean" AND url.debug eq 1) or (cgi.remote_addr eq "127.0.0.1")>
 <cfoutput>
 <!-- 
 ID: #stJS.id#<cfif len(stJS.lCombineIDs)>
@@ -130,8 +132,9 @@ PACKAGED: #stJS.lCombineIDs#</cfif>
 FILES: #stJS.lFullFilebaseHREFs#
 -->
 </cfoutput>
-			</cfif>
-				
+    </cfif>
+</cfif>
+
 			<cfif len(stJS.condition)>
 				<cfoutput><!--[#stJS.condition#]>#CRLF#</cfoutput>
 			</cfif>
