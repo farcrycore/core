@@ -159,7 +159,7 @@
 				<cfset aData[i] = stData />
 			</cfif>
 		</cfloop>
-		<misc:sort values="#aData#" result="aData"><cfset sendback = value1.seq - value2.seq /></misc:sort>
+		<cfset arraySort(aData, function(a, b) { return a.seq - b.seq; }) />
 	  	<cfloop from="1" to="#arraylen(aData)#" index="i">
 	  		<cfset aData[i].seq = i />
 	  	</cfloop>
