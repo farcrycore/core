@@ -813,13 +813,15 @@
 									<!--- bootstrap --->
 									<cfif structkeyexists(attributes.aButtons[i],"icon")>
 										<cfset icon =  attributes.aButtons[i].icon />
-									<cfelse>
-										<cfswitch expression="#attributes.aButtons[i].value#">
-											<cfcase value="Add">
-												<cfset class = "btn-primary">
-											</cfcase>
-										</cfswitch>
 									</cfif>
+									<cfswitch expression="#attributes.aButtons[i].value#">
+										<cfcase value="Add">
+											<cfset class = "btn-primary">
+										</cfcase>
+									</cfswitch>
+								</cfif>
+								<cfif structkeyexists(attributes.aButtons[i],"class")>
+									<cfset class = attributes.aButtons[i]['class']>
 								</cfif>
 								
 								<cfif not structkeyexists(attributes.aButtons[i],"hint")>
