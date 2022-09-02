@@ -310,7 +310,7 @@
 				</cfif>
 			</cfcase>
 			<cfcase value="boolean">
-				<cfif IsBoolean(stResult.left) AND IsBoolean(stResult.right) >
+				<cfif (NOT len(stResult.left) OR IsBoolean(stResult.left)) AND IsBoolean(stResult.right) >
 					<cfset stResult.leftHighlighted = YesNoFormat(stResult.left) />
 					<cfset stResult.rightHighlighted = YesNoFormat(stResult.right) />
 					<cfset stResult.different = compare(stResult.leftHighlighted,stResult.rightHighlighted) neq 0 />
