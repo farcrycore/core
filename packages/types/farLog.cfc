@@ -17,7 +17,7 @@
 
 	<cfproperty name="event" type="string" default="" 
 		ftSeq="3" ftFieldset="" ftLabel="Event" 
-		ftType="string"
+		ftType="string" dbIndex="IDX_event"
 		hint="The event this log is associated with">
 
 	<cfproperty name="location" type="string" default="" 
