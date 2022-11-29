@@ -97,7 +97,7 @@
 				<cfset stMetadata = application.stCOAPI[stLocal.stObj.typename].stProps[thisprop].metadata />
 				<cfparam name="stMetadata.ftType" default="#stMetadata.type#" />
 				
-				<cfif (not structkeyexists(stMetadata,"bArchive") or stMetadata.bArchive) and structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onArchive")>
+				<cfif (not structkeyexists(stMetadata,"bArchive") or stMetadata.bArchive) and structkeyexists((application.formtools[stMetadata.ftType].oFactory?:{}),"onArchive")>
 					<cfset queryaddrow(arguments.stMeta.files) />
 					<cfset querysetcell(arguments.stMeta.files,"property",thisprop) />
 					<cfset querysetcell(arguments.stMeta.files,"filename",stLocal.stObj[thisprop]) />
