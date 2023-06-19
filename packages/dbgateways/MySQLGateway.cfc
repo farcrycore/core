@@ -596,6 +596,8 @@
 				<cfcase value="datetime">
 					<cfset stColumn.type = "datetime" />
 					<cfset stColumn.precision = "#qColumns.datetime_precision#" />
+					<!--- For MariaDB 10.2+, strip out ' so date comparisons work --->
+					<cfset stColumn.default = replace(stColumn.default, "'", "", "ALL") />
 					<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
 						<cfset stColumn.default = "NULL" />
 					<cfelseif stColumn.default gt dateadd('yyyy',100,now())>
@@ -671,12 +673,15 @@
 	<cffunction name="isFieldAltered" access="public" returntype="boolean" output="false" hint="Returns true if there is a difference">
 		<cfargument name="expected" type="struct" required="true" hint="The expected schema" />
 		<cfargument name="actual" type="struct" required="true" hint="The actual schema" />
+
+		<!--- For MariaDB 10.2+, also compare default with 'default' --->
+
 		<cfset var altered = arguments.expected.nullable neq arguments.actual.nullable
-				  OR (arguments.expected.type neq "longchar" and arguments.expected.default neq arguments.actual.default)
+				  OR (arguments.expected.type neq "longchar" and arguments.expected.default neq arguments.actual.default and "'#arguments.expected.default#'" neq arguments.actual.default)
 				  OR arguments.expected.type neq arguments.actual.type
 				  OR arguments.expected.precision neq arguments.actual.precision
-				  OR arguments.expected.GENERATEDALWAYS?:'' neq arguments.actual.GENERATEDALWAYS?:''
-				  OR arguments.expected.VIRTUALTYPE?:'' neq arguments.actual.VIRTUALTYPE?:'' />
+				  OR (arguments.expected.GENERATEDALWAYS?:'') neq (arguments.actual.GENERATEDALWAYS?:'')
+				  OR (arguments.expected.VIRTUALTYPE?:'') neq (arguments.actual.VIRTUALTYPE?:'') />
 
 		<cfreturn altered />
 	</cffunction>
