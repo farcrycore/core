@@ -913,17 +913,7 @@
 		<cfset var stAttrs = structnew() />
 		<cfset var cachePath = "" />
 
-		<cfif IsNull(arguments.source_config)>
-			<cfset var sDebug = false>
-		<cfelse>
-			<cfset var sDebug = arguments.source_config.bDebug>
-		</cfif>
-		<cfif IsNull(arguments.dest_config)>
-			<cfset var dDebug = false>
-		<cfelse>
-			<cfset var dDebug = arguments.dest_config.bDebug>
-		</cfif>		
-		<cfset var bDebug = sDebug OR dDebug>
+		<cfset var bDebug = (not IsNull(arguments.source_config) and arguments.source_config.bDebug) OR (not IsNull(arguments.dest_config) and arguments.dest_config.bDebug)>
 
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
@@ -951,15 +941,15 @@
 			<cfelse>
 			
 				<!--- copy from S3 source to local destination --->
-				<cfset sourcefile = getS3Path(config=arguments.source_config,file=arguments.source_file) />
+				<cfset sourcefile = getURLPath(config=arguments.source_config,file=arguments.source_file,protocol="https") />
 				<cfset destfile = arguments.dest_localpath />
 				
 				<cfif not directoryExists(getDirectoryFromPath(destfile))>
 					<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
 				</cfif>
-				
-				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
-				
+
+				<cfhttp url="#sourceFile#" method="get" path="#getDirectoryFromPath(destfile)#" file="#getFileFromPath(destfile)#" />
+
 				<cfif arguments.source_config.localCacheSize>
 					<cfset tmpfile = getTemporaryFile(config=arguments.source_config,file=arguments.source_file) />
 					<cffile action="copy" source="#destfile#" destination="#tmpfile#" mode="664" nameconflict="overwrite" />
