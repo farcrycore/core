@@ -133,17 +133,17 @@ OBJECT METHODS
 		<cfreturn super.setData(argumentCollection=arguments) />
 	</cffunction>
 
-	<cffunction name="getLocales" access="public" output="false" returntype="string" hint="Returns the list of supported locales">
-		<cfset var locales = application.i18nUtils.getLocales() />
-		<cfset var localeNames = application.i18nUtils.getLocaleNames() />
-		<cfset var result = "" />
-		<cfset var locale = "" />
+	<cffunction name="getLocales" access="public" output="false" returntype="query" hint="Returns the list of supported locales">
+		<cfset var qLocales = application.i18nUtils.getLocalesAsQuery() />
+		<cfset var qResult = queryNew("value,name") />
 
-		<cfloop list="#application.locales#" index="locale">
-			<cfset result = listappend(result,"#locale#:#listgetat(localeNames,listfind(locales,locale))#") />
-		</cfloop>
+		<cfquery dbtype="query" name="qResult" >
+			SELECT value, name
+			FROM qLocales
+			WHERE value in (<cfqueryparam value="#application.locales#" cfsqltype="cf_sql_varchar" list="yes"/>)
+		</cfquery>
 		
-		<cfreturn result />
+		<cfreturn qResult />
 	</cffunction>
 	
 	<cffunction name="createProfile" access="PUBLIC" hint="Create new profile object using existing dmSec information. Returns newly created profile as a struct." returntype="struct" output="true">
