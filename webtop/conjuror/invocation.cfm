@@ -76,7 +76,7 @@
 	<!--- get object instance --->
 	<cfset oType = createObject("component", PackagePath)>
 	<cfif ListLen(url.objectid) GT 1>
-		<cfset evaluate("oType.#method#(objectid='#objectid#')")>
+		<cfset oType[method](objectid=objectid)>
 	<cfelse>
 		<cfset returnStruct = oType.getData(objectid=URL.objectid)>
 		
@@ -176,7 +176,6 @@
 				</cfoutput>
 			<cfelse>
 				<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-				<!--- <cfset evaluate("oType.#method#(objectid='#objectid#',onExitProcess=#onExitProcess#)")> --->
 				<cfinvoke component="#PackagePath#" method="#method#">
 					<cfinvokeargument name="objectId" value="#objectId#" />
 					<cfinvokeargument name="onExitProcess" value="#onExitProcess#" />

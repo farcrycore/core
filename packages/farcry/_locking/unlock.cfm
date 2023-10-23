@@ -61,14 +61,14 @@ $out:$
 
 <!--- hack to get dates correct --->
 <cfloop collection="#stProperties#" item="field">
-	<cfif StructKeyExists(Evaluate("application.types."&stProperties.typeName&".stProps"), field)>
-		<cfset fieldType = Evaluate("application.types."&stProperties.typeName&".stProps."&field&".metaData.type")>
+	<cfif StructKeyExists(application.types[stProperties.typeName].stProps, field)>
+		<cfset fieldType = application.types[stProperties.typeName].stProps[field].metaData.type>
 	<cfelse>
 		<cfset fieldType = "string">
 	</cfif>
 	<cfif fieldType EQ "date" and field neq "lastupdatedby">
-		<cfif Evaluate("stProperties.#field#") NEQ "">
-			<cfset "stProperties.#field#" = createodbcdatetime(stProperties[field])>
+		<cfif stProperties[field] NEQ "">
+			<cfset stProperties[field] = createodbcdatetime(stProperties[field])>
 		</cfif>
 	</cfif>
 </cfloop>

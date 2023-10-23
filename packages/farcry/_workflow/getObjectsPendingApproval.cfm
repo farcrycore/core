@@ -156,7 +156,7 @@ $out:$
 				<cfset stLocal.iCounter = stLocal.iCounter + 1>
 
 				<cfloop index="stLocal.columnName" list="#stLocal.lColumns#">
-					<cfset QuerySetCell(stReturn.qList,stLocal.columnName,Evaluate("stLocal.qList.#stLocal.columnName#"))>
+					<cfset QuerySetCell(stReturn.qList,stLocal.columnName,stLocal.qList[stLocal.columnName])>
 				</cfloop>
 
 				<cfif structKeyExists(application.types[stLocal.qList.typename].stProps,"VersionID") AND Len(stLocal.qList.versionid) EQ 35>
@@ -176,7 +176,7 @@ $out:$
 					</cfquery>
 					<cfif stLocal.qDraft.recordcount EQ 1>
 						<cfloop index="stLocal.columnName" list="#stLocal.lColumns#">
-							<cfset QuerySetCell(stReturn.qList,stLocal.columnName,Evaluate("stLocal.qList.#stLocal.columnName#"))>
+							<cfset QuerySetCell(stReturn.qList,stLocal.columnName,stLocal.qList[stLocal.columnName])>
 						</cfloop>
 					</cfif>
 				</cfif>
