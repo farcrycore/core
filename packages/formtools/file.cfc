@@ -106,7 +106,7 @@
 		<skin:loadJS id="fc-jquery" />
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
-			<cfcase value="html">
+			<cfdefaultcase>
 				
 				<cfsavecontent variable="html">
 					<grid:div class="multiField">
@@ -215,114 +215,8 @@
 					</grid:div>				
 				</cfsavecontent>
 				
-			</cfcase>
-			
-			<cfcase value="jquery">
-				<cfparam name="arguments.stMetadata.ftFacade" default="#application.url.webtop#/facade/jqueryupload/upload.cfm" />
-				<cfparam name="arguments.stMetadata.ftFileTypes" default="*.jpg;*.JPG;*.jpeg;*.JPEG;" /><!--- *.abc; *.xyz --->
-				<cfparam name="arguments.stMetadata.ftStartMessage" default="Upload file here." />
-				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
-				<cfparam name="arguments.stMetadata.ftErrorSizeMessage" default="Maximum filesize is #arguments.stMetadata.ftMaxSize# kb" />
-				<cfparam name="arguments.stMetadata.ftCompleteMessage" default="File upload complete" />
-				<cfparam name="arguments.stMetadata.ftAfterUploadJSScript" default="" />
-				
-				
-				
-				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#application.fc.lib.esapi.encodeForURL(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
-				
-				<skin:loadJS id="fc-jquery" />
-				
-				<skin:htmlHead><cfoutput>
-					<script type="text/javascript" src="#application.url.webtop#/facade/jqueryupload/jquery.flash.js"></script>
-					<script type="text/javascript" src="#application.url.webtop#/facade/jqueryupload/jquery.jqUploader.js"></script>
-				</cfoutput></skin:htmlHead>
-				<cfsavecontent variable="html">
-					<cfoutput>
-						<table style="border:0 none;">
-						<tr>
-							<td valign="top" style="border:0 none;">
-								<cfif arguments.stMetadata.ftMaxSize gt 0><input name="MAX_FILE_SIZE" value="#arguments.stMetadata.ftMaxSize#" type="hidden" /></cfif>
-								<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
-								<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-								<script type="text/javascript">
-									jQ121("###arguments.fieldname#").jqUploader({ 
-										src:'#application.url.webtop#/facade/jqueryupload/jqUploader.swf', 
-										uploadScript:'http://#cgi.http_host##application.url.webtop#/facade/jqueryupload/upload.cfm?objectid=#arguments.stObject.objectid#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#arguments.stMetadata.value#&#session.urltoken#', 
-										startMessage:'#jsstringformat(arguments.stMetadata.ftStartMessage)#', 
-										endMessage:'#jsstringformat(arguments.stMetadata.ftCompleteMessage)#', 
-										errorSizeMessage:'#arguments.stMetadata.ftErrorSizeMessage#',
-										varName:'#arguments.fieldname#',
-										afterFunction:function(containerId,filename,varname){
-											$con = jQ121('##'+varname).empty().append("Your file ("+filename+") has been uploaded.");
-											$con.append("<input type='hidden' name='"+varname+"' value='#arguments.stMetadata.ftDestination#/"+filename.replace(/[^\w\d\.]/g,'')+"' />");
-											jQ121("###arguments.fieldname#previewfile").hide();
-											jQ121("###arguments.fieldname#DELETE").val("");
-											#arguments.stMetadata.ftAfterUploadJSScript#
-										} ,
-										allowedExt: "#arguments.stMetadata.ftFileTypes#"
-									});
-								</script>
-							</td>
-							
-							<cfif len(#arguments.stMetadata.value#)>
-								<td valign="top" style="border:0 none;">
-									<div id="#arguments.fieldname#previewfile">
-										<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
-											<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
-											#listLast(arguments.stMetadata.value, "/")#
-										<cfelse>
-											<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
-										</cfif>
-										
-										<ft:button type="button" value="Delete File" confirmText="Are you sure you want to remove this file?" onclick="$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());$j('###arguments.fieldname#').val('');$j('###arguments.fieldname#previewfile').hide();" />
-										
-									</div>
-								</td>
-							</cfif>	
-						</tr>
-						</table>
-					</cfoutput>
-				</cfsavecontent>
-			</cfcase>
-			
-			<cfdefaultcase>
-				
-				<cfparam name="arguments.stMetadata.ftFacade" default="#application.url.webtop#/facade/fileupload/upload.cfm" />
-				<cfparam name="arguments.stMetadata.ftFileTypes" default="*.*" />
-				<cfparam name="arguments.stMetadata.ftFileDescription" default="File Types" />
-				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
-				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
-				
-				<skin:loadJS id="fc-jquery" />
-				
-				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#application.fc.lib.esapi.encodeForURL(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
-				
-				<cfsavecontent variable="html">
-					<cfoutput>
-						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-						<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-						<cfif len(arguments.stMetadata.value)>
-							<div id="#arguments.fieldname#previewfile">
-								<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
-									<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
-									#listLast(arguments.stMetadata.value, "/")#
-								<cfelse>
-									<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
-								</cfif>
-								
-								<ft:button type="button" value="Delete File" confirmText="Are you sure you want to remove this file?" onclick="$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());$j('###arguments.fieldname#').val('');$j('###arguments.fieldname#previewfile').hide();" />
-							</div>
-						</cfif>
-						<div style="width:420px;height:100px;">
-							<cfform name="myform" width="420" format="Flash" timeout="100">
-								<ft:flashUpload name="file" actionFile="#facade#" value="#arguments.stMetadata.value#" filetypes="#listchangedelims(arguments.stMetadata.ftFileTypes,';')#" fileDescription="#arguments.stMetadata.ftFileDescription#" maxsize="#arguments.stMetadata.ftMaxSize#" onComplete="getURL('javascript:updateField(\'#arguments.fieldname#\',#arguments.fieldname#.text)');#arguments.stMetadata.ftOnComplete#">
-									<ft:flashUploadInput chooseButtonLabel="Browse" uploadButtonLabel="Upload" />
-								</ft:flashUpload>
-							</cfform>
-						</div>
-					</cfoutput>
-				</cfsavecontent>
 			</cfdefaultcase>
+			
 		</cfswitch>
 	
 		<cfreturn html>
