@@ -40,7 +40,7 @@
 			return 60000 - (new Date().getTime() % 60000);
 		};
 		var updateClock = function() {
-			moment.lang(['#session.dmProfile.locale#', 'en']);
+			moment.locale(['#session.dmProfile.locale#', 'en']);
 			$j("##fc-clock-day").html(moment().format("ddd"));
 			<cfif b12Hour>
 				$j("##fc-clock-time").html(moment().startOf("minute").format("h:mm"));
