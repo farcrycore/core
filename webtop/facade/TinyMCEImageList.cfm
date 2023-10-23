@@ -13,13 +13,15 @@
 
 <cfif NOT isValid("uuid", url.relatedObjectid)>
 	<cfset bValid = false>
-<cfelseif len(url.ftImageListFilterTypename) AND len(url.ftImageListFilterProperty) AND len(url.relatedTypename)>
+<cfelseif NOT len(url.ftImageListFilterTypename) OR NOT len(url.ftImageListFilterProperty)>
+	<cfset bValid = false>
+<cfelse>
 	<cfset stRelatedType = application.fapi.getContentTypeMetadata(typename=url.ftImageListFilterTypename)>
-	<cfif structIsEmpty(stImageListFilterProp)>
+	<cfif NOT isStruct(stRelatedType) OR structIsEmpty(stRelatedType)>
 		<cfset bValid = false>
 	</cfif>
 	<cfset stImageListFilterProp = application.fapi.getPropertyMetadata(typename=url.ftImageListFilterTypename, property=url.ftImageListFilterProperty)>
-	<cfif structIsEmpty(stImageListFilterProp)>
+	<cfif NOT isStruct(stImageListFilterProp) OR structIsEmpty(stImageListFilterProp)>
 		<cfset bValid = false>
 	</cfif>
 </cfif>
