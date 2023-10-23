@@ -106,8 +106,8 @@
 					<cfif arguments.qdata.currentrow MOD arguments.numrows EQ 1>
 						<tr>
 					</cfif>
-					<cfset value = evaluate("arguments.qdata." & arguments.valueColumn)>
-					<cfset display = evaluate("arguments.qdata." & arguments.displayColumn)>
+					<cfset value = arguments.qdata[arguments.valueColumn]>
+					<cfset display = arguments.qdata[arguments.displayColumn]>
 					<td>
 						<input <cfif listFindNoCase(arguments.lSelectedValues,value)>checked</cfif> type="Checkbox" name="#arguments.name#" value="#value#">#display#
 					</td>
@@ -236,8 +236,8 @@
 				<select name="#arguments.name#" <cfif len(onChangeJS)>onChange="#arguments.onChangeJS#"</cfif>>
 					<option value="">#arguments.defaultMsg#</option>
 					<cfloop query="arguments.qData">
-						<cfset value = evaluate("arguments.qdata." & arguments.valueColumn)>
-						<cfset display = evaluate("arguments.qdata." & arguments.displayColumn)>
+						<cfset value = arguments.qdata[arguments.valueColumn]>
+						<cfset display = arguments.qdata[arguments.displayColumn]>
 						<option<cfif listContainsNoCase(arguments.lSelectedValues,value)> selected="selected"</cfif> value="#value#">#display#</option>
 					</cfloop>
 				</select>

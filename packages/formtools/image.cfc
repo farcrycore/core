@@ -1396,7 +1396,7 @@
 	
 		<!--- Apply Image Effects --->
 		<cfif len(arguments.customEffectsObjName) and len(arguments.lCustomEffects)>
-			<cfset oImageEffects = createObject("component", "#evaluate("application.formtools.#customEffectsObjName#.packagePath")#") />
+			<cfset oImageEffects = createObject("component", application.formtools[customEffectsObjName].packagePath) />
 			
 			<!--- Covert the list to an array --->
 			<cfset aMethods = listToArray(trim(arguments.lCustomEffects), ";") />

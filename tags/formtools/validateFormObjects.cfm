@@ -353,6 +353,6 @@
 	</cfloop>
 	
 	<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix#typename")>
-		<cfset "Caller.#attributes.r_stProperties#.typename" = Evaluate("FORM['#ProcessingFormObjectPrefix#typename']")>
+		<cfset "Caller.#attributes.r_stProperties#.typename" = FORM["#ProcessingFormObjectPrefix#typename"]>
 	</cfif>
 </cffunction>
