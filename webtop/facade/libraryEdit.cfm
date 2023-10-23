@@ -79,7 +79,6 @@ $Developer: $
 		<cfoutput>#HTML#</cfoutput>
 	<cfelse>
 		<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-	    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',onExitProcess=#onExitProcess#)")> --->
 	    <cfinvoke component="#oData#" method="edit">
 	        <cfinvokeargument name="objectId" value="#stData.objectid#" />
 	        <cfinvokeargument name="onExitProcess" value="#onExitProcess#" />
