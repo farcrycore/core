@@ -115,21 +115,22 @@
 
 	<cfparam name="attributes.emptymessage" default="You do not currently have any content. Use the [Add] button above to begin." />
 
-<!--- fix up any boolean values --->
+    <!--- fix up any boolean values --->
     <cfloop index="i" list="#attributes.lFilterFields#">
-        <cfif structKeyExists(application.types, attributes.typename) AND application.types[attributes.typename].stProps[i].metadata.type EQ 'boolean'> 
+		<cfif structKeyExists(application.types, attributes.typename) AND structKeyExists(application.types[attributes.typename].stProps, i) 
+				AND application.types[attributes.typename].stProps[i].metadata.type eq "boolean">
 			<cfif NOT structKeyExists(attributes.stFilterMetadata,i)>
-                <cfset attributes.stFilterMetadata[i] = structNew()>
-            </cfif>
-            <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftType")>
-                <cfset attributes.stFilterMetadata[i].ftType = "list">
-            </cfif>
-            <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftList")>
-                <cfset attributes.stFilterMetadata[i].ftList = ":...Any,0:No,1:Yes">
-            </cfif>
-            <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftDefault")>
+				<cfset attributes.stFilterMetadata[i] = structNew()>
+			</cfif>
+			<cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftType")>
+				<cfset attributes.stFilterMetadata[i].ftType = "list">
+			</cfif>
+			<cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftList")>
+				<cfset attributes.stFilterMetadata[i].ftList = ":...Any,0:No,1:Yes">
+			</cfif>
+			<cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftDefault")>
 				<cfset attributes.stFilterMetadata[i].ftDefault = "">
-            </cfif>
+			</cfif>
 		</cfif>
    </cfloop>
 
@@ -688,7 +689,7 @@
 		<cfloop collection="#form#" item="fieldname">
 			<!--- match for custom button action --->
 			<cfif reFind("^CB.*", fieldname) AND NOT reFind("^CB.*_DATA", fieldname) and structKeyExists(form, "#fieldname#_data")>
-				<cfset wcustomdata=evaluate("form.#fieldname#_data")>
+				<cfset wcustomdata=form["#fieldname#_data"]>
 				<cfwddx action="wddx2cfml" input="#wcustomdata#" output="stcustomdata">
 				<cfif len(stcustomdata.method)>
 					<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectID#&typename=#attributes.typename#&ref=typeadmin&method=#stcustomdata.method#" addtoken="false">

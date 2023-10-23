@@ -155,7 +155,7 @@ Parent Object: URL.OBJECTID
 	--->
 	<!--- does the reference already exist? if so there is a problem. --->
 	<cfif structkeyexists(stparent, url.parentproperty)>
-		<cfset lrefobjectids=arraytolist(evaluate("stParent.#url.parentproperty#"))>
+		<cfset lrefobjectids=arraytolist(stParent[url.parentproperty])>
 		<cfif len(url.objectId) AND lrefobjectids contains NewObjID>
 			<cfthrow type="evocation" message="The object #NewObjID# is already referenced by parent object #stparent.objectid#.">
 		</cfif>
@@ -187,7 +187,7 @@ Parent Object: URL.OBJECTID
 		<cfelse>
 			<!--- Append new ObjectIDs to AObjects array --->
 			<cfscript>
-				arrayAppend(evaluate("stParent.#url.parentproperty#"), NewObjID);
+				arrayAppend(stParent[url.parentproperty], NewObjID);
 				stParent.DATETIMELASTUPDATED = createODBCDate(now());
 				oParentType = createobject("component", application.types[stParent.typename].typePath);
 				oParentType.setData(stProperties=stParent);
