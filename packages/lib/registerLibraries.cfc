@@ -24,12 +24,12 @@
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="fc-jquery" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.9.1.min.js,noconflict.js" />
+							lFiles="jquery-3.7.1.min.js,jquery-migrate-3.4.0.min.js,noconflict.js" />
 		<skin:registerJS 	id="jquery" aliasof="fc-jquery" core="false" />
 			
 		<skin:registerJS 	id="fc-jquery-ui" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-ui-1.10.3.custom.min.js" />
+							lFiles="jquery-ui-1.13.2.min.js" />
 		<skin:registerJS 	id="jquery-ui" aliasof="fc-jquery-ui" core="false" bCombine="false" />
 		
 		<skin:registerJS 	id="fc-underscore" core="true"
@@ -132,10 +132,6 @@
 							baseHREF="#application.url.webtop#/js"
 							lFiles="devicetype.js" />
 		<skin:registerJS 	id="farcry-devicetype" aliasof="fc-farcry-devicetype" core="false" />
-		
-		<skin:registerJS 	id="swfobject" core="true"
-							baseHREF="#application.url.webtop#/js"
-							lFiles="swfobject.js" />
 							
 		<skin:registerJS 	id="jquery-modal" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
@@ -256,7 +252,7 @@
 							
 		<skin:registerCSS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/smoothness"
-							lFiles="jquery-ui-1.10.3.custom.css" />
+							lFiles="jquery-ui-1.13.2.min.css" />
 		
 		<skin:registerCSS	id="image-formtool"
 							baseHREF="#application.url.webtop#/thirdparty/image-formtool"
