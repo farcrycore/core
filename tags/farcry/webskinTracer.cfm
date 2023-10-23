@@ -45,7 +45,13 @@
 						<cfcase value="1">
 							<!--- If the webskin is set to cache but not using objectbroker, then notify with purple flavour. --->
 							<cfif structKeyExists(application.stcoapi, request.aAncestorWebskinsTrace[i].typename) AND application.stcoapi[request.aAncestorWebskinsTrace[i].typename].bObjectBroker>
-								<cfset color = "green" />
+								<cfset typeCoapiObjectID = application.fapi.getContentType("farCoapi").getCoapiObjectID(request.aAncestorWebskinsTrace[i].typename)>
+								<cfif typeCoapiObjectID eq request.aAncestorWebskinsTrace[i].objectid>
+									<cfset color = "darkorange" />
+								<cfelse>
+									<cfset color = "green" />
+								</cfif>
+
 							<cfelse>
 								<cfset color = "purple" />
 							</cfif>

@@ -21,9 +21,9 @@
 		<cfoutput>
 			<dt>Author</dt>
 			<dd>
-				#arguments.stparam.author.firstname# #arguments.stparam.author.lastname#
+				#encodeForHTML(arguments.stparam.author.firstname)# #encodeForHTML(arguments.stparam.author.lastname)#
 				<cfif len(arguments.stparam.author.emailaddress)>
-					(<a href="mailto:#arguments.stparam.author.emailaddress#">#arguments.stparam.author.emailaddress#</a>)
+					(<a href="mailto:#arguments.stparam.author.emailaddress#">#encodeForHTML(arguments.stparam.author.emailaddress)#</a>)
 				</cfif>
 			</dd>
 		</cfoutput>

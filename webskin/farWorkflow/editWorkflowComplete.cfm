@@ -19,7 +19,7 @@
 		<cfif qWorkflow.recordcount>
 			<cfset stWorkflow = oWorkflow.getData(objectid="#qWorkflow.parentID#") />
 			
-			<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stTask.taskWebskin#">
+			<cflocation addtoken="false" url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stWorkflow.referenceID#&method=#stTask.taskWebskin#">
 		</cfif>
 		
 

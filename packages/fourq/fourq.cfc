@@ -1,33 +1,6 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
-<!--- @@License:
-    This file is part of FarCry.
-
-    FarCry is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    FarCry is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
---->
-<!------------------------------------------------------------------------
-fourQ COAPI
-Copyright Daemon Pty Limited 2002 (http://www.daemon.com.au/)
-
-$Header: /cvs/farcry/fourq/fourq.cfc,v 1.43 2005/10/04 01:17:44 guy Exp $
-$Author: guy $
-$Date: 2005/10/04 01:17:44 $
-$Name:  $
-$Revision: 1.43 $
-
-Contributors:
-Geoff Bowers (modius@daemon.com.au)
-
+<!--- @@Copyright: Daemon Pty Limited 2002-2019, http://www.daemon.com.au --->
+<!-------------------------------------------------------------------------
+## fourQ COAPI
 Description:
 Introspects current object invocation and determines appropriate table 
 structure etc based on the CFC and its extensions, then uses getMetadta()
@@ -51,7 +24,6 @@ to build the four queries
 If the application.dbtype is odbc - you may specify application.dbowner as a blank string : '', or alternatively : "<databasename>.dbo. ".
 So in the case of a database called 'fourq' - the correct application.dbowner variable would be "fourq.dbo." 
 ------------------------------------------------------------------------->
-
 <cfcomponent displayname="FourQ COAPI" extends="farcry.core.packages.schema.schema" bAbstract="true">
 
 	<cfset variables.typePath = "">
@@ -148,8 +120,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 			<skin:loadJS id="fc-jquery" />
 			
-			<skin:loadJS id="webskinAjaxLoader" core="true">
-			<cfoutput>		
+			<skin:loadJS id="webskinAjaxLoader" core="true" lDependsOn="fc-jquery"><cfoutput>
 				$j.fn.loadAjaxWebskin = function (config){
 					var self = this;
 					config = config || self.data("loadWebskinAjax") || {};
@@ -181,8 +152,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					
 					return self;
 				}
-			</cfoutput>
-			</skin:loadJS>
+			</cfoutput></skin:loadJS>
 			
 			<!--- Get the url for the ajax webskin loader --->			
 			<!--- TODO: The ampDelim variable causes the link to be in the & 
@@ -354,8 +324,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		
 		</cfif>
-		
-		
 		
 		<cfreturn stWebskin.webskinHTML />
 	</cffunction>
@@ -837,8 +805,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 		
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfif arguments.bUseInstanceCache AND structKeyExists(tempObjectStore,arguments.objectid)>
-			<!--- get from the temp object stroe --->
+		<cfif structKeyExists(tempObjectStore,arguments.objectid) AND NOT arguments.bArraysAsStructs>
+			<!--- get from the temp object store --->
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
@@ -1521,7 +1489,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var oFormtools = "" />
 		<cfset var stLibraryData = {} />
 
-		<cfif len(arguments.filter)>
+		<cfif len(arguments.filter) AND (NOT isDefined("arguments.stMetadata.ftCustomFilter") OR arguments.stMetadata.ftCustomFilter eq false)>
 			<cfquery datasource="#application.dsn_read#" name="qFiltered">
 				SELECT objectid AS "key"
 				FROM #arguments.filterType#
@@ -1534,10 +1502,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfinvoke component="#this#" method="#arguments.stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
 					<cfinvokeargument name="primaryID" value="#arguments.primaryID#" />
 					<cfinvokeargument name="qFilter" value="#qFiltered#" />
+					<cfinvokeargument name="filter" value="#arguments.filter#" />
 				</cfinvoke>
 			<cfelse>
 				<cfinvoke component="#this#" method="#arguments.stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
 					<cfinvokeargument name="primaryID" value="#arguments.primaryID#" />
+					<cfinvokeargument name="filter" value="#arguments.filter#" />
 				</cfinvoke>
 			</cfif>
 			

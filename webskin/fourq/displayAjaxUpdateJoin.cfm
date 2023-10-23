@@ -89,16 +89,15 @@
 	</cfif>
 	
 	<cfset stToUpdate[url.property] = newValue />
-	
-	<cfset application.fapi.setData(stProperties="#stToUpdate#") />
-	
-	
+
 	<cfif structKeyExists(form, "deleteID")>
 		<cfloop list="#form.deleteID#" index="i">
 			<cfset deleteType = application.fapi.findType("#i#") />
 			<cfset application.fapi.getContentType(deleteType).delete(objectid="#i#") />
 		</cfloop>
 	</cfif>
+	
+	<cfset application.fapi.setData(stProperties="#stToUpdate#") />
 	
 	<cfoutput>SUCCESSFUL</cfoutput>
 	

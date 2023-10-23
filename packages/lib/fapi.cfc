@@ -250,6 +250,13 @@
 									#f.property# LIKE <cfqueryparam cfsqltype="#f.sqltype#" value="#f.value#" />
 								</cfcase>
 								<cfcase value="isnull">
+								<cfif f.type eq "array">
+										<cfif f.value>
+										NOT EXISTS (SELECT parentID FROM #application.dbowner##arguments.typename#_#f.property# WHERE parentid = #application.dbowner##arguments.typename#.objectid) 
+										<cfelse>
+										EXISTS (SELECT parentID FROM #application.dbowner##arguments.typename#_#f.property# WHERE parentid = #application.dbowner##arguments.typename#.objectid)
+										</cfif>
+									<cfelse>
 									(
 										<cfif f.value>
 											#f.property# IS NULL
@@ -265,6 +272,7 @@
 											</cfif>
 										</cfif>
 									)
+								</cfif>
 								</cfcase>
 								<cfcase value="lt,lte,gt,gte" delimiters=",">
 									<cfif f.sqltype eq "cf_sql_timestamp"><!--- Special case to handle the various null date formats --->
@@ -1564,7 +1572,7 @@
 		<!--- @@examples:
 			<p>Redirect to the project webroot:</p>
 			<code>
-				<cflocation url="#application.fapi.getWebRoot()#" />
+				<cflocation addtoken="false" url="#application.fapi.getWebRoot()#" />
 			</code>
 		 --->
 		<cffunction name="getWebRoot" access="public" returntype="string" output="false" hint="Returns the url path to the webroot." bDocument="true">
@@ -1688,7 +1696,7 @@
 		@@examples:
 		<p>Refresh the current FarCry page:</p>
 		<code>
-			<cflocation url="#application.fapi.fixURL()#" />
+			<cflocation addtoken="false"url="#application.fapi.fixURL()#" />
 		</code>
 		
 		<p>Remove a query variable from a custom URL:</p>

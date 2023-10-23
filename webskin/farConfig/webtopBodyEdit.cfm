@@ -6,7 +6,7 @@
 
 <cfif q.recordcount>
 	<cfoutput>
-		<h1><i class="fa #application.fapi.getContentTypeMetadata(typename="farConfig", md="icon", default='')#"></i> #application.fapi.getContentTypeMetadata(typename=q.configTypename, md="displayName", default=url.key)#<h1>
+		<h1><i class="fa #application.fapi.getContentTypeMetadata(typename="farConfig", md="icon", default='')#"></i> #application.fapi.getContentTypeMetadata(typename=q.configTypename, md="displayName", default=url.key)#</h1>
 		#edit(objectid=q.objectid)#
 	</cfoutput>
 <cfelse>

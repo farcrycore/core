@@ -157,8 +157,7 @@
     SELECT object, notes, event, datetimelastupdated, userid
     FROM #arguments.dbowner#farLog
     WHERE
-      event = <cfqueryparam cfsqltype="cf_sql_varchar" value="comment" />
-      OR event LIKE <cfqueryparam cfsqltype="cf_sql_varchar" value="to%" />
+      event IN ('toapproved','todraft','topending','comment')
     ORDER BY datetimecreated DESC
   </cfquery>
 

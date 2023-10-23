@@ -14,9 +14,9 @@
 <cfif thistag.ExecutionMode EQ "Start">
 
 	<cfif StructKeyExists(FORM, 'FarcryFormSubmitted') AND StructKeyExists(FORM, 'FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#') AND FORM['FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#'] NEQ "">
-		<cfset FORM.FarcryFormSubmitButton = evaluate("FORM.FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") />
+		<cfset FORM.FarcryFormSubmitButton = FORM["FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#"] />
 	</cfif>
-	
+
 	<!--- Determine if we are processing the Action or the current step --->
 	<cfif structKeyExists(attributes,"action")>
 		<cfset FormFieldToProcess = "FarcryFormSubmitButton" />

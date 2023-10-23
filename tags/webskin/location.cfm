@@ -47,7 +47,14 @@
 	<cfset attributes.url = application.fapi.getLink(argumentCollection="#attributes#") />		
 	
 	<cfset request.fc.bLocating = true />
-	
+
+	<cfheader name="cache-control" value="no-store">
+
+	<cfif listFindNoCase("staging,development,unknown", application.fapi.getContentType("configEnvironment").getEnvironment())>
+		<cfset trace = application.fc.lib.error.getStack(bIncludeCore=true, bIncludeJava=false, ignoreLines=2) />
+		<cfheader name="location-reason" value="#trace[1].template#:#trace[1].line#">
+	</cfif>
+
 	<cfset createobject("component","farcry.core.Application").onRequestEnd() />
 	<cfif attributes.statusCode eq "">
 		<cflocation url="#attributes.url#" addtoken="#attributes.addToken#" />

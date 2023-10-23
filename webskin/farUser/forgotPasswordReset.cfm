@@ -30,6 +30,12 @@
 					<cfset structDelete(session,"resetPWUserID")>
 				
 					<cfset request.pwchanged = true />
+
+					<cfloop list="#structKeyList(stProperties)#" index="prop">
+						<cfif NOT listFindNoCase("objectid,typename,password", prop)>
+							<cfset structDelete(stProperties, prop)>
+						</cfif>
+					</cfloop>
 					
 					<!--- Clear out the password reset key --->
 					<cfset stProperties.forgotPasswordHash = "" />

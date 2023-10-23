@@ -33,22 +33,34 @@
 			</thead>
 			<tbody>
 				<cfloop query="qActivity"  >
-					
-					
-				<cfset eventTypename=application.fapi.findType(qActivity.object) />
-				<cfif len(eventTypename) AND eventTypename neq "container">
-					<cfset stObj = application.fapi.getContentObject(qActivity.object) />
-					<cfif structKeyExists(stObj, "label") AND stObj.label NEQ "(incomplete)">
-					<cfset stProfile = oProfile.getProfile(qActivity.userid)>
-					<tr>
-						<td nowrap="true"><i class="fa #application.fapi.getContentTypeMetadata(typename="#stObj.Typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#stObj.Typename#", md="displayname", default="Unknown")#"></i> #stObj.Typename#</td>
-						<td><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qActivity.object#&typename=#stObj.Typename#" bmodal="true" linktext="#stObj.label#" title="Editing: #stObj.label#" /></td>
-						<td><cfif len(qactivity.notes)>#qActivity.notes#<cfelse>-</cfif></td>
-						<td>#stProfile.label#</td>
-						<td nowrap="true">#application.fapi.prettyDate(qactivity.datetimelastupdated)#</td>
-					</tr>
+
+					<cfset eventTypename=application.fapi.findType(qActivity.object) />
+					<cfif len(eventTypename) AND eventTypename neq "container">
+						<cftry>
+						
+							<cfset stActivityObject = application.fapi.getContentObject(qActivity.object,eventTypename) />
+							<cfif structKeyExists(stActivityObject, "label") AND stActivityObject.label NEQ "(incomplete)">
+								<cfset stProfile = oProfile.getProfile(qActivity.userid)>
+								<tr>
+									<td nowrap="true"><i class="fa #application.fapi.getContentTypeMetadata(typename="#stActivityObject.Typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#stActivityObject.Typename#", md="displayname", default="Unknown")#"></i> #stActivityObject.Typename#</td>
+									<td><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qActivity.object#&typename=#stActivityObject.Typename#" bmodal="true" linktext="#stActivityObject.label#" title="Editing: #stActivityObject.label#" /></td>
+									<td><cfif len(qactivity.notes)>#qActivity.notes#<cfelse>-</cfif></td>
+									<td>#stProfile.label#</td>
+									<td nowrap="true">#application.fapi.prettyDate(qactivity.datetimelastupdated)#</td>
+								</tr>
+							</cfif>
+						
+							<cfcatch>
+								<tr>
+									<td>#eventTypename#</td>
+									<td><strong>Error</strong> for objectid '#qActivity.object#'<br />#CFCATCH.Message#. #CFCATCH.Detail#</td>
+									<td><cfif len(qactivity.notes)>#qActivity.notes#<cfelse>-</cfif></td>
+									<td nowrap="true">-</td>
+									<td nowrap="true">#application.fapi.prettyDate(qactivity.datetimelastupdated)#</td>
+								</tr>
+							</cfcatch>
+						</cftry>
 					</cfif>
-				</cfif>
 
 				</cfloop>
 			</tbody>

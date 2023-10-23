@@ -330,8 +330,6 @@
 					</cfloop>
 				<cfelseif stProps[fieldname].metadata.type EQ "UUID" and len(arguments.stObject[fieldname])>
 					<cfset lRelated = listAppend(lRelated, arguments.stObject[fieldname]) />
-				<cfelse>
-					<cfset lRelated = "" />
 				</cfif>
 
 				<cfif len(lRelated)>

@@ -104,7 +104,7 @@ FARCRY IMPORT FILES
 	</cfoutput></skin:pop>
 	
 	<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#">#arguments.stParam.message#</admin:resource></div></cfoutput>
+		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#">#encodeForHTML(arguments.stParam.message)#</admin:resource></div></cfoutput>
 	</cfif>
 	
 	<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" focusField="username" r_stFields="stFields" />

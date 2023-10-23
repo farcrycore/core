@@ -1,5 +1,5 @@
 <cfcomponent 
-	displayname="FarCry Task Definition" 
+	displayname="FarCry Workflow Definition" 
 	extends="types" output="false"
 	hint="Workflow definitions are used as template to create workflow instances" 
 	description="Acts as a template for the creation of workflow instances" 

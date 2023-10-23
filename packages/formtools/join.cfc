@@ -243,7 +243,8 @@
 							<cfloop list="#joinItems#" index="i">
 								<cfset counter = counter + 1 />
 								<cftry>
-									<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
+									<cfset viewTypename=listLen(arguments.stmetadata.ftjoin) eq 1 ? arguments.stmetadata.ftjoin : "">
+									<skin:view typename="#viewTypename#" objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 									<cfcatch type="any">
 										<cfset htmlLabel = "<span title='#application.fc.lib.esapi.encodeForHTMLAttribute(cfcatch.message)#'>OBJECT NO LONGER EXISTS</span>" />
 									</cfcatch>
@@ -368,7 +369,7 @@
 												priority="secondary"
 												class="small"
 												value="Remove All" 
-												text="remove all" 
+												text="Remove All" 
 												confirmText="Are you sure you want to remove all the attached items?"
 												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
 									

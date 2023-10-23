@@ -323,37 +323,30 @@
 		<cfargument name="fuID" required="false" default="" hint="The objectid of the farFU record to exclude from the db query" />
 		
 		<cfset var qDuplicates = "" />
-		<cfset var bDuplicate = true />
 		<cfset var duplicateCounter = "" />
 		<cfset var cleanFU = arguments.friendlyURL />
-		
-		<cfloop condition="#bDuplicate#">	
-			<cfquery datasource="#application.dsn#" name="qDuplicates">
-			SELECT objectid
+		<cfset var potentialDuplicates = "" />
+
+		<cfquery datasource="#application.dsn#" name="qDuplicates">
+			SELECT friendlyURL
 			FROM farFU
-			WHERE friendlyURL = <cfqueryparam value="#cleanFU##duplicateCounter#" cfsqltype="cf_sql_varchar">	
+			WHERE friendlyURL like <cfqueryparam value="#cleanFU#%" cfsqltype="cf_sql_varchar">
 			<cfif len(arguments.fuID)>
 				AND objectid <> <cfqueryparam value="#arguments.fuID#" cfsqltype="cf_sql_varchar">
 			</cfif>				
 			AND fuStatus > 0
-			</cfquery>
-	
-					
-			<cfset bDuplicate = qDuplicates.recordCount />
-			
-			<cfif bDuplicate GT 0>			
-				<cfif isNumeric(duplicateCounter)>
-					<cfset duplicateCounter = duplicateCounter + 1 />
-				<cfelse>
-					<cfset duplicateCounter = 1 />
-				</cfif>				
-			</cfif>	
+		</cfquery>
+		<cfset potentialDuplicates = valueList(qDuplicates.friendlyURL) />
+		
+		<cfloop condition="#listFindNoCase(potentialDuplicates, cleanFU & duplicateCounter)#">
+			<cfif duplicateCounter eq "">
+				<cfset duplicateCounter = 1 />
+			<cfelse>
+				<cfset duplicateCounter = duplicateCounter + 1 />
+			</cfif>
 		</cfloop>
 		
-		<cfset cleanFU = "#cleanFU##duplicateCounter#" />			
-		
-		<cfreturn cleanFU />	
-			
+		<cfreturn cleanFU & duplicateCounter />
 	</cffunction>
 	
 	<cffunction name="setSystemFU" access="public" returntype="struct" hint="Returns the success state of setting the System FU of an object" output="false">
@@ -767,6 +760,12 @@
 				<cfif not isvalid("integer",stResult.__redirectionType)>
 					<cfset stResult.__redirectionType = 301>
 				</cfif>
+
+				<cfif listFindNoCase("staging,development,unknown", application.fapi.getContentType("configEnvironment").getEnvironment())>
+					<cfset trace = application.fc.lib.error.getStack(bIncludeCore=true, bIncludeJava=false, ignoreLines=1) />
+					<cfheader name="location-reason" value="#trace[1].template#:#trace[1].line#">
+				</cfif>
+
 				<cfheader statuscode="#stResult['__redirectionType']#" /><!--- statustext="Moved permanently" --->
 				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#" charset="utf-8" />
 				<cfabort />
@@ -786,6 +785,11 @@
 					<cfset structdelete(stLocalURL,"objectid") />
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
+					<cfif listFindNoCase("staging,development,unknown", application.fapi.getContentType("configEnvironment").getEnvironment())>
+						<cfset trace = application.fc.lib.error.getStack(bIncludeCore=true, bIncludeJava=false, ignoreLines=1) />
+						<cfheader name="location-reason" value="#trace[1].template#:#trace[1].line#">
+					</cfif>
+
 					<cfheader statuscode="301" /><!--- statustext="Moved permanently" --->
 					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string), ampDelim="&")#" charset="utf-8" />
 					<cfabort />
@@ -1657,18 +1661,20 @@
 		<cfif structIsEmpty(stReturnFU)>
 			<!--- Strongest match: the exact FU is in database ---> 
 			<cfquery datasource="#application.dsn#" name="stLocal.qGet"> 
-				SELECT		farFU.objectid as objectid,farFU.friendlyURL as friendlyURL,refObjects.typename as typename 
+				SELECT		farFU.objectid as objectid,farFU.friendlyURL as friendlyURL,farFU.refobjectid
 				FROM 		farFU 
-							INNER JOIN 
-							refObjects 
-							on farFU.refobjectid = refObjects.objectid 
 				WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
 							and fuStatus > 0
 				ORDER BY 	farFU.bDefault DESC, farFU.fuStatus DESC 
 			</cfquery>
 
 			<cfif stLocal.qGet.recordcount>
-				<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(furl=arguments.friendlyURL, farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGet.typename[1])) />
+				<cfquery datasource="#application.dsn#" name="stLocal.qGetRefObject">
+					SELECT typename FROM refObjects WHERE objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stLocal.qGet.refobjectid#" />
+				</cfquery>
+				<cfif stLocal.qGetRefObject.recordcount>
+					<cfset stReturnFU = cacheURLStructByURL(arguments.friendlyURL,createURLStruct(furl=arguments.friendlyURL, farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGetRefObject.typename[1])) />
+				</cfif>
 			</cfif>
 		</cfif>
 		

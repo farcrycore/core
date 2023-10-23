@@ -32,7 +32,7 @@
 					<cfset stProfile = oProfile.getProfile(username=qLog.userid[1]) />
 					<small><span title="#dateformat(qLog.datetimecreated[1], 'dd/mm/yyyy')# #timeformat(qLog.datetimecreated[1], 'hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated[1])#</span>
 					<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
-						| #stProfile.firstname# #stProfile.lastname#
+						| #encodeForHTML(stProfile.firstname)# #encodeForHTML(stProfile.lastname)#
 					<cfelse>
 						| #listfirst(qLog.userid[1],'_')#
 					</cfif></small>
@@ -50,7 +50,7 @@
 								<cfset stProfile = oProfile.getProfile(username=qLog.userid) />
 								<small><span title="#dateformat(qLog.datetimecreated, 'dd/mm/yyyy')# #timeformat(qLog.datetimecreated, 'hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated)#</span>
 								<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
-									| #stProfile.firstname# #stProfile.lastname#
+									| #encodeForHTML(stProfile.firstname)# #encodeForHTML(stProfile.lastname)#
 								<cfelse>
 									| #listfirst(qLog.userid,'_')#
 								</cfif></small>

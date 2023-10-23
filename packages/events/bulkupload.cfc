@@ -29,7 +29,7 @@
 			typename = stObject.typename,
 			objectid = stObject.objectid,
 			existingFile = "",
-			localFile = application.fc.lib.cdn.ioGetFileLocation(location="temp", file=arguments.details.tempfile).path,
+			localFile = application.fc.lib.cdn.ioGetFileLocation(location="temp", file=arguments.details.tempfile,bRetrieve="true").path,
 			destination = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftDestination"),
 			secure = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSecure", false),
 			status = structKeyExists(stObject, "status") ? stObject.status : "approved",
