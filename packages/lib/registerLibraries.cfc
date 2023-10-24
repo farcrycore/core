@@ -250,9 +250,9 @@
 							baseHREF="#application.url.webtop#/thirdparty/font-awesome-4.1.0/css"
 							lFiles="font-awesome.css" />
 							
-		<skin:registerCSS 	id="jquery-ui"
+		<skin:registerCSS 	id="jquery-ui" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/smoothness"
-							lFiles="jquery-ui-1.13.2.min.css" />
+							lFiles="jquery-ui-1.13.2.css" />
 		
 		<skin:registerCSS	id="image-formtool"
 							baseHREF="#application.url.webtop#/thirdparty/image-formtool"
