@@ -11,6 +11,13 @@
 		ftSeq="2" ftFieldset="Directories and Storage" ftLabel="Password hashing algorithm"
 		ftHint="" hint="Algorithm used to encrypt passwords in the database">
 
+	<!--- Errors and Debugging --->
+	
+	<cfproperty name="urlDebug" type="string" default="boolean" required="false"
+		ftSeq="3" ftFieldset="Errors and Debugging" ftLabel="URL Debug Option"
+		ftType="list" ftList="disable:Disabled,updateappkey:Allowed using Updateapp Key,boolean:Allowed using boolean"
+		ftHint="Disabled turns off URL debugging, Requires Updateapp Key enables debugging with ?debug=yourupdateappkey, Allowed (default) enables debugging with ?debug=1">
+
 	<!--- Form security --->
 
 	<cfproperty name="bCSRFTokens" type="boolean" ftType="boolean" default="1" 

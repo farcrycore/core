@@ -324,7 +324,7 @@
 				</cfif>
 			</cfcase>
 			<cfcase value="boolean">
-				<cfif IsBoolean(stResult.left) AND IsBoolean(stResult.right) >
+				<cfif (NOT len(stResult.left) OR IsBoolean(stResult.left)) AND IsBoolean(stResult.right) >
 					<cfset stResult.leftHighlighted = YesNoFormat(stResult.left) />
 					<cfset stResult.rightHighlighted = YesNoFormat(stResult.right) />
 					<cfset stResult.different = compare(stResult.leftHighlighted,stResult.rightHighlighted) neq 0 />
@@ -367,6 +367,15 @@
 					<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 				</cfif>
 			</cfcase>
+			<cfdefaultcase>
+				<cfif isSimpleValue(stResult.left) AND  isSimpleValue(stResult.right)>
+					<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
+					<cfif stResult.different>
+						<cfset stResult.aDiff = getDiff(old=stResult.left,new=stResult.right) />
+						<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
+					</cfif>
+				</cfif>
+			</cfdefaultcase>
 		</cfswitch>
 		
 		<cfreturn stResult />

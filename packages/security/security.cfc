@@ -302,6 +302,10 @@
 		<cfparam name="stResult.message" default="" /><!--- Any message that the user directory may have returned --->
 		<cfparam name="stResult.loginReturnURL" default="#session.loginReturnURL#" /><!--- The return url after a successful login --->
 		
+		<cfif not len(stResult.loginReturnURL)>
+			<cfset stResult.loginReturnURL = application.url.webtop />
+		</cfif>
+
 		<!--- WHICH USERDIRECTORY SHOULD WE BE RENDERING THE FORM FOR --->
 		<cfset stResult.ud = getDefaultUD() />
 		

@@ -112,7 +112,9 @@
 	
 		<cfsavecontent variable="css">
 
-			<cfif structKeyExists(url, "debug") AND url.debug eq 1>
+<cfset urlDebug = application.fapi.getConfig("security","urlDebug","boolean")>
+<cfif isdefined("url.debug") AND urlDebug neq "disable">
+    <cfif (urlDebug eq "updateappkey" AND url.debug eq application.updateappKey) or (urlDebug eq "boolean" AND url.debug eq 1) or (cgi.remote_addr eq "127.0.0.1")>
 <cfoutput>
 <!-- 
 ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
@@ -120,7 +122,8 @@ PACKAGED: #stCSS.lCombineIDs#</cfif>
 FILES: #stCSS.lFullFilebaseHREFs#
 -->
 </cfoutput>
-			</cfif>
+    </cfif>
+</cfif>
 
 			<cfif len(stCSS.condition)>
 				<cfoutput><!--[#stCSS.condition#]>#CRLF#</cfoutput>

@@ -369,7 +369,7 @@
 												priority="secondary"
 												class="small"
 												value="Remove All" 
-												text="remove all" 
+												text="Remove All" 
 												confirmText="Are you sure you want to remove all the attached items?"
 												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
 									

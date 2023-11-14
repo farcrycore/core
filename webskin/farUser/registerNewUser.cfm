@@ -15,20 +15,36 @@
 
 <ft:processForm action="Register Now">
 	<!--- Get the User --->
-	<ft:processFormObjects typename="farUser">
-		<cfset stProperties.userstatus = "pending" />
-		<cfset stProperties.userid = trim(stProperties.userid) />
+	<ft:processFormObjects typename="farUser" bSessionOnly="true">
+		<cfset stProperties.objectid = createUUID() />
+		<cfset stNew = application.fapi.getContentObject(typename="farUser", objectid=createUUID()) />
+		<cfset stNew.userstatus = "pending" />
+		<cfset stNew.userid = trim(stProperties.userid) />
+		<cfset stNew.password = stProperties.password />
+		<cfset stNew.aGroups = [ application.fapi.getContentType(typename="farGroup").getID(name="member") ] />
+		<cfset application.fapi.setData(stProperties=stNew) />
 
-		<cfset newUserID = stProperties.objectid />
-		<cfset newUserName = stProperties.userid />
+		<cfif isDefined("session.stTempObjectStoreKeys.farUser.registerNewUser")>
+			<cfset structDelete(session.stTempObjectStoreKeys.farUser, "registerNewUser") />
+		</cfif>
 
-		<cfset stProperties.aGroups = [ application.fapi.getContentType(typename="farGroup").getID(name="member") ]>
+		<cfset newUserID = stNew.objectid />
+		<cfset newUserName = stNew.userid />
 	</ft:processFormObjects>
 
 
-	<ft:processFormObjects typename="dmProfile">
-		<cfset stProperties.userDirectory = "CLIENTUD" />
-		<cfset stProperties.username = "#newUserName#_CLIENTUD" />
+	<ft:processFormObjects typename="dmProfile" bSessionOnly="true">
+		<cfset stNew = application.fapi.getContentObject(typename="dmProfile", objectid=createUUID()) />
+		<cfset stNew.firstName = stProperties.firstName />
+		<cfset stNew.lastname = stProperties.lastname />
+		<cfset stNew.emailAddress = stProperties.emailAddress />
+		<cfset stNew.userDirectory = "CLIENTUD" />
+		<cfset stNew.username = "#newUserName#_CLIENTUD" />
+		<cfset application.fapi.setData(stProperties=stNew) />
+
+		<cfif isDefined("session.stTempObjectStoreKeys.dmProfile.registerNewUser")>
+			<cfset structDelete(session.stTempObjectStoreKeys.dmProfile, "registerNewUser") />
+		</cfif>
 	</ft:processFormObjects>
 
 	<!--- This will send the confirmation email and then redirect to the confirmation page --->

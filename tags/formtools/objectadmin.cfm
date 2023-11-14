@@ -117,21 +117,21 @@
 
     <!--- fix up any boolean values --->
     <cfloop index="i" list="#attributes.lFilterFields#">
-                <cfif structKeyExists(application.types, attributes.typename) AND structKeyExists(application.types[attributes.typename].stProps, i) 
-                        AND application.types[attributes.typename].stProps[i].metadata.type eq "boolean">
-                    <cfif NOT structKeyExists(attributes.stFilterMetadata,i)>
-                        <cfset attributes.stFilterMetadata[i] = structNew()>
-                    </cfif>
-                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftType")>
-                        <cfset attributes.stFilterMetadata[i].ftType = "list">
-                    </cfif>
-                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftList")>
-                        <cfset attributes.stFilterMetadata[i].ftList = ":...Any,0:No,1:Yes">
-                    </cfif>
-                    <cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftDefault")>
-                     <cfset attributes.stFilterMetadata[i].ftDefault = "">
-                    </cfif>
-                </cfif>
+		<cfif structKeyExists(application.types, attributes.typename) AND structKeyExists(application.types[attributes.typename].stProps, i) 
+				AND application.types[attributes.typename].stProps[i].metadata.type eq "boolean">
+			<cfif NOT structKeyExists(attributes.stFilterMetadata,i)>
+				<cfset attributes.stFilterMetadata[i] = structNew()>
+			</cfif>
+			<cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftType")>
+				<cfset attributes.stFilterMetadata[i].ftType = "list">
+			</cfif>
+			<cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftList")>
+				<cfset attributes.stFilterMetadata[i].ftList = ":...Any,0:No,1:Yes">
+			</cfif>
+			<cfif NOT structKeyExists(attributes.stFilterMetadata[i],"ftDefault")>
+				<cfset attributes.stFilterMetadata[i].ftDefault = "">
+			</cfif>
+		</cfif>
    </cfloop>
 
 
@@ -814,13 +814,15 @@
 									<!--- bootstrap --->
 									<cfif structkeyexists(attributes.aButtons[i],"icon")>
 										<cfset icon =  attributes.aButtons[i].icon />
-									<cfelse>
-										<cfswitch expression="#attributes.aButtons[i].value#">
-											<cfcase value="Add">
-												<cfset class = "btn-primary">
-											</cfcase>
-										</cfswitch>
 									</cfif>
+									<cfswitch expression="#attributes.aButtons[i].value#">
+										<cfcase value="Add">
+											<cfset class = "btn-primary">
+										</cfcase>
+									</cfswitch>
+								</cfif>
+								<cfif structkeyexists(attributes.aButtons[i],"class")>
+									<cfset class = attributes.aButtons[i]['class']>
 								</cfif>
 								
 								<cfif not structkeyexists(attributes.aButtons[i],"hint")>
