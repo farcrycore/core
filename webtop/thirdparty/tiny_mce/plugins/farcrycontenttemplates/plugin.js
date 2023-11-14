@@ -16,21 +16,28 @@
 						text: stType.label,
 						context: 'farcrycontenttemplates',
 						onclick: function(){
+							var lRelatedIDs;
+							var aRelatedIDs = $j(".array input[type=hidden],.uuid input[type=hidden]").map(function(){
+									return this.value.search(/^(,?\w{8}-\w{4}-\w{4}-\w{16}),?$/) === -1 ? null : this.value; 
+								}).get();							
+							$j('li[id^="join-item-aObjectIDs"]').each(function(){ 
+									aRelatedIDs.push($j(this).attr('serialize'));
+									
+								});							
+							lRelatedIDs = aRelatedIDs.join(",");
 							updatePreview("typename", stType.id);
 							updatePreview("item",null);
 							updatePreview("webskin",null);
-
 							$j.getJSON(params.optionsURL,{
 								relatedtypename : stType.id,
-								relatedids : $j(".array input[type=hidden],.uuid input[type=hidden]").map(function(){ 
-									return this.value.search(/^(,?\w{8}-\w{4}-\w{4}-\w{16}),?$/) === -1 ? null : this.value; 
-								}).get().join(",")
+								relatedids : lRelatedIDs
 							},function(data){
 								if (typeof(data)==="string")
 									data = $j.parseJSON(data);
 
 								var items = [];
 								if (data.showitems) {
+									data.items.unshift({text:'None',value:''});
 									items.push({
 										type: 'listbox',
 										name: 'item',
@@ -43,6 +50,7 @@
 										}
 									});
 								}
+								data.webskins.unshift({text:'None',value:''});
 								items.push({
 									type: 'listbox',
 									name: 'webskin',
