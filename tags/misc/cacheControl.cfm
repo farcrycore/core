@@ -72,9 +72,16 @@ Matt Dawson (mad@daemon.com.au)
 	<CFHEADER NAME="Pragma" VALUE="no-cache">
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
 	
-	<cfif isdefined("url.debug") and url.debug eq 1>
-		<cfhtmlhead text='<!-- <CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT"> <CFHEADER NAME="Pragma" VALUE="no-cache"> <CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate"> -->' />
-	</cfif>
+	<cfset urlDebug = application.fapi.getConfig("security","urlDebug","boolean")>
+	<cfif isdefined("url.debug") AND urlDebug neq "disable">
+	    <cfif urlDebug eq "updateappkey" AND url.debug eq application.updateappKey>
+	        <cfhtmlhead text='<!-- <CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT"> <CFHEADER NAME="Pragma" VALUE="no-cache"> <CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate"> -->' />
+	    <cfelseif urlDebug eq "boolean" AND url.debug eq 1>
+	        <cfhtmlhead text='<!-- <CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT"> <CFHEADER NAME="Pragma" VALUE="no-cache"> <CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate"> -->' />
+	    <cfelseif cgi.remote_addr eq "127.0.0.1">
+	        <cfhtmlhead text='<!-- <CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT"> <CFHEADER NAME="Pragma" VALUE="no-cache"> <CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate"> -->' />
+    	</cfif>
+    </cfif>
 <cfelse>
 	<cfset gmt = gettimezoneinfo() />
 	<cfset gmt = gmt.utcHourOffset />
@@ -97,9 +104,17 @@ Matt Dawson (mad@daemon.com.au)
 	
 	<CFHEADER NAME="Cache-Control" VALUE="#maxagestring#">
 	
-	<cfif isdefined("url.debug") and url.debug eq 1>
-		<cfhtmlhead text='<!-- <CFHEADER NAME="Cache-Control" VALUE="#maxagestring#"> -->' />
-	</cfif>
+
+	<cfset urlDebug = application.fapi.getConfig("security","urlDebug","boolean")>
+	<cfif isdefined("url.debug") AND urlDebug neq "disable">
+	    <cfif urlDebug eq "updateappkey" AND url.debug eq application.updateappKey>
+	        <cfhtmlhead text='<!-- <CFHEADER NAME="Cache-Control" VALUE="#maxagestring#"> -->' />
+	    <cfelseif urlDebug eq "boolean" AND url.debug eq 1>
+	        <cfhtmlhead text='<!-- <CFHEADER NAME="Cache-Control" VALUE="#maxagestring#"> -->' />
+	    <cfelseif cgi.remote_addr eq "127.0.0.1">
+	        <cfhtmlhead text='<!-- <CFHEADER NAME="Cache-Control" VALUE="#maxagestring#"> -->' />
+    	</cfif>
+    </cfif>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">

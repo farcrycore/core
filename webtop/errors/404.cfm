@@ -3,8 +3,18 @@
 <cfheader statuscode="404" statustext="Not Found" />
 
 <cfset showError = false>
-<cfif isdefined("url.debug") AND url.debug eq 1>
-	<cfset showError = true>
+<cfset urlDebug = "boolean">
+<cfif structKeyExists(application, "fapi")>
+	<cfset urlDebug = application.fapi.getConfig("security","urlDebug","boolean")>
+</cfif>
+<cfif isdefined("url.debug") AND urlDebug neq "disable">
+	<cfif urlDebug eq "updateappkey" AND url.debug eq application.updateappKey>
+		<cfset showError = true>
+	<cfelseif urlDebug eq "boolean" AND url.debug eq 1>
+		<cfset showError = true>
+	<cfelseif cgi.remote_addr eq "127.0.0.1">
+		<cfset showError = true>
+	</cfif>
 </cfif>
 
 <!--- rudimentary error handler --->

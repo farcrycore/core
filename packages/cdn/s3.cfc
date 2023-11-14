@@ -202,10 +202,13 @@
 			<cfset removeCachedFile(config=arguments.config,file=arguments.file) />
 		</cfif>
 		
-		<cfset this.cacheMap[arguments.config.name][arguments.file] = structnew() />
-		<cfset this.cacheMap[arguments.config.name][arguments.file].touch = now() />
-		<cfset this.cacheMap[arguments.config.name][arguments.file].path = arguments.path />
-		
+		<cflock name="s3addCachedFile_#hash(arguments.file)#_#application.applicationname#" type="exclusive" timeout="1">
+			<cfset var stFile = {}>
+			<cfset stFile.touch = now() />
+			<cfset stFile.path = arguments.path />
+			<cfset this.cacheMap[arguments.config.name][arguments.file] = stFile>
+		</cflock>
+
 		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Added [#arguments.config.name#] #sanitiseS3URL(arguments.file)# to local cache" /></cfif>
 		
 		<!--- Remove old files --->
@@ -227,6 +230,7 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		
+		<cflock name="s3addCachedFile_#application.applicationname#" type="exclusive" timeout="5">
 		<cfif structkeyexists(this.cacheMap,arguments.config.name)
 			and structkeyexists(this.cacheMap[arguments.config.name],arguments.file)>
 			
@@ -242,6 +246,7 @@
 			
 			<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="Removed [#arguments.config.name#] #sanitiseS3URL(arguments.file)# from local cache" /></cfif>
 		</cfif>
+		</cflock>
 	</cffunction>
 	
 	<cffunction name="getTemporaryFile" returntype="string" access="public" output="false" hint="Returns a path for a new temporary file">
@@ -1321,6 +1326,7 @@
 				<cfset stDetail["signature"] = replace(signature, chr(10), "\n", "ALL")>
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
+				<cfset substituteValues[1] = results.error.message.XMLText>
 				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
 				<cfset substituteValues[3] = signature>
 				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request: {2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
