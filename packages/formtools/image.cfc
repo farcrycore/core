@@ -966,7 +966,7 @@
 			
 		<cfelse>
 			
-			<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
+			<cfif arguments.sizeLimit and arguments.sizeLimit lt application.fc.lib.cdn.ioGetFileSize(location="images",file=listLast(arguments.existingfile, "/\"))>
 				<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
 			<cfelseif listFindNoCase(arguments.allowedExtensions,listlast(arguments.localfile,"."))>
 				<cfset uploadFileName = application.fc.lib.cdn.ioMoveFile(source_localpath=arguments.localfile,dest_location="images",dest_file=arguments.destination & "/" & getFileFromPath(arguments.localfile),nameconflict="makeunique") />
