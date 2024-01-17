@@ -400,10 +400,6 @@
 		<cfargument name="userid" type="string" required="true" hint="The UD specific user id" />
 		<cfargument name="ud" type="string" required="true" hint="The user directory" />
 		
-		<cfset var username = arguments.userid />
-        <cfif left(arguments.userid, 6) EQ "auth0|">
-            <cfset username = replace(arguments.userid, "auth0|", "", "one")>
-        </cfif>
 		<cfset var groups = "" />
 		<cfset var aUserGroups = arraynew(1) />
 		<cfset var i = 0 />
@@ -417,11 +413,11 @@
 		</cfloop>
 		
 		<!--- New structure --->
-		<cfset session.security.userid = "#username#_#arguments.ud#" />
+		<cfset session.security.userid = "#arguments.userid#_#arguments.ud#" />
 		<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
 		
 		<!--- Get users profile --->
-		<cfset session.dmProfile = oProfile.getProfile(userName=username,ud=arguments.ud) />
+		<cfset session.dmProfile = oProfile.getProfile(userName=arguments.userid,ud=arguments.ud) />
 		<cfset session.dmProfile.lastLogin = now() />
 		<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(arguments.userid,duplicate(session.dmProfile)) />
 		<cfparam name="stDefaultProfile.override" default="false" />
@@ -429,7 +425,7 @@
 			<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
 
 			<cfset session.dmProfile.userdirectory = arguments.ud />
-			<cfset session.dmProfile.username = "#username#_#arguments.ud#" />
+			<cfset session.dmProfile.username = "#arguments.userid#_#arguments.ud#" />
 			<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
 			
 			<!--- Go and get it again now its in the db --->
