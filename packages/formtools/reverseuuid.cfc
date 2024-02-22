@@ -3,6 +3,8 @@
 
 	<cfproperty name="ftJoin" default="" type="string" />
 	<cfproperty name="ftJoinProperty" default="" type="string" />
+	<cfproperty name="ftAllowCreate" default="true" type="boolean" />
+	<cfproperty name="ftAllowDelete" default="true" type="boolean" />
 	<cfproperty name="ftTableView" default="editReverseUUIDTable" type="string" />
 	<cfproperty name="ftEditView" default="webtopPageModal" type="string" />
 	<cfproperty name="ftEditBodyView" default="editReverseUUIDObject" type="string" />
