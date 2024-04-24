@@ -406,7 +406,9 @@
 				<cfset stResult.precision = "11" />
 				<cfset stResult.nullable = false>
 				<cfset stResult.default = "">
-				<cfset stResult.index = listsort(listappend(stResult.index,"#name#_UNIQUE"),"textnocase","asc") />
+				<cfif NOT stResult.bPrimaryKey>
+					<cfset stResult.index = listsort(listappend(stResult.index,"#name#_UNIQUE"),"textnocase","asc") />
+				</cfif>
 			</cfcase>
 			<cfcase value="json">
 				<cfset stResult.type = "json" />

@@ -77,6 +77,7 @@
 		<cfset var stVal = structNew()>
 		<cfset var stProp = "">
 		<cfset var thisfield = "">
+		<cfset var pk = "">
 		
 		<cfprocessingdirective suppressWhitespace="true">
 		<cfsavecontent variable="resultSQL">
@@ -135,9 +136,18 @@
 							<cfoutput>DEFAULT #stVal.value# </cfoutput>
 						</cfif>
 					</cfif>
-					<cfif stProp.type eq "identity"><cfoutput>AUTO_INCREMENT </cfoutput></cfif>
+					<cfif stProp.type eq "identity">
+						<cfoutput>AUTO_INCREMENT </cfoutput>
+						<cfif stProp.bPrimaryKey>
+							<cfset pk = stProp.name>
+						</cfif>
+					</cfif>
 				</cfif>
 			</cfloop>
+
+			<cfif len(pk)>
+				<cfoutput>,#chr(13)##chr(10)#PRIMARY KEY (#pk#)</cfoutput>
+			</cfif>
 			
 			<cfoutput>#chr(13)##chr(10)#);</cfoutput>
 		</cfsavecontent>
@@ -262,7 +272,15 @@
 					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 					DEFAULT <cfqueryparam attributeCollection="#stVal#" />
 				</cfif>
-				<cfif stProp.type eq "identity">AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE</cfif>
+
+				<cfif stProp.type eq "identity">
+					<cfif stProp.bPrimaryKey>
+						AUTO_INCREMENT
+					<cfelse>
+						AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE
+					</cfif>
+				</cfif>
+
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
@@ -341,7 +359,13 @@
 					DEFAULT <cfqueryparam attributeCollection="#stVal#" />
 				</cfif>
 
-				<cfif stProp.type eq "identity">AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE</cfif>
+				<cfif stProp.type eq "identity">
+					<cfif stProp.bPrimaryKey>
+						AUTO_INCREMENT
+					<cfelse>
+						AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE
+					</cfif>
+				</cfif>
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
