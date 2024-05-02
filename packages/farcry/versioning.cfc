@@ -44,6 +44,7 @@ $out:$
 		<cfargument name="stDraftObject"  type="struct" required="true" hint="the draft stuct to be updated">
 		<cfargument name="typename" type="string" required="false" hint="Providing typename avoids a type-lookup from the objectid, offering a slight performance increase.">
 		<cfargument name="bCopyDraftContainers" type="boolean" required="false" default="true" hint="Containers configured for the draft object will be copied when the object is sent live.">
+		<cfargument name="auditNote" type="string" required="false" default="Draft version sent live" hint="Note for audit trail">
 		
 		<cfset var stResult = structNew() />
 		<cfset var o = "" />
@@ -78,7 +79,7 @@ $out:$
 				<cfset arguments.stDraftObject.status = "approved" />
 				<cfset arguments.stDraftObject.dateTimeLastUpdated = createODBCDateTime(Now()) />
 				<cfset structDelete(arguments.stDraftObject,"dateTimeCreated") /><!--- do not update created time when publishing --->
-				<cfset o.setData(stProperties=arguments.stDraftObject,auditNote='Draft version sent live',previousStatus="draft") />
+				<cfset o.setData(stProperties=arguments.stDraftObject,auditNote=arguments.auditNote,previousStatus="draft") />
 				
 				<cfset stResult.result = true />
 				<cfset stResult.message = 'Update Successful' />
