@@ -726,23 +726,40 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
-		
+		<cfargument name="auditNote" type="string" required="false" default="">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+
 		<cfset var bRefCreated = false>
+		<cfset var thisTypename = "">
+		<cfif structKeyExists(arguments.stProperties, "typename")>
+			<cfset thisTypename = arguments.stProperties.typename>
+		<cfelse>
+			<cfset thisTypename = getTypename()>
+		</cfif>
+
+		<!--- Announce the save event to listeners --->
+		<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "beforesave",
+													typename = thisTypename,
+													oType = this,
+													stProperties = arguments.stProperties,
+													bAudit = arguments.bAudit,
+													auditNote = arguments.auditNote) />
+
 		<cfset var stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- only create a record in refObjects if one doesnt already exist --->
 		<cfif len(application.fapi.findType(objectId = stReturn.objectId, dsn=application.dsn_write)) eq 0>
-			<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#stReturn.objectid#", typename=getTypeName(), dsn=application.dsn_write, dbowner=application.dbowner_write, dbtype=application.dbtype_write) />
+			<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#stReturn.objectid#", typename=thisTypename, dsn=application.dsn_write, dbowner=application.dbowner_write, dbtype=application.dbtype_write) />
 		</cfif>
 		
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes">
 		</cfif>
 		
-		<cfparam name="arguments.stProperties.typename" default="#getTypename()#" />
+		<cfparam name="arguments.stProperties.typename" default="#thisTypename#" />
 		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(stObject=arguments.stProperties) />
 		
-    	<cfreturn stReturn />
+		<cfreturn stReturn />
 	</cffunction>
 	
 	<cffunction name="getData" access="public" output="true" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">

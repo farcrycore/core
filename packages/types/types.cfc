@@ -243,7 +243,7 @@ default handlers
 				arguments.stProperties.lastupdatedby = arguments.user;	
 		</cfscript>
 		
-		<cfset stNewObject = super.createData(arguments.stProperties,arguments.stProperties.objectid,arguments.dsn) />
+		<cfset stNewObject = super.createData(stProperties=arguments.stProperties,objectid=arguments.stProperties.objectid,dsn=arguments.dsn,bAudit=arguments.bAudit,auditNote=arguments.auditNote) />
 		
 		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
 		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#getTypeName()#.bAudit") or application.stcoapi[getTypeName()].bAudit)>
