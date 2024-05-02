@@ -374,10 +374,14 @@
 		<cfset var stResult = "" />
 		<cfset var o = application.fapi.getContentType("#arguments.typename#") />
 
-		<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
-		<cfparam name="session.stTempObjectStoreKeys[arguments.typename]" default="#structNew()#" />
-		
-		
+		<cfif not structKeyExists(session, "stTempObjectStoreKeys") >
+			<cfset session.stTempObjectStoreKeys = structNew() >
+		</cfif>
+		<cfif not structKeyExists(session.stTempObjectStoreKeys, arguments.typename) >
+			<cfset session.stTempObjectStoreKeys[arguments.typename] = structNew() >
+		</cfif>
+
+
 		<cfloop collection="#arguments#" item="i">
 			<cfif NOT listFindNoCase(lReserved, i)>
 				<cfset arguments.stProperties[i] = arguments[i] />
