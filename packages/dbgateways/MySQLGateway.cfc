@@ -129,8 +129,8 @@
 							<cfoutput>DEFAULT NULL </cfoutput>
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
 							<cfoutput>DEFAULT '#stVal.value#' </cfoutput>
-						<cfelseif stVal.cfsqltype eq "cf_sql_date">
-							<cfoutput>DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#' </cfoutput>
+						<cfelseif stVal.cfsqltype eq "cf_sql_timestamp">
+							<cfoutput>DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"HH:mm:s")#' </cfoutput>
 						<cfelseif isNumeric(stVal.value)>
 							<cfoutput>DEFAULT #stVal.value# </cfoutput>
 						</cfif>

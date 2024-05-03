@@ -58,7 +58,7 @@
 		<cfset var st = refind("\?(?=([^']*'[^']*')*[^']*$)",sql,1,true) />
 		<cfset var paramindex = 1 />
 		<cfset var sqlParam = "" />
-		<cfset var comment = "#### #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'hh:mm:ss')#" />
+		<cfset var comment = "#### #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'HH:mm:ss')#" />
 		
 		<cfif structkeyexists(request,"id")>
 			<cfset comment = comment & ", " & request.id />
