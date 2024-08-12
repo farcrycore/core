@@ -181,7 +181,7 @@ Parent Object: URL.OBJECTID
 				<cfscript>
 					qChildren = application.factory.oTree.getChildren(objectid=stParent.objectID,typename=stParent.typename);
 					position = qChildren.recordCount + 1;
-					streturn = application.factory.oTree.setChild(objectName=stProps.label,typename=typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
+					streturn = application.factory.oTree.setChild(objectName=stProps.label,typename=stParent.typename,parentID=stParent.objectID,objectID=newObjId,pos=position);
 				</cfscript>
 				</cfif>
 		<cfelse>
