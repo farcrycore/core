@@ -501,7 +501,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=webtopAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -523,7 +523,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=webtopAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
