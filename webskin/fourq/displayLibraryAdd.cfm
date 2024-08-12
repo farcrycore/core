@@ -66,7 +66,7 @@ START WEBSKIN
 					$j.ajax({
 						cache: false,
 						type: "POST",
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
+			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=webtopAjaxUpdateJoin&property=#url.property#',
 						data: {addID: '#newLibraryObjectID#'},
 						dataType: "html",
 						complete: function(data){
@@ -96,7 +96,7 @@ START WEBSKIN
 					$j.ajax({
 						cache: false,
 						type: "POST",
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
+			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=webtopAjaxUpdateJoin&property=#url.property#',
 						data: {addID: '#newLibraryObjectID#'},
 						dataType: "html",
 						complete: function(data){
