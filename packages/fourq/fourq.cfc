@@ -661,10 +661,19 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<!--- check if date type, and set default to the default assigned OR to now() --->
 			
 			<cfif NOT StructKeyExists(stProps, propertie)>
-						
-				<cfparam name="stDefaultProperties[propertie].metadata.Default" default="">
-				<cfparam name="stDefaultProperties[propertie].metadata.ftDefaultType" default="value">
-				<cfparam name="stDefaultProperties[propertie].metadata.ftDefault" default="#stDefaultProperties[propertie].metadata.Default#">
+
+				<cfif not structKeyExists(stDefaultProperties[propertie], "metadata") >
+					<cfset stDefaultProperties[propertie].metadata = structNew() >
+				</cfif>
+				<cfif not structKeyExists(stDefaultProperties[propertie].metadata, "Default") >
+					<cfset stDefaultProperties[propertie].metadata.Default = "" >
+				</cfif>
+				<cfif not structKeyExists(stDefaultProperties[propertie].metadata, "ftDefaultType") >
+					<cfset stDefaultProperties[propertie].metadata.ftDefaultType = "value" >
+				</cfif>
+				<cfif not structKeyExists(stDefaultProperties[propertie].metadata, "ftDefault") >
+					<cfset stDefaultProperties[propertie].metadata.ftDefault = stDefaultProperties[propertie].metadata.Default >
+				</cfif>
 				
 						
 				

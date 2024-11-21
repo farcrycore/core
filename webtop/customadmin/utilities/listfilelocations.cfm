@@ -15,8 +15,14 @@
 	<cfif listcontains("type,rule",application.stCOAPI[thistype].class)>
 		<cfloop collection="#application.stCOAPI[thistype].stProps#" item="thisprop">
 			<cfif isdefined("application.stCOAPI.#thistype#.stProps.#thisprop#.metadata.ftType") and listcontains("image,file",application.stCOAPI[thistype].stProps[thisprop].metadata.ftType)>
-				<cfparam name="stFileProps[thistype]" default="#structnew()#" />
-				<cfparam name="stFileProps[thistype][thisprop]" default="#application.stCOAPI[thistype].stProps[thisprop].metadata#" />
+
+				<cfif not structKeyExists(stFileProps, thistype) >
+					<cfset stFileProps[thistype] = structNew() >
+				</cfif>
+				<cfif not structKeyExists(stFileProps[thistype], thisprop) >
+					<cfset stFileProps[thistype][thisprop] = application.stCOAPI[thistype].stProps[thisprop].metadata >
+				</cfif>
+
 			</cfif>
 		</cfloop>
 	</cfif>
