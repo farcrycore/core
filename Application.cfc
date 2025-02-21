@@ -102,6 +102,11 @@
 					</cfif>
 				</cfif>
 
+				<cfset FARCRY_DSN_VALIDATE = system.getEnv("FARCRY_DSN#key#_VALIDATE")>
+				<cfif NOT isNull(FARCRY_DSN_VALIDATE) AND FARCRY_DSN_VALIDATE>
+					<cfset this.datasources[FARCRY_DSN].validate = true>
+				</cfif>
+				
 			</cfif>
 		</cfloop>
 	</cfif>
