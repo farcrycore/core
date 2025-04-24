@@ -128,7 +128,7 @@
 				<cfloop collection="#stDiff.tables[thistable].indexes#" item="thisindex">
 					<cfswitch expression="#stDiff.tables[thistable].indexes[thisindex].resolution#">
 						<cfcase value="x">
-							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>[index] #thisindex#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisindex#_conflicts" selector="##index_#thistable#_#thisindex#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].indexes[thisindex])#" />
 								<cfoutput>
 									<label for="index_#thistable#_#thisindex#_ignore" class="radio inline">
@@ -143,7 +143,7 @@
 							</ft:field>
 						</cfcase>
 						<cfcase value="+">
-							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>[index] #thisindex#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisindex#_conflicts" selector="##index_#thistable#_#thisindex#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].indexes[thisindex])#" />
 								<cfoutput>
 									<label for="index_#thistable#_#thisindex#_ignore" class="radio inline">
@@ -158,7 +158,7 @@
 							</ft:field>
 						</cfcase>
 						<cfcase value="-">
-							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>#thisindex#</span>" bMultiField="true">
+							<ft:field label="&nbsp;<span id='index_#thistable#_#thisindex#_conflicts'>[index] #thisindex#</span>" bMultiField="true">
 								<skin:tooltip id="index_#thistable#_#thisindex#_conflicts" selector="##index_#thistable#_#thisindex#_conflicts" message="#summariseChanges(argumentCollection=stDiff.tables[thistable].indexes[thisindex])#" />
 								<cfoutput>
 									<label for="index_#thistable#_#thisindex#_ignore" class="radio inline">
