@@ -1003,7 +1003,7 @@
 			<cfargument name="permission" required="true" /><!--- create,edit,delete,approve,canapproveowncontent,requestapproval,view --->
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
 			
-			<cfreturn application.security.checkPermission(typename=arguments.typename, permission=arguments.permission, role=arguments.role) />
+			<cfreturn application.security.checkPermission(type=arguments.typename, permission=arguments.permission, role=arguments.role) />
 		</cffunction>
 		
 		<!--- @@examples:
