@@ -406,7 +406,7 @@
 					<cfif structKeyExists(arguments.stProperties,"typename")>
 						<cfset errorTypename = arguments.stProperties.typename>
 					</cfif>
-					<cflog file="fourq" text="Error running setData() for #arguments.stProperties.objectID# (#arguments.stProperties.typename#): #stResult.message#"  />
+					<cflog file="fourq" text="Error running setData() for #errorObjectID# (#errorTypename#): #stResult.message#"  />
 					<cfset arrayappend(stResult.results,cfcatch) />
 				</cfcatch>
 			</cftry>
