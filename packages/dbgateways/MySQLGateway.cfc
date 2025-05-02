@@ -593,6 +593,7 @@
 				<cfset stColumn.nullable = false />
 			</cfif>
 			<cfset stColumn.default = qColumns.column_default_value />
+			<cfset stColumn.defaultType = "value" />
 			<cfif stColumn.default eq "" and stColumn.nullable>
 				<cfset stColumn.default = "NULL" />
 			</cfif>
@@ -632,6 +633,10 @@
 				<cfcase value="datetime">
 					<cfset stColumn.type = "datetime" />
 					<cfset stColumn.precision = "#qColumns.datetime_precision#" />
+					<!--- defaultType is "expression" when the value is a non-date string that is not "NULL" (nulls are handled further down) --->
+					<cfif len(stColumn.default) AND stColumn.default neq "NULL" AND NOT isValid("date", stColumn.default)>
+						<cfset stColumn.defaultType = "expression" />
+					</cfif>
 					<!--- For MariaDB 10.2+, strip out ' so date comparisons work --->
 					<cfset stColumn.default = replace(stColumn.default, "'", "", "ALL") />
 					<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
@@ -696,6 +701,7 @@
 			<cfset stTemp.name = listlast(qTables.table_name,"_") />
 			<cfset stTemp.type = "array" />
 			<cfset stTemp.default = "NULL" />
+			<cfset stTemp.defaultType = "value" />
 			<cfset stTemp.nullable = true />
 			<cfset stTemp.GENERATEDALWAYS = "" />
 			<cfset stTemp.VIRTUALTYPE = "" />
@@ -726,6 +732,7 @@
 		<cfset var altered = arguments.expected.nullable neq arguments.actual.nullable
 				  OR (arguments.expected.type neq "longchar" and arguments.expected.default neq arguments.actual.default and "'#arguments.expected.default#'" neq arguments.actual.default)
 				  OR arguments.expected.type neq arguments.actual.type
+				  OR arguments.expected.defaultType neq arguments.actual.defaultType
 				  OR arguments.expected.precision neq arguments.actual.precision
 				  OR (expectedGeneratedAlways?:'') neq (actualGeneratedAlways?:'')
 				  OR (arguments.expected.VIRTUALTYPE?:'') neq (arguments.actual.VIRTUALTYPE?:'') />

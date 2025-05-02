@@ -318,6 +318,7 @@
 		<cfargument name="precision" type="string" required="false" default="" />
 		<cfargument name="bPrimaryKey" type="boolean" required="false" default="false" />
 		<cfargument name="default" type="any" required="false" default="" />
+		<cfargument name="defaultType" type="any" required="false" default="value" />
 		<cfargument name="index" type="string" required="false" default="" />
 		<cfargument name="savable" type="boolean" required="false" default="true" />
 		<cfargument name="generatedAlways" type="string" required="false" default="" hint="the expression used on a generated field. MySQL only." />
@@ -329,6 +330,7 @@
 		<cfset stResult.nullable = arguments.nullable />
 		<cfset stResult.bPrimaryKey = arguments.bPrimaryKey />
 		<cfset stResult.default = arguments.default />
+		<cfset stResult.defaultType = arguments.defaultType />
 		<cfset stResult.index = arguments.index />
 		<cfset stResult.savable = arguments.savable />
 		<cfset stResult.generatedAlways = arguments.generatedAlways />
@@ -447,7 +449,7 @@
 		<cfset var name = arguments.data.name />
 		<cfset var nullable = true />
 		<cfset var default = "" />
-		<cfset var defaultType = "" />
+		<cfset var defaultType = "value" />
 		<cfset var precision = "" />
 		<cfset var type = "" />
 		<cfset var bPrimaryKey = false />
@@ -530,6 +532,7 @@
 				<cfset stResult.bPrimaryKey = false />
 				<cfset stResult.nullable = true />
 				<cfset stResult.default = "NULL" />
+				<cfset stResult.defaultType = "value" />
 				<cfset stResult.fields.parentid = createFieldStruct(name="parentid",default="",nullable=false,type="uuid",precision="",index="array_index") />
 				<cfset stResult.fields.seq = createFieldStruct(name="seq",default=0,nullable=false,type="numeric",precision="",index="array_index") />
 				<cfparam name="stResult.indexes" default="#structnew()#" />
