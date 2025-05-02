@@ -398,7 +398,15 @@
 					<cftransaction action="rollback" />
 					<cfset stResult.bSuccess = false />
 					<cfset stResult.message = cfcatch.message ?: "" />
-					<cflog file="fourq" text="Error running setData() for #arguments.stProperties.objectID# (#arguments.stProperties.typename#): #stResult.message#"  />
+					<cfset var errorObjectID = "">
+					<cfset var errorTypename = "">
+					<cfif structKeyExists(arguments.stProperties,"objectid")>
+						<cfset errorObjectID = arguments.stProperties.objectid>
+					</cfif>
+					<cfif structKeyExists(arguments.stProperties,"typename")>
+						<cfset errorTypename = arguments.stProperties.typename>
+					</cfif>
+					<cflog file="fourq" text="Error running setData() for #errorObjectID# (#errorTypename#): #stResult.message#"  />
 					<cfset arrayappend(stResult.results,cfcatch) />
 				</cfcatch>
 			</cftry>
