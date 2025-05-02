@@ -447,6 +447,7 @@
 		<cfset var name = arguments.data.name />
 		<cfset var nullable = true />
 		<cfset var default = "" />
+		<cfset var defaultType = "" />
 		<cfset var precision = "" />
 		<cfset var type = "" />
 		<cfset var bPrimaryKey = false />
@@ -474,8 +475,12 @@
 			<cfset nullable = true />
 		</cfif>
 		
-		<cfif structkeyexists(arguments.data,"default")>
+		<cfif structkeyexists(arguments.data,"dbDefault")>
+			<cfset default = arguments.data.dbDefault />
+			<cfset defaultType = "expression" />
+		<cfelseif structkeyexists(arguments.data,"default")>
 			<cfset default = arguments.data.default />
+			<cfset defaultType = "value" />
 		</cfif>
 		
 		<cfif structkeyexists(arguments.data,"dbPrecision")>
@@ -511,7 +516,7 @@
 			<cfset virtualType = arguments.data.dbVirtualType />
 		</cfif>
 		
-		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index,savable=savable,generatedAlways=generatedAlways, virtualType=virtualType) />
+		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,defaultType=defaultType,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index,savable=savable,generatedAlways=generatedAlways, virtualType=virtualType) />
 		
 		<cfif type eq "array">
 			<!--- If there is an array content type for this property, that overrides everything else --->

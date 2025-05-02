@@ -11,7 +11,9 @@
 			<cfcase value="datetime">
 				<cfset stResult.cfsqltype = "cf_sql_timestamp" />
 				<cfset stResult.null = false />
-				<cfif (arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL") and arguments.schema.nullable>
+				<cfif arguments.schema.defaultType eq "expression">
+					<cfset stResult.value = arguments.value />
+				<cfelseif (arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL") and arguments.schema.nullable>
 					<cfset stResult.null = true />
 					<cfset stResult.value = "" />
 				<cfelseif arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL">
@@ -126,7 +128,9 @@
 					
 					<cfif NOT listFindNoCase("identity,longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 						<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-						<cfif stVal.null>
+						<cfif stProp.defaultType eq "expression">
+							<cfoutput>DEFAULT #stVal.value# </cfoutput>
+						<cfelseif stVal.null>
 							<cfoutput>DEFAULT NULL </cfoutput>
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
 							<cfoutput>DEFAULT '#stVal.value#' </cfoutput>
@@ -270,7 +274,11 @@
 
 				<cfif NOT listFindNoCase("identity,longchar,json", stProp.type) AND NOT len(trim(stProp.generatedAlways))>
 					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-					DEFAULT <cfqueryparam attributeCollection="#stVal#" />
+					<cfif stProp.defaultType eq "expression">
+						DEFAULT #stVal.value#
+					<cfelse>
+						DEFAULT <cfqueryparam attributeCollection="#stVal#" />
+					</cfif>
 				</cfif>
 
 				<cfif stProp.type eq "identity">
@@ -356,7 +364,11 @@
 
 				<cfif NOT listFindNoCase("identity,longchar,json", stProp.type) AND NOT len(trim(stProp.generatedAlways))>
 					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-					DEFAULT <cfqueryparam attributeCollection="#stVal#" />
+					<cfif stProp.defaultType eq "expression">
+						DEFAULT #stVal.value#
+					<cfelse>
+						DEFAULT <cfqueryparam attributeCollection="#stVal#" />
+					</cfif>
 				</cfif>
 
 				<cfif stProp.type eq "identity">
