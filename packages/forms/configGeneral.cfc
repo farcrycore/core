@@ -34,21 +34,26 @@
 	<!--- TODO: default locale should be the first locale nominated in the farcryconstructor --->
 	<cfproperty ftSeq="20" ftFieldset="Editing Options" name="locale" type="string" default="en_AU" hint="???" ftLabel="Default Locale" ftType="string" 
 		fthint="Nominate a default locale for the site."/>
+	<cfproperty ftSeq="21" ftFieldset="Editing Options"
+				name="timeFormat" type="string" default="12h"
+				ftLabel="Default time format" ftType="list" ftList="12h:12-hour time format,24h:24-hour time format" ftDefault="12h"
+				fthint="Nominate a default time format for the site." />
 
 <!--- sysadmin properties --->
-	<cfproperty ftSeq="21" ftFieldset="SysAdmin Properties" name="adminemail" type="string" default="support@daemon.com.au" hint="The email address to be used by the system for admin functions" ftLabel="Administration email" ftType="email" />
-	<cfproperty ftSeq="22" ftFieldset="SysAdmin Properties" name="adminserver" type="string" default="http://##cgi.HTTP_HOST##" ftDefaultType="expression" hint="???" ftLabel="Administration server" ftType="URL" />
-	<cfproperty ftSeq="23" ftFieldset="SysAdmin Properties" name="bugemail" type="string" default="support@daemon.com.au" hint="???" ftLabel="Bug email" ftType="email" />
-	<cfproperty ftSeq="24" ftFieldset="SysAdmin Properties" name="componentdocurl" type="numeric" default="/CFIDE/componentutils/componentdetail.cfm" hint="???" ftLabel="Component doc URL" ftType="string" />
-	<cfproperty ftSeq="26" ftFieldset="SysAdmin Properties" name="bEmailErrors" type="boolean" default="0" ftLabel="Email errors" />
-	<cfproperty ftSeq="27" ftFieldset="SysAdmin Properties" name="errorEmail" type="string" default="" ftLabel="Error email" ftType="email" />
-	<cfproperty ftSeq="28" ftFieldset="SysAdmin Properties" name="emailWhitelist" type="longchar" ftLabel="Email Whitelist" ftHint="Emails sent through the email library are filtered by this list (leave empty for no filtering). Each LINE can be the full email domain (e.g. daemon.com.au), or a full email address (e.g. support@daemon.com.au).">
-	<cfproperty ftSeq="29" ftFieldset="SysAdmin Properties" name="logDBChanges" type="longchar" ftLabel="Log DB Changes" ftHint="Flag specific types to say that all db changes should be logged" ftType="list" ftSelectMultiple="true" ftListData="listTypes" />
+	<cfproperty ftSeq="30" ftFieldset="SysAdmin Properties" name="adminemail" type="string" default="support@daemon.com.au" hint="The email address to be used by the system for admin functions" ftLabel="Administration email" ftType="email" />
+	<cfproperty ftSeq="31" ftFieldset="SysAdmin Properties" name="adminserver" type="string" default="http://##cgi.HTTP_HOST##" ftDefaultType="expression" hint="???" ftLabel="Administration server" ftType="URL" />
+	<cfproperty ftSeq="32" ftFieldset="SysAdmin Properties" name="bugemail" type="string" default="support@daemon.com.au" hint="???" ftLabel="Bug email" ftType="email" />
+	<cfproperty ftSeq="33" ftFieldset="SysAdmin Properties" name="componentdocurl" type="numeric" default="/CFIDE/componentutils/componentdetail.cfm" hint="???" ftLabel="Component doc URL" ftType="string" />
+	<cfproperty ftSeq="34" ftFieldset="SysAdmin Properties" name="bEmailErrors" type="boolean" default="0" ftLabel="Email errors" />
+	<cfproperty ftSeq="35" ftFieldset="SysAdmin Properties" name="errorEmail" type="string" default="" ftLabel="Error email" ftType="email" />
+	<cfproperty ftSeq="36" ftFieldset="SysAdmin Properties" name="emailWhitelist" type="longchar" ftLabel="Email Whitelist" ftHint="Emails sent through the email library are filtered by this list (leave empty for no filtering). Each LINE can be the full email domain (e.g. daemon.com.au), or a full email address (e.g. support@daemon.com.au).">
+	<cfproperty ftSeq="37" ftFieldset="SysAdmin Properties" name="logDBChanges" type="longchar" ftLabel="Log DB Changes" ftHint="Flag specific types to say that all db changes should be logged" ftType="list" ftSelectMultiple="true" ftListData="listTypes" />
+	<cfproperty ftSeq="38" ftFieldset="SysAdmin Properties" name="isAuditTurnedOn" type="boolean" default="1" ftHint="Should Farcry Use dmArchive and farcry:logevent?" ftLabel="Audit Turned On" ftType="boolean" />
 
 
 <!--- TODO: move to security config; update references --->
-	<cfproperty ftSeq="33" ftFieldset="Login Properties" name="loginattemptsallowed" type="numeric" default="3" hint="???" ftLabel="Login attempts allowed" ftType="integer" />
-	<cfproperty ftSeq="34" ftFieldset="Login Properties" name="loginattemptstimeout" type="numeric" default="10" hint="???" ftLabel="Login attempts timeout" ftType="integer" />
+	<cfproperty ftSeq="40" ftFieldset="Login Properties" name="loginattemptsallowed" type="numeric" default="3" hint="???" ftLabel="Login attempts allowed" ftType="integer" />
+	<cfproperty ftSeq="41" ftFieldset="Login Properties" name="loginattemptstimeout" type="numeric" default="10" hint="???" ftLabel="Login attempts timeout" ftType="integer" />
 
 
 <!--- deprecated properties; backward compatability only --->

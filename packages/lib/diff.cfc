@@ -79,6 +79,20 @@
 		<cfreturn result />
 	</cffunction>
 	
+	
+
+	<cffunction name="compareStrings" returntype="struct" access="public" output="false" hint="Takes two strings and returns a left and right highlighted result">
+		<cfargument name="string1" type="string" required="true">
+		<cfargument name="string2" type="string" required="true">
+
+		<cfset var aResult = getDiff(arguments.string1,arguments.string2)>
+		<cfset var stResult = convertDiffToHighlights(aResult)>
+		
+		<cfreturn stResult>
+		
+	</cffunction>
+
+
 	<cffunction name="convertDiffToHighlights" returntype="struct" access="private" output="false" hint="Takes a diff array and returns a left and right highlighted result">
 		<cfargument name="aDiff" type="array" required="true" />
 		
@@ -152,6 +166,7 @@
 		<cfset var i = 0 />
 		<cfset var j = 0 />
 		<cfset var thistype = "" />
+		<cfset var prop = "" />
 		
 		<cfset stResult.left = arguments.left />
 		<cfset stResult.right = arguments.right />
@@ -398,9 +413,11 @@
 							OR arguments.includeInvisibleProperties 
 						)>
 						
-						<cfset stResult[prop] = getPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
-						<cfif stResult[prop].different>
-							<cfset stResult.countDifferent = stResult.countDifferent + 1 />
+						<cfif structKeyExists(arguments.left, prop) AND structKeyExists(arguments.right, prop)>
+							<cfset stResult[prop] = getPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
+							<cfif stResult[prop].different>
+								<cfset stResult.countDifferent = stResult.countDifferent + 1 />
+							</cfif>
 						</cfif>
 					</cfif>
 				</cfif>

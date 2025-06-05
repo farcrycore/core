@@ -162,10 +162,11 @@ $out:$
 		<cfargument name="stProps" type="struct" required="true" />
 		
 		
-		<cfset var qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftwizardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
-		<cfset var qMetadata = queryNew("typename,propertyname,ftSeq,ftFieldset,ftwizardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->	
+		<cfset var qMetadataSetup = queryNew("typename,propertyname,ftSeq,ftFieldset,ftSection,ftwizardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->
+		<cfset var qMetadata = queryNew("typename,propertyname,ftSeq,ftFieldset,ftSection,ftwizardStep,ftType,fthelptitle,fthelpsection","varchar,varchar,Integer,varchar,varchar,varchar,varchar,varchar,varchar") /><!--- Prepare a temporary metadata query that will later be sorted and sent into the types metadata structure. --->	
 		<cfset var Seq = "" />
 		<cfset var Fieldset = "" />
+		<cfset var Section = "" />
 		<cfset var wizardStep = "" />
 		<cfset var Type = "" />
 		<cfset var helpTitle="" />
@@ -196,6 +197,15 @@ $out:$
 				<cfset Fieldset = arguments.stProps[i].METADATA.ftFieldset />
 			<cfelse>
 				<cfset Fieldset = typename />
+			</cfif>
+			
+			<!--- SETUP FTSECTION --->
+			<cfif structKeyExists(arguments.stProps[i].METADATA, "ftSection")>
+				<cfset section = arguments.stProps[i].METADATA.ftSection />
+			<cfelseif structKeyExists(arguments.stProps[i].METADATA, "ftFieldset")>
+				<cfset section = arguments.stProps[i].METADATA.ftFieldset />
+			<cfelse>
+				<cfset section = typename />
 			</cfif>
 			
 			<!--- SETUP FTwizardSTEP --->
@@ -229,6 +239,7 @@ $out:$
 			<cfset querySetCell(qMetadataSetup,"propertyname", i) />
 			<cfset querySetCell(qMetadataSetup,"ftSeq", val(Seq)) />
 			<cfset querySetCell(qMetadataSetup,"ftFieldset", Fieldset) />
+			<cfset querySetCell(qMetadataSetup,"ftSection", Section) />
 			<cfset querySetCell(qMetadataSetup,"ftwizardStep", wizardStep) />
 			<cfset querySetCell(qMetadataSetup,"ftType", Type) />
 			<cfset querySetCell(qMetadataSetup,"ftHelpTitle", helpTitle) />
@@ -441,13 +452,22 @@ $out:$
 		<cfset var i = structnew() />
 		<cfset var qTypeWatcherWebskins = "" />
 		<cfset var item = "">
+		<cfset var lPackages = "">
 
 		<cfset application.stCOAPI = structnew() />
 
+
+		<!--- FORMTOOLS THEN TYPES.FARCONFIG & THEN EVERYTHING ELSE --->
 		<cfloop list="formtools,types,rules,forms,schema" index="thispackage">
 			<cfset application[thispackage] = structnew() />
+
+			<cfset lPackages = application.factory.oUtils.getComponents(thispackage) />
 			
-			<cfloop list="#application.factory.oUtils.getComponents(thispackage)#" index="thistype">
+			<cfif thispackage EQ "types">
+				<cfset lPackages = listPrepend(lPackages,"farConfig") />
+			</cfif>
+
+			<cfloop list="#lPackages#" index="thistype">
 				<cfset stMetadata = getCOAPIMetadata(thispackage,thistype) />
 				
 				<cfif not structisempty(stMetadata)>
@@ -459,7 +479,7 @@ $out:$
 				</cfif>
 			</cfloop>
 		</cfloop>
-		
+
 		<cfloop list="#structKeyList(application.stCOAPI)#" index="thistype">
 			<cfset qTypeWatcherWebskins = application.stCOAPI[thistype].qWebskins />
 			<cfquery dbtype="query" name="qTypeWatcherWebskins">

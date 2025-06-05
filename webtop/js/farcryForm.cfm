@@ -29,7 +29,7 @@
 		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",{ prefix:prefix, property: property },ajaxUpdate);
 		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",{ prefix:prefix, property: property },ajaxUpdate);
 		var el = $j("input[name="+prefix+property+"][type=hidden]");
-		if (el.size()){
+		if (el.length){
 			var lastvalue = el.val();
 			setInterval(function(){
 				var el = $j("input[name="+prefix+property+"][type=hidden]");
@@ -118,7 +118,7 @@
 				$fc.watchloading++;
 				(function(watcher){
 					// post the AJAX request
-					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.webtop#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.webtop#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid+'&formtheme='+watcher.formtheme,
 						values,
 						function(response){
 							$j("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);
@@ -178,7 +178,7 @@
 				$fc.watchloading++;
 				(function(watcher){
 					// post the AJAX request
-					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid+'&formtheme='+watcher.formtheme,
 						values,
 						function(response){
 							$j("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);
@@ -501,7 +501,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=webtopAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -523,7 +523,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webroot#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=webtopAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -820,113 +820,111 @@
 		
 		$j(document).on("click",".fc-btn, .fc-btn-link", function(e) {
 			
-			var fcSettings = $j(this).data('fcSettings');
+			//var fcSettings = $j(this).data('fcSettings');
+			// if (!fcSettings) {
+			// 	return true;
+			// }
+			var fcdata = $j(this).data();
 
-			if (!fcSettings) {
-				return true;
-			}
-			
-			if( fcSettings.CLICK ) {
+			if ('click' in fcdata){
+				if ('textonclick' in fcdata){
 				
-				if( fcSettings.TEXTONCLICK ) {
 					$j(this).find('.ui-button-text')
 						.css('width', $j(this).find('.ui-button-text').width())
 						.css('height', $j(this).find('.ui-button-text').height())
 						.html( "<img src='/wsimages/ajax-loader.gif' style='width:16px;height:16px;' />");
 						//.html( $j(this).attr('fc:textOnClick') );
 				};
-				
-				btnClick( $j(this).closest('form').attr('id') , fcSettings.CLICK );
+				btnClick( $j(this).closest('form').attr('id') , fcdata.click );
 			};
 			
-			if( fcSettings.SELECTEDOBJECTID ) {
-				selectedObjectID( fcSettings.SELECTEDOBJECTID );
+			if ('selectedobjectid' in fcdata){
+				selectedObjectID( fcdata.selectedobjectid );
 			};
 					
-						
-			if( fcSettings.TURNOFFSERVERSIDEVALIDATION ) {
+			if ('turnoffserversidevalidation' in fcdata){			
 				btnTurnOffServerSideValidation();
 			};
 			
-			if( fcSettings.TURNONSERVERSIDEVALIDATION ) {
+			if ('turnonserversidevalidation' in fcdata){	
 				btnTurnOnServerSideValidation();
 			};
 			
-			
-			if( fcSettings.TURNOFFCLIENTSIDEVALIDATION ) {
+			if ('turnoffclientsidevalidation' in fcdata){	
 				$j(this).closest('form').attr('fc:validate',false);
 			};				
 			
-			
-			if( fcSettings.CONFIRMTEXT ) {
-				if( !confirm( fcSettings.CONFIRMTEXT ) ) {
+			if ('confirmtext' in fcdata){
+				if( !confirm( fcdata.confirmtext) ) {
 					return false;
 				}
 			};				
-			
-			if( fcSettings.URL ) {
-				btnURL( fcSettings.URL , fcSettings.TARGET )
+			if ('url' in fcdata){
+				btnURL( fcdata.url , fcdata.target )
 			};
 			
-			if( fcSettings.TEXTONCLICK ) {
+			if ('textonclick' in fcdata){
 				$j(this).find('.ui-button-text')
 					.css('width', $j(this).find('.ui-button-text').width())
 					.css('height', $j(this).find('.ui-button-text').height())
-					.html( fcSettings.TEXTONCLICK );
+					.html( fcdata.textonclick );
 			};
 			
-			if( fcSettings.ONCLICK ) {
-				eval("var fn = function(){ "+fcSettings.ONCLICK+" }");
+			if ('onclick' in fcdata){
+				eval("var fn = function(){ "+fcdata.onclick+" }");
 				if (fn.call(this,e)===false) return false;
 			};
 			
 			
-			if( fcSettings.SUBMIT ) {
+			if ('submit' in fcdata){
 			
+				if ('disableonsubmit' in fcdata){
+					$j(this).attr("disabled",true);
+				};
 				
-				if( fcSettings.TEXTONSUBMIT ) {
+				if ('textonsubmit' in fcdata){
 					$j(this).find('.ui-button-text')
 						.css('width', $j(this).find('.ui-button-text').width())
 						.css('height', $j(this).find('.ui-button-text').height())
-						.html( fcSettings.TEXTONSUBMIT );
+						.html( fcdata.textonsubmit );
 				};
 				
 				
-				btnSubmit( $j(this).closest('form').attr('id') , fcSettings.SUBMIT );
+				btnSubmit( $j(this).closest('form').attr('id') , fcdata.submit );
 			};
 			return false;
 		});	
 	});		
 	
-	$fc.refreshProperty = function(propertyWrap,focusFieldID) {
+$fc.refreshProperty = function(propertyWrap,focusFieldID) {
 
-		$j(propertyWrap).mask('');
-		var $wrap = $j(propertyWrap);
-		
-		var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&view=displayAjaxRefreshAutoSaveProperty';
-		
-		if (typeof($wrap) == 'undefined'){
-			// ignore
-		} else {
-			//if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
-				$j.ajaxq('AutoSave',{
-				    url: refreshPropertyURL,
-				    cache: false,
-				    success: function(html)
-				    {
-				    	$wrap.html(html);
-				    }
-				});
-			//}
-		}
-		
-		//$wrap.load(refreshPropertyURL, 
-		//	function(data){
-		//		$j('##' + focusFieldID).focus();
-		//	});
+	$j(propertyWrap).mask('');
+	var $wrap = $j(propertyWrap);
+	
+	var refreshPropertyURL = '/index.cfm?ajaxmode=1&type=' + $wrap.attr('ft:type') + '&objectid=' + $wrap.attr('ft:objectid') + '&format=' + $wrap.attr('ft:format') + '&property=' + $wrap.attr('ft:property') + '&prefix=' + $wrap.attr('ft:prefix') + '&view=displayAjaxRefreshAutoSaveProperty';
+	
+	if (typeof($wrap.attr('ft:type')) == 'undefined'){
+		// ignore
+	} else {
+		//if ($wrap.attr('ft:refreshPropertyOnAutoSave') == 'Yes'){
+			$j.ajax({
+			    url: refreshPropertyURL,
+			    cache: false,
+			    success: function(html)
+			    {
+			    	$wrap.html(html);
+			    }
+			});
+		//}
+	}
+	
+	//$wrap.load(refreshPropertyURL, 
+	//	function(data){
+	//		$j('##' + focusFieldID).focus();
+	//	});
 
-		$j(propertyWrap).unmask('');			
-	};	
+	$j(propertyWrap).unmask('');			
+};
 
 
 
@@ -984,6 +982,9 @@
 																
 						for(var i=0; i<valueArray.length; i++){
 							if (valueArray[i] == (propertyPrefix + propertyName) ){
+								// refresh the webskin wrap
+								$fc.reloadWebskinWrap( $currentWebskinWrap );	
+							} else if(valueArray[i] == (propertyType + '.' + propertyName)  ){
 								// refresh the webskin wrap
 								$fc.reloadWebskinWrap( $currentWebskinWrap );	
 							} else if(valueArray[i] == (propertyName) ){

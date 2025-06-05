@@ -1,7 +1,9 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Job Status Cell --->
 
-<cfif stobj.startdate gt now()>
+<cfif stObj.datetimeLastExecuted gt stObj.datetimeLastFinished and dateAdd("s", stObj.timeout, stObj.datetimeLastExecuted) gt now()>
+	<cfoutput><i class="fa fa-play" style="color: orange;"></i> Started #application.fapi.prettyDate(stObj.datetimeLastExecuted)#</cfoutput>	
+<cfelseif stobj.startdate gt now()>
 	<cfoutput><i class="fa fa-clock-o" style="color: orange;"></i> Starts #application.fapi.prettyDate(stobj.startdate)#</cfoutput>		
 <cfelseif stobj.enddate lt now()>
 	<cfoutput><i class="fa fa-clock-o" style="color: red;"></i> Ended #application.fapi.prettyDate(stobj.startdate)#</cfoutput>		

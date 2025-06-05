@@ -41,7 +41,6 @@
 			xAxisTitle = "#application.rb.getResource('coapi.auditUserOverTime.general.hour@label','Hour')#" 
 			yAxisTitle = "#application.rb.getResource('coapi.auditUserOverTime.general.activity@label','Activity')#" 
 			show3D = "yes"
-			rotated = "no" 
 			showLegend = "yes" 
 			tipStyle = "MouseOver">
 			
@@ -74,7 +73,6 @@
 			xAxisTitle = "#application.rb.getResource('coapi.auditUserOverTime.general.hour@label','Day')#" 
 			yAxisTitle = "#application.rb.getResource('coapi.auditUserOverTime.general.activity@label','Activity')#" 
 			show3D = "yes"
-			rotated = "no" 
 			showLegend = "yes" 
 			tipStyle = "MouseOver">
 				

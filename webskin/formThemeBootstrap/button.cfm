@@ -56,11 +56,11 @@
 			<cfif len(attributes.title)> title="#attributes.title#"</cfif> 
 			class="fc-btn btn #attributes.class#" style="#attributes.style#" 
 			<cfif attributes.disabled>disabled</cfif>
-		 	<cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> 
-		 	<cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> 
-		 	<cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>
+		 	<cfif len(attributes.textOnClick)>data-textOnClick="#attributes.textOnClick#"</cfif> 
+		 	<cfif len(attributes.textOnSubmit)>data-textOnSubmit="#attributes.textOnSubmit#"</cfif> 
+		 	<cfif attributes.disableOnSubmit>data-disableOnSubmit="1"</cfif>
 		 	<cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>
-		 >
+		 	<cfloop collection="#attributes.stButtonAttributes#" item="iAttr">data-#lCase(iAttr)#="#attributes.stButtonAttributes[iAttr]#" </cfloop> >
 		 
 		<cfif listLen(attributes.icon)>
 			<cfif len(trim(listFirst(attributes.icon)))>

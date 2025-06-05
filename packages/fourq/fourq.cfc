@@ -633,9 +633,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stProps.typename = arguments.typename>
 		
 		<cfset stProps.label = "(incomplete)">
-		<cfset stProps.lastupdatedby = userlogin>
+		<cfset stProps.lastupdatedby = dmProfileID>
 		<cfset stProps.datetimelastupdated = Now()>
-		<cfset stProps.createdby = userlogin>
+		<cfset stProps.createdby = dmProfileID>
 		<cfset stProps.datetimecreated = Now()>
 		<cfset stProps.ownedby = dmProfileID>
 		
@@ -726,23 +726,40 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dsn" type="string" required="false" default="">
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
-		
+		<cfargument name="auditNote" type="string" required="false" default="">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+
 		<cfset var bRefCreated = false>
+		<cfset var thisTypename = "">
+		<cfif structKeyExists(arguments.stProperties, "typename")>
+			<cfset thisTypename = arguments.stProperties.typename>
+		<cfelse>
+			<cfset thisTypename = getTypename()>
+		</cfif>
+
+		<!--- Announce the save event to listeners --->
+		<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "beforesave",
+													typename = thisTypename,
+													oType = this,
+													stProperties = arguments.stProperties,
+													bAudit = arguments.bAudit,
+													auditNote = arguments.auditNote) />
+
 		<cfset var stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- only create a record in refObjects if one doesnt already exist --->
-		<cfif len(application.fapi.findType(objectId = stReturn.objectId)) eq 0>
-			<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#stReturn.objectid#", typename=getTypeName(), dsn=arguments.dsn, dbowner=arguments.dbowner, dbtype=arguments.dbtype) />
+		<cfif len(application.fapi.findType(objectId = stReturn.objectId, dsn=application.dsn_write)) eq 0>
+			<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#stReturn.objectid#", typename=thisTypename, dsn=application.dsn_write, dbowner=application.dbowner_write, dbtype=application.dbtype_write) />
 		</cfif>
 		
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes">
 		</cfif>
 		
-		<cfparam name="arguments.stProperties.typename" default="#getTypename()#" />
+		<cfparam name="arguments.stProperties.typename" default="#thisTypename#" />
 		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(stObject=arguments.stProperties) />
 		
-    	<cfreturn stReturn />
+		<cfreturn stReturn />
 	</cffunction>
 	
 	<cffunction name="getData" access="public" output="true" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">
@@ -1243,34 +1260,91 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var prop = '' />
 		<cfset var webskinToCache = '' />
 		<cfset var res = '' />
+		<cfset var iProp = {} />
+		<cfset var formtoolMDType = {} />
 		
-		
+
 		<!--- Make sure ALL properties have an ftType, ftLabel,ftStyle and ftClass set. If not explicitly set then use defaults. --->
-		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation") />
+		
+		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation,ftWatchFields,ftSeq,ftFieldset,ftWizardStep,ftPlaceholder") />
 		
 		<!--- Make sure all required  the defaults are in place --->
+		
 		<cfloop collection="#stReturnMetadata.stProps#" item="prop">
+
+			<!--- WE NEED TO TAKE A COPY OF THE BASE METADATA FROM THE COMPONENT WITHOUT THE LEGACY FORMTOOL METADATA WHICH IS NOT USED IN ADMINUI --->
+			<cfset stReturnMetadata.stProps[prop].baseMetadata = duplicate(stReturnMetadata.stProps[prop].metadata) />
+
+
+
+
 			<cfset stFormtoolDefaults = application.coapi.coapiAdmin.getFormtoolDefaults(formtool=stReturnMetadata.stProps[prop].metadata.ftType) />
 
-			<cfset structAppend(stReturnMetadata.stProps[prop].metadata,stFormtoolDefaults,false) />
+			<!--- FORMTOOL METADATA HAS THE CORRECT DATA TYPE (TRUE/FALSE as boolean) --->
+			<!--- <cfset structAppend(stReturnMetadata.stProps[prop].metadata,stFormtoolDefaults,false) /> --->
+
+								
+			<cfloop collection="#stFormtoolDefaults#" item="iProp">
+
+
+				<cfif !structKeyExists(stReturnMetadata.stProps[prop].metadata, iProp)>
+					<cfset stReturnMetadata.stProps[prop].metadata[iProp] = stFormtoolDefaults[iProp] />
+				<cfelse>
+
+					<cfset formtoolMDType = application.fapi.getFormtoolMetadata(formtool=stReturnMetadata.stProps[prop].metadata.ftType, property=iProp, md="type") />
+
+				
+					<!--- getMetaData() returns only string types. We need to convert booleans to a REAL boolean type --->
+					<cfswitch expression="#formtoolMDType#">
+						<cfcase value="boolean">
+							<cfif isBoolean(stReturnMetadata.stProps[prop].metadata[iProp])>
+								<cfset stReturnMetadata.stProps[prop].metadata[iProp] = !!stReturnMetadata.stProps[prop].metadata[iProp]  />		
+							</cfif>
+						</cfcase>
+						<cfcase value="numeric">
+							<cfif isNumeric(stReturnMetadata.stProps[prop].metadata[iProp])>
+								<cfset stReturnMetadata.stProps[prop].metadata[iProp] = parseNumber(stReturnMetadata.stProps[prop].metadata[iProp],'dec')  />		
+							</cfif>
+						</cfcase>
+						<cfdefaultcase>
+							<!--- ignore --->
+						</cfdefaultcase>
+					</cfswitch>
+
+
+				</cfif>
+				
+			</cfloop>
+
+									
+
+
+
 		</cfloop>
 		
+
+
 		<!--- Set up default attributes --->
-		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" />
-		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
+		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" type="boolean" />
+		<cfparam name="stReturnMetadata.bObjectBroker" default="false" type="boolean" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.objectBrokerWebskinCacheTimeout" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
  		<cfparam name="stReturnMetadata.fuAlias" default="#componentname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
-		<cfparam name="stReturnMetadata.bSystem" default="false" />
-		<cfparam name="stReturnMetadata.bUseInTree" default="false" />
-		<cfparam name="stReturnMetadata.bWorkflow" default="false" />
-		
-		<cfif refindnocase("\.(types|system)\.",stReturnMetadata.fullname)>
-			<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" />
+		<cfparam name="stReturnMetadata.bSystem" default="false" type="boolean" />
+		<cfparam name="stReturnMetadata.bUseInTree" default="false" type="boolean" />
+		<cfparam name="stReturnMetadata.bWorkflow" default="false" type="boolean" />
+	
+		<cfif application.fapi.getConfig('general','isAuditTurnedOn',1)>			
+			<cfif refindnocase("\.(types|system)\.",stReturnMetadata.fullname)>
+				<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" type="boolean" />
+			<cfelse>
+				<cfparam name="stReturnMetadata.bArchive" default="false" type="boolean" />
+			</cfif>
 		<cfelse>
-			<cfparam name="stReturnMetadata.bArchive" default="false" />
+			<cfset stReturnMetadata.bArchive = false />
 		</cfif>
+
 		
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />

@@ -33,6 +33,7 @@
 						</cfcase>
 						<cfcase value="string"><cfoutput>nvarchar(#stProp.precision#) </cfoutput></cfcase>
 						<cfcase value="longchar"><cfoutput>nvarchar(MAX) </cfoutput></cfcase>
+						<cfcase value="json"><cfoutput>nvarchar(MAX) </cfoutput></cfcase>
 						<cfcase value="datetime">
 							<cfif stProp.precision eq "">
 								<cfoutput>datetime2(3) </cfoutput>
@@ -44,9 +45,9 @@
 					
 					<cfif stProp.nullable><cfoutput>NULL </cfoutput><cfelse><cfoutput>NOT NULL </cfoutput></cfif>
 					
-					<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+					<cfif not listFindNoCase("longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 						<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-						<cfif stVal.null>
+						<cftry><cfif stVal.null>
 							<cfoutput>DEFAULT NULL </cfoutput>
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
 							<cfoutput>DEFAULT '#stVal.value#' </cfoutput>
@@ -54,7 +55,7 @@
 							<cfoutput>DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#' </cfoutput>
 						<cfelse>
 							<cfoutput>DEFAULT #stVal.value# </cfoutput>
-						</cfif>
+						</cfif><cfcatch><cfdump var='#stVal#'><cfdump var="#stProp#"><cfabort></cfcatch></cftry>
 					</cfif>
 				</cfif>
 			</cfloop>
@@ -155,6 +156,7 @@
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
+					<cfcase value="json">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">
 						<cfif stProp.precision eq "">
 							datetime2(3)
@@ -165,7 +167,7 @@
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
 				
-				<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+				<cfif not listFindNoCase("longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 					<cfif stVal.null>
 						DEFAULT NULL
@@ -279,6 +281,7 @@
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">nvarchar(MAX)</cfcase>
+					<cfcase value="json">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">
 						<cfif stProp.precision eq "">
 							datetime2(3)
@@ -307,7 +310,7 @@
 			</cfif>
 			
 			<!--- Add new default --->
-			<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+			<cfif not listFindNoCase("longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 				<cfquery datasource="#this.dsn#" result="queryresult">
 					ALTER TABLE #this.dbowner##arguments.schema.tablename#
@@ -378,7 +381,7 @@
 			    OR FindNoCase("string", stTableMetadata.fields[k].type)
 			     >
 					'|---|' + COALESCE(#stTableMetadata.fields[k].Name#,'') + '|---|'
-				<cfelseif FindNoCase("text", stTableMetadata.fields[k].type) OR FindNoCase("longchar", stTableMetadata.fields[k].type)>
+				<cfelseif FindNoCase("text", stTableMetadata.fields[k].type) OR FindNoCase("longchar,json", stTableMetadata.fields[k].type)>
 					'|---|' + COALESCE( CONVERT( varchar(MAX) , #stTableMetadata.fields[k].Name#),'') + '|---|'
 				<cfelseif FindNoCase("date", stTableMetadata.fields[k].type) OR FindNoCase("time", stTableMetadata.fields[k].type)>
 					'|---|' + COALESCE( CONVERT ( varchar(25) , #stTableMetadata.fields[k].Name#, 120) ,'NULL') + '|---|'

@@ -1,60 +1,17 @@
 <cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true">
 
 	<cffunction access="public" returntype="utils" name="init" output="false" hint="Constructor">
-		<cfargument name="aJarPaths" type="array" required="no" default="#arrayNew(1)#" />
-		
-		<cfset var paths = arrayNew(1) />
-		<cfset var theSystem = "" />
-		<cfset var jvmVersion = "" /> 
-		<cfset var aMajorMinor = "" />
-		<cfset var arrlen = "" />
-		<cfset var a = "" />
-		
-		<!--- This points to the jar we want to load. Could also load a directory of .class files --->
-		<cfset paths[1] = expandPath("/farcry/core/packages/farcry/uuid/uuid-3.2.jar") />
-		
-		<cfset arrlen = arrayLen(aJarPaths) />
-		<cfif arrlen>
-			<cfloop from="1" to="#arrlen#" index="a">
-				<cfset arrayappend(paths, expandPath(aJarPaths[a])) />
-			</cfloop>
-		</cfif>
-		
-		<!--- create the loader --->
-		<cfset variables.loader = createObject(
-			"component", 
-			"farcry.core.packages.farcry.javaloader.JavaLoader"
-		).init(paths) />
-		
-		<!--- get the system object so we can get the runtime version --->
-		<cfset theSystem = createObject("java","java.lang.System") />
-		<cfset jvmVersion = "#theSystem.getProperty('java.runtime.version')#" /> 
-		<!--- split the version string into an array.  We only care about the first
-			two digits --->
-		<cfset aMajorMinor = listToArray(jvmVersion,".") />
-		
-		<cfset variables.aJVMMajorMinor = aMajorMinor />
-		
-		<!--- if the JVM is above 1 or above 1.5 the uuid bit will work --->
-		<cfset variables.JVM1_5 = false />
-		<cfif variables.aJVMMajorMinor[1] gt 1 
-			or (variables.aJVMMajorMinor[1] eq 1 and variables.aJVMMajorMinor[2] gte 5)>
-			<cfset variables.JVM1_5 = true />
-		</cfif>
-		
 		
 		<!--- COMBINE: Used for CSS and JS --->
 		<cfset variables.oCombine = createObject("component", "farcry.core.packages.farcry.combine.combine").init(
-												enableCache= true,
-												cachePath= "#application.path.cache#",
-												enableETags= false,
-												enableJSMin= true,
-												enableYuiCSS= true,
-												skipMissingFiles= true,
-												javaLoader= createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader"),
-												jarPath= expandPath('/farcry/core/packages/farcry/combine/lib')
-								) />
-								
+			enableCache= true,
+			cachePath= "#application.path.cache#",
+			enableETags= false,
+			enableJSMin= true,
+			enableYuiCSS= true,
+			skipMissingFiles= true
+		) />
+
 		<cfreturn this />
 	</cffunction>
 
@@ -69,26 +26,11 @@
 		<cfreturn oCombine.combine(argumentCollection=arguments) />
 		
 	</cffunction>
-	
+
 	<cffunction name="createJavaUUID" access="public" returntype="uuid" output="false" hint="">
-		<cfset var newUUID = "" />
-		<cfset var oUUID = "" />
-		
-		<!--- We need to check the current java version and only use
-			the fast UUID library if we are running verison 1.5 or 1.6. --->
-		<cfif variables.JVM1_5>
-			<cfset oUUID = loader.create("com.eaio.uuid.UUID") />
-			
-			<cfset newUUID = oUUID.init() />
-			<cfset newUUID = javaUUIDtoCFUUID(newUUID) />
-			
-		<cfelse>
-			<cfset newUUID = createUUID() />
-		</cfif>
-		
-		<cfreturn newUUID />
+		<cfreturn createUUID()>
 	</cffunction>
-	
+
 	<cffunction name="javaUUIDtoCFUUID" returntype="uuid" access="private" output="false" hint="Most java generators generate UUIDs in a form that do not conform to CFs UUID format. This fixes them.">
 		<cfargument name="sJavaUUID" required="yes">
 		<cfset var newUUID = "" />

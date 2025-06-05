@@ -201,9 +201,19 @@ default handlers
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Set to false to disable logging" />
 		
 		<cfset var stNewObject = "" />
+		<cfset var currentProfileID	= 'anonymous' />
+		<cfset var currentUsersProfile = application.fapi.getCurrentUsersProfile()>
+
+		<!---
+		## determine editing user profile; 
+			note user may be logged in but not created during first-time profile creation or onboarding
+		--->
+		<cfif application.fapi.isLoggedIn() AND NOT structIsEmpty(currentUsersProfile)>
+			<cfset currentProfileID = currentUsersProfile.objectid />
+		</cfif>
 		
-		
-		<cfif not len(arguments.user)>
+		<!--- ## determine user reference --->
+		<cfif not len(arguments.user)>		
 			<cfif isDefined("session.security.userID")>
 				<cfset arguments.user = session.security.userID />
 			<cfelse>
@@ -211,7 +221,12 @@ default handlers
 			</cfif>
 		</cfif>
 		
-		<cfscript>			
+		<cfscript>		
+			arguments.stProperties.datetimecreated = createODBCDateTime(now());
+			arguments.stProperties.datetimelastupdated = createODBCDateTime(now());
+			arguments.stProperties.createdby = currentProfileID;			
+			arguments.stProperties.lastupdatedby = currentProfileID;	
+
 			if(NOT structKeyExists(arguments.stProperties,"objectid"))
 				arguments.stProperties.objectid = application.fc.utils.createJavaUUID();
 			if(NOT structKeyExists(arguments.stProperties,"datetimecreated"))
@@ -228,7 +243,7 @@ default handlers
 				arguments.stProperties.lastupdatedby = arguments.user;	
 		</cfscript>
 		
-		<cfset stNewObject = super.createData(arguments.stProperties,arguments.stProperties.objectid,arguments.dsn) />
+		<cfset stNewObject = super.createData(stProperties=arguments.stProperties,objectid=arguments.stProperties.objectid,dsn=arguments.dsn,bAudit=arguments.bAudit,auditNote=arguments.auditNote) />
 		
 		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
 		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#getTypeName()#.bAudit") or application.stcoapi[getTypeName()].bAudit)>
@@ -265,12 +280,25 @@ default handlers
 		<cfset var stObj = structnew() />
 		<cfset var fnStatusChange = "" />
 		<cfset var stAfterSave	= '' />
+		<cfset var currentProfileID	= 'anonymous' />
+		<cfset var currentUsersProfile = application.fapi.getCurrentUsersProfile()>
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
-		<!--- If no user has been defined we need to manually set it here. --->
+		<!---
+		## determine editing user profile; 
+			note user may be logged in but not created during first-time profile creation or onboarding
+		--->
+		<cfif application.fapi.isLoggedIn() AND NOT structIsEmpty(currentUsersProfile)>
+			<cfset currentProfileID = currentUsersProfile.objectid />
+		</cfif>
+		
+		<!--- 
+		## determine user reference
+			If no user has been defined we need to manually set it here
+		--->
 		<cfif not len(arguments.User)>
-			
+
 			<!--- If a user has logged in then use them --->
 			<cfif application.security.isLoggedIn()>
 				<cfset arguments.User = application.security.getCurrentUserID()>
@@ -282,10 +310,14 @@ default handlers
 			<cfelse>
 				<cfset arguments.User = "anonymous" />
 			</cfif>
+
 		</cfif>
 		
 		<cfif arguments.bSetDefaultCoreProperties>
 			<cfscript>
+				arguments.stProperties.datetimelastupdated = createODBCDateTime(now());
+				arguments.stProperties.lastupdatedby = currentProfileID;	
+
 				//fill in the gaps in case user has forgotten any core properties
 				if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))
 					arguments.stProperties.datetimelastupdated = createODBCDateTime(now());		
@@ -338,7 +370,7 @@ default handlers
 															auditNote = arguments.auditNote) />
 			</cfif>
 		</cfif>
-		
+
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties,bAudit=arguments.bAudit,auditNote=arguments.auditNote) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
@@ -1361,13 +1393,16 @@ default handlers
 		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
 			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
 				<cfset stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
-				<cfset oFactory = application.formtools[stMetadata.ftType].oFactory />
-				<cfif structkeyexists(oFactory,"onDelete")>
-					<cfinvoke component="#oFactory#" method="onDelete">
-						<cfinvokeargument name="typename" value="#arguments.typename#" />
-						<cfinvokeargument name="stObject" value="#arguments.stObject#" />
-						<cfinvokeargument name="stMetadata" value="#stMetadata#" />
-					</cfinvoke>
+
+				<cfif structKeyExists(application.formtools, stMetadata.ftType)>
+					<cfset oFactory = application.formtools[stMetadata.ftType].oFactory />
+					<cfif structkeyexists(oFactory,"onDelete")>
+						<cfinvoke component="#oFactory#" method="onDelete">
+							<cfinvokeargument name="typename" value="#arguments.typename#" />
+							<cfinvokeargument name="stObject" value="#arguments.stObject#" />
+							<cfinvokeargument name="stMetadata" value="#stMetadata#" />
+						</cfinvoke>
+					</cfif>
 				</cfif>
 			</cfif>
 		</cfloop>

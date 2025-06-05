@@ -122,7 +122,7 @@
 		<cfif len(arguments.typename)>
 			<cfset o = createObject("component", application.stcoapi["#arguments.typename#"].packagePath) />
 			<cfset st = duplicate(o.getData(objectid=arguments.objectid)) />
-			<cfset st.objectid = application.fc.utils.createJavaUUID() />
+			<cfset st.objectid = createUUID() />
 			
 			<cfset st.lastupdatedby = userlogin />
 			<cfset st.datetimelastupdated = now() />

@@ -29,6 +29,7 @@
 <cfparam name="url.property" type="string" /><!--- The name of the property we are updating. --->
 <cfparam name="url.prefix" default="" />
 <cfparam name="url.format" default="display" />
+<cfparam name="url.formTheme" default="" />
 
 <cfset request.hideAutoSaveWrapper = true />
 
@@ -59,9 +60,11 @@
 					format="#url.format#"
 					r_stFields="stFields"
 					stPropValues="#objPropValues#"
-					prefix="#url.prefix#" />
+					prefix="#url.prefix#"
+					formtheme="#url.formtheme#" />
 	</cfif>	
 </cfsilent>
+
 
 <cfoutput>
 #stFields[url.property].HTML#

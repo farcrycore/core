@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 
+
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfparam name="attributes.value" /><!--- @@hint: The event submitted and captured by an ft:processForm tag. @@required: true --->
@@ -41,7 +42,6 @@
 
 	<skin:loadJS id="farcry-form" />
 	
-	
 	<cfif not len(attributes.priority) AND len(attributes.text)>	
 		<cfif listFindNoCase(GetBaseTagList(),"cf_buttonPanel")>
 			
@@ -54,17 +54,7 @@
 			</cfif>
 		</cfif>
 	</cfif>
-<!--- 	<cfif len(attributes.priority)>	
-	
-		
-		<cfif listFindNoCase(GetBaseTagList(),"cf_splitButton") AND attributes.renderType EQ "link">
-			<!--- NO PRIORITY IN SPLIT BUTTON LINKS --->
-		<cfelse>
-			<cfset attributes.class = listAppend(attributes.class, "ui-priority-#attributes.priority# btn-#attributes.priority#", " ")>
-		</cfif>
-	</cfif> --->
-	
-	
+
 	<cfset stButtonAttributes = structNew()>
 
 	<!--- I18 conversion of label --->
@@ -169,14 +159,18 @@
 		<cfset attributes.class = listAppend(attributes.class, "dropdown-toggle", " ") />
 	</cfif>
 
+
+
+
+
 	<!--- Output the button if not just returning the info --->
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
 		<cfcase value="link">
-			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn-link #attributes.class#" style="#attributes.style#" href="##" <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>>#attributes.text#</a></cfoutput>
+			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn-link #attributes.class#" style="#attributes.style#" href="##" <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif> <cfloop collection="#stButtonAttributes#" item="iAttr">data-#lcase(iAttr)#="#stButtonAttributes[iAttr]#" </cfloop> >#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfcase value="button">
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>  <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>  <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif> <cfloop collection="#stButtonAttributes#" item="iAttr">data-#lcase(iAttr)#="#stButtonAttributes[iAttr]#" </cfloop> >#attributes.text#</button></cfoutput>
 		</cfcase>
 		
 		<!--- Default FarcryButton based on form theme --->
@@ -199,13 +193,13 @@
 
 		</cfdefaultcase>
 		</cfswitch>
-
+<!--- 
 		<cfset fcSettings = SerializeJSON(stButtonAttributes)>
 		<skin:onReady>
 			<cfoutput>
 			$j('###attributes.id#').data('fcSettings', #fcSettings#);</cfoutput>
 		</skin:onReady>
-		
+		 --->
 		
 		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>
 		
@@ -230,6 +224,7 @@
 		<cfset caller[attributes.r_stButton] = duplicate(attributes) />
 		<cfset caller[attributes.r_stButton].name = "FarcryForm#attributes.Type#Button=#attributes.value#">
 	</cfif>
+
 </cfif>
 
 <cfsetting enablecfoutputonly="false">

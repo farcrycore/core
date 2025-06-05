@@ -17,15 +17,15 @@ jQuery.ajaxq = function (queue, options)
 
 
    var showQueueIndicator = function() {
-         if($j("#autosaveindicator").length == 0) {
-            var fcAutoSaveIndicatorTPL = $j("<div id='autosaveindicator' style='position:absolute;top:0px;text-align: center; display: none;width:100%;'><div style='display: inline-block;border: 1px solid #F0C36D;background-color: #F9EDBE;padding:2px;'>Saving...</div></div>");
-            $j("body").append(fcAutoSaveIndicatorTPL);
+         if(jQuery("#autosaveindicator").length == 0) {
+            var fcAutoSaveIndicatorTPL = jQuery("<div id='autosaveindicator' style='position:absolute;top:0px;text-align: center; display: none;width:100%;'><div style='display: inline-block;border: 1px solid #F0C36D;background-color: #F9EDBE;padding:2px;'>Saving...</div></div>");
+            jQuery("body").append(fcAutoSaveIndicatorTPL);
         }
-        $j("#autosaveindicator").show(); 
+        jQuery("#autosaveindicator").show(); 
     }
 
    var hideQueueIndicator = function() {
-        $j("#autosaveindicator").hide();
+        jQuery("#autosaveindicator").hide();
     }
 
 

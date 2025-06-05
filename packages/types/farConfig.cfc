@@ -198,7 +198,7 @@ object methods
 				<cfset structappend(stObj,stProperties,true) />
 			</ft:validateFormObjects>
 		<cfelse>
-			<cfset stObj = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.formname].packagepath).getData(application.fc.utils.createJavaUUID()) />
+			<cfset stObj = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.formname].packagepath).getData(createUUID()) />
 			<cfset stObj.typename = arguments.stFieldPost.stSupporting.formname />
 			
 			<!--- No validation required --->
@@ -311,7 +311,7 @@ object methods
 
 			<!--- update with missing default values --->
 			<cfif structkeyexists(stResult, "typename") AND structkeyexists(application.stCOAPI,stResult.typename)>
-				<cfset stDefault = createobject("component",application.stCOAPI[stResult.typename].packagepath).getData(application.fc.utils.createJavaUUID()) />
+				<cfset stDefault = createobject("component",application.stCOAPI[stResult.typename].packagepath).getData(createUUID()) />
 				<cfloop collection="#stDefault#" item="formkey">
 					<cfif not structkeyexists(stResult,formkey)>
 						<cfset stResult[formkey] = stDefault[formkey] />
@@ -330,7 +330,7 @@ object methods
 				<cfif qConfig.recordcount>
 					<cfset stObj.objectid = qConfig.objectid[1] />
 				<cfelse>
-					<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
+					<cfset stObj.objectid = createUUID() />
 				</cfif>
 				<cfset stObj.typename = "farConfig" />
 				<cfset stObj.configkey = arguments.key />

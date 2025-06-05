@@ -11,16 +11,20 @@
 			<cfcase value="datetime">
 				<cfset stResult.cfsqltype = "cf_sql_timestamp" />
 				<cfset stResult.null = false />
-				<cfif (arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL") and arguments.schema.nullable>
+				<cfif arguments.schema.defaultType eq "expression">
+					<cfset stResult.value = arguments.value />
+				<cfelseif (arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL") and arguments.schema.nullable>
 					<cfset stResult.null = true />
 					<cfset stResult.value = "" />
 				<cfelseif arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL">
 					<cfset stResult.value = dateadd('yyyy',200,now()) />
+				<cfelseif isDate(arguments.value)>
+					<cfset stResult.value = "#lsdateformat(arguments.value,'yyyy-mm-dd')# #timeformat(arguments.value,'HH:mm:ss.lll')#" />
 				<cfelse>
 					<cfset stResult.value = arguments.value />
 				</cfif>
 			</cfcase>
-			<cfcase value="numeric">
+			<cfcase value="numeric,identity">
 				<cfif listlast(arguments.schema.precision) eq 0 and listfirst(arguments.schema.precision) gt 10>
 					<cfset stResult.cfsqltype = "cf_sql_bigint" />
 				<cfelseif listlast(arguments.schema.precision) eq 0>
@@ -47,6 +51,19 @@
 					<cfset stResult.null = false />
 				</cfif>
 			</cfcase>
+			<cfcase value="json">
+				<cfset stResult.cfsqltype = "cf_sql_varchar" />
+				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
+					<cfset stResult.value = "" />
+					<cfset stResult.null = true />
+				<cfelseif isJSON(arguments.value)>
+					<cfset stResult.value = arguments.value />
+					<cfset stResult.null = false />
+				<cfelse>
+					<cfset stResult.value = "{}" />
+					<cfset stResult.null = false />
+				</cfif>
+			</cfcase>
 		</cfswitch>
 		
 		<cfreturn stResult />
@@ -62,6 +79,7 @@
 		<cfset var stVal = structNew()>
 		<cfset var stProp = "">
 		<cfset var thisfield = "">
+		<cfset var pk = "">
 		
 		<cfprocessingdirective suppressWhitespace="true">
 		<cfsavecontent variable="resultSQL">
@@ -76,6 +94,12 @@
 					
 					<cfoutput>#stProp.name# </cfoutput>
 					<cfswitch expression="#stProp.type#">
+						<cfcase value="identity">
+							<cfoutput>int(11) </cfoutput>
+						</cfcase>
+						<cfcase value="json">
+							<cfoutput>json </cfoutput>
+						</cfcase>
 						<cfcase value="numeric">
 							<cfif stProp.precision eq "1,0">
 								<cfoutput>tinyint(1) </cfoutput>
@@ -91,14 +115,22 @@
 							</cfif>
 						</cfcase>
 						<cfcase value="longchar"><cfoutput>longtext </cfoutput></cfcase>
-						<cfcase value="datetime"><cfoutput>datetime </cfoutput></cfcase>
+						<cfcase value="datetime">
+							<cfif stProp.precision eq "">
+								<cfoutput>datetime(3) </cfoutput>
+							<cfelse>
+								<cfoutput>datetime(#stProp.precision#) </cfoutput>
+							</cfif>
+						</cfcase>
 					</cfswitch>
 					
 					<cfif stProp.nullable><cfoutput>NULL </cfoutput><cfelse><cfoutput>NOT NULL </cfoutput></cfif>
 					
-					<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+					<cfif NOT listFindNoCase("identity,longchar,json", stProp.type) and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 						<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-						<cfif stVal.null>
+						<cfif stProp.defaultType eq "expression">
+							<cfoutput>DEFAULT #stVal.value# </cfoutput>
+						<cfelseif stVal.null>
 							<cfoutput>DEFAULT NULL </cfoutput>
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
 							<cfoutput>DEFAULT '#stVal.value#' </cfoutput>
@@ -108,8 +140,18 @@
 							<cfoutput>DEFAULT #stVal.value# </cfoutput>
 						</cfif>
 					</cfif>
+					<cfif stProp.type eq "identity">
+						<cfoutput>AUTO_INCREMENT </cfoutput>
+						<cfif stProp.bPrimaryKey>
+							<cfset pk = stProp.name>
+						</cfif>
+					</cfif>
 				</cfif>
 			</cfloop>
+
+			<cfif len(pk)>
+				<cfoutput>,#chr(13)##chr(10)#PRIMARY KEY (#pk#)</cfoutput>
+			</cfif>
 			
 			<cfoutput>#chr(13)##chr(10)#);</cfoutput>
 		</cfsavecontent>
@@ -192,12 +234,14 @@
 		
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.results = arraynew(1) />
-		
+
 		<cftry>
 			<cfquery datasource="#this.dsn#" result="queryresult">
 				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				ADD #stProp.name# 
 				<cfswitch expression="#stProp.type#">
+					<cfcase value="identity">int(11)</cfcase>
+					<cfcase value="json">json</cfcase>
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
 							tinyint(1)
@@ -213,11 +257,38 @@
 						</cfif>
 					</cfcase>
 					<cfcase value="longchar">longtext</cfcase>
-					<cfcase value="datetime">datetime</cfcase>
+					<cfcase value="datetime">
+						<cfif stProp.precision eq "">
+							datetime(3)
+						<cfelse>
+							datetime(#stProp.precision#)
+						</cfif>
+					</cfcase>
 				</cfswitch>
+
+				<cfif len(trim(stProp.generatedAlways))>
+					GENERATED ALWAYS AS (#PreserveSingleQuotes(stProp.generatedAlways)#) #stProp.virtualType#
+				</cfif>
+
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
-				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
+
+				<cfif NOT listFindNoCase("identity,longchar,json", stProp.type) AND NOT len(trim(stProp.generatedAlways))>
+					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
+					<cfif stProp.defaultType eq "expression">
+						DEFAULT #stVal.value#
+					<cfelse>
+						DEFAULT <cfqueryparam attributeCollection="#stVal#" />
+					</cfif>
+				</cfif>
+
+				<cfif stProp.type eq "identity">
+					<cfif stProp.bPrimaryKey>
+						AUTO_INCREMENT
+					<cfelse>
+						AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE
+					</cfif>
+				</cfif>
+
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
@@ -259,6 +330,8 @@
 				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				CHANGE #arguments.oldpropertyname# #stProp.name# 
 				<cfswitch expression="#stProp.type#">
+					<cfcase value="identity">int(11)</cfcase>
+					<cfcase value="json">json</cfcase>
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
 							tinyint(1)
@@ -274,11 +347,37 @@
 						</cfif>
 					</cfcase>
 					<cfcase value="longchar">longtext</cfcase>
-					<cfcase value="datetime">datetime</cfcase>
+					<cfcase value="datetime">
+						<cfif stProp.precision eq "">
+							datetime(3)
+						<cfelse>
+							datetime(#stProp.precision#)
+						</cfif>
+					</cfcase>				
 				</cfswitch>
+
+				<cfif len(trim(stProp.generatedAlways))>
+					GENERATED ALWAYS AS (#PreserveSingleQuotes(stProp.generatedAlways)#) #stProp.virtualType#
+				</cfif>
+
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
-				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-				<cfif stProp.type neq "longchar">DEFAULT <cfqueryparam attributeCollection="#stVal#" /></cfif>
+
+				<cfif NOT listFindNoCase("identity,longchar,json", stProp.type) AND NOT len(trim(stProp.generatedAlways))>
+					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
+					<cfif stProp.defaultType eq "expression">
+						DEFAULT #stVal.value#
+					<cfelse>
+						DEFAULT <cfqueryparam attributeCollection="#stVal#" />
+					</cfif>
+				</cfif>
+
+				<cfif stProp.type eq "identity">
+					<cfif stProp.bPrimaryKey>
+						AUTO_INCREMENT
+					<cfelse>
+						AUTO_INCREMENT, ADD UNIQUE INDEX #stProp.name#_UNIQUE(#stProp.name#) USING BTREE
+					</cfif>
+				</cfif>
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
@@ -353,9 +452,31 @@
 		<cfargument name="tablename" type="string" required="true" />
 		
 		<cfset var qColumns = "" />
-		
-		<cfdbinfo datasource="#this.dsn#" type="columns" table="#arguments.tablename#" name="qColumns" />
-		
+		<cfset var qSchema = "" />
+
+		<cfquery datasource="#application.dsn#" name="qSchema">
+			SELECT DATABASE() AS table_schema
+		</cfquery>
+
+		<cfquery name="qColumns" datasource="#this.dsn#">
+			SELECT table_name
+				, column_name
+				, column_default AS column_default_value
+				, data_type AS type_name
+				, character_octet_length AS char_octet_length
+				, character_maximum_length AS column_size
+				, numeric_precision
+				, numeric_scale AS decimal_digits
+				, datetime_precision
+				, is_nullable
+				, generation_expression
+				, extra
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE table_schema = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qSchema.table_schema#">
+				AND table_name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.tablename#">
+			ORDER BY table_name, ordinal_position
+		</cfquery>
+
 		<cfreturn qColumns />
 	</cffunction>
 	
@@ -432,6 +553,8 @@
 				<cfset stResult[qIndexes.index_name].name = qIndexes.index_name />
 				<cfif qIndexes.index_name eq "primary">
 					<cfset stResult[qIndexes.index_name].type = "primary" />
+				<cfelseif listLast(qIndexes.index_name, "_") eq "unique">
+					<cfset stResult[qIndexes.index_name].type = "unique" />
 				<cfelse>
 					<cfset stResult[qIndexes.index_name].type = "unclustered" />
 				</cfif>
@@ -470,6 +593,7 @@
 				<cfset stColumn.nullable = false />
 			</cfif>
 			<cfset stColumn.default = qColumns.column_default_value />
+			<cfset stColumn.defaultType = "value" />
 			<cfif stColumn.default eq "" and stColumn.nullable>
 				<cfset stColumn.default = "NULL" />
 			</cfif>
@@ -490,19 +614,31 @@
 				</cfcase>
 				<cfcase value="varchar">
 					<cfset stColumn.type = "string" />
-					<cfset stColumn.precision = qColumns.char_octet_length />
+					<cfset stColumn.precision = qColumns.column_size />
 				</cfcase>
 				<cfcase value="decimal">
 					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "#qColumns.column_size#,#qColumns.decimal_digits#" />
+					<cfset stColumn.precision = "#qColumns.numeric_precision#,#qColumns.decimal_digits#" />
 				</cfcase>
 				<cfcase value="int">
-					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "#qColumns.column_size#,0" />
+					<cfif isDefined("qColumns.extra") AND qColumns.extra eq "auto_increment">
+						<cfset stColumn.type = "identity" />
+						<cfset stColumn.precision = "11" />
+						<cfset stColumn.nullable = false />
+					<cfelse>
+						<cfset stColumn.type = "numeric" />
+						<cfset stColumn.precision = "#qColumns.numeric_precision#,0" />
+					</cfif>
 				</cfcase>
 				<cfcase value="datetime">
 					<cfset stColumn.type = "datetime" />
-					<cfset stColumn.precision = "3" />
+					<cfset stColumn.precision = "#qColumns.datetime_precision#" />
+					<!--- defaultType is "expression" when the value is a non-date string that is not "NULL" (nulls are handled further down) --->
+					<cfif len(stColumn.default) AND stColumn.default neq "NULL" AND NOT isValid("date", stColumn.default)>
+						<cfset stColumn.defaultType = "expression" />
+					</cfif>
+					<!--- For MariaDB 10.2+, strip out ' so date comparisons work --->
+					<cfset stColumn.default = replace(stColumn.default, "'", "", "ALL") />
 					<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
 						<cfset stColumn.default = "NULL" />
 					<cfelseif stColumn.default gt dateadd('yyyy',100,now())>
@@ -510,7 +646,17 @@
 					</cfif>
 				</cfcase>
 			</cfswitch>
-			
+
+			<!--- GENERATED COLUMN --->
+			<cfset stColumn.generatedAlways = replaceNoCase(qColumns.generation_expression, "`", "","all") />
+			<cfif len(stColumn.generatedAlways)>
+				<cfset stColumn.virtualType = listFirst(qColumns.extra, " ") />
+			<cfelse>
+				<cfset stColumn.virtualType = "" />
+			</cfif>
+
+
+
 			<cfset stResult.fields[stColumn.name] = stColumn />
 		</cfloop>
 		
@@ -537,7 +683,7 @@
 		
 		<!--- Get basic table columns--->
 		<cfdbinfo datasource="#this.dsn#" type="tables" name="qAllTables" />
-		
+
 		<cfquery dbtype="query" name="qTables">
 			select * from qAllTables where upper(table_name) like '#ucase(arguments.typename)#'
 		</cfquery>
@@ -555,7 +701,10 @@
 			<cfset stTemp.name = listlast(qTables.table_name,"_") />
 			<cfset stTemp.type = "array" />
 			<cfset stTemp.default = "NULL" />
+			<cfset stTemp.defaultType = "value" />
 			<cfset stTemp.nullable = true />
+			<cfset stTemp.GENERATEDALWAYS = "" />
+			<cfset stTemp.VIRTUALTYPE = "" />
 			<cfset structappend(stTemp,introspectTable(qTables.table_name),true) />
 			<cfset stResult.fields[listlast(qTables.table_name,"_")] = stTemp />
 		</cfloop>
@@ -566,11 +715,30 @@
 	<cffunction name="isFieldAltered" access="public" returntype="boolean" output="false" hint="Returns true if there is a difference">
 		<cfargument name="expected" type="struct" required="true" hint="The expected schema" />
 		<cfargument name="actual" type="struct" required="true" hint="The actual schema" />
-		
-		<cfreturn arguments.expected.nullable neq arguments.actual.nullable
-				  OR (arguments.expected.type neq "longchar" and arguments.expected.default neq arguments.actual.default)
+
+		<!--- IGNORE non alphanumeric characters as it seems mysql really wants to reformat itself by adding spaces and inverted commas and so on. --->
+		<cfset var expectedGeneratedAlways = reReplace(arguments.expected.GENERATEDALWAYS,'[^\w]', '', 'all') />
+		<cfset var actualGeneratedAlways = reReplace(arguments.actual.GENERATEDALWAYS,'[^\w]', '', 'all') />
+
+		<!--- 
+		MYSQL 8 seems to add _utf8mb4 in front of json expressions. We want to ignore this for the purpose of alteration inspections
+		 e.g.json_unquote(json_extract(`jsonPayload`,_utf8mb4'$.Data')) 
+		--->
+		<cfset expectedGeneratedAlways = replaceNoCase(expectedGeneratedAlways, "_utf8mb4", "", "all") /> 
+		<cfset actualGeneratedAlways = replaceNoCase(actualGeneratedAlways, "_utf8mb4", "", "all") />
+
+		<!--- For MariaDB 10.2+, also compare default with 'default' --->
+
+		<cfset var altered = arguments.expected.nullable neq arguments.actual.nullable
+				  OR (arguments.expected.type neq "longchar" and arguments.expected.default neq arguments.actual.default and "'#arguments.expected.default#'" neq arguments.actual.default)
 				  OR arguments.expected.type neq arguments.actual.type
-				  OR arguments.expected.precision neq arguments.actual.precision />
+				  OR arguments.expected.defaultType neq arguments.actual.defaultType
+				  OR arguments.expected.precision neq arguments.actual.precision
+				  OR (expectedGeneratedAlways?:'') neq (actualGeneratedAlways?:'')
+				  OR (arguments.expected.VIRTUALTYPE?:'') neq (arguments.actual.VIRTUALTYPE?:'') />
+
+		<cfreturn altered />
 	</cffunction>
+
 	
 </cfcomponent>

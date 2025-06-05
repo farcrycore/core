@@ -470,10 +470,10 @@
 		<cfset var plugin = "" />
 	
 		<!--- If the webskin is in the application.stcoapi then just use it --->
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "path")>
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "path")>
 			<cfset webskinPath = application.stcoapi[arguments.typename].stWebskins[arguments.template].path />
 		<cfelse>
 		
@@ -529,8 +529,8 @@
 		</cfif>
 		
 		<!--- Check that the webskin can be used as a variable name --->
-		<cfif not isValid("variablename",template)>
-			<cfthrow 	message="Invalid webskin filename (#path#)."
+		<cfif not isValid("variablename",arguments.template)>
+			<cfthrow 	message="Invalid webskin filename (#arguments.path#)."
 						detail=" FarCry webskin names must adhere to the standard ColdFusion variable naming conventions. For example, no spaces in filename." />
 		</cfif>
 		
@@ -594,11 +594,11 @@
 		<cfset var pos = "" />	
 		<cfset var count = "" />		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheStatus")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheStatus />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheStatus")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheStatus />
 
 		</cfif>
 		
@@ -621,11 +621,11 @@
 		<cfset var pos = "" />	
 		<cfset var count = "" />		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheTimeout")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheTimeout />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheTimeout")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheTimeout />
 
 		</cfif>
 			
@@ -648,11 +648,11 @@
 		<cfset var pos = "" />	
 		<cfset var count = "" />		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "browserCacheTimeout")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].browserCacheTimeout />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "browserCacheTimeout")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].browserCacheTimeout />
 
 		</cfif>
 			
@@ -675,11 +675,11 @@
 		<cfset var pos = "" />	
 		<cfset var count = "" />		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "proxyCacheTimeout")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].proxyCacheTimeout />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "proxyCacheTimeout")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].proxyCacheTimeout />
 
 		</cfif>
 			
@@ -703,11 +703,11 @@
 		<cfset var count = "" />
 		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheByURL")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheByURL />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheByURL")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheByURL />
 		</cfif>
 		
 		
@@ -730,11 +730,11 @@
 		<cfset var count = "" />
 		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheFlushOnFormPost")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheFlushOnFormPost />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheFlushOnFormPost")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheFlushOnFormPost />
 		</cfif>
 		
 		<cfif not isBoolean(result)>
@@ -757,11 +757,11 @@
 		<cfset var count = "" />
 		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheByForm")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheByForm />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheByForm")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheByForm />
 		</cfif>
 		
 		<cfif not isBoolean(result)>
@@ -784,11 +784,11 @@
 		<cfset var count = "" />
 		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheByRoles")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheByRoles />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheByRoles")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheByRoles />
 
 		</cfif>
 		
@@ -810,10 +810,10 @@
 		<cfset var count = "" />
 		<cfset var iViewState = "" />
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheByVars")>
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheByVars")>
 			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheByVars />
 			
 		</cfif>
@@ -832,10 +832,10 @@
 		<cfset var count = "" />
 		<cfset var iViewState = "" />
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheTypeWatch")>
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheTypeWatch")>
 			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheTypeWatch />
 			
 		</cfif>
@@ -854,10 +854,10 @@
 		<cfset var count = "" />
 		<cfset var iViewState = "" />
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheFlushOnObjectChange")>
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "cacheFlushOnObjectChange")>
 			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheFlushOnObjectChange />
 			
 		</cfif>
@@ -878,15 +878,15 @@
 		<cfset var pos = "" />	
 		<cfset var count = "" />		
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "displayname")
-			AND len(application.stcoapi['#typename#'].stWebskins['#template#'].displayname)>
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "displayname")
+			AND len(application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].displayname)>
 			
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].displayname />
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].displayname />
 		<cfelse>
-			<cfset result = template />
+			<cfset result = arguments.template />
 		</cfif>
 			
 		<cfreturn result />
@@ -903,11 +903,11 @@
 		<cfset var pos = "" />	
 		<cfset var count = "" />	
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "author")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].author />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "author")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].author />
 
 		</cfif>
 		
@@ -925,11 +925,11 @@
 		<cfset var pos = "" />	
 		<cfset var count = "" />
 		
-		<cfif structKeyExists(application.stcoapi, typename)
-			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
-			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "description")>
-			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].description />
+		<cfif structKeyExists(application.stcoapi, arguments.typename)
+			AND structKeyExists(application.stcoapi[arguments.typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template) 
+			AND structKeyExists(application.stcoapi[arguments.typename].stWebskins[arguments.template], "description")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].description />
 
 		</cfif>
 		

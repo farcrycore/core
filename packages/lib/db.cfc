@@ -157,6 +157,8 @@
 		<cfargument name="typename" type="any" required="true" hint="The package path or type component to process" />
 		<cfargument name="schema" type="struct" required="false" hint="Use to provide a manually generated schema" />
 		
+		<cfset var md = {} />
+
 		<cfif structkeyexists(arguments,"schema")>
 			<cfif not issimplevalue(arguments.typename)>
 				<cfthrow message="When provided your own schema, the typename must be a string" />
@@ -165,7 +167,9 @@
 				<cfset this.tablemetadata[listlast(arguments.typename,'.')] = duplicate(arguments.schema) />
 			</cfif>
 		<cfelse>
-			<cfset this.tablemetadata[arguments.typename] = parseComponentMetadata(md=getMetadata(createobject("component",arguments.typename))) />
+			<cfset md = getMetadata(createobject("component",arguments.typename)) />
+			<cfset this.tablemetadata[arguments.typename] = parseComponentMetadata(md=duplicate(md)) />
+			
 			<cfset this.tablemetadata[listlast(arguments.typename,'.')] = duplicate(this.tablemetadata[arguments.typename]) />
 		</cfif>
 		
@@ -253,6 +257,8 @@
 						<cfset stResult.indexes[thisindex].name = thisindex />
 						<cfif thisindex eq "primary">
 							<cfset stResult.indexes[thisindex].type = "primary" />
+						<cfelseif listLast(thisindex, "_") eq "unique">
+							<cfset stResult.indexes[thisindex].type = "unique" />
 						<cfelse>
 							<cfset stResult.indexes[thisindex].type = "unclustered" />
 						</cfif>
@@ -312,8 +318,11 @@
 		<cfargument name="precision" type="string" required="false" default="" />
 		<cfargument name="bPrimaryKey" type="boolean" required="false" default="false" />
 		<cfargument name="default" type="any" required="false" default="" />
+		<cfargument name="defaultType" type="any" required="false" default="value" />
 		<cfargument name="index" type="string" required="false" default="" />
 		<cfargument name="savable" type="boolean" required="false" default="true" />
+		<cfargument name="generatedAlways" type="string" required="false" default="" hint="the expression used on a generated field. MySQL only." />
+		<cfargument name="virtualType" type="string" required="false" default="" hint="VIRTUAL OR STORED" />
 		
 		<cfset var stResult = structnew() />
 		
@@ -321,9 +330,16 @@
 		<cfset stResult.nullable = arguments.nullable />
 		<cfset stResult.bPrimaryKey = arguments.bPrimaryKey />
 		<cfset stResult.default = arguments.default />
+		<cfset stResult.defaultType = arguments.defaultType />
 		<cfset stResult.index = arguments.index />
 		<cfset stResult.savable = arguments.savable />
+		<cfset stResult.generatedAlways = arguments.generatedAlways />
+		<cfset stResult.virtualType = arguments.virtualType />
 		
+		<cfif len(trim(arguments.generatedAlways))>
+			<cfset stResult.savable = false /> <!--- Never savable --->
+			<cfset stResult.default = "" /> <!--- Cant be used --->
+		</cfif>
 		<cfif stResult.index eq "true">
 			<cfset stResult.index = "#name#_index" />
 		</cfif>
@@ -387,6 +403,20 @@
 				<cfset stResult.type = "numeric" />
 				<cfset stResult.precision = "11,0" />
 			</cfcase>
+			<cfcase value="identity">
+				<cfset stResult.type = "identity" />
+				<cfset stResult.precision = "11" />
+				<cfset stResult.nullable = false>
+				<cfset stResult.default = "">
+				<cfif NOT stResult.bPrimaryKey>
+					<cfset stResult.index = listsort(listappend(stResult.index,"#name#_UNIQUE"),"textnocase","asc") />
+				</cfif>
+			</cfcase>
+			<cfcase value="json">
+				<cfset stResult.type = "json" />
+				<cfset stResult.precision = "" />
+				<cfset stResult.default = "">
+			</cfcase>
 			<cfcase value="smallint">
 				<cfset stResult.type = "numeric" />
 				<cfset stResult.precision = "11,0" />
@@ -419,12 +449,15 @@
 		<cfset var name = arguments.data.name />
 		<cfset var nullable = true />
 		<cfset var default = "" />
+		<cfset var defaultType = "value" />
 		<cfset var precision = "" />
 		<cfset var type = "" />
 		<cfset var bPrimaryKey = false />
 		<cfset var stResult = "" />
 		<cfset var index = "" />
 		<cfset var savable = true />
+		<cfset var generatedAlways = "" />
+		<cfset var virtualType = "" />
 		<cfset var j	= '' />
 		
 		<!--- incorporate formtool specific defaults --->
@@ -444,8 +477,12 @@
 			<cfset nullable = true />
 		</cfif>
 		
-		<cfif structkeyexists(arguments.data,"default")>
+		<cfif structkeyexists(arguments.data,"dbDefault")>
+			<cfset default = arguments.data.dbDefault />
+			<cfset defaultType = "expression" />
+		<cfelseif structkeyexists(arguments.data,"default")>
 			<cfset default = arguments.data.default />
+			<cfset defaultType = "value" />
 		</cfif>
 		
 		<cfif structkeyexists(arguments.data,"dbPrecision")>
@@ -471,8 +508,17 @@
 		<cfif structkeyexists(arguments.data,"bSave") and not arguments.data.bSave>
 			<cfset savable = false />
 		</cfif>
+
+		<!--- GENERATED COLUMN (MySQL and Postgresql) --->		
+		<cfif structkeyexists(arguments.data,"dbGeneratedAlways")>
+			<cfset generatedAlways = arguments.data.dbGeneratedAlways />
+		</cfif>
 		
-		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index,savable=savable) />
+		<cfif structkeyexists(arguments.data,"dbVirtualType")>
+			<cfset virtualType = arguments.data.dbVirtualType />
+		</cfif>
+		
+		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,defaultType=defaultType,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index,savable=savable,generatedAlways=generatedAlways, virtualType=virtualType) />
 		
 		<cfif type eq "array">
 			<!--- If there is an array content type for this property, that overrides everything else --->
@@ -486,6 +532,7 @@
 				<cfset stResult.bPrimaryKey = false />
 				<cfset stResult.nullable = true />
 				<cfset stResult.default = "NULL" />
+				<cfset stResult.defaultType = "value" />
 				<cfset stResult.fields.parentid = createFieldStruct(name="parentid",default="",nullable=false,type="uuid",precision="",index="array_index") />
 				<cfset stResult.fields.seq = createFieldStruct(name="seq",default=0,nullable=false,type="numeric",precision="",index="array_index") />
 				<cfparam name="stResult.indexes" default="#structnew()#" />

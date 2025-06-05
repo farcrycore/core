@@ -38,14 +38,18 @@
 					</td>
 					<td>
 						<ft:button type="button" value="edit" class="reverseuuid-edit btn-small" icon="fa-pencil" text="" />
-						<ft:button type="button" value="delete" class="reverseuuid-delete btn-small" icon="fa-trash-o" text="" />
+						<cfif structKeyexists(stParam.stMetadata, "ftAllowDelete") AND stParam.stMetadata.ftAllowDelete eq "true">
+							<ft:button type="button" value="delete" class="reverseuuid-delete btn-small" icon="fa-trash-o" text="" />
+						</cfif>
 					</td>
 				</tr>
 			</cfloop>
 		</tbody>
 	</table>
 	<ft:buttonPanel style="text-align:left;">
-		<ft:button type="button" value="Add" class="reverseuuid-add btn-small" icon="fa-plus" text="Add New" priority="default" />
+		<cfif structKeyexists(stParam.stMetadata, "ftAllowCreate") AND stParam.stMetadata.ftAllowCreate eq "true">
+			<ft:button type="button" value="Add" class="reverseuuid-add btn-small" icon="fa-plus" text="Add New" priority="default" />
+		</cfif>
 	</ft:buttonPanel>
 </div>
 </cfoutput>

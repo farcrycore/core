@@ -132,6 +132,7 @@
 		<cfset propertytypemap["datetime"] = "cf_sql_timestamp" />
 		<cfset propertytypemap["numeric"] = "cf_sql_numeric" />
 		<cfset propertytypemap["integer"] = "cf_sql_numeric" />
+		<cfset propertytypemap["identity"] = "cf_sql_numeric" />
 		<cfset propertytypemap["boolean"] = "cf_sql_numeric" />
 		<cfset propertytypemap["array"] = "cf_sql_varchar" />
 		<cfset propertytypemap["category"] = "cf_sql_varchar" />
@@ -774,6 +775,27 @@
 
 		<cfreturn duplicate(result) />
 	</cffunction>
+			
+	<cffunction name="getFormtoolMetadata" access="public" output="false" returntype="any" hint="Returns the value of the metadata for a formtool/property passed in. Omitting the md name, all metadata for the property will be returned.">
+		<cfargument name="formtool" required="true" type="string" hint="The formtool containing the property" />
+		<cfargument name="property" required="true" type="string" hint="The property for which we want metadata for" />
+		<cfargument name="md" required="false" type="string" default="" hint="The name of the piece of metadata we want (optional)" />
+		<cfargument name="default" required="false" default="" type="string" hint="The default value if the metadata does not exist" />
+		
+		<cfset var result = arguments.default />
+		
+		<cfif isDefined("application.formtools.#arguments.formtool#.stProps.#arguments.property#.METADATA")>
+			<cfif len(arguments.md)>
+				<cfif structKeyExists(application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA, arguments.md)>
+					<cfset result = application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
+				</cfif>
+			<cfelse>
+				<cfset result = duplicate(application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA) />
+			</cfif>
+		</cfif>
+
+		<cfreturn duplicate(result) />
+	</cffunction>
 	
 	<cffunction name="stream" access="public" output="false" returntype="void" hint="Stream content to the user with the specified mime type">
 		<cfargument name="content" type="any" required="true" />
@@ -981,7 +1003,7 @@
 			<cfargument name="permission" required="true" /><!--- create,edit,delete,approve,canapproveowncontent,requestapproval,view --->
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
 			
-			<cfreturn application.security.checkPermission(typename=arguments.typename, permission=arguments.permission, role=arguments.role) />
+			<cfreturn application.security.checkPermission(type=arguments.typename, permission=arguments.permission, role=arguments.role) />
 		</cffunction>
 		
 		<!--- @@examples:
@@ -1662,28 +1684,10 @@
 	</cffunction>
 		
 	<!--- @@description:
-		<p>The native createUUID is very usefull - unfortunately it always takes 10-15ms to run. This is fine for once off calls, but not for the frequent usage that might happen during an import.</p>
-		<p>This function bypasses that problem by accessing the Java equivilent directly.</p>
-		
-		@@examples:
-		<p>Generating many UUIDs:</p>
-		<code>
-			<cftimer label="createUUID()" type="inline">
-				<cfloop from="1" to="10000" index="i">
-					<cfset anotheruuid = createuuid() />
-				</cfloop>
-			</cftimer>
-			
-			<cftimer label="application.fapi.getUUID()" type="inline">
-				<cfloop from="1" to="10000" index="i">
-					<cfset anotheruuid = application.fapi.getUUID() />
-				</cfloop>
-			</cftimer>
-		</code>
+		<p>This function calls createUUID directly. It was previously used as an alternative when createUUID performance was slow but this is generally not the case now.</p>
 	 --->
-	<cffunction name="getUUID" access="public" returntype="uuid" output="false" hint="A fast createUUID alternative." bDocument="true">
-		
-		<cfreturn application.fc.utils.createJavaUUID() />
+	<cffunction name="getUUID" access="public" returntype="uuid" output="false" hint="Calls createUUID directly." bDocument="true">
+		<cfreturn createUUID() />
 	</cffunction>
 		
 	<!--- @@description: 

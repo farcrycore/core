@@ -18,6 +18,12 @@
 		ftType="list" ftList="disable:Disabled,updateappkey:Allowed using Updateapp Key,boolean:Allowed using boolean"
 		ftHint="Disabled turns off URL debugging, Requires Updateapp Key enables debugging with ?debug=yourupdateappkey, Allowed (default) enables debugging with ?debug=1">
 
+	<!--- Form security --->
+
+	<cfproperty name="bCSRFTokens" type="boolean" ftType="boolean" default="1" 
+		ftSeq="5" ftFieldset="Form Security" ftLabel="Enable CSRF Tokens on forms"
+		ftHint="Check this box to enable CSRF token generation/validation on all forms by default">
+
 	<!--- Password policy --->
 	
 	<cfproperty name="passwordMinLength" type="integer" ftType="integer" default="6" ftValidation="required"

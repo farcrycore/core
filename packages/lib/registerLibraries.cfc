@@ -105,7 +105,7 @@
 							lFiles="jquery.gritter.js" />
 
 		<skin:registerJS	id="jquery-file-upload" core="true"
-							baseHREF="#application.url.webtop#/thirdparty/jQuery-File-Upload-8.1.0"
+							baseHREF="#application.url.webtop#/thirdparty/jQuery-File-Upload-10.32.0"
 							lFiles="vendor/jquery.ui.widget.js,jquery.iframe-transport.js,jquery.fileupload.js,jquery.fileupload-process.js,jquery.fileupload-validate.js,jquery.fileupload-validate.js" />
 		
 		<skin:registerJS	id="bulk-upload" core="true"

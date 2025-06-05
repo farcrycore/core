@@ -22,6 +22,158 @@
 	<cfabort>
 </cfif>
 
+
+<ft:processForm action="Rebuild Ref Archive Triggers" url="refresh">
+
+	<cfquery name="qAudit" result="sqlResult">
+	CREATE TABLE IF NOT EXISTS `refArchive`
+	  (
+	    `auditaction` ENUM ('INSERT', 'UPDATE', 'DELETE'),
+	    `audittimestamp` DATETIME DEFAULT CURRENT_TIMESTAMP,
+	    `auditid` INT(14) AUTO_INCREMENT,
+	    `lastupdatedby` varchar(50) GENERATED ALWAYS AS (json_unquote(json_extract(`jsonData`,'$.lastupdatedby'))) STORED NULL,
+	    `objectid` varchar(50) GENERATED ALWAYS AS (json_unquote(json_extract(`jsonData`,'$.objectid'))) STORED NULL,
+	    `typename` varchar(255) NULL,
+	    `jsonData` JSON NULL,
+	    PRIMARY KEY (`auditid`),
+	    INDEX (`audittimestamp`)
+	  );
+
+ 	</cfquery>	
+
+	<cfloop collection="#application.stCoapi#" item="iTable">
+
+		<cfquery name="qAudit" result="sqlResult">
+	 	DROP TRIGGER IF EXISTS `#iTable#_inserts`;
+	 	DROP TRIGGER IF EXISTS `#iTable#_updates`;
+	 	DROP TRIGGER IF EXISTS `#iTable#_deletes`;
+	 	</cfquery>
+
+
+
+		<cfif application.stCoapi[iTable].isArchived?:false>
+			
+
+			<cfquery name="qAudit" result="sqlResult">
+		 	<!--- INSERTS --->
+		 	CREATE TRIGGER `#iTable#_inserts`
+			AFTER INSERT ON `#iTable#`
+			FOR EACH ROW 
+			INSERT INTO `refArchive`  (`auditAction`,`typename`, `jsonData`)
+			SELECT 'INSERT' as auditAction
+			, '#iTable#' as typename
+			, JSON_OBJECT(
+				<cfset bFirst = 1 />
+				<cfloop collection="#application.stcoapi[iTable].stprops#" item="prop">
+
+					<cfset stProp = application.stcoapi[iTable].stprops[prop] />
+					
+					<cfif not bFirst>,</cfif>
+					<cfset bFirst = 0 />
+
+					
+					<cfswitch expression="#stProp.metadata.type#">
+						<cfcase value="array">
+							<!--- <cfif listLen(stProp.metadata.ftjoin) EQ 1> --->
+								'#lcase(stProp.metadata.name)#',
+								(
+									select JSON_ARRAYAGG(#iTable#_#stProp.metadata.name#.data)
+									from #iTable#_#stProp.metadata.name#
+									where #iTable#_#stProp.metadata.name#.parentid = #iTable#.objectid
+
+								)
+							<!--- </cfif> --->
+						</cfcase>
+						<cfcase value="json">
+							<cfif stProp.metadata.ftType eq "oneToMany">
+								'#lcase(stProp.metadata.name)#',
+								(
+									select JSON_ARRAYAGG(#stProp.metadata.ftjoin#.objectid)
+									from #stProp.metadata.ftjoin#
+									where #stProp.metadata.ftjoin#.#stProp.metadata.ftJoinProperty# = #iTable#.objectid
+								)
+							<cfelse>
+								'#lcase(stProp.metadata.name)#',
+								#lcase(stProp.metadata.name)#
+							</cfif>
+						</cfcase>
+						<cfdefaultcase>
+							'#lcase(stProp.metadata.name)#',
+							#lcase(stProp.metadata.name)#
+						</cfdefaultcase>
+					</cfswitch>
+				 </cfloop>
+			) as jsonData
+			 from #iTable#
+			 where #iTable#.objectid = NEW.objectid;
+
+		 	<!--- UPDATES --->
+		 	CREATE TRIGGER `#iTable#_updates`
+			AFTER UPDATE ON `#iTable#`
+			FOR EACH ROW 
+			INSERT INTO `refArchive`  (`auditAction`,`typename`, `jsonData`)
+			SELECT 'UPDATE' as auditAction
+			, '#iTable#' as typename
+			, JSON_OBJECT(
+				<cfset bFirst = 1 />
+				<cfloop collection="#application.stcoapi[iTable].stprops#" item="prop">
+
+					<cfset stProp = application.stcoapi[iTable].stprops[prop] />
+					
+					<cfif not bFirst>,</cfif>
+					<cfset bFirst = 0 />
+
+					
+					<cfswitch expression="#stProp.metadata.type#">
+						<cfcase value="array">
+							<!--- <cfif listLen(stProp.metadata.ftjoin) EQ 1> --->
+								'#lcase(stProp.metadata.name)#',
+								(
+									select JSON_ARRAYAGG(#iTable#_#stProp.metadata.name#.data)
+									from #iTable#_#stProp.metadata.name#
+									where #iTable#_#stProp.metadata.name#.parentid = #iTable#.objectid
+
+								)
+							<!--- </cfif> --->
+						</cfcase>
+						<cfcase value="json">
+							<cfif stProp.metadata.ftType eq "oneToMany">
+								'#lcase(stProp.metadata.name)#',
+								(
+									select JSON_ARRAYAGG(#stProp.metadata.ftjoin#.objectid)
+									from #stProp.metadata.ftjoin#
+									where #stProp.metadata.ftjoin#.#stProp.metadata.ftJoinProperty# = #iTable#.objectid
+								)
+							<cfelse>
+								'#lcase(stProp.metadata.name)#',
+								#lcase(stProp.metadata.name)#
+							</cfif>
+						</cfcase>
+						<cfdefaultcase>
+							'#lcase(stProp.metadata.name)#',
+							#lcase(stProp.metadata.name)#
+						</cfdefaultcase>
+					</cfswitch>
+				 </cfloop>
+			) as jsonData
+			 from #iTable#
+			 where #iTable#.objectid = NEW.objectid;
+
+		 	<!--- UPDATES --->
+		 	CREATE TRIGGER `#iTable#_deletes`
+			AFTER DELETE ON `#iTable#`
+			FOR EACH ROW 
+			INSERT INTO `refArchive` (`auditAction`,`typename`, `jsonData`)
+			VALUES ('DELETE', '#iTable#', JSON_OBJECT( 'objectid',OLD.objectid) );
+			</cfquery>
+			
+			<skin:bubble message="<i class='fa fa-database'></i> JSON Archive Triggers Rebuilt for #iTable#" tags="coapichange,success" />
+		</cfif>
+
+	</cfloop>
+
+</ft:processForm>
+
 <ft:processform action="Apply Default Resolutions">
 	<cfparam name="form.deploydefaults" default="" />
 	<cfloop list="#form.deploydefaults#" index="thistype">
@@ -364,7 +516,16 @@
 	</cfif>
 </cfloop>
 
+<cfoutput>
+<div class="pull-right">
+	<ft:form>
+		<ft:button value="Rebuild Ref Archive Triggers" text="Rebuild Ref Archive Triggers (MySQL)" icon="fa fa-refresh" class="fc-btn btn btn-primary" />
+	</ft:form>
+</div>
+</cfoutput>
+
 <cfoutput><h1><i class="fa fa-cog"></i> COAPI Overview</h1></cfoutput>
+
 
 <cfif conflictCount>
 	<ft:form>

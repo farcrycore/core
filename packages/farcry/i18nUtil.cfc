@@ -12,7 +12,10 @@ this CFC contains a few util I18N functions. all valid java locales	are supporte
 of cfobject. 
 
 methods in this CFC:
-	
+
+	- getLocalesAsQuery returns QUERY of java style locales (en_US,etc.)
+	and their corresponding names (English (United States),etc.) available on this server. PUBLIC
+		
 	- getLocales returns LIST of java style locales (en_US,etc.) available on this server. PUBLIC
 	
 	- getLocaleNames returns LIST of java style locale names available on this server. PUBLIC
@@ -31,6 +34,25 @@ methods in this CFC:
 	one required argument, thisLocale. returns string. PUBLIC
  --->
 <cfset variables.aLocale = createObject("java","java.util.Locale")>
+
+<cffunction access="public" name="getLocalesAsQuery" output="No" returntype="query" hint="returns query of locales with their names" bDocument="true">
+	<cfscript>
+		var orgLocales=aLocale.getAvailableLocales();
+		var qLocales=queryNew("value,name"); /* allow list to be used directly with list formtool */
+		var i=0;
+		var thisName="";
+		for (i=1; i LTE arrayLen(orgLocales); i=i+1) {
+			if (listLen(orgLocales[i],"_") EQ 2) {
+				if (left(orgLocales[i],2) EQ "ar" or left(orgLocales[i],2) EQ "iw")
+					thisName=chr(8235)&orgLocales[i].getDisplayName(orgLocales[i])&chr(8234);
+				else
+					thisName=orgLocales[i].getDisplayName(orgLocales[i]);
+				queryAddRow(qLocales, {"value"=orgLocales[i], "name"=replace(thisName, ",", "", "ALL")});
+			} // if locale more than language
+		} //for
+		return qLocales;
+	</cfscript>
+</cffunction>
 
 <cffunction access="public" name="getLocales" output="No" returntype="string" hint="returns list of locales" bDocument="true">
 	<cfscript>

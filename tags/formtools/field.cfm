@@ -35,6 +35,7 @@
 <cfparam name="attributes.formtheme" default=""><!--- The form theme to use --->
 <cfparam name="attributes.format" default="edit"><!--- edit or display --->
 <cfparam name="attributes.ftFieldMetadata" default="#structNew()#"><!--- all the formtool metatdata from the field --->
+<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 
 
 <cfif not len(attributes.formtheme)>

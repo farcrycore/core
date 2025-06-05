@@ -41,11 +41,14 @@
 					<cfset stResult.value = "" />
 				<cfelseif arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL">
 					<cfset stResult.value = dateadd('yyyy',200,now()) />
+				<cfelseif isDate(arguments.value)>
+					<cfset stResult.value = "#lsdateformat(arguments.value,'yyyy-mm-dd')# #timeformat(arguments.value,'HH:mm:ss.lll')#" />
 				<cfelse>
 					<cfset stResult.value = arguments.value />
 				</cfif>
 			</cfcase>
 			<cfcase value="numeric">
+				<cfset stResult.null = false />
 				<cfif listlast(arguments.schema.precision) eq 0 and listfirst(arguments.schema.precision) gt 10>
 					<cfset stResult.cfsqltype = "cf_sql_bigint" />
 				<cfelseif listlast(arguments.schema.precision) eq 0>
@@ -69,6 +72,19 @@
 					<cfset stResult.null = true />
 				<cfelse>
 					<cfset stResult.value = arguments.value />
+					<cfset stResult.null = false />
+				</cfif>
+			</cfcase>
+			<cfcase value="json">
+				<cfset stResult.cfsqltype = "cf_sql_varchar" />
+				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
+					<cfset stResult.value = "" />
+					<cfset stResult.null = true />
+				<cfelseif isJSON(arguments.value)>
+					<cfset stResult.value = arguments.value />
+					<cfset stResult.null = false />
+				<cfelse>
+					<cfset stResult.value = "{}" />
 					<cfset stResult.null = false />
 				</cfif>
 			</cfcase>
@@ -853,7 +869,7 @@
 		<cfset b = b or arguments.expected.nullable neq arguments.actual.nullable />
 		
 		<!--- Default --->
-		<cfif arguments.expected.type eq "longchar">
+		<cfif listFindNoCase("longchar,json", arguments.expected.type)>
 			<!--- Ignore. Longchar can't have a default. --->
 		<cfelseif arguments.expected.type eq "datetime">
 			<!--- Handle weird null values --->
@@ -865,7 +881,11 @@
 		</cfif>
 		
 		<!--- Type --->
-		<cfset b = b or arguments.expected.type neq arguments.actual.type />
+		<cfif arguments.expected.type  eq "json" and arguments.actual.type eq "longchar">
+			<!--- These count as "the same" for MS SQL --->
+		<cfelse>
+			<cfset b = b or arguments.expected.type neq arguments.actual.type />
+		</cfif>
 		
 		<!--- Precision --->
 		<cfset b = b or arguments.expected.precision neq arguments.actual.precision />

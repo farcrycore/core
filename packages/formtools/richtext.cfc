@@ -140,6 +140,8 @@
 				
 				<style type="text/css">
 				.richtext .formHint {float:left;}
+				div.webtop-modal.mce-fullscreen { padding-top: 0; }
+				div.mce-container.mce-window.mce-fullscreen { top: 0 !important; }
 				</style>
 
 				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.inputClass# #arguments.stMetadata.ftClass#" style="width: 100%; #arguments.stMetadata.ftStyle#">#arguments.stMetadata.value#</textarea>
@@ -556,14 +558,19 @@
 		
 		<cfsavecontent variable="configJS">
 			<cfoutput>			
-				plugins : "farcrycontenttemplates,layer,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,code,textcolor",
-				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
+				plugins : "farcrycontenttemplates,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,codemirror,textcolor,lists",
+				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],ul,ol,li",
 				menubar : false,
 				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
 				relative_urls : false,
-				entity_encoding : 'raw'
+				entity_encoding : 'raw',
+				codemirror: {
+					indentOnInit: true, // Whether or not to indent code on init.
+					fullscreen: true,   // Default setting is false
+					saveCursorPosition: false
+				}				
 			</cfoutput>
 		</cfsavecontent>
 		

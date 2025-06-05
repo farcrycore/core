@@ -35,8 +35,13 @@
 
 
 	<!--- run the active project's constructor --->
-	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
-	<cfinclude template="#this.projectConstructorLocation#" />
+	<cfinclude template="/farcryConstructor.cfm" />
+
+	<!--- lucee session cluster should be false and sticky sessions are required to avoid session rotate / csrf token bugs --->
+	<cfset this.sessioncluster = "false">
+
+	<!--- set up jar paths --->
+	<cfset setupJARPaths()>
 
 
 	<!--- set up the farcry dsn from the environment --->
@@ -97,6 +102,11 @@
 					</cfif>
 				</cfif>
 
+				<cfset FARCRY_DSN_VALIDATE = system.getEnv("FARCRY_DSN#key#_VALIDATE")>
+				<cfif NOT isNull(FARCRY_DSN_VALIDATE) AND FARCRY_DSN_VALIDATE>
+					<cfset this.datasources[FARCRY_DSN].validate = true>
+				</cfif>
+				
 			</cfif>
 		</cfloop>
 	</cfif>
@@ -153,6 +163,73 @@
 		<cfset request.fc.hasSessionScope = true />
 	</cfif>
 	
+
+	<cffunction name="setupJARPaths" access="private">
+		<!--- param these once per request --->
+		<cfparam name="this.javaSettings" default="#structNew()#">
+		<cfparam name="this.javaSettings.loadPaths" default="#arrayNew(1)#">
+		<cfparam name="application.farcryPathExpanded" default="#expandpath("/farcry")#">
+
+		<!--- core --->
+		<cfset addJARPath([
+			"core/packages/farcry/combine/lib",
+			"core/packages/lib/diff",
+			"core/packages/resources",
+			"core/packages/security/crypt"
+		])>
+
+		<!--- plugins --->
+		<cfset var plugin = "">
+		<cfloop list="#(this.plugins ?: "")#" index="plugin">
+			<cfset addJARPath("plugins/#plugin#/jars")>			
+		</cfloop>
+
+		<!--- project --->
+		<cfset addJARPath(("projects/#(this.projectDirectoryName ?: this.name)#/jars"))>
+
+	</cffunction>
+
+	<cffunction name="addJARPath" access="package">
+		<cfargument name="path" required="true">
+
+		<cfset var i = 0>
+		<cfset var p = "">
+
+		<cfif NOT isArray(arguments.path)>
+			<cfset arguments.path = [ arguments.path ]>
+		</cfif>
+
+		<cfloop from="1" to="#arrayLen(arguments.path)#" index="i">
+			<cfset p = application.farcryPathExpanded & "/" & arguments.path[i]>
+			<cfif NOT arrayFindNoCase(this.javaSettings.loadPaths, p)>
+				<!--- ACF compatibility: check if the path exists first --->
+				<cfif server.coldfusion.productname eq "ColdFusion Server">
+					<cfparam name="server.farcryJARPathExists" default="#structNew()#">
+					<cfif NOT structKeyExists(server.farcryJARPathExists, p) OR structKeyExists(url, "updateapp")>
+						<!--- cache the directory exists result in the server scope --->
+						<cfif directoryExists(p)>
+							<!--- if a path does exist then cache the result and append to loadPaths below --->
+							<cfset server.farcryJARPathExists[p] = true>
+						<cfelse>
+							<!--- if a path doesn't exist then don't append to loadPaths, short circuit the loop --->
+							<cfset server.farcryJARPathExists[p] = false>
+							<cfcontinue>
+						</cfif>
+					<cfelse>
+						<!--- for paths that do exist in the server scope check the result --->
+						<cfif server.farcryJARPathExists[p] eq false>
+							<!--- if a path doesn't exist then don't append to loadPaths, short circuit the loop --->
+							<cfcontinue>
+						</cfif>
+					</cfif>
+				</cfif>
+				<!--- /ACF compatibility --->
+
+				<cfset arrayAppend(this.javaSettings.loadPaths, p)>
+			</cfif>
+		</cfloop>
+	</cffunction>
+
 	
 	<!--- ////////////////////////////////////////////// --->
 	
@@ -284,15 +361,11 @@
 
 		<cfset var qServerSpecific = queryNew("blah") />
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
-		<cfset var machineName = "localhost" />
 		<cfset var tickBegin = getTickCount() />
 		<cfset var typename = "" />
+		<cfset var plugin = "" />
+		<cfset var qProfileLocales = "" />
 		
-		<cftry>
-			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-			
-			<cfcatch></cfcatch>
-		</cftry>
 
 		<!--- intialise application scope --->
 		<cfset initApplicationScope() />
@@ -301,13 +374,6 @@
 		CALL THE PROJECTS SERVER SPECIFIC VARIABLES
 		 ----------------------------------->
 		<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
-		
-		<!--- Add Server Specific Request Scope files --->
-		<cfif directoryExists("#application.path.project#/config/#machineName#")>
-			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVars.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVars.cfm" />
-			</cfif>
-		</cfif>
 		
 		
 		<!----------------------------------- 
@@ -415,16 +481,6 @@
 
 
 		<!----------------------------------- 
-		ADD SERVER SPECIFIC AFTER INIT VARIABLES
-		------------------------------------>
-		<cfif directoryExists("#application.path.project#/config/#machineName#")>
-			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVarsAfterInit.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVarsAfterInit.cfm" />
-			</cfif>
-		</cfif>
-
-
-		<!----------------------------------- 
 		APPLICAION UPTIME INFO
 		------------------------------------>
 		<cfif not isdefined("application.fcstats.updateapp") or not isquery(application.fcstats.updateapp)>
@@ -490,35 +546,6 @@
 			<cfabort />
 		</cfif>
 	
-		
-		<!---
-		SHARED WEBTOP LOGIN 
-		This sets up a cookie on the users system so that if they try and login to
-		the webtop and the webtop can't determine which project it is trying to update,
-		it will know what projects they will be potentially trying to edit.  
-		--->
-		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
-		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName) or not isstruct(server.stFarcryProjects[application.projectDirectoryName])>
-			<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
-			<cfset server.stFarcryProjects[application.projectDirectoryName].displayname = application.displayName />
-			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = "" />
-		</cfif>
-		<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
-			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
-		</cfif>
-		<cfcookie name="currentFarcryProject" value="#application.projectDirectoryName#" httpOnly="true">	
-	
-		<!--- Checks to see if the user has attempted to flick over to administrate a different project on this server. --->		
-		<cfif 	structKeyExists(url, "farcryProject") 
-				AND len(url.farcryProject) 
-				AND structKeyExists(server, "stFarcryProjects") 
-				AND structKeyExists(cookie, "currentFarcryProject") 
-				AND structKeyExists(server.stFarcryProjects, url.farcryProject) 
-				AND cookie.currentFarcryProject NEQ url.farcryProject>
-					
-					<cfset cookie.currentFarcryProject = url.farcryProject />
-					<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
-		</cfif>
 		
 		<cfif isdefined("session")>
 			<cfparam name="session.loginReturnURL" default="#application.url.webroot#" />
@@ -773,71 +800,6 @@
 
 	</cffunction>
 
-			
-	
-	<cffunction name="getProjectConstructorLocation" access="public" output="false" hint="Returns the location of the active project constructor." returntype="string">
-		<cfargument name="plugin" type="string" hint="The name of the plugin.">
-		<cfargument name="fileExtension" type="string" default="cfm" hint="'XML' if looking for the xml constructor override file">
-		
-		<cfset var loc = "" />
-		<cfset var virtualDirectory = "" />
-		
-		<!--- strip the context path first (for J2EE deployments) --->
-		<cfset var script_path = right( cgi.SCRIPT_NAME, len( cgi.SCRIPT_NAME ) - len( cgi.context_path ) )>
-
-		<!--- Get the first directory after the url if there is one (ie. if its just index.cfm then we know we are just under the webroot) --->
-		<cfif listLen(script_path, "/") GT 1>
-			<cfset virtualDirectory = listFirst(script_path, "/") />
-				
-			<!--- If the first directory name is the same name as the plugin, then we assume we are running the project from the webroot --->
-			<cfif virtualDirectory EQ arguments.plugin>
-				<cfset virtualDirectory = "" />
-			</cfif>					
-		</cfif>
-
-		<!--- If we ended up with a virtual directory we check to see if there is a farcryConstructor --->
-		<cfif len(virtualDirectory) AND fileExists(expandPath("/#virtualDirectory#/farcryConstructor.#arguments.fileExtension#"))>
-			<cfset loc = trim("/#virtualDirectory#/farcryConstructor.#arguments.fileExtension#") />
-
-		<cfelseif fileExists(expandPath("/farcryConstructor.#arguments.fileExtension#"))>
-			<!--- Otherwise we check in the webroot --->
-			<cfset loc = trim("/farcryConstructor.#arguments.fileExtension#") />
-		<cfelse>
-			<!--- If all else fails... --->
-			<!--- 1. See if the user has a cookie telling us what project to look at. --->
-			<cfif structKeyExists(url, "farcryProject") AND len(url.farcryProject)>
-				<cfcookie name="currentFarcryProject" value="#url.farcryProject#" httpOnly="true">
-			</cfif>
-			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
-				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#"))>
-					<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#") />
-				</cfif>
-			</cfif>
-			<!--- 2. If no cookie exists, see if server.stFarcryProjects holds any project names and list the first one found --->
-			<cfif loc eq "" and arguments.plugin EQ "webtop" and structKeyExists(server, "stFarcryProjects") and structcount(server.stFarcryProjects) GT 0>
-				<cfloop collection="#server.stFarcryProjects#" item="thisproject">
-					<cfif fileExists(expandPath("/#thisproject#/farcryConstructor.#arguments.fileExtension#"))>
-						<cfset loc = trim("/#thisproject#/farcryConstructor.#arguments.fileExtension#") />
-						<cfbreak />
-					</cfif>
-				</cfloop>
-			</cfif>
-		</cfif>
-
-		<cfif not len(loc) and arguments.fileExtension eq "cfm">				
-			<cfif fileExists(expandPath("#cgi.context_path#/webtop/install/index.cfm"))>
-				<cfset installLink = "#cgi.context_path#/webtop/install/index.cfm" />
-			<cfelse>
-				<cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/index.cfm" />
-			</cfif>
-
-			<cflocation url="#installLink#" addtoken="false">
-			
-		</cfif>
-	
-		<cfreturn loc />
-	</cffunction>
-
 
 	<cffunction name="getPluginName" access="public" output="false" hint="Returns the name of this plugin; core returns 'farcry'." returntype="string">
 		<cfreturn "farcry" />
@@ -888,6 +850,8 @@
 		<cfif not isDefined("this.name")>
 			<cfabort showerror="this.name not defined in your projects farcryConstructor.">
 		</cfif>
+
+		<cfset application.farcryUseJARPath = true />
 
 		<cfparam name="this.dsn" default="#this.name#" />
 		<cfif not isDefined("this.dbtype")>
@@ -1049,7 +1013,7 @@
 
 		
 		<!--- Set an application random string that can be used to force refresh of various browser caching. Restarting application will effectively flush those browser caches --->
-		<cfset application.randomID =  application.fc.utils.createJavaUUID() />
+		<cfset application.randomID =  createUUID() />
 		
 		
 		<!----------------------------------------

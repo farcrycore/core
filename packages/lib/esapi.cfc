@@ -6,6 +6,8 @@
 	<!--- test server verions --->
 	<cfif isDefined("server.railo") AND listFirst(server.railo.version, ".") gte 4>
 		<cfset bHasBuiltinFunctions = true>
+	<cfelseif isDefined("server.lucee") AND listFirst(server.lucee.version, ".") gte 4>
+		<cfset bHasBuiltinFunctions = true>
 	<cfelseif listFirst(server.coldfusion.productVersion) gte 10>
 		<cfset bHasBuiltinFunctions = true>
 	</cfif>

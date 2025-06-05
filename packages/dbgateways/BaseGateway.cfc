@@ -159,7 +159,7 @@
 				<cfset aData[i] = stData />
 			</cfif>
 		</cfloop>
-		<misc:sort values="#aData#" result="aData"><cfset sendback = value1.seq - value2.seq /></misc:sort>
+		<cfset arraySort(aData, function(a, b) { return a.seq - b.seq; }) />
 	  	<cfloop from="1" to="#arraylen(aData)#" index="i">
 	  		<cfset aData[i].seq = i />
 	  	</cfloop>
@@ -319,6 +319,7 @@
 		<cfset var queryresult = "" />
 		<cfset var bFirst = true />
 		<cfset var stVal = structnew() />
+		<cfset var iSeq = 0 />
 
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
@@ -351,8 +352,18 @@
 			<cfset stResult.message = "Object does not exist" />
 			
 		<cfelse>
-			
+			<cftransaction>
 			<cftry>
+
+
+				<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
+				<cfloop collection="#arguments.schema.fields#" item="thisfield">
+					<cfif arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].savable>
+						<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
+					</cfif>
+				</cfloop>
+
+				
 				<!--- build query --->
 				<cfset bFirst = true />
 				<cfquery datasource="#this.dsn#" name="qSetData" result="queryresult">
@@ -372,26 +383,35 @@
 								<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
 								#thisfield#=<cfqueryparam attributeCollection="#stVal#" />
 							</cfloop>
+					;
+
 				</cfquery>
-				
+
 				<cfset arrayappend(stResult.results,queryresult) />
 				<cfif len(arguments.logLocation)>
 					<cfset logQuery(arguments.logLocation,queryresult) />
 				</cfif>
+
+				<cftransaction action="commit" />
 				
 				<cfcatch type="database">
+					<cftransaction action="rollback" />
 					<cfset stResult.bSuccess = false />
+					<cfset stResult.message = cfcatch.message ?: "" />
+					<cfset var errorObjectID = "">
+					<cfset var errorTypename = "">
+					<cfif structKeyExists(arguments.stProperties,"objectid")>
+						<cfset errorObjectID = arguments.stProperties.objectid>
+					</cfif>
+					<cfif structKeyExists(arguments.stProperties,"typename")>
+						<cfset errorTypename = arguments.stProperties.typename>
+					</cfif>
+					<cflog file="fourq" text="Error running setData() for #errorObjectID# (#errorTypename#): #stResult.message#"  />
 					<cfset arrayappend(stResult.results,cfcatch) />
 				</cfcatch>
 			</cftry>
 			
-			<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
-			<cfloop collection="#arguments.schema.fields#" item="thisfield">
-				<cfif arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield) and arguments.schema.fields[thisfield].savable>
-					<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
-				</cfif>
-			</cfloop>
-			
+			</cftransaction>
 		</cfif>
 		
 		<cfreturn stResult />
@@ -692,6 +712,13 @@
 										(#arraytolist(stIndex.fields)#)
 					</cfquery>
 				</cfcase>
+				<cfcase value="unique">
+					<!--- NOTE: identity types have unqiue indexes added on create/repair, not with a separate addIndex call --->
+					<cfquery datasource="#this.dsn#" result="queryresult">
+						SELECT 1
+						-- dummy query result
+					</cfquery>
+				</cfcase>
 				<cfcase value="unclustered">
 					<cfquery datasource="#this.dsn#" result="queryresult">
 					 	CREATE INDEX 	#stIndex.name# 
@@ -780,7 +807,7 @@
 						DROP 			PRIMARY KEY
 					</cfquery>
 				</cfcase>
-				<cfcase value="unclustered">
+				<cfcase value="unique,unclustered" delimiters=",">
 					<cfquery datasource="#this.dsn#" result="queryresult">
 					 	DROP INDEX 		#stDB.indexes[arguments.indexname].name# 
 					 	ON 				#this.dbowner##arguments.schema.tablename#
@@ -985,8 +1012,7 @@
 		
 		<cftry>
 			<cfquery datasource="#this.dsn#" name="q">
-				SELECT count(*)
-				FROM #this.dbowner##arguments.schema.tablename#
+				SELECT 1 FROM #this.dbowner##arguments.schema.tablename# WHERE 1=0
 			</cfquery>
 			
 			<cfcatch type="database">

@@ -2,6 +2,11 @@
 
 <cfheader statuscode="500" statustext="Internal Server Error" />
 
+<cfset webtopPath = "/webtop">
+<cfif isDefined("application.url.webtop")>
+	<cfset webtopPath = application.url.webtop>
+</cfif>
+
 <cfset showError = false>
 <cfset urlDebug = "boolean">
 <cfif structKeyExists(application, "fapi")>
@@ -60,7 +65,7 @@
 					color:##0000ff;
 				}
 			</style>
-			<script type="text/javascript" src="#application.url.webtop#/thirdparty/jquery/js/jquery-1.9.1.min.js"></script>
+			<script type="text/javascript" src="#webtopPath#/thirdparty/jquery/js/jquery-1.9.1.min.js"></script>
 			<script type="text/javascript">
 				window.$fc = window.$fc || {};
 				

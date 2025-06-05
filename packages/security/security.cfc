@@ -85,13 +85,13 @@
 		<cfset var barnacleID = "">
 		<cfset var iRole = "">
 		<cfset var bRight = "">
-		<cfset var genericPermissionID = "">
+		<cfset var permissionToCheck = "">
 		
 		<!--- If the role was left empty, use current user's roles --->
 		<cfif not len(arguments.role)>
 			<cfset arguments.role = getCurrentRoles() />
 		</cfif>
-		
+
 			
 		<!--- RETURN THE CACHE IF ALREADY PROCESSED. --->
 		<cfset hashKey = hash("#arguments.permission#-#arguments.object#-#arguments.role#-#arguments.type#-#arguments.webskin#") />
@@ -102,24 +102,31 @@
 		<!--------------------------------------------------------------------------------------------------- 
 		IF WE MAKE IT TO HERE, WE NEED TO DETERMINE THE PERMISSION AND THEN STORE IT IN THE APPLICATION CACHE.
 		 --------------------------------------------------------------------------------------------------->
-		
+
 		<cfif len(arguments.type) and len(arguments.webskin)>
 		
 			<cfset result = this.factory.role.checkWebskin(role=arguments.role,type=arguments.type,webskin=arguments.webskin) />
 			
 		<cfelseif NOT len(arguments.object) AND len(arguments.type) and len(arguments.permission)>
 			
-			<cfset genericPermissionID = application.security.factory.permission.getID(name="generic#arguments.permission#")>
-			
-			<cfif len(genericPermissionID)>
+			<cfset permissionToCheck = application.security.factory.permission.getID(name="#arguments.type##arguments.permission#")>
+
+			<cfif !len(permissionToCheck)>
+				<cfset permissionToCheck = application.security.factory.permission.getID(name="generic#arguments.permission#")>
+			</cfif>
+
+			<cfif len(permissionToCheck)>
 				
 				<cfset barnacleID = application.fapi.getContentType("farCoapi").getCoapiObjectID(arguments.type)>
 				
+
 				<cfloop list="#arguments.role#" index="iRole">
-					<cfset bRight = this.factory.barnacle.getRight(role="#iRole#", permission="#genericPermissionID#", object="#barnacleID#", objecttype="farCoapi")>
+
+
+					<cfset bRight = this.factory.barnacle.getRight(role="#iRole#", permission="#permissionToCheck#", object="#barnacleID#", objecttype="farCoapi")>
 					
 					<cfif bRight eq 0>
-						<cfset bRight = this.factory.role.getRight(role="#iRole#", permission="#genericPermissionID#") />
+						<cfset bRight = this.factory.role.getRight(role="#iRole#", permission="#permissionToCheck#") />
 						
 						<cfif bRight eq 1>
 							<cfset result = true />
@@ -133,8 +140,10 @@
 					<cfelseif bRight eq -1 and result eq -1>
 						<cfset result = false />
 					</cfif>
+
+
 				</cfloop>
-				
+
 			<cfelse>
 			
 				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
@@ -474,17 +483,54 @@
 
 		<cfset sessionRotate()>
 
-		<!--- Log the result --->
-		<cfif structKeyExists(session, "impersonator")>
-			<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
-		<cfelseif session.firstLogin>
-			<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
+
+		<cfif application.fapi.getConfig('general','isAuditTurnedOn',1)>
+
+
+			<!--- Log the result --->
+			<cfif structKeyExists(session, "impersonator")>
+				<farcry:logevent type="security" event="impersonatedby" userid="#session.security.userid#" notes="#session.impersonator#" />
+			<cfelseif session.firstLogin>
+				<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
+			<cfelse>
+				<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
+			</cfif>
 		<cfelse>
-			<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
+			<!--- Log the result --->
+			<cfset var stSessionLog = application.fapi.getNewContentObject(typename="farSessionLog") />
+			
+			<cfif structKeyExists(session, "impersonator")>
+				<cfset stSessionLog.event = "impersonating" />
+			<cfelse>
+				<cfset stSessionLog.event = "login" />
+			</cfif>
+			<cfset stSessionLog.label = '#stSessionLog.event# - #session.dmProfile.firstname# #session.dmProfile.lastname#' />
+			<cfset stSessionLog.profileID = session.dmProfile.objectid />
+			<cfset stSessionLog.jsonProfile = serializeJSON(session.dmProfile) />
+			<cfset stSessionLog.ipAddress = '#cgi.REMOTE_ADDR#' />
+			<cfset application.fapi.setData(stProperties="#stSessionLog#") />
+			
 		</cfif>
 	</cffunction>
 
 	<cffunction name="logout" access="public" output="false" returntype="void" hint="" bDocument="true">
+
+
+		<!--- Log the result --->
+		<cfset var stSessionLog = application.fapi.getNewContentObject(typename="farSessionLog") />
+		
+		<cfset stSessionLog.event = "logout" />
+
+		<cfif structKeyExists(session, "dmProfile")>
+			<cfset stSessionLog.label = '#stSessionLog.event# - #session.dmProfile.firstname# #session.dmProfile.lastname#' />
+			<cfset stSessionLog.profileID = session.dmProfile.objectid />
+			<cfset stSessionLog.jsonProfile = serializeJSON(session.dmProfile) />
+		</cfif>
+		<cfset stSessionLog.ipAddress = '#cgi.REMOTE_ADDR#' />
+		<cfset application.fapi.setData(stProperties="#stSessionLog#") />
+
+
+		<!--- REMOVE SESSION STRUCTURES --->
 		<cfset structdelete(session,"security") />
 		<cfset structdelete(session,"dmProfile") />
 		<cfset structdelete(session.fc,"mode") />

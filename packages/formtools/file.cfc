@@ -100,9 +100,13 @@
 		<cfset var facade = "" />
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, flash, jquery --->
+		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, jquery --->
 		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
 		
+		<cfif NOT listfindNoCase("html,jquery", arguments.stMetadata.ftRenderType)>
+			<cfset arguments.stMetadata.ftRenderType = "html">
+		</cfif>
+
 		<skin:loadJS id="fc-jquery" />
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
@@ -392,7 +396,7 @@
 					) />
 					
 					<cfif not arguments.bArchive>
-						<cffile action="delete" file="-#archivedFile#" />
+						<cffile action="delete" file="#archivedFile#" />
 					</cfif>
 				<cfelse>
 					<!--- There is no file currently so we simply upload the file and make it unique  --->
