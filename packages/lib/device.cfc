@@ -109,6 +109,11 @@
 	 --->
 	<cffunction name="getDeviceType" access="public" output="false" returntype="string" hint="Returns the device type string" bDocument="true">
 
+		<cfif NOT isDeviceDetectionEnabled()>
+			<!--- if device detection is not enabled, always return desktop as device type --->
+			<cfreturn "desktop">
+		</cfif>
+
 		<cfif NOT structKeyExists(cookie, "FARCRYDEVICETYPE")>
 			<cfset setDeviceType(getUserAgentDeviceType())>
 		</cfif>
@@ -164,7 +169,10 @@
 		<cfset var stAttributes = structNew()>
 		<cfset stAttributes.httpOnly = false>
 
-		<cfcookie name="FARCRYDEVICETYPE" value="#arguments.deviceType#" attributeCollection="#stAttributes#">
+		<cfif isDeviceDetectionEnabled()>
+			<!--- if device detection is enabled, store the device type in a cookie --->
+			<cfcookie name="FARCRYDEVICETYPE" value="#arguments.deviceType#" attributeCollection="#stAttributes#">
+		</cfif>
 
 	</cffunction>
 
