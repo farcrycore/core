@@ -1113,6 +1113,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.message = "Object deleted successfully">
 		
+		<!--- Find the object by objectid only so that the type can be checked before refobjects/farFU cleanup --->
 		<cfset stobj = getData(objectid=arguments.objectid)>
 		
 			
@@ -1126,16 +1127,20 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	    
 		<cfset application.fc.lib.db.deleteData(typename=getTypePath(),objectid=arguments.objectid,dsn=arguments.dsn) />
 		
-		<!--- TODO: convert this to use gateways --->
-		<cfquery datasource="#application.dsn_write#" name="qdeleteRefData">
-		DELETE FROM #arguments.dbowner#refObjects
-		WHERE objectID = '#arguments.objectID#'
-		</cfquery>
-		
-		<cfquery datasource="#application.dsn_write#" name="qdeleteFUs">
-		DELETE FROM #arguments.dbowner#farFU
-		WHERE refObjectID = '#arguments.objectID#'
-		</cfquery>
+		<!--- Delete from refObjects and farFU only if the current typename matches the found object --->
+		<cfif stobj.typename eq typename>
+			<!--- TODO: convert this to use gateways --->
+			<cfquery datasource="#application.dsn_write#" name="qdeleteRefData">
+			DELETE FROM #arguments.dbowner#refObjects
+			WHERE objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#">
+				AND typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#">
+			</cfquery>
+			
+			<cfquery datasource="#application.dsn_write#" name="qdeleteFUs">
+			DELETE FROM #arguments.dbowner#farFU
+			WHERE refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#">
+			</cfquery>
+		</cfif>
 		
 		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=typename) />
 		
