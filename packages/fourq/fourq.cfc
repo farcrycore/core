@@ -1103,6 +1103,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- set status here... if something goes wrong expect a thrown error --->
 		<cfset var stResult = structNew()>
 		<cfset var stobj = structNew() />
+		<cfset var typename = getTypeName() />
 		<cfset var stProps = structNew() />
 		<cfset var prop = "" />
 		<cfset var tablename = "" />
@@ -1121,7 +1122,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	   	</cfif>
 	   				
 	    <!--- Make sure we remove the object from the objectBroker if we update something --->
-	    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.ObjectID,typename=getTypeName())>
+	    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.ObjectID,typename=typename)>
 	    
 		<cfset application.fc.lib.db.deleteData(typename=getTypePath(),objectid=arguments.objectid,dsn=arguments.dsn) />
 		
@@ -1136,7 +1137,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		WHERE refObjectID = '#arguments.objectID#'
 		</cfquery>
 		
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=getTypeName()) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=typename) />
 		
 		<cfreturn stResult>
 	</cffunction>
