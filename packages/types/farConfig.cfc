@@ -118,6 +118,10 @@ object methods
 									<cfset stMeta[qFieldset.propertyname] = structNew()>
 									<cfset stMeta[qFieldset.propertyname].ftHint = "This field is read only and cannot be edited via the webtop">
 									<cfset stPropValues[qFieldset.propertyname] = application.config_readonly[arguments.stObject.configkey][qFieldset.propertyname]>
+									<!--- override display method for read-only properties flagged as secret --->
+									<cfif application.fapi.getPropertyMetadata(qFieldset.typename, qFieldset.propertyname, "ftSecret") eq "true">
+										<cfset stMeta[qFieldset.propertyname].ftDisplayMethod = "displaySecret">
+									</cfif>
 								</cfif>
 
 								<ft:object stObject="#stObj#" format="#propertyFormat#" lExcludeFields="label" lFields="#qFieldset.propertyname#" stPropMetadata="#stMeta#" stPropValues="#stPropValues#" inTable="false" IncludeFieldSet="false" />
