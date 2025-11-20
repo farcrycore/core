@@ -7,6 +7,16 @@ component {
 		return this;
 	}
 
+	public void function addCommonKeys(array keys){
+		var key = "";
+
+		for (key in keys){
+			if (not arrayFindNoCase(this.commonKeys, key)){
+				arrayAppend(this.commonKeys, key);
+			}
+		}
+	}
+
 	public query function getSessions(boolean bCurrent, numeric maxRows=5) hint="Returns information about the currently active sessions" {
 		var qSessions = querynew("sessionID,lastAccessed,bCurrent,user", "varchar,date,bit,varchar");
 		var sessionID = "";
