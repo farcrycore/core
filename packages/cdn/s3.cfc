@@ -953,8 +953,7 @@
 					<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
 				</cfif>
 
-				<cfhttp url="#sourceFile#" method="get" path="#getDirectoryFromPath(destfile)#" file="#getFileFromPath(destfile)#" />
-
+				<cfhttp url="#sourceFile#" method="get" path="#getDirectoryFromPath(destfile)#" file="#getFileFromPath(destfile)#" getAsBinary="yes"/>	
 				<cfif arguments.source_config.localCacheSize>
 					<cfset tmpfile = getTemporaryFile(config=arguments.source_config,file=arguments.source_file) />
 					<cffile action="copy" source="#destfile#" destination="#tmpfile#" mode="664" nameconflict="overwrite" />
