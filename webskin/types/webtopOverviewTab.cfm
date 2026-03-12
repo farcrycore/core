@@ -186,19 +186,19 @@ FARCRY INCLUDE FILES
 					</admin:tabItem>
 				</cfif>
 			</cfloop>
-			 </cfoutput>
+			</cfoutput>
 
-			 <cfloop collection="#application.stCoapi[arguments.typename].stProps#" item="iField">
-			 	<cfif 	application.fapi.getPropertyMetadata(typename="#arguments.typename#", property="#iField#", md="ftType") EQ "reverseUUID" AND
-			 			application.fapi.getPropertyMetadata(typename="#arguments.typename#", property="#iField#", md="ftManageInOverview", default="false")>
+			<cfloop collection="#application.stCoapi[stobj.typename].stProps#" item="iField">
+			 	<cfif 	application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#iField#", md="ftType") EQ "reverseUUID" AND
+			 			application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#iField#", md="ftManageInOverview", default="false")>
 
-			 		<admin:tabItem id="#tabID#-reverseUUID-#iField#" 
-									title="#application.fapi.getPropertyMetadata(typename="#arguments.typename#", property="#iField#", md="ftLabel", default="#iField#")#">
+			 		<admin:tabItem id="#tabID#-reverseUUID-#iField#"
+									title="#application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#iField#", md="ftLabel", default="#iField#")#">
 			 			<ft:object typename="#stobj.typename#" objectid="#stObj.objectid#" lFields="#iField#" r_stFields="stReversArrayFields" />
 			 			<cfoutput>#stReversArrayFields[iField].html#</cfoutput>
 			 		</admin:tabItem>
 			 	</cfif>
-			 </cfloop>
+			</cfloop>
 		</admin:tabs>
 	
 <cfsetting enablecfoutputonly="false">
