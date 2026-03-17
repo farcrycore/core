@@ -39,8 +39,8 @@
 			
 			
 			<!--- MOVE UP --->
-			<cfif arguments.stParam.index gt 1>
-				<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=moveup&originalID=#stParam.originalID#") />
+			<cfif stParam.index gt 1>
+				<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#stParam.index#&rule_action=moveup&originalID=#stParam.originalID#") />
 				
 				<a title="Move up"
 					class="con-refresh con-move-up-rule" 
@@ -52,8 +52,8 @@
 			</cfif>
 			
 			<!--- MOVE DOWN --->
-			<cfif arguments.stParam.index lt arguments.stParam.arraylen>
-				<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=movedown&originalID=#stParam.originalID#") />
+			<cfif stParam.index lt stParam.arraylen>
+				<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#stParam.index#&rule_action=movedown&originalID=#stParam.originalID#") />
 				
 				<a title="Move down"
 					class="con-refresh con-move-down-rule" 
@@ -66,7 +66,7 @@
 			</cfif>
 			
 			<!--- DELETE --->
-			<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=delete&originalID=#stParam.originalID#") />
+			<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#stParam.index#&rule_action=delete&originalID=#stParam.originalID#") />
 			
 			<a title="Delete"
 				class="con-delete con-delete-rule" 

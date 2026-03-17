@@ -71,7 +71,7 @@ FARCRY IMPORT FILES
 	<cfloop query="qSessions">
 		<cfset queryaddrow(qExtraOptions) />
 		<cfset querysetcell(qExtraOptions,"label","#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)") />
-		<cfset querysetcell(qExtraOptions,"url",application.fapi.fixURL(url=arguments.stParam.loginReturnURL, addvalues='switchsession=#qSessions.sessionID#')) />
+		<cfset querysetcell(qExtraOptions,"url",application.fapi.fixURL(url=stParam.loginReturnURL, addvalues='switchsession=#qSessions.sessionID#')) />
 		<cfset querysetcell(qExtraOptions,"selected",false) />
 	</cfloop>
 </cfif>
@@ -86,8 +86,8 @@ FARCRY IMPORT FILES
 		</div>
 	</cfoutput></skin:pop>
 	
-	<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#">#encodeForHTML(arguments.stParam.message)#</admin:resource></div></cfoutput>
+	<cfif isdefined("stParam.message") and len(stParam.message)>
+		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(stParam.message,'[^\w]','','ALL')#">#encodeForHTML(stParam.message)#</admin:resource></div></cfoutput>
 	</cfif>
 	
 	<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" focusField="username" r_stFields="stFields" />

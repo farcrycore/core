@@ -5,25 +5,25 @@
 
 <cfoutput>
 	<div class="feeditem">
-		<h2>#stObj[arguments.stParam.title]#</h2>
+		<h2>#stObj[stParam.title]#</h2>
 </cfoutput>
 
 <cfoutput><dl class="item"></cfoutput>
 
-<cfif len(arguments.stParam.keywords)>
-	<cfoutput><dt>Keywords</dt><dd>#stObj[arguments.stParam.keywords]#</dd></cfoutput>
+<cfif len(stParam.keywords)>
+	<cfoutput><dt>Keywords</dt><dd>#stObj[stParam.keywords]#</dd></cfoutput>
 </cfif>
 
-<cfif arguments.stParam.bAuthor>
-	<cfset arguments.stParam.author = createobject("component",application.stCOAPI.dmProfile.packagepath).getProfile(username=stObj.createdby) />
+<cfif stParam.bAuthor>
+	<cfset stParam.author = createobject("component",application.stCOAPI.dmProfile.packagepath).getProfile(username=stObj.createdby) />
 	
-	<cfif not structisempty(arguments.stParam.author) and (len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname))>
+	<cfif not structisempty(stParam.author) and (len(stParam.author.firstname) or len(stParam.author.lastname))>
 		<cfoutput>
 			<dt>Author</dt>
 			<dd>
-				#encodeForHTML(arguments.stparam.author.firstname)# #encodeForHTML(arguments.stparam.author.lastname)#
-				<cfif len(arguments.stparam.author.emailaddress)>
-					(<a href="mailto:#arguments.stparam.author.emailaddress#">#encodeForHTML(arguments.stparam.author.emailaddress)#</a>)
+				#encodeForHTML(stparam.author.firstname)# #encodeForHTML(stparam.author.lastname)#
+				<cfif len(stparam.author.emailaddress)>
+					(<a href="mailto:#stparam.author.emailaddress#">#encodeForHTML(stparam.author.emailaddress)#</a>)
 				</cfif>
 			</dd>
 		</cfoutput>
@@ -31,13 +31,13 @@
 </cfif>
 
 <cfoutput><dt>Content</dt></cfoutput>
-<cfif find("<p>",stObj[arguments.stParam.content])>
-	<cfoutput><dd>#stObj[arguments.stParam.content]#</dd></cfoutput>
+<cfif find("<p>",stObj[stParam.content])>
+	<cfoutput><dd>#stObj[stParam.content]#</dd></cfoutput>
 <cfelse>
-	<cfoutput><dd><p>#stObj[arguments.stParam.content]#</p></dd></cfoutput>
+	<cfoutput><dd><p>#stObj[stParam.content]#</p></dd></cfoutput>
 </cfif>
-<cfif len(arguments.stParam.media)>
-	<cfoutput><dt>Media</dt><dd><a href="#application.fapi.getFileWebRoot()##stObj[arguments.stParam.media]#">Download file</a><cfif len(arguments.stParam.itunesduration)>(stObj[arguments.stParam.duration)</cfif></dd></cfoutput>
+<cfif len(stParam.media)>
+	<cfoutput><dt>Media</dt><dd><a href="#application.fapi.getFileWebRoot()##stObj[stParam.media]#">Download file</a><cfif len(stParam.itunesduration)>(stObj[stParam.duration)</cfif></dd></cfoutput>
 </cfif>
 
 <cfoutput>
