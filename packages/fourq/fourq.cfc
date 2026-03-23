@@ -671,6 +671,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif stDefaultProperties[propertie].metadata.type eq "array"> 
 					<!--- set to the default if it is not already defined above --->
 					<cfset stProps[propertie] = arrayNew(1)>
+
+				<cfelseif stDefaultProperties[propertie].metadata.type eq "identity"> 
+					<!--- identity properties should not be set with a default value as they are auto generated --->
+					<!--- NOTE: do nothing --->
+
 				<cfelse>
 					
 					<cfswitch expression="#stDefaultProperties[propertie].metadata.ftDefaultType#">
