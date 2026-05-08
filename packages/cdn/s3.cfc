@@ -45,6 +45,14 @@
 		<cfif not structkeyexists(st,"region")>
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'region' ]) />
 		</cfif>
+
+		<cfif structKeyExists(arguments.config, "setACL")>
+			<cfif NOT isBoolean(arguments.config.setACL)>
+				<cfset application.fapi.throw(message="setACL must be a boolean value",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
+			</cfif>
+		<cfelse>
+			<cfset st.setACL = true />
+		</cfif>
 		
 		<cfif not structkeyexists(st,"domain")>
 			<cfset st.domainType = "s3" />
@@ -87,10 +95,12 @@
 		<cfelseif not structkeyexists(st,"security") or st.security eq "public">
 			<cfset st.security = "public" />
 
-			<cfset stACL = structnew() />
-			<cfset stACL["group"] = "all" />
-			<cfset stACL["permission"] = "read" />
-			<cfset arrayappend(st.acl,stACL) />
+			<cfif st.setACL>
+				<cfset stACL = structnew() />
+				<cfset stACL["group"] = "all" />
+				<cfset stACL["permission"] = "read" />
+				<cfset arrayappend(st.acl,stACL) />
+			</cfif>
 		</cfif>
 		
 		<cfif structkeyexists(st,"pathPrefix")>
@@ -116,7 +126,7 @@
 			<cfset application.fapi.throw(message="the 'readers' value must be an array of canonical user ids or email addresses or ACL structs",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		<cfelseif not structkeyexists(st,"readers")>
 			<cfset st.readers = arraynew(1) />
-		<cfelse>
+		<cfelseif st.setACL>
 			<cfloop from="1" to="#arraylen(st.readers)#" index="i">
 				<cfif isStruct(st.readers[i])>
 					<cfset stACL = duplicate(st.readers[i]) />
@@ -134,7 +144,7 @@
 			<cfset application.fapi.throw(message="the 'admins' value must be an array of canonical user ids or email addresses or ACL structs",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
 		<cfelseif not structkeyexists(st,"admins")>
 			<cfset st.admins = arraynew(1) />
-		<cfelse>
+		<cfelseif st.setACL>
 			<cfloop from="1" to="#arraylen(st.admins)#" index="i">
 				<cfif isStruct(st.admins[i])>
 					<cfset stACL = duplicate(st.admins[i]) />
@@ -703,6 +713,9 @@
 		<cfset var stResult = structnew() />
 		
 		<cfset arguments.s3path = arguments.admin />
+		<cfif arguments.admin AND arguments.config.setACL eq false>
+			<cfset arguments.s3path = false />
+		</cfif>
 
 		<cfset stResult["method"] = "redirect" />
 		<cfset stResult["path"] = getURLPath(argumentCollection=arguments) />
@@ -1094,18 +1107,20 @@
 		</cfif>
 		
 		<!--- add ACL --->
-		<cfloop from="1" to="#arraylen(arguments.config.admins)#" index="i">
-			<cfif NOT structKeyExists(stAMZHeaders, "x-amz-grant-full-control")>
-				<cfset stAMZHeaders["x-amz-grant-full-control"] = "" />
-			</cfif>
-			<cfif isvalid("email",arguments.config.admins[i])>
-				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'emailAddress="#arguments.config.admins[i]#"',', ') />
-			<cfelseif isstruct(arguments.config.admins[i]) and structKeyExists(arguments.config.admins[i], "id")>
-				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i].id#"',', ') />
-			<cfelse>
-				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i]#"',', ') />
-			</cfif>
-		</cfloop>
+		<cfif arguments.config.setACL>
+			<cfloop from="1" to="#arraylen(arguments.config.admins)#" index="i">
+				<cfif NOT structKeyExists(stAMZHeaders, "x-amz-grant-full-control")>
+					<cfset stAMZHeaders["x-amz-grant-full-control"] = "" />
+				</cfif>
+				<cfif isvalid("email",arguments.config.admins[i])>
+					<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'emailAddress="#arguments.config.admins[i]#"',', ') />
+				<cfelseif isstruct(arguments.config.admins[i]) and structKeyExists(arguments.config.admins[i], "id")>
+					<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i].id#"',', ') />
+				<cfelse>
+					<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i]#"',', ') />
+				</cfif>
+			</cfloop>
+		</cfif>
 		
 		<!--- add content type --->
 		<cfset stHeaders["content-type"] = stMeta.content_type />
@@ -1349,7 +1364,7 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 
-		<cfif arrayLen(arguments.config.acl)>
+		<cfif arrayLen(arguments.config.acl) AND arguments.config.setACL>
 			<cfset putACL(config=arguments.config, file=arguments.file) />
 		</cfif>
 	</cffunction>
