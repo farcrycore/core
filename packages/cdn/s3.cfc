@@ -69,6 +69,12 @@
 			</cfif>
 			<cfset st.apiEndpointPrefix = "/#st.bucket#">
 		</cfif>
+
+		<cfif find(".", st.bucket)>
+			<cfset st.domainHost = st.apiEndpoint>
+		<cfelse>
+			<cfset st.domainHost = "#st.bucket#.s3.#st.region#.amazonaws.com">
+		</cfif>
 		
 		<cfif structkeyexists(st,"acl") and not isarray(arguments.config.acl)>
 			<cfset application.fapi.throw(message="the 'acl' value must be an array of ACL structs - group | email | id + permission and ",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
@@ -371,7 +377,7 @@
 		<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
 			<cfset arguments.headers["host"] = arguments.config.apiEndpoint />
 		<cfelse>
-			<cfset arguments.headers["host"] = arguments.config.domain & ".s3.amazonaws.com" />
+			<cfset arguments.headers["host"] = arguments.config.domainHost />
 		</cfif>
 
 
