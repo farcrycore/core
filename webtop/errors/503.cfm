@@ -50,7 +50,7 @@
 					color:##0000ff;
 				}
 			</style>
-			<script type="text/javascript" src="#webtopPath#/thirdparty/jquery/js/jquery-1.9.1.min.js"></script>
+			<script type="text/javascript" src="#webtopPath#/thirdparty/jquery/js/jquery-3.7.1.min.js"></script>
 			<script type="text/javascript">
 				window.$fc = window.$fc || {};
 				
