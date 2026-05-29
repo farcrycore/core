@@ -191,3 +191,56 @@ span.jqtree-dragging {
     cursor: pointer;
     padding: 2px 8px;
 }
+
+
+/* CUSTOM FARCRY */
+
+.node-options {
+    display: none;
+    margin-left: auto; /* was float:right — flex-aware replacement */
+}
+.jqtree-selected > .jqtree-element .node-options {
+    display: inline;
+}
+.jqtree-element:hover .node-options {
+    display: inline;
+}
+.control-group .jqtree-element .node-options {
+    display: none !important;
+}
+.node-options i {
+    padding: 3px;
+    margin-left: 3px;
+    cursor: pointer;
+}
+.node-options i:hover {
+    color: #FFFFFF;
+    background-color: #FF9900;
+}
+ul.jqtree-tree .jqtree-element {
+    padding: 7px;
+    align-items: center; /* keep title vertically centred in the flex row */
+}
+ul.jqtree-tree li > .jqtree-element:hover,
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+    background: #FFF6EB;
+}
+ul.jqtree-tree li.jqtree-selected > .jqtree-element {
+    background: #f9e6d4;
+    text-shadow: none; /* override the white text-shadow that came with the blue gradient */
+}
+ul.jqtree-tree .jqtree-title {
+    color: #333333;
+}
+ul.jqtree-tree span.jqtree-border {
+    border: 1px solid #0E65A2;
+    border-radius: 0;
+    padding: 7px;
+}
+.jqtree-element input {
+    margin-right: 10px;
+    vertical-align: middle;
+}
+ul.jqtree-tree li.jqtree_common {
+    clear: none;
+}
