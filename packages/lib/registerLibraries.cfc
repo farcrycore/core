@@ -158,7 +158,7 @@
 							lFiles="select2.js,typeahead.js" />
 
 		<skin:registerJS	id="fc-moment" core="true" bCombine="false"
-							baseHREF="#application.url.webtop#/thirdparty/moment-2.4.0" 
+							baseHREF="#application.url.webtop#/thirdparty/moment" 
 							lFiles="moment-with-locales-2.29.4.min.js" />
 
 		<skin:registerJS	id="fc-chardin" core="true" bCombine="false"
