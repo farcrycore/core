@@ -106,8 +106,9 @@
 
 				<cfsavecontent variable="html">
 					<grid:div class="multiField">
+						<!--- File input wrap. Visible by default if there's no value; hidden once a file is uploaded/saved. --->
 						<cfoutput>
-							<div id="#arguments.fieldname#-wrap">
+							<div id="#arguments.fieldname#-wrap"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
 
 								<label class="inlineLabel" for="#arguments.fieldname#">
 									&nbsp;
@@ -118,6 +119,23 @@
 
 								</label>
 
+							</div>
+						</cfoutput>
+
+						<!--- Preview / actions block. Always rendered so the XHR onComplete can populate it consistently
+						      whether the record is brand-new or being re-edited. Hidden when there's no value. --->
+						<cfoutput>
+							<div id="#arguments.fieldname#previewfile"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+								<cfif len(arguments.stMetadata.value)>
+									<a id="#arguments.fieldname#-preview-file" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#" target="_blank">Preview (#listLast(arguments.stMetadata.value,"/")#)</a>
+								<cfelse>
+									<a id="#arguments.fieldname#-preview-file" href="##" target="_blank">Preview</a>
+								</cfif>
+								<br />
+								<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
+								<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
+								<ft:button type="button" value="Replace" rendertype="link" id="#arguments.fieldname#-replace-btn" onclick="" />
+								<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-replace-btn" onclick="" />
 							</div>
 						</cfoutput>
 
@@ -149,20 +167,20 @@
 									$j('###arguments.fieldname#').val(results.value || '');
 									$j('###arguments.fieldname#DELETE').val('');
 									var filename = results.filename || (results.value ? results.value.split('/').pop() : '');
-									var previewBaseURL = '#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#';
-									var $previewLink = $j('<a></a>')
-										.attr('id', '#arguments.fieldname#-preview-file')
-										.attr('href', previewBaseURL)
-										.attr('target', '_blank')
-										.text('Preview (' + filename + ')');
-									if ($j('###arguments.fieldname#previewfile').length) {
-										$j('###arguments.fieldname#-preview-file').remove();
-										$j('###arguments.fieldname#previewfile').prepend($previewLink);
-									} else {
-										$j('###arguments.fieldname#-wrap').after(
-											$j('<div></div>').attr('id', '#arguments.fieldname#previewfile').append($previewLink)
-										);
-									}
+									// Prefer the CDN-resolved fullpath (works pre-save). Fall back to download.cfm (works post-save).
+									var previewURL = results.fullpath || '#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#';
+									$j('###arguments.fieldname#-preview-file')
+										.attr('href', previewURL)
+										.text('Preview (' + filename + ')')
+										.css('display', 'inline');
+									// Switch to "uploaded" view: hide file input, show preview/actions
+									$j('###arguments.fieldname#-wrap').hide('fast');
+									$j('###arguments.fieldname#previewfile').show('fast');
+									// Reset action-button states
+									$j('###arguments.fieldname#-delete-btn').css('display','inline');
+									$j('###arguments.fieldname#-replace-btn').css('display','inline');
+									$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
+									$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
 								},
 								onError: function(file, error){
 									$j('###arguments.fieldname#-upload-progress').hide();
@@ -178,83 +196,48 @@
 										alert('Upload failed: ' + error.message);
 								}
 							});
+
+							// Initial cancel-button visibility (the two Cancel links default to hidden).
+							$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
+							$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
+
+							// Action handlers — always bound. They're a no-op when their target elements
+							// aren't visible (e.g. on a brand-new record with no upload yet).
+							// "Delete" marks the file for deletion on next save; actual file removal happens
+							// server-side via handleFilePost. "Cancel" undoes that intent before save.
+							$j('###arguments.fieldname#-delete-btn').click(function() {
+								$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());
+								$j('###arguments.fieldname#').val('');
+								$j('###arguments.fieldname#-wrap').show('fast');
+								$j('###arguments.fieldname#previewfile').hide('fast');
+								$j('###arguments.fieldname#-delete-btn').css('display','none');
+								$j('###arguments.fieldname#-replace-btn').css('display','none');
+								$j('###arguments.fieldname#-cancel-delete-btn').css('display','inline');
+							});
+							$j('###arguments.fieldname#-cancel-delete-btn').click(function() {
+								$j('###arguments.fieldname#').val($j('###arguments.fieldname#DELETE').val());
+								$j('###arguments.fieldname#DELETE').val('');
+								$j('###arguments.fieldname#-wrap').hide('fast');
+								$j('###arguments.fieldname#previewfile').show('fast');
+								$j('###arguments.fieldname#-delete-btn').css('display','inline');
+								$j('###arguments.fieldname#-replace-btn').css('display','inline');
+								$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
+							});
+							$j('###arguments.fieldname#-replace-btn').click(function() {
+								$j('###arguments.fieldname#-wrap').show('fast');
+								$j('###arguments.fieldname#-delete-btn').css('display','none');
+								$j('###arguments.fieldname#-replace-btn').css('display','none');
+								$j('###arguments.fieldname#-cancel-replace-btn').css('display','inline');
+							});
+							$j('###arguments.fieldname#-cancel-replace-btn').click(function() {
+								$j('###arguments.fieldname#-wrap').hide('fast');
+								$j('###arguments.fieldname#-delete-btn').css('display','inline');
+								$j('###arguments.fieldname#-replace-btn').css('display','inline');
+								$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
+							});
 						</cfoutput>
 						</skin:onReady>
-						
-						<cfif len(arguments.stMetadata.value)>
-							<cfoutput>
-								<div id="#arguments.fieldname#previewfile">
-								
-									<a id="#arguments.fieldname#-preview-file" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#" target="_blank">Preview (#listLast(arguments.stMetadata.value,"/")#)</a> <br />
-									<!---#listLast(arguments.stMetadata.value,"/")#--->
-									<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
-									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
-									<ft:button type="button" value="Replace" rendertype="link" id="#arguments.fieldname#-replace-btn" onclick="" />
-									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-replace-btn" onclick="" />
-	
-								</div>
-							</cfoutput>	
-							
-
-							<skin:onReady>
-								<cfoutput>
-                            	
-	                            	$j('###arguments.fieldname#-wrap').css('display','none');		
-	                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');	
-	                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');	
-	                            	
-									$j('###arguments.fieldname#NEW').change(function() {
-										var id = '#arguments.fieldname#';
-										var currentText = $j('##' + id).attr('value');	
-										var aCurrentExt = currentText.split(".");	
-											
-										var newText = $j('##' + id + 'NEW').attr('value');	
-										var aNewExt = newText.split(".");	
-										
-										if (currentText.length > 0 && newText.length > 0) {
-											if (aCurrentExt.length > 1 && aNewExt.length > 1){						
-												if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
-													$j('##' + id + 'NEW').attr('value', '');
-													alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
-												}
-											}
-										}					
-									});
-									
-	                            	$j('###arguments.fieldname#-delete-btn').click(function() {
-										$j('###arguments.fieldname#DELETE').attr('value',$j('###arguments.fieldname#').attr('value'));
-										$j('###arguments.fieldname#').attr('value','');
-										$j('###arguments.fieldname#-wrap').show('fast');								
-										$j('###arguments.fieldname#-preview-file').css('display','none');
-										$j('###arguments.fieldname#-delete-btn').css('display','none');
-										$j('###arguments.fieldname#-replace-btn').css('display','none');
-		                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','inline');
-									});		
-	                            	$j('###arguments.fieldname#-cancel-delete-btn').click(function() {
-										$j('###arguments.fieldname#').attr('value',$j('###arguments.fieldname#DELETE').attr('value'));
-										$j('###arguments.fieldname#DELETE').attr('value','');
-										$j('###arguments.fieldname#-wrap').hide('fast');							
-										$j('###arguments.fieldname#-preview-file').css('display','inline');
-										$j('###arguments.fieldname#-delete-btn').css('display','inline');
-										$j('###arguments.fieldname#-replace-btn').css('display','inline');
-		                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
-									});		
-	                            	$j('###arguments.fieldname#-replace-btn').click(function() {
-										$j('###arguments.fieldname#-wrap').show('fast');
-										$j('###arguments.fieldname#-delete-btn').css('display','none');
-										$j('###arguments.fieldname#-replace-btn').css('display','none');
-		                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','inline');
-									});		
-	                            	$j('###arguments.fieldname#-cancel-replace-btn').click(function() {
-										$j('###arguments.fieldname#-wrap').hide('fast');
-										$j('###arguments.fieldname#-delete-btn').css('display','inline');
-										$j('###arguments.fieldname#-replace-btn').css('display','inline');
-		                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
-									});	
-                            	</cfoutput>
-							</skin:onReady>							
-						</cfif>				
-					</grid:div>				
+					</grid:div>
 				</cfsavecontent>
 				
 			</cfdefaultcase>
@@ -319,10 +302,27 @@
 			<cfset stJSON["value"] = stResult.value />
 			<cfset stJSON["filename"] = listLast(stResult.value, "/") />
 			<cfset stJSON["error"] = "" />
+
+			<!--- Resolve the CDN path so the client can show a working preview link
+			      even before the form is saved (download.cfm would 404 pre-save because
+			      no object record exists in the DB yet). --->
+			<cfset stJSON["fullpath"] = "" />
+			<cftry>
+				<cfset stJSON["fullpath"] = application.fc.lib.cdn.ioGetFileLocation(
+					location=application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles", file=stResult.value),
+					file=stResult.value,
+					bRetrieve=false
+				).path />
+				<cfcatch type="any">
+					<!--- If CDN resolution fails, fullpath stays empty; the client falls back
+					      to the download.cfm URL (which works post-save). --->
+				</cfcatch>
+			</cftry>
 		<cfelse>
 			<cfset stJSON["objectid"] = arguments.stObject.objectid />
 			<cfset stJSON["value"] = stFieldPost.value />
 			<cfset stJSON["filename"] = "" />
+			<cfset stJSON["fullpath"] = "" />
 			<cfif structkeyexists(stResult,"stError") and structkeyexists(stResult.stError,"message")>
 				<cfset stJSON["error"] = stResult.stError.message />
 			<cfelse>
