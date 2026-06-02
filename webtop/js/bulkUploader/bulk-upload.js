@@ -133,8 +133,11 @@ FileView = Backbone.View.extend({
 	},
 	
 	removeFile : function FileView_removeFile(){
-		if (this.model.has("jqXHR"))
-			this.model.get("jqXHR").abort();
+		// Cancel any in-flight Uppy upload. No-op if the file has already
+		// finished uploading (Uppy doesn't know about server taskIDs).
+		if (Window.app && Window.app.uploadView && Window.app.uploadView.uploader) {
+			try { Window.app.uploadView.uploader.cancel(this.model.get("fileID")); } catch (e){}
+		}
 		
 		// remove file from memory and DOM
 		this.model.collection.remove(this.model);
@@ -217,9 +220,7 @@ FileCollectionView = Backbone.View.extend({
 FileUploadView = Backbone.View.extend({
 	initialize : function FileUploadView_initialize(options){
 		this.template = Handlebars.compile(Backbone.$("#upload-area-template").html());
-
-		this.indexFileID = 1;
-
+		
 		if (options.uploadURL === undefined)
 			throw "uploadURL must be defined in FileUploadView options";
 		
@@ -229,20 +230,8 @@ FileUploadView = Backbone.View.extend({
 		if (options.uploaderID === undefined)
 			throw "uploaderID must be defined in FileUploadView options";
 		
-		this.fileUpload = {
-			url : options.uploadURL,
-			dataType : "json",
-			sequentialUploads : true,
-			limitMultiFileUploads : 1,
-			autoUpload : true
-		};
-		
-		if (options.sizeLimit)
-			this.fileUpload.maxFileSize = options.sizeLimit;
-		
-		if (options.allowedExtensions)
-        	this.fileUpload.acceptFileTypes = new RegExp("\.("+options.allowedExtensions.replace(/,/g,"|")+")$","i");
-		
+		// Prevent the browser's default behaviour for files dropped anywhere
+		// outside our drop zone (otherwise the browser would navigate to the file).
 		Backbone.$(document).bind('drop dragover', function (e) {
 		    e.preventDefault();
 		});
@@ -251,148 +240,145 @@ FileUploadView = Backbone.View.extend({
 		
 		this.render();
 	},
-	events : {
-		"fileuploadadd #fileupload" : "uploadAdd",
-		"fileuploadsubmit #fileupload" : "uploadSubmit",
-		"fileuploadsend #fileupload" : "uploadSend",
-		"fileuploadprogress #fileupload" : "uploadProgress",
-		"fileuploaddone #fileupload" : "uploadDone",
-		"fileuploadfail #fileupload" : "uploadFail",
-		
-		"dragenter .targetarea" : "dragEnter",
-		"dragover .targetarea" : "dragOver",
-		"dragleave .targetarea" : "dragLeave"
-	},
 	
 	render : function FileUploadView_render(){
 		this.$el.html(this.template());
-		this.fileUpload.dropZone = this.$(".targetarea");
-	    this.$("#fileupload").fileupload(this.fileUpload);
-		this.delegateEvents();
+		
+		var self = this;
+		this.uploader = $fc.uploader.create({
+			fileInput:           this.$("#fileupload"),
+			fieldName:           "file",
+			endpoint:            this.options.uploadURL,
+			maxFileSize:         this.options.sizeLimit || 0,
+			allowedFileTypes:    this.options.allowedExtensions || null,
+			simultaneousUploads: 1,
+			autoProceed:         true,
+			dropZone:            this.$(".targetarea"),
+			onDragEnter:         function(){ self.dragEnter(); },
+			onDragLeave:         function(){ self.dragLeave(); },
+			onSelect:            function(file){ self.onUppySelect(file); },
+			onProgress:          function(file, percent){ self.onUppyProgress(file, percent); },
+			onComplete:          function(file, body){ self.onUppyComplete(file, body); },
+			onError:             function(file, error){ self.onUppyError(file, error); }
+		});
 	},
 	
-	uploadAdd : function FileUploadView_uploadAdd(e,data){
-		for (var i = 0, ii = data.files.length; i < ii; i++) {
-			var file = this.collection.findWhere({
-				name : data.files[i].name,
-				size : data.files[i].size
-			});
-			
-			if (file === undefined) {
-				file = new FileModel({
-					name: data.files[i].name,
-					size: data.files[i].size,
-					status: "added",
-					editableProperties : this.options.editableProperties,
-					saveURL : this.options.saveURL
-				});
-				
-				this.collection.add([ file ]);
-				
-				file.set("jqXHR",data.submit());
+	/* Replaces the old uploadAdd + uploadSubmit + uploadSend trio. Runs once
+	   per file as Uppy accepts it. autoProceed is true, so the upload starts
+	   immediately after this returns. */
+	onUppySelect : function FileUploadView_onUppySelect(file){
+		// Dedupe by name+size — same key the old uploadAdd used
+		var existing = this.collection.findWhere({ name: file.name, size: file.size });
+		if (existing){
+			try { this.uploader.cancel(file.id); } catch (e){}
+			return;
+		}
+		
+		// Per-file form data: uploaderID + default properties. setFileMeta
+		// merges this into the multipart POST for this specific file only.
+		var perFileMeta = serializeFormByPrefix("default", this.options.defaultProperties);
+		perFileMeta.uploaderID = this.options.uploaderID;
+		perFileMeta.fileID     = file.id;
+		try { this.uploader._uppy.setFileMeta(file.id, perFileMeta); } catch (e){}
+		
+		// Create the Backbone model. fileID = Uppy's file.id for now; gets
+		// replaced with the server taskID once the upload completes.
+		var fileModel = new FileModel({
+			fileID:             file.id,
+			name:               file.name,
+			size:               file.size,
+			status:             "uploading",
+			editableProperties: this.options.editableProperties,
+			saveURL:            this.options.saveURL,
+			progress: {
+				loaded:  0,
+				total:   file.size || 0,
+				bitrate: 0
+			},
+			// Bookkeeping for local bitrate computation (Uppy doesn't expose bitrate)
+			_lastBytes:   0,
+			_lastBytesAt: new Date().getTime()
+		});
+		
+		this.collection.add([ fileModel ]);
+	},
+	
+	onUppyProgress : function FileUploadView_onUppyProgress(file, percent){
+		var fileModel = this.collection.get(file.id);
+		if (!fileModel) return;
+		
+		// Compute bitrate locally from (bytes since last tick) / (seconds since last tick).
+		// Uppy v5 only emits bytesUploaded / bytesTotal — we already turned that into
+		// a percentage in the wrapper, so reconstruct the byte count here for display.
+		var total    = file.size || 0;
+		var loaded   = Math.round((percent / 100) * total);
+		var now      = new Date().getTime();
+		var lastAt   = fileModel.get("_lastBytesAt") || now;
+		var lastBytes = fileModel.get("_lastBytes") || 0;
+		var dt       = (now - lastAt) / 1000;
+		var bitrate  = (dt > 0) ? Math.max(0, (loaded - lastBytes) * 8 / dt) : 0;
+		
+		fileModel.set({
+			status: "uploading",
+			progress: {
+				loaded:  loaded,
+				total:   total,
+				bitrate: bitrate
+			},
+			_lastBytes:   loaded,
+			_lastBytesAt: now
+		});
+	},
+	
+	/* Replaces the success branch of the old uploadDone handler. */
+	onUppyComplete : function FileUploadView_onUppyComplete(file, body){
+		var fileModel = this.collection.get(file.id);
+		
+		// Server returned 2xx with an explicit error in the JSON body
+		if (body && body.error){
+			if (fileModel){
+				fileModel.set({ status: "failed", error: body.error });
 			}
+			else if (Window.app && Window.app.errorCollection){
+				Window.app.errorCollection.add({
+					message: body.error.message,
+					error: body.error
+				});
+			}
+			return;
 		}
-	},
-	uploadSubmit : function FileUploadView_uploadSubmit(e,data){
-		var file = this.collection.findWhere({
-			name : data.files[0].name,
-			size : data.files[0].size
-		});
 		
-		if (file){
-			data.formData = serializeFormByPrefix("default",this.options.defaultProperties);
-			data.formData.uploaderID = this.options.uploaderID;
-			data.formData.fileID = this.indexFileID++;
-			
-			file.set("fileID",data.formData.fileID);
-		}
-	},
-	uploadSend : function FileUploadView_uploadSend(e,data){
-		var file = this.collection.findWhere({
-			name : data.files[0].name,
-			size : data.files[0].size
-		});
+		if (!fileModel) return;
 		
-		if (file) {
-			file.set({
-				status : "uploading",
-				progress : {
-					loaded : 0,
-					total : 0,
-					bitrate : 0
-				}
-			});
+		// Drill out the server taskID. The bulk upload server queues files
+		// for background processing and returns a taskID we'll poll on.
+		var taskID = (body && body.files && body.files[0] && body.files[0].taskID) || undefined;
+		if (taskID === undefined){
+			fileModel.set({ status: "failed", error: { message: "Unexpected server response" } });
+			return;
 		}
-	},
-	uploadProgress : function FileUploadView_uploadProgress(e,data){
-		var file = this.collection.get(data.formData.fileID);
 		
-		if (file){
-			file.set({
-				status : "uploading",
-				progress : data._progress
-			});
-		}
-	},
-	uploadDone : function FileUploadView_uploadDone(e,data){
-		var file = this.collection.findWhere({
-			fileID : data.formData.fileID
+		// Transition model to uploaddone. fileID changes from Uppy's id to the
+		// server taskID — FileCollection.updateStatus correlates results by taskID.
+		fileModel.set({
+			fileID: taskID,
+			status: "uploaddone"
 		});
-
-		if (file && data.result.error){
-			file.set({
-				status : "failed",
-				error : data.result.error,
-				jqXHR : undefined
-			});
-		}
-		else if (data.result.error && Window.app && Window.app.errorCollection){
-			Window.app.errorCollection.add({
-				message : data.result.error.message,
-				error: data.result.error
-			});
-		}
-		else if (file){
-			file.set({
-				jqXHR : undefined,
-				fileID: data.result.files[0].taskID,
-				status : "uploaddone",
-				uploadProgress : undefined
-			});
-		}
-
 	},
-	uploadFail : function FileUploadView_uploadFail(e,data){
-		var file = this.collection.findWhere({
-			name : data.files[0].name,
-			size : data.files[0].size
-		});
-		
-		if (file){
-			file.set({
-				jqXHR : undefined,
-				status : "failed",
-				error : data._response.errorThrown,
-				uploadProgress : undefined
-			});
+	
+	/* Replaces the failure branch of the old uploadDone + uploadFail. Wrapper
+	   has already categorised the error (restriction / http / network / etc). */
+	onUppyError : function FileUploadView_onUppyError(file, error){
+		var fileModel = file ? this.collection.get(file.id) : null;
+		if (fileModel){
+			fileModel.set({ status: "failed", error: error });
 		}
-		else{
-			this.options.generalErrors.add({ 
-				error: {
-					message: data._response.errorThrown
-				} 
-			});
+		else if (this.options.generalErrors){
+			this.options.generalErrors.add({ error: error });
 		}
 	},
 	
 	dragEnter: function FileUploadView_dragEnter(){
-		this.$(".targetarea").addClass("dragover");
-		if (this.stopShow) {
-			clearTimeout(this.stopShow);
-			this.stopShow = 0;
-		}
-	},
-	dragOver: function FileUploadView_dragOver(){
 		this.$(".targetarea").addClass("dragover");
 		if (this.stopShow) {
 			clearTimeout(this.stopShow);

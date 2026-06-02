@@ -21,6 +21,10 @@
  *       onProgress:        function(file, percent){},
  *       onComplete:        function(file, parsedJSON){},
  *       onError:           function(file, error){},  // error = { type, message, status? }
+ *       // Optional drag-and-drop:
+ *       dropZone:          ".fc-dropzone",           // selector / jQuery / DOM element to accept dropped files
+ *       onDragEnter:       function(event){},        // visual feedback when files enter the zone
+ *       onDragLeave:       function(event){},        // visual feedback when files leave or are dropped
  *       storage:           "local"                   // accepted, ignored in Phase 1
  *   });
  *
@@ -156,6 +160,15 @@
 		var simultaneous     = (typeof opts.simultaneousUploads === "number" && opts.simultaneousUploads > 0) ? opts.simultaneousUploads : null;
 		var autoProceed      = (typeof opts.autoProceed === "boolean") ? opts.autoProceed : true;
 
+		// Optional drag-drop zone. Resolve to a DOM element if provided.
+		var dropZoneEl = null;
+		if (opts.dropZone){
+			var $dz = (typeof opts.dropZone === "string") ? jQuery(opts.dropZone) : jQuery(opts.dropZone);
+			dropZoneEl = $dz.length ? $dz.get(0) : null;
+		}
+		var onDragEnter = (typeof opts.onDragEnter === "function") ? opts.onDragEnter : function(){};
+		var onDragLeave = (typeof opts.onDragLeave === "function") ? opts.onDragLeave : function(){};
+
 		var onSelect   = opts.onSelect   || function(){};
 		var onProgress = opts.onProgress || function(){};
 		var onComplete = opts.onComplete || function(){};
@@ -230,28 +243,55 @@
 			try { onError(file, classifyRestriction(msg)); } catch (e){}
 		});
 
-		function onInputChange(e){
-			var files = e.target && e.target.files;
-			if (!files || !files.length) return;
-			for (var i = 0; i < files.length; i++){
-				var f = files[i];
+		/**
+		 * Enqueue a list of File objects into Uppy. Used by both the file-input
+		 * change handler and (optionally) the drag-drop drop handler.
+		 *
+		 * Uppy's addFile() throws synchronously on restriction failures; the
+		 * restriction-failed event has already routed the error through onError,
+		 * so we silently catch here and continue the loop for subsequent files.
+		 */
+		function addFiles(fileList, source){
+			if (!fileList || !fileList.length) return;
+			for (var i = 0; i < fileList.length; i++){
+				var f = fileList[i];
 				try {
 					uppy.addFile({
-						source: "$fc.uploader",
+						source: source || "$fc.uploader",
 						name:   f.name,
 						type:   f.type,
 						data:   f
 					});
 				} catch (err){
-					// Uppy throws synchronously on restriction failure; the
-					// restriction-failed event has already routed the error
-					// through onError. Continue the loop for subsequent files.
+					// see comment above
 				}
 			}
+		}
+
+		function onInputChange(e){
+			addFiles(e.target && e.target.files, "$fc.uploader");
 			try { e.target.value = ""; } catch (resetErr){}
 		}
 
 		inputEl.addEventListener("change", onInputChange, false);
+
+		// Drag-drop wiring (only if dropZone option was provided)
+		function onDragEnterHandler(e){ e.preventDefault(); e.stopPropagation(); try { onDragEnter(e); } catch (err){} }
+		function onDragOverHandler(e){  e.preventDefault(); e.stopPropagation(); try { onDragEnter(e); } catch (err){} }
+		function onDragLeaveHandler(e){ e.preventDefault(); e.stopPropagation(); try { onDragLeave(e); } catch (err){} }
+		function onDropHandler(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var files = e.dataTransfer && e.dataTransfer.files;
+			addFiles(files, "$fc.uploader.drop");
+			try { onDragLeave(e); } catch (err){}
+		}
+		if (dropZoneEl){
+			dropZoneEl.addEventListener("dragenter", onDragEnterHandler, false);
+			dropZoneEl.addEventListener("dragover",  onDragOverHandler,  false);
+			dropZoneEl.addEventListener("dragleave", onDragLeaveHandler, false);
+			dropZoneEl.addEventListener("drop",      onDropHandler,      false);
+		}
 
 		return {
 			cancel: function(fileId){
@@ -262,6 +302,12 @@
 			},
 			destroy: function(){
 				try { inputEl.removeEventListener("change", onInputChange, false); } catch (e){}
+				if (dropZoneEl){
+					try { dropZoneEl.removeEventListener("dragenter", onDragEnterHandler, false); } catch (e){}
+					try { dropZoneEl.removeEventListener("dragover",  onDragOverHandler,  false); } catch (e){}
+					try { dropZoneEl.removeEventListener("dragleave", onDragLeaveHandler, false); } catch (e){}
+					try { dropZoneEl.removeEventListener("drop",      onDropHandler,      false); } catch (e){}
+				}
 				try {
 					if (typeof uppy.destroy === "function") uppy.destroy();
 					else if (typeof uppy.close === "function") uppy.close();

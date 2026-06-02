@@ -197,7 +197,8 @@
 
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-jquery-ui" />
-<skin:loadJS id="jquery-file-upload" />
+<skin:loadJS id="fc-uppy" />
+<skin:loadJS id="fc-uploader" />
 <skin:loadJS id="fc-underscore" />
 <skin:loadJS id="fc-backbone" />
 <skin:loadJS id="fc-handlebars" />
