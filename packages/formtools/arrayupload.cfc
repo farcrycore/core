@@ -155,8 +155,8 @@
 		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
-	    <skin:loadJS id="jquery-uploadify" />
-	    <skin:loadCSS id="jquery-uploadify" />
+	    <skin:loadJS id="fc-uppy" />
+	    <skin:loadJS id="fc-uploader" />
 		<skin:loadJS id="jquery-modal" />
 		<skin:loadCSS id="jquery-modal" />
 		<skin:loadCSS id="fc-fontawesome" />
@@ -238,52 +238,51 @@
 							
 							fcForm.arrayuploadfields = fcForm.arrayuploadfields || {};
 							fcForm.arrayuploadfields[prefix+property] = arrayuploadformtool;
-							
-				    		arrayuploadformtool.uploadify.uploadify({
-					    		'buttonText'	: 'Select File',
-								'uploader'  	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf',
-								'script'    	: url+"/upload/1",
-								'checkScript'	: url+"/check/1",
-								'cancelImg' 	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/cancel.png',
-								'hideButton'	: true,
-								'wmode'			: "transparent",
-								'auto'      	: true,
-								'fileExt'		: filetypes,
-								'multi'			: true,
-								'queueID'		: 'join-'+objectid+'-'+property,
-								'simUploadLimit': uploadLimit,
-								'removeCompleted' : false,
-								'fileDataName'	: property+"UPLOAD",
-								'method'		: "POST",
-								'scriptData'	: {},
-								'sizeLimit'		: sizeLimit,
-								'onSelect'		: function(event,ID,fileObj){
+
+							// Map Uppy file IDs → local sequential numbers so existing template
+							// markup and CSS selectors (which assume short, selector-safe IDs) keep working.
+							arrayuploadformtool.idMap = {};
+							arrayuploadformtool.idCounter = 0;
+
+				    		arrayuploadformtool.uploader = $fc.uploader.create({
+								fileInput:           arrayuploadformtool.uploadify,
+								fieldName:           property+"UPLOAD",
+								endpoint:            url+"/upload/1",
+								allowedFileTypes:    filetypes,
+								maxFileSize:         sizeLimit,
+								simultaneousUploads: uploadLimit,
+								autoProceed:         true,
+								extraFormData: function(){
+									return arrayuploadformtool.getPostValues();
+								},
+								onSelect: function(file){
+									arrayuploadformtool.idCounter += 1;
+									var ID = arrayuploadformtool.idCounter;
+									arrayuploadformtool.idMap[file.id] = ID;
 									arrayuploadformtool.displaylist.append(arrayuploadformtool.getHTML("uploaditem",{
 										index 		: ($("> li",arrayuploadformtool.displaylist).size() + 1).toString(),
 										ID 			: ID,
-										filename	: getFilenameOutput(fileObj.name),
-										filesize	: getBytesOutput(fileObj.size)
+										filename	: getFilenameOutput(file.name),
+										filesize	: getBytesOutput(file.size)
 									}));
 									arrayuploadformtool.displaylist.sortable("refresh");
-									// attached related fields to uploadify post
-									arrayuploadformtool.uploadify.uploadifySettings("scriptData",arrayuploadformtool.getPostValues());
-									arrayuploadformtool.uploadify.uploadifyUpload();
-									return false;
 								},
-								'onProgress'	: function(event,ID,fileObj,data){
-									if (data.percentage<100)
-										$("##"+fieldname+ID+"ProgressBar").animate({'width': data.percentage + '%'},250);	
+								onProgress: function(file, percent){
+									var ID = arrayuploadformtool.idMap[file.id];
+									if (ID == null) return;
+									if (percent < 100)
+										$("##"+fieldname+ID+"ProgressBar").animate({'width': percent + '%'},250);
 									else
-										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##0099FF;font-weight:bold;'>processing image...</span");
+										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##0099FF;font-weight:bold;'>processing image...</span>");
 								},
-								'onCancel'		: function(event,ID,fileObj,data){
-									$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).remove();
-								},
-								'onComplete'	: function(event, ID, fileObj, response, data){
-									var results = $.parseJSON(response);
-									
+								onComplete: function(file, results){
+									var ID = arrayuploadformtool.idMap[file.id];
+									if (ID == null) return;
+									if (arrayuploadformtool.uploader) arrayuploadformtool.uploader.cancel(file.id);
+									delete arrayuploadformtool.idMap[file.id];
+
 									if (results.error && results.error.length){
-										errorloc = $("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
+										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
 									}
 									else {
 										$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
@@ -292,14 +291,24 @@
 										}));
 									};
 								},
-								'onError'		: function(event, ID, fileObj, errorObj){
-									var errorloc = $("##fileupload-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist);
-									if (errorObj.type === "HTTP")
-										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>HTTP error: "+errorObj.status+"</span>");
-									else if (errorObj.type ==="File Size")
+								onError: function(file, error){
+									var ID = (file && arrayuploadformtool.idMap[file.id]) || null;
+									if (file && arrayuploadformtool.uploader) {
+										arrayuploadformtool.uploader.cancel(file.id);
+										delete arrayuploadformtool.idMap[file.id];
+									}
+									if (ID == null) return;
+									var errorloc = $("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist);
+									if (error.type === "http")
+										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>HTTP error: "+(error.status||"")+"</span>");
+									else if (error.type === "size")
 										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>File size: File is not within the file size limit of "+Math.round(sizeLimit/1048576).toString()+"MB</span>");
+									else if (error.type === "type")
+										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>File type: "+error.message+"</span>");
+									else if (error.type === "network")
+										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>Network error: "+error.message+"</span>");
 									else
-										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>"+errorObj.type+": "+errorObj.text+"</span>");
+										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>"+(error.type||"server")+": "+error.message+"</span>");
 								}
 							});
 							
@@ -504,8 +513,20 @@
 		    				if (editid.length) arrayuploadformtool.refreshItems([ editid ]);
 		    				$("##"+prefix+property).val("");
 		    			}
-		    			
-		    		};		
+
+		    			this.cancelByLocalId = function arrayUploadCancelByLocalId(localId){
+		    				localId = parseInt(localId, 10);
+		    				for (var fid in arrayuploadformtool.idMap){
+		    					if (arrayuploadformtool.idMap[fid] === localId){
+		    						if (arrayuploadformtool.uploader) arrayuploadformtool.uploader.cancel(fid);
+		    						delete arrayuploadformtool.idMap[fid];
+		    						break;
+		    					}
+		    				}
+		    				$("##join-item-#arguments.stMetadata.name#-"+localId,arrayuploadformtool.displaylist).remove();
+		    			};
+
+		    		};
 		    		
 		    		if (!this[prefix+property]) this[prefix+property] = new ArrayUploadFormtool(prefix,property);
 		    		return this[prefix+property];
@@ -641,7 +662,7 @@
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
-										<a href="javascript:$j('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
+										<a href="javascript:$fc.arrayuploadformtool('{{prefix}}','{{property}}').cancelByLocalId('{{ID}}')" title="Cancel Upload">
 											<i class="fa fa-times-circle-o"></i>
 										</a>
 									</div>
@@ -686,7 +707,7 @@
 												</div>
 											</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
-												<a href="javascript:$j('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
+												<a href="javascript:$fc.arrayuploadformtool('{{prefix}}','{{property}}').cancelByLocalId('{{ID}}')" title="Cancel Upload">
 													<i class="fa fa-minus-circle-o"></i>
 												</a>
 											</td>

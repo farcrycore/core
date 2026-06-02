@@ -92,10 +92,14 @@
 							baseHREF="#application.url.webtop#/thirdparty/image-formtool"
 							lFiles="image-formtool.js" />
 							
-		<skin:registerJS	id="jquery-uploadify" core="true"
-							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
-							lFiles="swfobject.js,jquery.uploadify.v2.1.4.min.js" />
-							
+		<skin:registerJS	id="fc-uppy" core="true" bCombine="false"
+							baseHREF="#application.url.webtop#/thirdparty/uppy"
+							lFiles="uppy.min.js" />
+
+		<skin:registerJS	id="fc-uploader" core="true"
+							baseHREF="#application.url.webtop#/js/uploader"
+							lFiles="fc-uploader.js" />
+
 		<skin:registerJS	id="jquery-crop" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/Jcrop/js"
 							lFiles="jquery.Jcrop.js" />
@@ -257,10 +261,6 @@
 		<skin:registerCSS	id="image-formtool"
 							baseHREF="#application.url.webtop#/thirdparty/image-formtool"
 							lFiles="image-formtool.css" />
-							
-		<skin:registerCSS	id="jquery-uploadify"
-							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
-							lFiles="uploadify.css" />
 							
 		<skin:registerCSS	id="jquery-crop"
 							baseHREF="#application.url.webtop#/thirdparty/Jcrop/css"

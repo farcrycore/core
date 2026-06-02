@@ -175,21 +175,14 @@
 	    <skin:loadJS id="jquery-tooltip" />
 	    <skin:loadJS id="jquery-tooltip-auto" />
 	    <skin:loadCSS id="jquery-tooltip" />
-	    <skin:loadJS id="jquery-uploadify" />
-	    <skin:loadCSS id="jquery-uploadify" />
+	    <skin:loadJS id="fc-uppy" />
+	    <skin:loadJS id="fc-uploader" />
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
 	    <skin:loadCSS id="fc-fontawesome" />
-	    
+
 	    <skin:loadCSS id="image-formtool" />
 		<skin:loadJS id="image-formtool" />
-		<skin:htmlHead><cfoutput>
-			<script type="text/javascript">
-				$fc.imageformtool.buttonImg = '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4//selectImage.png';
-				$fc.imageformtool.uploader = '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf';
-				$fc.imageformtool.cancelImg = '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/cancel.png';
-			</script>
-		</cfoutput></skin:htmlHead>
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>

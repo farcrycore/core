@@ -41,14 +41,6 @@
 			ftType="file" ftDestination="/someDirectory" ftAllowedFileExtensions="*.pdf" />
 	</code>
 
-	<p>PDF only (jQuery)</p>
-	<code>
-		<cfproperty 
-			name="someFile" type="string" default="" hint="The file to process" 
-			ftSeq="6" ftFieldset="General" ftLabel="File" 
-			ftType="file" ftDestination="/someDirectory" ftRenderType="jquery" 
-			ftFileTypes="*.pdf" />
-	</code>
 
  --->
 
@@ -58,8 +50,6 @@
 	<cfproperty name="ftStyle" default="" hint="Custom inline styles" />
 	<cfproperty name="ftRenderType" default="html" hint="This formtool offers a number of ways to render the input. (html, flash, jquery)" />
 	<cfproperty name="ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi" hint="Used when ftRenderType is set to HTML, extentions allowed to be uploaded." />
-	<cfproperty name="ftFacade" default="#chr(35)#application.url.webtop#chr(35)#/facade/fileupload/upload.cfm" hint="location of uploader facade." />
-	<cfproperty name="ftFileTypes" default="*.*" hint="Used when ftRenderType is set to flash (default *.*) or jquery (default *.jpg;*.JPG;*.jpeg;*.JPEG;), extentions allowed to be uploaded. " />
 	<cfproperty name="ftFileDescription" default="File Types" hint="Used when ftRenderType is set to HTML, text display above upload control." />
 	<cfproperty name="ftMaxSize" default="0" hint="Maximum filesize upload in bytes." />
 	<cfproperty name="ftOnComplete" default="" hint="Used when ftRenderType is set to HTML, javascript to execute after file upload." />
@@ -108,40 +98,88 @@
 		</cfif>
 
 		<skin:loadJS id="fc-jquery" />
-		
+		<skin:loadJS id="fc-uppy" />
+		<skin:loadJS id="fc-uploader" />
+
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfdefaultcase>
-				
+
 				<cfsavecontent variable="html">
 					<grid:div class="multiField">
 						<cfoutput>
-							<div id="#arguments.fieldname#-wrap">						
-								
+							<div id="#arguments.fieldname#-wrap">
+
 								<label class="inlineLabel" for="#arguments.fieldname#">
 									&nbsp;
 									<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 									<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
 									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fileUpload #arguments.inputClass# <cfif arguments.stMetadata.ftValidation eq 'required'> required</cfif>" value="" style="#arguments.stMetadata.ftstyle#" />
-									
-								</label>						
-								
+									<span id="#arguments.fieldname#-upload-progress" style="display:none;margin-left:0.5em;font-style:italic;color:##0099FF;"></span>
+
+								</label>
+
 							</div>
-						</cfoutput>	
-						
-						<cfif listLen(arguments.stMetadata.ftAllowedFileExtensions)>
-							<skin:onReady>
-							<cfoutput>
-								$j('###arguments.fieldname#NEW').change(function() {
-									var ext = $j(this).val().split('.').pop().toLowerCase();
-									var allow = new Array(#ListQualify(arguments.stMetadata.ftAllowedFileExtensions,"'")#);
-									if($j.inArray(ext, allow) == -1) {
-										$j(this).attr('value', '');
-									    alert('Only files with the following extensions are allowed: #arguments.stMetadata.ftAllowedFileExtensions#');
+						</cfoutput>
+
+						<skin:onReady>
+						<cfoutput>
+							$fc.uploader.create({
+								fileInput:        '###arguments.fieldname#NEW',
+								fieldName:        '#arguments.stMetadata.name#NEW',
+								endpoint:         '#getAjaxURL(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata, fieldname=arguments.fieldname, combined=true)#',
+								allowedFileTypes: '#arguments.stMetadata.ftAllowedFileExtensions#',
+								maxFileSize:      <cfif isNumeric(arguments.stMetadata.ftMaxSize) and val(arguments.stMetadata.ftMaxSize) gt 0>#val(arguments.stMetadata.ftMaxSize)#<cfelse>0</cfif>,
+								maxNumberOfFiles: 1,
+								autoProceed:      true,
+								onSelect: function(file){
+									$j('###arguments.fieldname#-upload-progress').text('Uploading ' + file.name + '...').show();
+								},
+								onProgress: function(file, percent){
+									if (percent < 100)
+										$j('###arguments.fieldname#-upload-progress').text('Uploading ' + percent + '%');
+									else
+										$j('###arguments.fieldname#-upload-progress').text('Processing...');
+								},
+								onComplete: function(file, results){
+									$j('###arguments.fieldname#-upload-progress').hide();
+									if (results.error) {
+										alert('Upload failed: ' + results.error);
+										return;
 									}
-								});
-							</cfoutput>
-							</skin:onReady>
-						</cfif>
+									$j('###arguments.fieldname#').val(results.value || '');
+									$j('###arguments.fieldname#DELETE').val('');
+									var filename = results.filename || (results.value ? results.value.split('/').pop() : '');
+									var previewBaseURL = '#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#';
+									var $previewLink = $j('<a></a>')
+										.attr('id', '#arguments.fieldname#-preview-file')
+										.attr('href', previewBaseURL)
+										.attr('target', '_blank')
+										.text('Preview (' + filename + ')');
+									if ($j('###arguments.fieldname#previewfile').length) {
+										$j('###arguments.fieldname#-preview-file').remove();
+										$j('###arguments.fieldname#previewfile').prepend($previewLink);
+									} else {
+										$j('###arguments.fieldname#-wrap').after(
+											$j('<div></div>').attr('id', '#arguments.fieldname#previewfile').append($previewLink)
+										);
+									}
+								},
+								onError: function(file, error){
+									$j('###arguments.fieldname#-upload-progress').hide();
+									if (error.type === 'size')
+										alert('File exceeds the maximum allowed size.');
+									else if (error.type === 'type')
+										alert('Only files with the following extensions are allowed: #arguments.stMetadata.ftAllowedFileExtensions#');
+									else if (error.type === 'http')
+										alert('Server error (' + (error.status||'') + '): ' + error.message);
+									else if (error.type === 'network')
+										alert('Network error: ' + error.message);
+									else
+										alert('Upload failed: ' + error.message);
+								}
+							});
+						</cfoutput>
+						</skin:onReady>
 						
 						<cfif len(arguments.stMetadata.value)>
 							<cfoutput>
@@ -225,13 +263,78 @@
 	
 		<cfreturn html>
 	</cffunction>
-	
+
+	<cffunction name="ajax" output="false" returntype="string" hint="Response to ajax requests for this formtool. Handles XHR-on-select uploads from $fc.uploader.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var stResult = "" />
+		<cfset var stFieldPost = structnew() />
+		<cfset var stJSON = structnew() />
+		<cfset var objStatus = "" />
+
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
+		<cfparam name="arguments.stMetadata.ftLocation" default="" />
+		<cfparam name="arguments.stMetadata.ftDestination" default="" />
+		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="" />
+		<cfparam name="arguments.stMetadata.ftMaxSize" default="0" />
+
+		<!--- Legacy 'check' endpoint (uploadify compatibility — harmless) --->
+		<cfif structkeyexists(url,"check")>
+			<cfreturn "[]" />
+		</cfif>
+
+		<cfif structkeyexists(arguments.stObject,"status")>
+			<cfset objStatus = arguments.stObject.status />
+		</cfif>
+
+		<!--- handleFilePost expects stFieldPost.value (current value) and reads form[uploadfield] for the new file --->
+		<cfset stFieldPost.value = arguments.stObject[arguments.stMetadata.name] />
+		<cfset stFieldPost.NEW = "" />
+		<cfset stFieldPost.DELETE = false />
+
+		<cfset stResult = handleFilePost(
+			objectid=arguments.stObject.objectid,
+			typename=arguments.typename,
+			existingFile=arguments.stObject[arguments.stMetadata.name],
+			uploadField="#arguments.stMetadata.name#NEW",
+			destination=arguments.stMetadata.ftDestination,
+			secure=arguments.stMetadata.ftSecure,
+			ftLocation=arguments.stMetadata.ftLocation,
+			status=objStatus,
+			allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
+			sizeLimit=arguments.stMetadata.ftMaxsize,
+			bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive),
+			stFieldPost=stFieldPost
+		) />
+
+		<cfif stResult.bSuccess and len(stResult.value)>
+			<cfset stJSON["objectid"] = arguments.stObject.objectid />
+			<cfset stJSON["value"] = stResult.value />
+			<cfset stJSON["filename"] = listLast(stResult.value, "/") />
+			<cfset stJSON["error"] = "" />
+		<cfelse>
+			<cfset stJSON["objectid"] = arguments.stObject.objectid />
+			<cfset stJSON["value"] = stFieldPost.value />
+			<cfset stJSON["filename"] = "" />
+			<cfif structkeyexists(stResult,"stError") and structkeyexists(stResult.stError,"message")>
+				<cfset stJSON["error"] = stResult.stError.message />
+			<cfelse>
+				<cfset stJSON["error"] = "Upload failed" />
+			</cfif>
+		</cfif>
+
+		<cfreturn serializeJSON(stJSON) />
+	</cffunction>
+
 	<cffunction name="display" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-	
+
 		<cfset var html = "" />
 	
 		<cfsavecontent variable="html">

@@ -421,30 +421,23 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
     			}
 			}
     		
-    		imageformtool.inputs.newf.uploadify({
-	    		'buttonImg'		: $fc.imageformtool.buttonImg,
-				'uploader'  	: $fc.imageformtool.uploader,
-				'script'    	: url,
-				'checkScript'	: url+"/check/1",
-				'cancelImg' 	: $fc.imageformtool.cancelImg,
-				'auto'      	: true,
-				'fileExt'		: filetypes,
-				'fileDataName'	: property+"NEW",
-				'method'		: "POST",
-				'scriptData'	: {},
-				'sizeLimit'		: imageformtool.sizeLimit,
-				'onSelectOnce' 	: function(event,data){
-					// attached related fields to uploadify post
-					imageformtool.inputs.newf.uploadifySettings("scriptData",imageformtool.getPostValues());
+    		imageformtool.uploader = $fc.uploader.create({
+				fileInput:         imageformtool.inputs.newf,
+				fieldName:         property+"NEW",
+				endpoint:          url,
+				allowedFileTypes:  filetypes,
+				maxFileSize:       imageformtool.sizeLimit,
+				maxNumberOfFiles:  1,
+				autoProceed:       true,
+				extraFormData: function(){
+					return imageformtool.getPostValues();
 				},
-				'onComplete'	: function(event, ID, fileObj, response, data){
-					var results = $j.parseJSON(response);
-					
-					imageformtool.inputs.newf.uploadifyClearQueue();
-					
+				onComplete: function(file, results){
+					if (imageformtool.uploader) imageformtool.uploader.cancel(file.id);
+
 					// hide any previous results
 					$j('#'+prefix+property+"_uploaderror").hide();
-					
+
 					if (results.error) {
 						$j(imageformtool).trigger("fileerror", ["upload", "500", results.error]);
 					}
@@ -453,14 +446,18 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 						$j(imageformtool).trigger("filechange", [results]);
 					}
 				},
-				'onError'		: function(event, ID, fileObj, errorObj){
-					imageformtool.inputs.newf.uploadifyClearQueue();
-					if (errorObj.type === "HTTP")
-						$j(imageformtool).trigger("fileerror",[ "upload",errorObj.info.toString(),'Error '+errorObj.type+": "+errorObj.info ]);
-					else if (errorObj.type ==="File Size")
-						$j(imageformtool).trigger("fileerror",[ "upload","filesize",fileObj.name+" is not within the file size limit of "+Math.round(imageformtool.sizeLimit/1048576)+"MB" ]);
+				onError: function(file, error){
+					if (imageformtool.uploader && file) imageformtool.uploader.cancel(file.id);
+					if (error.type === "http")
+						$j(imageformtool).trigger("fileerror",[ "upload",String(error.status||""),'Error HTTP: '+(error.status||error.message) ]);
+					else if (error.type === "size")
+						$j(imageformtool).trigger("fileerror",[ "upload","filesize",(file&&file.name?file.name+" ":"")+"is not within the file size limit of "+Math.round(imageformtool.sizeLimit/1048576)+"MB" ]);
+					else if (error.type === "type")
+						$j(imageformtool).trigger("fileerror",[ "upload","filetype",error.message ]);
+					else if (error.type === "network")
+						$j(imageformtool).trigger("fileerror",[ "upload","network",'Network error: '+error.message ]);
 					else
-						$j(imageformtool).trigger("fileerror",[ "upload",errorObj.type,'Error '+errorObj.type+": "+errorObj.text ]);
+						$j(imageformtool).trigger("fileerror",[ "upload",error.type||"server",'Error: '+error.message ]);
 				}
 			});
 		};
@@ -577,6 +574,3 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 	if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	return this[prefix+property];
 };
-$fc.imageformtool.buttonImg = '/webtop/thirdparty/jquery.uploadify-v2.1.4/selectImage.png';
-$fc.imageformtool.uploader = '/webtop/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf';
-$fc.imageformtool.cancelImg = '/webtop/thirdparty/jquery.uploadify-v2.1.4/cancel.png';
