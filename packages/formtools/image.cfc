@@ -478,6 +478,7 @@
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<cfif structkeyexists(url,"check")>
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif isdefined("url.callback")>
 				<cfreturn "#url.callback#([])" />
 			<cfelse>
@@ -486,6 +487,8 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"crop")>
+			<!--- This branch returns the Jcrop dialog markup. No Content-Type set;
+			      the CFML default (text/html) is correct for HTML responses. --->
 			<cfset stSource = arguments.stObject />
 			<cfset sourceField = listfirst(arguments.stMetadata.ftSourceField,":") />
 			<cfif isArray(stSource[sourceField]) and arrayLen(stSource[sourceField])>
@@ -555,6 +558,9 @@
 			</cfif>
 		</cfif>
 		
+		<!--- Every return path below this point serialises JSON. --->
+		<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+
 		<cfset stResult = handleFilePost(
 				objectid=arguments.stObject.objectid,
 				existingfile=arguments.stMetadata.value,

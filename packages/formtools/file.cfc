@@ -270,6 +270,10 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<!--- Every return path in this method serialises JSON. Set the correct Content-Type
+		      so consumers (and proxies / dev tooling) treat it as JSON, not the CFML default text/html. --->
+		<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+
 		<cfset var stResult = "" />
 		<cfset var stFieldPost = structnew() />
 		<cfset var stJSON = structnew() />

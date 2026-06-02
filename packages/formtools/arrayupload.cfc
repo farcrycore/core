@@ -800,10 +800,12 @@
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<cfif structkeyexists(url,"check")>
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfreturn "[]" />
 		</cfif>
 		
 		<cfif structkeyexists(url,"add")>
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif not isdefined("form.items") or not len(form.items)>
 				<cfreturn "" />
 			</cfif>
@@ -829,6 +831,8 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"edit")><!--- Edit an array item --->
+			<!--- This branch returns HTML for the edit-item modal.
+			      No Content-Type set; the CFML default (text/html) is correct. --->
 			<cfif not isdefined("form.item") or not len(form.item)>
 				<cfreturn "No item specified" />
 			</cfif>
@@ -849,6 +853,7 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"update")><!--- Update an array item --->
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif not isdefined("form._objectid") or not len(form._objectid)>
 				<cfreturn "No data specified" />
 			</cfif>
@@ -878,6 +883,7 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"delete")>
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif not isdefined("form.items") or not len(form.items)>
 				<cfreturn "[]" />
 			</cfif>
@@ -894,6 +900,7 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"upload")><!--- Edit an array item --->
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
 				
 				<cfset stResult = handleFilePost(
@@ -1014,6 +1021,7 @@
 			</cfif>
 		</cfif>
 		
+		<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 		<cfreturn "{}" />
 	</cffunction>
 	

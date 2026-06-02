@@ -61,6 +61,34 @@
 		return out.length ? out : null;
 	}
 
+	/**
+	 * Pull a short, readable snippet out of a response body. Strips script/style
+	 * blocks, collapses tags to spaces, normalises whitespace, truncates.
+	 * Useful when the server returns an HTML error page (Lucee/CF debug screen,
+	 * Nginx 502 page, etc.) and we want to show something meaningful instead of
+	 * a generic "upload failed".
+	 */
+	function bodySnippet(text){
+		if (!text || typeof text !== "string") return "";
+		return text.replace(/<style[\s\S]*?<\/style>/gi, " ")
+		           .replace(/<script[\s\S]*?<\/script>/gi, " ")
+		           .replace(/<[^>]+>/g, " ")
+		           .replace(/&nbsp;/gi, " ")
+		           .replace(/\s+/g, " ")
+		           .trim()
+		           .slice(0, 240);
+	}
+
+	/**
+	 * Extract responseText from an Uppy upload-error payload. Uppy v5's XHRUpload
+	 * stores the underlying XHR on the error/response args; we look in both.
+	 */
+	function extractResponseText(error, response){
+		if (response && typeof response.responseText === "string") return response.responseText;
+		if (error && error.request && typeof error.request.responseText === "string") return error.request.responseText;
+		return "";
+	}
+
 	function categorizeError(file, error, response){
 		var msg = (error && error.message) || (typeof error === "string" ? error : "Upload failed");
 
@@ -70,14 +98,23 @@
 		if (error && error.isNetworkError) {
 			return { type: "network", message: msg };
 		}
-		var status = (response && typeof response.status === "number") ? response.status : null;
+
+		var status = (response && typeof response.status === "number") ? response.status
+		           : (error && error.request && typeof error.request.status === "number") ? error.request.status
+		           : null;
+
+		// Pull a readable snippet from the response body, if there is one,
+		// and append it to the message — keeps server error info visible.
+		var snippet = bodySnippet(extractResponseText(error, response));
+		var fullMsg = snippet ? (msg + ": " + snippet) : msg;
+
 		if (status !== null && status >= 400) {
-			return { type: "http", message: msg, status: status };
+			return { type: "http", message: fullMsg, status: status };
 		}
 		if (status !== null) {
-			return { type: "server", message: msg, status: status };
+			return { type: "server", message: fullMsg, status: status };
 		}
-		return { type: "server", message: msg };
+		return { type: "server", message: fullMsg };
 	}
 
 	function classifyRestriction(msg){
@@ -140,10 +177,19 @@
 			fieldName:    fieldName,
 			formData:     true,
 			method:       "POST",
-			getResponseData: function(responseText){
-				if (!responseText) return {};
-				try { return JSON.parse(responseText); }
-				catch (err){ return { error: "Invalid JSON response: " + String(responseText).slice(0, 200) }; }
+			// Uppy v5 signature: receives the XMLHttpRequest (not response text).
+			// We override the default so that a 2xx response with a non-JSON body
+			// (typical when a CFML error page is returned with a 200 status, or
+			// when an upstream proxy returns plaintext) surfaces a useful message
+			// via results.error instead of throwing a generic Uppy error.
+			getResponseData: function(xhr){
+				var text = (xhr && typeof xhr.responseText === "string") ? xhr.responseText : "";
+				if (!text) return { error: "Empty response from server" };
+				try { return JSON.parse(text); }
+				catch (err){
+					var snippet = bodySnippet(text);
+					return { error: "Non-JSON response from server" + (snippet ? ": " + snippet : "") };
+				}
 			}
 		};
 		if (simultaneous !== null) xhrOpts.limit = simultaneous;
