@@ -247,7 +247,6 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			imageformtool.inputs.resizemethod  = $j('#'+prefix+property+'RESIZEMETHOD');
 			imageformtool.inputs.quality  = $j('#'+prefix+property+'QUALITY');
 			imageformtool.inputs.deletef = $j('#'+prefix+property+'DELETE');
-			imageformtool.inputs.traditional = $j('#'+prefix+property+'TRADITIONAL');
 			imageformtool.inputs.newf = $j('#'+prefix+property+'NEW');
 			imageformtool.inputs.base = $j('#'+prefix+property);
 			
@@ -274,7 +273,6 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 								$j(this).find(".image-custom-crop, .image-crop-select-button").show().end();
 			    			}
 	    				},
-	    				"traditional" : function onImageFormtoolOpenTraditional(event){  },
 	    				"cancel" : function onImageFormtoolOpenCancel(event){ 
 	    					imageformtool.inlineview.find("span.action-cancel").hide();
 	    					imageformtool.inlineview.find("span.not-cancel").show();
@@ -292,9 +290,6 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 	    				"working" : function onImageFormtoolCloseAutogenerate(event){
 	    					imageformtool.inputs.resizemethod.val("");
 		    				imageformtool.inputs.deletef.val("false");
-	    				},
-	    				"traditional" : function onImageFormtoolCloseTraditional(event){ 
-	    					imageformtool.inputs.traditional.val(""); 
 	    				},
 	    				"cancel" : function onImageFormtoolCloseCancel(event){
 	    					imageformtool.inlineview.find("span.not-cancel").hide();

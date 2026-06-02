@@ -221,17 +221,10 @@
 					<div id="#arguments.fieldname#-multiview">
 						<cfif arguments.stMetadata.ftAllowUpload>
 							<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-								<a href="##traditional" class="fc-btn select-view" style="float:left" title="Switch between traditional upload and inline upload"><i class="fa fa-random fa-fw"></i></a>
 								<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 								<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;<cfif not len(error)>display:none;</cfif>">#error#</div>
 								<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
 								<div class="image-cancel-upload" style="clear:both;"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to upload an image</a></div>
-							</div>
-							<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-								<a href="##back" class="fc-btn select-view" style="float:left" title="Switch between traditional upload and inline upload"><i class="fa fa-random fa-fw"></i></a>
-								<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-								<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
-								<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><i class="fa fa-times-cirlce-o"></i> <a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 							</div>
 							<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
 								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
@@ -296,15 +289,8 @@
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<div id="#arguments.fieldname#-multiview">
 						<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-							<a href="##traditional" class="fc-btn select-view" style="float:left" title="Switch between traditional upload and inline upload"><i class="fa fa-random fa-fw">&nbsp;</i></a>
 							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 							<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;<cfif not len(error)>display:none;</cfif>">#error#</div>
-							<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
-							<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
-						</div>
-						<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-							<a href="##back" class="fc-btn select-view" style="float:left" title="Switch between traditional upload and inline upload"><i class="fa fa-random fa-fw">&nbsp;</i></a>
-							<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 							<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
 							<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 						</div>
@@ -436,14 +422,8 @@
 					<div id="#arguments.fieldname#-multiview">
 						<div id="#arguments.fieldname#_cancel" class="cancel-view"></div>
 				    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-			    			<a href="##traditional" class="select-view" style="float:left" title="Switch between traditional upload and inline upload"><i class="fa fa-random fa-fw">&nbsp;</i></a>
 				    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 				    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-				    		<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
-						</div>
-				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-			    			<a href="##upload" class="select-view" style="float:left" title="Switch between traditional upload and inline upload"><i class="fa fa-random fa-fw">&nbsp;</i></a>
-				    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 				    		<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
 						</div>
 					</div>
@@ -1068,61 +1048,13 @@
 		<cfreturn html>
 	</cffunction>
 	
-	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+	<cffunction name="validate" access="public" output="true" returntype="struct" hint="Pass-through; upload and processing happens in ajax().">
 	    <cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 	    <cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 	    <cfargument name="stImageArgs" required="true" type="struct" default="#structNew()#" hint="Append any additional image arguments for image generation.">
 	    <cfargument name="objectid" required="true" type="uuid" hint="objectid of image object" />
-	
-		<cfset var stResult = structNew() />
-		<cfset var stGeneratedImageArgs = arguments.stImageArgs />
-		<cfset var uploadFileName = "" />
-		<cfset var b = "" />
-		<cfset var newFileName = "" />
-		<cfset var lFormField = "" /> 
-		<cfset var stFixed = structNew() />
-		
-		
-		<cfset stResult = handleFilePost(
-			objectid=arguments.objectid,
-			existingfile=arguments.stFieldPost.value,
-			uploadfield="#arguments.stMetadata.FormFieldPrefix##arguments.stMetadata.name#TRADITIONAL",
-			destination=arguments.stMetadata.ftDestination,
-			allowedExtensions=arguments.stMetadata.ftAllowedExtensions,
-			stFieldPost=arguments.stFieldPost.stSupporting,
-			sizeLimit=arguments.stMetadata.ftSizeLimit,
-			bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive)
-		) />
-		
-		<cfif stResult.bChanged>
-			<cfif isdefined("stResult.value") and len(stResult.value)>
-			
-				<cfparam name="arguments.stFieldPost.stSupporting.ResizeMethod" default="#arguments.stMetadata.ftAutoGenerateType#" />
-				<cfparam name="arguments.stFieldPost.stSupporting.Quality" default="#arguments.stMetadata.ftQuality#" />
-				
-				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
-				
-				<cfif stFixed.bSuccess>
-					<cfset stResult.value = stFixed.value />
-				<cfelseif structkeyexists(stFixed,"stError")>
-					<!--- Do nothing - an error from fixImage means there was no resize --->
-				</cfif>
-				
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-				
-			<cfelse>
-			
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-			
-			</cfif>
-			
-		</cfif>
-		
-		<!--- ----------------- --->
-		<!--- Return the Result --->
-		<!--- ----------------- --->
-		<cfreturn stResult />
-		
+
+		<cfreturn passed(value=arguments.stFieldPost.value) />
 	</cffunction>
 	
 	
