@@ -271,12 +271,103 @@
 			payload.value = s3ValueByFileId[file.id] || "";
 			return postJSON(withParam(opts.endpoint, "s3op", "finalize"), payload);
 		}
+
+		// Override for @uppy/aws-s3's uploadPartBytes (the presigned-POST path).
+		//
+		// Stock AwsS3 reads the uploaded object's ETag from a response header and
+		// treats a missing one as fatal: it logs and returns WITHOUT resolving or
+		// rejecting, so the upload stalls — no upload-success, no finalize. The
+		// header is only visible if the bucket exposes it via CORS, and we don't
+		// need it: presigned POST returns its result in the response BODY and our
+		// server "finalize" is the source of truth. So for POST we proceed even
+		// when the ETag header is absent — no bucket CORS change required.
+		//
+		// Method-aware: PUT (multipart parts) keeps the stock ETag requirement, so
+		// switching shouldUseMultipart on later stays correct.
+		//
+		// This is a faithful copy of @uppy/aws-s3@5.1.0's static uploadPartBytes
+		// (the version inside the bundled uppy v5.2.4) with two deliberate edits:
+		//   1. the "bail on null ETag" guard is skipped for POST (the fix above);
+		//   2. the POST "Could not read the Location header" console.error is
+		//      dropped — with success_action_status=201 the Location is always in
+		//      the body, never a header, so stock logs it spuriously every upload.
+		// Upgrader note: if you bump the bundle, re-diff against that version's
+		// uploadPartBytes. If a future release stops treating a missing POST ETag
+		// as fatal, this override can be removed.
+		function s3UploadPartBytes(args){
+			var signature  = args.signature || {};
+			var url        = signature.url;
+			var expires    = signature.expires;
+			var headers    = signature.headers;
+			var method     = (signature.method || "PUT").toUpperCase();   // stock default is PUT; relax only for explicit POST
+			var body       = args.body;
+			var size       = args.size != null ? args.size : (body && body.size);
+			var onProgress = args.onProgress;
+			var onComplete = args.onComplete;
+			var signal     = args.signal;
+
+			if (signal && signal.aborted) { return Promise.reject(new Error("Upload aborted")); }
+			if (url == null) { return Promise.reject(new Error("Cannot upload to an undefined URL")); }
+
+			return new Promise(function(resolve, reject){
+				var xhr = new XMLHttpRequest();
+				xhr.open(method, url, true);
+				if (headers){
+					Object.keys(headers).forEach(function(k){ xhr.setRequestHeader(k, headers[k]); });
+				}
+				xhr.responseType = "text";
+				if (typeof expires === "number") xhr.timeout = expires * 1000;
+
+				function onAbort(){ xhr.abort(); }
+				function cleanup(){ if (signal) signal.removeEventListener("abort", onAbort); }
+				if (signal){ signal.addEventListener("abort", onAbort); }
+
+				xhr.upload.addEventListener("progress", function(ev){ if (onProgress) onProgress(ev); });
+				xhr.addEventListener("abort", function(){ cleanup(); reject(new Error("Upload aborted")); });
+				xhr.addEventListener("timeout", function(){ cleanup(); var err = new Error("Request has expired"); err.source = { status: 403 }; reject(err); });
+				xhr.addEventListener("error", function(ev){ cleanup(); var err = new Error("Unknown error"); err.source = ev.target; reject(err); });
+				xhr.addEventListener("load", function(){
+					cleanup();
+					if (xhr.status === 403 && xhr.responseText && xhr.responseText.indexOf("<Message>Request has expired</Message>") !== -1){
+						var expErr = new Error("Request has expired"); expErr.source = xhr; reject(expErr); return;
+					}
+					if (xhr.status < 200 || xhr.status >= 300){
+						var httpErr = new Error("Non 2xx"); httpErr.source = xhr; reject(httpErr); return;
+					}
+					if (onProgress) onProgress({ loaded: size, lengthComputable: true });
+
+					// Parse all response headers into a lowercase-keyed map, exactly
+					// as stock does, so the resolved object carries them through.
+					var headersMap = {};
+					var raw = xhr.getAllResponseHeaders().trim().split(/[\r\n]+/);
+					for (var i = 0; i < raw.length; i++){
+						var parts = raw[i].split(": ");
+						var name  = parts.shift();
+						headersMap[name] = parts.join(": ");
+					}
+					var etag = headersMap.etag;
+
+					// PUT (multipart part) keeps the stock contract: ETag is required.
+					// POST proceeds without it — see comment block above.
+					if (method !== "POST" && etag == null){
+						console.error("@uppy/aws-s3: Could not read the ETag header (required for multipart). Expose ETag via the bucket's CORS Access-Control-Expose-Headers.");
+						return;
+					}
+
+					if (onComplete) onComplete(etag);
+					resolve(Object.assign({}, headersMap, { ETag: etag }));
+				});
+
+				xhr.send(body);
+			});
+		}
 		// ---------------------------------------------------------------------
 
 		if (isS3){
 			uppy.use(window.Uppy.AwsS3, {
-				shouldUseMultipart:  false,   // presigned POST only; extension point for multipart later
-				getUploadParameters: fetchSignParams
+				shouldUseMultipart:  false,               // presigned POST only; extension point for multipart later
+				getUploadParameters: fetchSignParams,
+				uploadPartBytes:     s3UploadPartBytes    // see comment above: 2xx = success, no ETag CORS exposure needed for POST
 			});
 		} else {
 			uppy.use(window.Uppy.XHRUpload, xhrOpts);
