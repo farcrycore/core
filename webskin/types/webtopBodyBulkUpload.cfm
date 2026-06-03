@@ -24,6 +24,22 @@
 <cfset lDefaultFields = application.stCOAPI[stObj.name].bulkUploadDefaultFields />
 <cfset lEditFields = application.stCOAPI[stObj.name].bulkUploadEditFields />
 
+<!--- Resolve the FINAL CDN location for the upload target so we can derive the
+      storage type (s3 vs local) and presign direct-to-S3 uploads. Respects
+      ftLocation and ftSecure for ALL field types: an explicit ftLocation override
+      wins; otherwise a secure target goes to privatefiles; otherwise the type's
+      default public location (images for image, publicfiles for file). --->
+<cfif len(application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftLocation", default=""))>
+	<cfset uploadLocationBulk = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftLocation", default="") />
+<cfelseif isBoolean(application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftSecure", default=false)) and application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftSecure", default=false)>
+	<cfset uploadLocationBulk = "privatefiles" />
+<cfelseif application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftType", default="image") eq "file">
+	<cfset uploadLocationBulk = "publicfiles" />
+<cfelse>
+	<cfset uploadLocationBulk = "images" />
+</cfif>
+<cfset storageTypeBulk = application.fc.lib.cdn.getLocationType(uploadLocationBulk) />
+
 <cfset lFileIDs = "">
 
 <cfset exit = false />
@@ -51,8 +67,95 @@
 	<cfset url.action = form.action />
 </cfif>
 
+<!--- Direct-to-S3 sign request (storage:s3). Presign a POST straight to the
+      final CDN location and echo the resolved value so finalize can record it.
+      Reached at the same URL as a local upload but with &s3op=sign and a JSON
+      body; the local multipart path below is untouched. --->
+<cfif structkeyexists(url,"action") and url.action eq "upload" and structkeyexists(url,"s3op") and url.s3op eq "sign">
+	<cftry>
+		<cfset stBody = deserializeJSON(toString(getHTTPRequestData().content)) />
+
+		<cfset sizeLimit = 0 />
+		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftSizeLimit")>
+			<cfset sizeLimit = application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftSizeLimit />
+		<cfelseif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftMaxSize")>
+			<cfset sizeLimit = application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftMaxSize />
+		</cfif>
+
+		<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
+			location = uploadLocationBulk,
+			destination = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftDestination", default=""),
+			filename = structKeyExists(stBody,"filename") ? stBody.filename : "upload",
+			uniqueAmong = uploadLocationBulk,
+			contentType = structKeyExists(stBody,"type") ? stBody.type : "",
+			maxSize = (val(sizeLimit) gt 0) ? val(sizeLimit) : 0
+		) />
+		<!--- Carry the resolved value to the client so finalize can echo it back. --->
+		<cfset stPrep.params["value"] = stPrep.value />
+		<cfset stResult = stPrep.params />
+
+		<cfcatch>
+			<cfset stResult = structnew() />
+			<cfset stResult["error"] = application.fc.lib.error.normalizeError(cfcatch) />
+			<cfset application.fc.lib.error.logData(stResult.error) />
+		</cfcatch>
+	</cftry>
+
+	<cfset application.fapi.stream(content=stResult,type="json") />
+</cfif>
+
+<!--- Direct-to-S3 finalize request (storage:s3). The object is already in its
+      final CDN location, so we queue the same background task as the local path
+      but with directValue instead of a temp file, and return the same shape. --->
+<cfif structkeyexists(url,"action") and url.action eq "upload" and structkeyexists(url,"s3op") and url.s3op eq "finalize">
+	<cftry>
+		<cfset stBody = deserializeJSON(toString(getHTTPRequestData().content)) />
+
+		<cfset stDefaults = structnew() />
+		<cfloop list="#lDefaultFields#" index="thisprop">
+			<cfif structkeyexists(stBody,thisprop)>
+				<cfset stDefaults[thisprop] = stBody[thisprop] />
+			</cfif>
+		</cfloop>
+
+		<cfset stTask = {
+			objectid = application.fapi.getUUID(),
+			directValue = structKeyExists(stBody,"value") ? stBody.value : "",
+			directLocation = uploadLocationBulk,
+			typename = stObj.name,
+			targetfield = uploadTarget,
+			defaults = stDefaults
+		} />
+		<cfset application.fc.lib.tasks.addTask(taskID=stTask.objectid,jobID=stBody.uploaderID,action="bulkupload.upload",details=stTask) />
+
+		<!--- session only object for webskins --->
+		<cfset fileObjectID = application.fapi.getUUID()>
+		<cfset application.fapi.setData(typename=stObj.name,objectid=fileObjectID,bSessionOnly="true") />
+
+		<cfset stResult = structnew() />
+		<cfset stResult["files"] = arraynew(1) />
+		<cfset stResult["files"][1] = structnew() />
+		<cfset stResult["files"][1]["name"] = listlast(URLDecode(stTask.directValue),"/") />
+		<cfset stResult["files"][1]["url"] = application.fapi.fixURL(removevalues="upload",addvalues="action=view&uploader=#stBody.uploaderID#&file=#fileObjectID#") />
+		<cfset stResult["files"][1]["thumbnail_url"] = "" />
+		<cfset stResult["files"][1]["delete_url"] = "" />
+		<cfset stResult["files"][1]["delete_type"] = "DELETE" />
+		<cfset stResult["files"][1]["fileID"] = structKeyExists(stBody,"fileID") ? stBody.fileID : "" />
+		<cfset stResult["files"][1]["taskID"] = stTask.objectid />
+		<cfset stResult["files"][1]["objectid"] = fileObjectID />
+
+		<cfcatch>
+			<cfset stResult = structnew() />
+			<cfset stResult["error"] = application.fc.lib.error.normalizeError(cfcatch) />
+			<cfset application.fc.lib.error.logData(stResult.error) />
+		</cfcatch>
+	</cftry>
+
+	<cfset application.fapi.stream(content=stResult,type="json") />
+</cfif>
+
 <!--- Handle upload request --->
-<cfif structkeyexists(url,"action") and url.action eq "upload">
+<cfif structkeyexists(url,"action") and url.action eq "upload" and not structkeyexists(url,"s3op")>
 	<cftry>
 		<cfset allowedExtensions = "" />
 		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftAllowedExtensions")>
@@ -384,7 +487,8 @@
 		</cfif>
 		
 		uploadURL : "#application.fapi.fixURL(addValues='action=upload')#",
-		saveURL : "#application.fapi.fixURL(addvalues='action=save')#"
+		saveURL : "#application.fapi.fixURL(addvalues='action=save')#",
+		storage : "#storageTypeBulk#"
 	});
 	
 	$j("##defaultProperties .title").click(function(){

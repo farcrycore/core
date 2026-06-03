@@ -24,24 +24,34 @@
 			</cfif>
 		</cfif>
 
-		<!--- copy file up --->
-		<cfset stResult = application.formtools[application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftType")].oFactory.handleFileLocal(
-			typename = stObject.typename,
-			objectid = stObject.objectid,
-			existingFile = "",
-			localFile = application.fc.lib.cdn.ioGetFileLocation(location="temp", file=arguments.details.tempfile,bRetrieve="true").path,
-			destination = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftDestination"),
-			secure = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSecure", false),
-			status = structKeyExists(stObject, "status") ? stObject.status : "approved",
-			allowedExtensions = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftAllowedExtensions"),
-			sizeLimit = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSizeLimit", 0),
-			bArchive = false
-		) />
-		<cfif not stResult.bSuccess>
-			<cflog file="bulkupload" text="Could not handle #arguments.details.tempfile#: #stResult.stError.message#" />
-			<creturn "" />
+		<cfif structkeyexists(arguments.details,"directValue") and len(arguments.details.directValue)>
+			<!--- Direct-to-S3: the object is already in its final CDN location
+			      (presigned at sign time). No temp file to copy — just record the
+			      value. createFromUpload below still resizes the S3-resident file. --->
+			<cfset stObject[arguments.details.targetfield] = arguments.details.directValue />
+		<cfelse>
+			<!--- copy file up. ftLocation is passed so the file formtool honours an
+			      explicit location override (image ignores it and always uses "images"),
+			      keeping the local path consistent with the direct-S3 sign location. --->
+			<cfset stResult = application.formtools[application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftType")].oFactory.handleFileLocal(
+				typename = stObject.typename,
+				objectid = stObject.objectid,
+				existingFile = "",
+				localFile = application.fc.lib.cdn.ioGetFileLocation(location="temp", file=arguments.details.tempfile,bRetrieve="true").path,
+				destination = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftDestination"),
+				secure = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSecure", false),
+				ftLocation = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftLocation", ""),
+				status = structKeyExists(stObject, "status") ? stObject.status : "approved",
+				allowedExtensions = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftAllowedExtensions"),
+				sizeLimit = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSizeLimit", 0),
+				bArchive = false
+			) />
+			<cfif not stResult.bSuccess>
+				<cflog file="bulkupload" text="Could not handle #arguments.details.tempfile#: #stResult.stError.message#" />
+				<creturn "" />
+			</cfif>
+			<cfset stObject[arguments.details.targetfield] = stResult.value />
 		</cfif>
-		<cfset stObject[arguments.details.targetfield] = stResult.value />
 		<cfset stResult = {} />
 
 		<!--- call additional function to support cloudinary plugin --->

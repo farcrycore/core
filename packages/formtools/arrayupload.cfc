@@ -99,7 +99,9 @@
 		<cfset var returnHTML = "" />
 		<cfset var qArrayField = "" />
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
-	    
+	    <cfset var uploadLocation = "" />
+	    <cfset var storageType = "local" />
+
 	    <cfif not listlen(arguments.stMetadata.ftJoin) eq 1>
 			<cfthrow message="One related type must be specified in the ftJoin attribute" />
 		</cfif>
@@ -122,7 +124,14 @@
 		<cfelse>
 			<cfset arguments.stMetadata.ftSizeLimit = -1 />
 		</cfif>
-		
+
+		<!--- Pick the uploader transport from the joined file property's CDN location:
+		      direct-to-S3 for an S3 bucket, else local XHR. The location is resolved
+		      the same way the ajax() upload / finalize branches resolve it (image->images;
+		      file->ftLocation else publicfiles/privatefiles by ftSecure). --->
+		<cfset uploadLocation = resolveJoinUploadLocation(arguments.stMetadata) />
+		<cfset storageType = application.fc.lib.cdn.getLocationType(uploadLocation) />
+
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		<cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
@@ -217,7 +226,7 @@
 							return filename;
 		    			};
 		    			
-		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,removeType,quickEdit,view,tilewidth,tileheight){
+		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,removeType,quickEdit,view,tilewidth,tileheight,storage){
 		    				var fieldname = prefix + property;
 							arrayuploadformtool.displaylist = $("##join-"+objectid+"-"+property);
 							arrayuploadformtool.uploadify = $("##"+fieldname+"UPLOAD");
@@ -230,6 +239,7 @@
 							arrayuploadformtool.removeType = removeType;
 							arrayuploadformtool.beforeSelect = [];
 							arrayuploadformtool.quickEdit = quickEdit;
+							arrayuploadformtool.storage = storage;
 		    				
 		    				if (view=="tiled")
 								arrayuploadformtool.displaylist.sortable({ items:'li.sort', forceHelperSize:true, forcePlaceholderSize:true, tolerance:"pointer" });
@@ -248,6 +258,7 @@
 								fileInput:           arrayuploadformtool.uploadify,
 								fieldName:           property+"UPLOAD",
 								endpoint:            url+"/upload/1",
+								storage:             arrayuploadformtool.storage,
 								allowedFileTypes:    filetypes,
 								maxFileSize:         sizeLimit,
 								simultaneousUploads: uploadLimit,
@@ -654,7 +665,7 @@
 					
 				</cfoutput>	</ft:buttonPanel>
 				
-				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#);</script></cfoutput>
+				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
 				<cfif arguments.stMetadata.ftView eq 'tiled'>
 					<cfoutput>
 						<script type="text/template" id="uploaditem-#arguments.fieldname#">
@@ -770,7 +781,11 @@
 	    <cfset var stActions = structnew() />
 	    <cfset var editprefix = "" />
 	    <cfset var stNewObject = structnew() />
-		
+	    <cfset var stBody = structnew() />
+	    <cfset var stPrep = "" />
+	    <cfset var uploadLocationS3 = "" />
+	    <cfset var joinLocation = "" />
+
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -798,7 +813,33 @@
 		</cfif>
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-		
+
+		<!--- Direct-to-S3 sign request (storage:s3). Mirrors file/image ajaxS3:
+		      presign a POST to the FINAL location and echo the resolved value so
+		      finalize can record it. Secret key never leaves the server. --->
+		<cfif structkeyexists(url,"s3op") and url.s3op eq "sign">
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+			<cfset stBody = application.formtools.field.oFactory.getAjaxRequestBody() />
+			<cfset uploadLocationS3 = resolveJoinUploadLocation(arguments.stMetadata) />
+			<cftry>
+				<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
+					location=uploadLocationS3,
+					destination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					filename=structKeyExists(stBody,"filename") ? stBody.filename : "upload",
+					uniqueAmong=listfindnocase("publicfiles,privatefiles", uploadLocationS3) ? "privatefiles,publicfiles" : uploadLocationS3,
+					contentType=structKeyExists(stBody,"type") ? stBody.type : "",
+					maxSize=(val(arguments.stMetadata.ftSizeLimit) gt 0) ? val(arguments.stMetadata.ftSizeLimit) : 0
+				) />
+				<!--- Carry the resolved value to the client so finalize can echo it back. --->
+				<cfset stPrep.params["value"] = stPrep.value />
+				<cfreturn serializeJSON(stPrep.params) />
+
+				<cfcatch type="any">
+					<cfreturn serializeJSON({ "error" = cfcatch.message }) />
+				</cfcatch>
+			</cftry>
+		</cfif>
+
 		<cfif structkeyexists(url,"check")>
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfreturn "[]" />
@@ -899,32 +940,46 @@
 			<cfreturn serializeJSON(aItems) />
 		</cfif>
 		
-		<cfif structkeyexists(url,"upload")><!--- Edit an array item --->
+		<cfif structkeyexists(url,"upload")><!--- Upload / finalise a new array item --->
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
-			<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
-				
+
+			<!--- stFieldPost is supplied by the dispatcher for form posts but may be
+			      absent on a direct-S3 finalize (an AJAX fetch); guard it so the
+			      shared image post-processing below can default ResizeMethod/Quality. --->
+			<cfif not structKeyExists(arguments,"stFieldPost") or not isStruct(arguments.stFieldPost)>
+				<cfset arguments.stFieldPost = structnew() />
+			</cfif>
+			<cfif not structKeyExists(arguments.stFieldPost,"stSupporting")>
+				<cfset arguments.stFieldPost.stSupporting = structnew() />
+			</cfif>
+
+			<!--- Resolve the joined file property's CDN location once (image->images;
+			      file->ftLocation else publicfiles/privatefiles by ftSecure) and use it
+			      for both the local and direct-S3 paths so they stay consistent. --->
+			<cfset joinLocation = resolveJoinUploadLocation(arguments.stMetadata) />
+
+			<cfif structkeyexists(url,"s3op") and url.s3op eq "finalize">
+				<!--- Direct-to-S3 finalize: the object is already in S3. Synthesize the
+				      handleFilePost result from the echoed value so the existing
+				      object-create / resize / render pipeline below runs unchanged
+				      (no temp file, no server-side copy). --->
+				<cfset stBody = application.formtools.field.oFactory.getAjaxRequestBody() />
+				<cfset stResult.location = joinLocation />
+				<cfset stResult.value = structKeyExists(stBody,"value") ? stBody.value : "" />
+				<cfset stResult.bSuccess = len(stResult.value) gt 0 />
+
+			<cfelse>
+
 				<cfset stResult = handleFilePost(
 					objectid=arguments.stObject.objectid,
 					uploadfield="#arguments.stMetadata.name#UPLOAD",
 					destination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-					location="publicfiles",
+					location=joinLocation,
 					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
 					stFieldPost=arguments.stFieldPost.stSupporting,
 					sizeLimit=arguments.stMetadata.ftSizeLimit) />
-				<cfset stResult.location = "publicfiles" />
-				
-			<cfelse><!--- File property is an image formtool --->
-				
-				<cfset stResult = handleFilePost(
-					objectid=arguments.stObject.objectid,
-					uploadfield="#arguments.stMetadata.name#UPLOAD",
-					destination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-					location="images",
-					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
-					stFieldPost=arguments.stFieldPost.stSupporting,
-					sizeLimit=arguments.stMetadata.ftSizeLimit) />
-				<cfset stResult.location = "images" />
-					
+				<cfset stResult.location = joinLocation />
+
 			</cfif>
 			
 			<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
@@ -1025,6 +1080,29 @@
 		<cfreturn "{}" />
 	</cffunction>
 	
+	<cffunction name="resolveJoinUploadLocation" access="private" output="false" returntype="string" hint="Resolves the CDN location of the joined file property, respecting ftLocation and ftSecure for ALL field types. An explicit ftLocation override wins; otherwise a secure property goes to privatefiles; otherwise the type's default public location (images for image, publicfiles for file).">
+		<cfargument name="stMetadata" required="true" type="struct" />
+
+		<cfset var stProp = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata />
+		<cfset var propType = structKeyExists(stProp,"ftType") ? stProp.ftType : "image" />
+		<cfset var propLocation = structKeyExists(stProp,"ftLocation") ? stProp.ftLocation : "" />
+		<cfset var propSecure = structKeyExists(stProp,"ftSecure") ? stProp.ftSecure : false />
+
+		<!--- An explicit ftLocation override always wins, regardless of type. --->
+		<cfif len(propLocation)>
+			<cfreturn propLocation />
+		</cfif>
+		<!--- A secure property goes to privatefiles, regardless of type. --->
+		<cfif isBoolean(propSecure) and propSecure>
+			<cfreturn "privatefiles" />
+		</cfif>
+		<!--- Otherwise the type's default public location. --->
+		<cfif propType eq "file">
+			<cfreturn "publicfiles" />
+		</cfif>
+		<cfreturn "images" />
+	</cffunction>
+
 	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
 		<cfargument name="uploadfield" type="string" required="true" hint="Traditional form saves will use <PREFIX><PROPERTY>NEW, ajax posts will use <PROPERTY>NEW ... so the caller needs to say which it is" />

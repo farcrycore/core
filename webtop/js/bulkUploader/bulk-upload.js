@@ -249,6 +249,7 @@ FileUploadView = Backbone.View.extend({
 			fileInput:           this.$("#fileupload"),
 			fieldName:           "file",
 			endpoint:            this.options.uploadURL,
+			storage:             this.options.storage || "local",
 			maxFileSize:         this.options.sizeLimit || 0,
 			allowedFileTypes:    this.options.allowedExtensions || null,
 			simultaneousUploads: 1,

@@ -252,7 +252,16 @@
 		}
 
 		function s3Meta(file){
-			var payload = { filename: file.name, type: file.type, size: file.size };
+			var payload = {};
+			// Per-file meta set via Uppy setFileMeta (e.g. the bulk uploader's
+			// uploaderID / fileID / default-property values) rides along to the
+			// server so sign + finalize carry the same context as a local post.
+			if (file && file.meta){
+				for (var m in file.meta){ if (Object.prototype.hasOwnProperty.call(file.meta, m)) payload[m] = file.meta[m]; }
+			}
+			payload.filename = file.name;
+			payload.type     = file.type;
+			payload.size     = file.size;
 			var extra;
 			try { extra = extraFormData() || {}; } catch (e){ extra = {}; }
 			for (var k in extra){ if (Object.prototype.hasOwnProperty.call(extra, k)) payload[k] = extra[k]; }
