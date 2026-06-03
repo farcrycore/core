@@ -62,7 +62,7 @@
 
 	<!--- validate options --->
 	<cfproperty name="ftSecure" default="false" hint="Store files securely outside of public webspace." />
-	<cfproperty name="ftLocation" default="" hint="set to 'temp' to save to local CDN location" />
+	<cfproperty name="ftLocation" default="" hint="Explicit CDN location to store the file in (e.g. 'publicfiles', 'privatefiles', 'temp'). When set it wins over ftSecure and the status/permission rules, pinning the file to this location." />
 	<cfproperty name="ftDestination" default="" hint="Destination of file store relative of secure/public locations." />
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
@@ -652,31 +652,37 @@
 		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
 		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
 		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
-		
+		<cfargument name="location" type="string" required="false" default="" hint="Explicit CDN location override. When set it wins over secure/status/permission, pinning the file to this location." />
+
 		<cfset var filelocation = "" />
+		<cfset var uniqueamong = "privatefiles,publicfiles" />
 		<cfset var stResult = structNew()>
 		<cfset var filepermission = 0 />
 		<cfset var archivedFile = "" />
 		<cfset var errormessage = "" />
-		
+
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = arguments.existingFile>
 		<cfset stResult.stError = StructNew()>
-		
+
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
-		
+
 		<!--- If developer has entered an ftDestination, make sure it starts with a slash --->
 		<cfif len(arguments.destination) AND left(arguments.destination,1) NEQ "/">
 			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
-		
+
 		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
-		<cfif arguments.secure eq "false" and not listfindnocase("draft,pending",arguments.status) and filepermission>
+		<!--- An explicit location override always wins and pins the file to that location. --->
+		<cfif len(arguments.location)>
+			<cfset filelocation = arguments.location />
+			<cfset uniqueamong = arguments.location />
+		<cfelseif arguments.secure eq "false" and not listfindnocase("draft,pending",arguments.status) and filepermission>
 			<cfset filelocation = "publicfiles" />
 		<cfelse>
 			<cfset filelocation = "privatefiles" />
 		</cfif>
-		
+
 		<cfif len(arguments.existingfile)
 			AND application.fc.lib.cdn.ioFileExists(location=filelocation,file=arguments.existingfile)>
 			
@@ -723,7 +729,7 @@
 					dest_location=fileLocation,
 					dest_file=arguments.destination & "/" & listlast(arguments.localfile,"/\"),
 					nameconflict="makeunique",
-					uniqueamong="privatefiles,publicfiles"
+					uniqueamong=uniqueamong
 				) />
 			</cfif>
 			
@@ -766,9 +772,14 @@
 		<cfset var currentLocation = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
-		
+
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
-		
+
+		<!--- An explicit ftLocation override pins the file; skip public/private movement. --->
+		<cfif len(getLocationOverride(arguments.stMetadata))>
+			<cfreturn />
+		</cfif>
+
 		<!--- Draft content should always be secured --->
 		<!--- ftSecure=true will already be secured --->
 		<!--- anonymous access=false will already be secured --->
@@ -792,13 +803,18 @@
 		<cfset var currentLocation = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
-		
+
+		<!--- An explicit ftLocation override pins the file; skip public/private movement. --->
+		<cfif len(getLocationOverride(arguments.stMetadata))>
+			<cfreturn />
+		</cfif>
+
 		<!--- Approved content should be moved to public if not secured --->
 		<!--- ftSecure=true should not be moved --->
 		<!--- anonymous access=false should not be moved --->
 		<cfif len(arguments.stObject[arguments.stMetadata.name])>
 			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
-			
+
 			<cfif len(currentLocation) and currentLocation neq "publicfiles" and not isSecured(arguments.stObject,arguments.stMetadata)>
 				<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location="publicfiles") />
 			</cfif>
@@ -811,12 +827,14 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
 		<cfset var currentLocation = "" />
-		
+		<cfset var locationOverride = getLocationOverride(arguments.stMetadata) />
+		<cfset var searchLocations = len(locationOverride) ? locationOverride : "privatefiles,publicfiles" />
+
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
-		
+
 		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and len(arguments.stObject[arguments.stMetadata.name])>
-			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
-			
+			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations=searchLocations,file=arguments.stObject[arguments.stMetadata.name]) />
+
 			<cfif len(currentLocation)>
 				<cfset application.fc.lib.cdn.ioDeleteFile(location=currentLocation,file=arguments.stObject[arguments.stMetadata.name]) />
 			</cfif>
@@ -838,7 +856,12 @@
 		<cfset var stPermission = "" />
 		<cfset var currentLocation = "" />
 		<cfset var newLocation = "" />
-		
+
+		<!--- An explicit ftLocation override pins the file; skip public/private movement. --->
+		<cfif len(getLocationOverride(arguments.stMetadata))>
+			<cfreturn />
+		</cfif>
+
 		<cfif not structkeyexists(arguments,"stObject")>
 			<cfset arguments.stObject = getData(objectid=arguments.objectid) />
 		</cfif>
@@ -887,9 +910,11 @@
 		
 		<cfset var currentLocation = "" />
 		<cfset var archiveFile = "" />
-		
+		<cfset var locationOverride = getLocationOverride(arguments.stMetadata) />
+		<cfset var searchLocations = len(locationOverride) ? locationOverride : "publicfiles,privatefiles" />
+
 		<cfif len(arguments.stObject[arguments.stMetadata.name])>
-			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations=searchLocations,file=arguments.stObject[arguments.stMetadata.name]) />
 			
 			<cfif len(currentLocation)>
 				<cfset archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
@@ -910,12 +935,20 @@
 		<cfset var filepermission = "" />
 		<cfset var archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
 		<cfset var targetlocation = "" />
-		
-		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
-		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved") and filepermission>
-			<cfset targetlocation = "publicfiles" />
+		<cfset var locationOverride = getLocationOverride(arguments.stMetadata) />
+
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
+
+		<cfif len(locationOverride)>
+			<!--- An explicit ftLocation override pins the file. --->
+			<cfset targetlocation = locationOverride />
 		<cfelse>
-			<cfset targetlocation = "privatefiles" />
+			<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
+			<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved") and filepermission>
+				<cfset targetlocation = "publicfiles" />
+			<cfelse>
+				<cfset targetlocation = "privatefiles" />
+			</cfif>
 		</cfif>
 		
 		<cfreturn application.fc.lib.cdn.ioMoveFile(source_location="archive",source_file=archiveFile,dest_location=targetlocation,dest_file=arguments.stObject[arguments.stMetadata.name]) />
@@ -933,7 +966,8 @@
 		<cfargument name="bRetrieve" type="boolean" required="false" default="true" />
 
 		<cfset var stResult = structnew() />
-		
+		<cfset var locationOverride = getLocationOverride(arguments.stMetadata) />
+
 		<!--- Throw an error if the field is empty --->
 		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
 			<cfset stResult = structnew() />
@@ -942,13 +976,15 @@
 			<cfset stResult.error = "No file defined" />
 			<cfreturn stResult />
 		</cfif>
-		
-		<cfif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
+
+		<cfif len(locationOverride)>
+			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location=locationOverride,file=arguments.stObject[arguments.stMetadata.name], bRetrieve=arguments.bRetrieve) />
+		<cfelseif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
 			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name], bRetrieve=arguments.bRetrieve) />
 		<cfelse>
 			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name], bRetrieve=arguments.bRetrieve) />
 		</cfif>
-		
+
 		<cfreturn stResult />
 	</cffunction>
 	
@@ -962,31 +998,44 @@
 		
 		
 		<cfset var stResult = structnew() />
-		
+		<cfset var locationOverride = getLocationOverride(arguments.stMetadata) />
+
 		<!--- Throw an error if the field is empty --->
 		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
 			<cfset stResult = structnew() />
 			<cfset stResult.error = "No file defined" />
 			<cfreturn stResult />
 		</cfif>
-		
-		<cfif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
+
+		<cfif len(locationOverride)>
+			<cfset stResult.correctlocation = locationOverride />
+			<cfset stResult.currentlocation = application.fc.lib.cdn.ioFindFile(locations=locationOverride,file=arguments.stObject[arguments.stMetadata.name]) />
+		<cfelseif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
 			<cfset stResult.correctlocation = "privatefiles" />
 			<cfset stResult.currentlocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		<cfelse>
 			<cfset stResult.correctlocation = "publicfiles" />
 			<cfset stResult.currentlocation = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		</cfif>
-		
+
 		<cfset stResult.correct = stResult.correctlocation eq stResult.currentlocation />
 		
 		<cfreturn stResult />
 	</cffunction>
 	
+	<cffunction name="getLocationOverride" access="private" output="false" returntype="string" hint="Returns the explicit ftLocation override for this field, or an empty string when none is set. When set, the file is pinned to that CDN location and the public/private status movement is bypassed.">
+		<cfargument name="stMetadata" type="struct" required="true" hint="Property metadata" />
+
+		<cfif structKeyExists(arguments.stMetadata,"ftLocation") and len(arguments.stMetadata.ftLocation)>
+			<cfreturn arguments.stMetadata.ftLocation />
+		</cfif>
+		<cfreturn "" />
+	</cffunction>
+
 	<cffunction name="isSecured" access="private" output="false" returntype="boolean" hint="Encapsulates the security check on the file">
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
-		
+
 		<cfset var filepermission = false />
 		
 		
@@ -1007,18 +1056,22 @@
 		
 		<cfset var currentfilename = arguments.stObject[arguments.stMetadata.name] />
 		<cfset var currentlocation = "" />
-		
+		<cfset var locationOverride = getLocationOverride(arguments.stMetadata) />
+		<cfset var searchLocations = len(locationOverride) ? locationOverride : "privatefiles,publicfiles" />
+
 		<cfif not len(currentfilename)>
 			<cfreturn "" />
 		</cfif>
-		
-		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=currentfilename) />
-		
+
+		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations=searchLocations,file=currentfilename) />
+
 		<cfif not len(currentlocation)>
 			<cfreturn "" />
 		</cfif>
-		
-		<cfif isSecured(arguments.stObject,arguments.stMetadata)>
+
+		<cfif len(locationOverride)>
+			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location=locationOverride,dest_file=currentfilename,nameconflict="makeunique",uniqueamong=locationOverride) />
+		<cfelseif isSecured(arguments.stObject,arguments.stMetadata)>
 			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location="privatefiles",dest_file=currentfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />
 		<cfelse>
 			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location="publicfiles",dest_file=currentfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />

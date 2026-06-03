@@ -40,7 +40,7 @@
 				localFile = application.fc.lib.cdn.ioGetFileLocation(location="temp", file=arguments.details.tempfile,bRetrieve="true").path,
 				destination = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftDestination"),
 				secure = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSecure", false),
-				ftLocation = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftLocation", ""),
+				location = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftLocation", ""),
 				status = structKeyExists(stObject, "status") ? stObject.status : "approved",
 				allowedExtensions = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftAllowedExtensions"),
 				sizeLimit = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSizeLimit", 0),

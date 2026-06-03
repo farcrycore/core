@@ -113,6 +113,7 @@
 	<cfproperty name="ftWatermarkTransparency" type="numeric" hint="The transparency to apply to the watermark." required="false" default="90" />
 	<cfproperty name="ftSizeLimit" type="numeric" hint="File size limit for upload. 0 is no-limit" required="false" default="0" />
 	<cfproperty name="ftShowMetadata" type="boolean" default="true" hint="If this is set to false, the file size and dimensions of the current image are not displayed to the user" />
+	<cfproperty name="ftLocation" type="string" hint="Explicitly set the CDN location to store the image, overriding the default images location." required="false" default="" />
 	
 	
 	<!--- 
@@ -142,12 +143,13 @@
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 	    <cfset var thisdependant = "" />
 	    <cfset var stAltMeta = structnew() />
-	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
+	    <cfset var location = resolveUploadLocation(arguments.stMetadata) />
+	    <cfset var bFileExists = getFileExists(file=arguments.stMetadata.value,location=location) />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
 	    <cfset var readImageError = "" />
 	    <cfset var imageMaxWidth = 400 />
-	    <cfset var storageType = application.fc.lib.cdn.getLocationType("images") />
+	    <cfset var storageType = application.fc.lib.cdn.getLocationType(location) />
 
 
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
@@ -193,7 +195,7 @@
 		</cfsavecontent>
 	    
 		<cfif bFileExists>
-			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
+			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true,location=location) />
 			<cfif isdefined("stImage.stError.message") and len(stImage.stError.message)>
 				<cfset readImageError = "Error ""#stImage.stError.message#"" because the image file is invalid or corrupted. You can upload a new image to replace it." />
 			<cfelse>
@@ -357,10 +359,11 @@
 		<cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomright="Crop Bottom Left",bottomright="Crop Bottom Center" } />
 	    <cfset var stImage = structnew() />
 	    <cfset var stFile = structnew() />
-	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
+	    <cfset var location = resolveUploadLocation(arguments.stMetadata) />
+	    <cfset var bFileExists = getFileExists(file=arguments.stMetadata.value,location=location) />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
-	    <cfset var storageType = application.fc.lib.cdn.getLocationType("images") />
+	    <cfset var storageType = application.fc.lib.cdn.getLocationType(location) />
 
 		<cfparam name="arguments.stMetadata.ftHint" default="" />
 	    <cfparam name="arguments.stMetadata.ftstyle" default="">
@@ -391,7 +394,7 @@
 		<cfif bFileExists>
 			<cfset preview = "<img src='#getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path#' style='width:400px; max-width:400px; max-height:400px;' />" />
 			<cfif arguments.stMetadata.ftShowMetadata>
-				<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
+				<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true,location=location) />
 				<cfset preview = preview & "<br><div style='width:#previewwidth#px;'>#round(stImage.size/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
 			</cfif>
 		<cfelse>
@@ -456,7 +459,8 @@
 		<cfset var json = "" />
 		<cfset var stJSON = structnew() />
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
-		
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
 		<cfif structkeyexists(url,"s3op")>
@@ -555,7 +559,8 @@
 				allowedExtensions=arguments.stMetadata.ftAllowedExtensions,
 				stFieldPost=arguments.stFieldPost.stSupporting,
 				sizeLimit=arguments.stMetadata.ftSizeLimit,
-				bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive)
+				bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive),
+				location=location
 			) />
 		
 		<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
@@ -599,7 +604,7 @@
 					<cfset stJSON["fullpath"] = stLoc.path />
 					
 					<cfif arguments.stMetadata.ftShowMetadata>
-						<cfset stImage = getImageInfo(stFixed.value,true) />
+						<cfset stImage = getImageInfo(file=stFixed.value,admin=true,location=location) />
 						<cfset stJSON["size"] = round(stImage.size / 1024) />
 						<cfset stJSON["width"] = stImage.width />
 						<cfset stJSON["height"] = stImage.height />
@@ -608,10 +613,10 @@
 						<cfset stJSON["width"] = 0 />
 						<cfset stJSON["height"] = 0 />
 					</cfif>
-				
+
 					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stFixed.value) />
 				</cfif>
-				
+
 				<cfif isdefined("url.callback")>
 					<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
 				<cfelse>
@@ -619,10 +624,10 @@
 				</cfif>
 			</cfif>
 		</cfif>
-		
+
 		<cfif (not len(stResult.value) or structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod")) and structkeyexists(arguments.stMetadata,"ftSourceField") and len(arguments.stMetadata.ftSourceField)>
-		
-			<cfset stResult = handleFileSource(sourceField=arguments.stMetadata.ftSourceField,stObject=arguments.stObject,destination=arguments.stMetadata.ftDestination,stFields=application.stCOAPI[arguments.typename].stProps) />
+
+			<cfset stResult = handleFileSource(sourceField=arguments.stMetadata.ftSourceField,stObject=arguments.stObject,destination=arguments.stMetadata.ftDestination,stFields=application.stCOAPI[arguments.typename].stProps,location=location) />
 			
 			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not len(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
@@ -651,7 +656,7 @@
 					<cfset stJSON["q"] = cgi.query_string />
 					
 					<cfif arguments.stMetadata.ftShowMetadata>
-						<cfset stImage = getImageInfo(stFixed.value,true) />
+						<cfset stImage = getImageInfo(file=stFixed.value,admin=true,location=location) />
 						<cfset stJSON["size"] = round(stImage.size / 1024) />
 						<cfset stJSON["width"] = stImage.width />
 						<cfset stJSON["height"] = stImage.height />
@@ -660,7 +665,7 @@
 						<cfset stJSON["width"] = 0 />
 						<cfset stJSON["height"] = 0 />
 					</cfif>
-					
+
 					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stFixed.value) />
 				</cfif>
 				
@@ -696,6 +701,7 @@
 		<cfset var value = "" />
 		<cfset var resizeKey = "#arguments.stMetadata.name#RESIZEMETHOD" />
 		<cfset var qualityKey = "#arguments.stMetadata.name#QUALITY" />
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
 
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images" />
 		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif" />
@@ -706,10 +712,10 @@
 
 		<cfif url.s3op eq "sign">
 			<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
-				location="images",
+				location=location,
 				destination=arguments.stMetadata.ftDestination,
 				filename=structkeyexists(stBody,"filename") ? stBody.filename : "upload",
-				uniqueAmong="images",
+				uniqueAmong=location,
 				contentType=structkeyexists(stBody,"type") ? stBody.type : "",
 				maxSize=arguments.stMetadata.ftSizeLimit
 			) />
@@ -720,7 +726,7 @@
 		<!--- finalize: the original now lives in the bucket --->
 		<cfset value = structkeyexists(stBody,"value") ? stBody.value : "" />
 
-		<cfif not len(value) or not getFileExists(value)>
+		<cfif not len(value) or not getFileExists(file=value,location=location)>
 			<cfset stJSON["error"] = "Uploaded image could not be found" />
 			<cfset stJSON["value"] = "" />
 			<cfreturn serializeJSON(stJSON) />
@@ -754,7 +760,7 @@
 		<cfset stJSON["fullpath"] = stLoc.path />
 
 		<cfif arguments.stMetadata.ftShowMetadata>
-			<cfset stImage = getImageInfo(value,true) />
+			<cfset stImage = getImageInfo(file=value,admin=true,location=location) />
 			<cfset stJSON["size"] = round(stImage.size / 1024) />
 			<cfset stJSON["width"] = stImage.width />
 			<cfset stJSON["height"] = stImage.height />
@@ -777,7 +783,8 @@
 		<cfargument name="bForceCrop" type="boolean" required="false" default="false" hint="Used to force the custom cropping" />
 	
 		<cfset var stGeneratedImageArgs = structnew() />
-		<cfset var stImage = getImageInfo(arguments.filename) />
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+		<cfset var stImage = getImageInfo(file=arguments.filename,location=location) />
 		<cfset var stGeneratedImage = structnew() />
 		<cfset var q = "" />
 		
@@ -822,6 +829,7 @@
 		<cfset stGeneratedImageArgs.bUploadOnly = false />
 		<cfset stGeneratedImageArgs.PadColor = arguments.stMetadata.ftPadColor />
 		<cfset stGeneratedImageArgs.ResizeMethod = arguments.resizeMethod />
+		<cfset stGeneratedImageArgs.location = location />
 		
 		<cfif (
 				(stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width gt stImage.width)
@@ -847,6 +855,18 @@
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="resolveUploadLocation" access="private" output="false" returntype="string" hint="Resolves the CDN location for an image field. An explicit ftLocation override wins; otherwise the default images location. (ftSecure is a file-formtool concept and does not apply to images.)">
+		<cfargument name="stMetadata" required="true" type="struct" />
+
+		<cfset var propLocation = structKeyExists(arguments.stMetadata,"ftLocation") ? arguments.stMetadata.ftLocation : "" />
+
+		<!--- An explicit ftLocation override wins; otherwise the default images location. --->
+		<cfif len(propLocation)>
+			<cfreturn propLocation />
+		</cfif>
+		<cfreturn "images" />
+	</cffunction>
+
 	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
 		<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
@@ -856,12 +876,13 @@
 		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
 		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
 		<cfargument name="stFieldPost" type="struct" required="false" default="#structnew()#" hint="The supplementary data" />
-		
+		<cfargument name="location" type="string" required="false" default="images" hint="The CDN location to store the image in (defaults to images; pass a custom location to honour ftLocation)" />
+
 		<cfset var uploadFileName = "" />
 		<cfset var archivedFile = "" />
 		<cfset var stResult = passed(arguments.existingfile) />
 		<cfset var stFile = structnew() />
-		
+
 		<cfparam name="stFieldPost.NEW" default="" />
 		<cfparam name="stFieldPost.DELETE" default="false" /><!--- Boolean --->
 		
@@ -882,19 +903,19 @@
 					AND stFieldPost.DELETE
 				)
 			) 
-			AND len(arguments.existingfile) 
-			AND application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
-			
+			AND len(arguments.existingfile)
+			AND application.fc.lib.cdn.ioFileExists(location=arguments.location,file=arguments.existingfile)>
+
 			<cfif arguments.bArchive>
 				<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
-					source_location="images",
+					source_location=arguments.location,
 					source_file=arguments.existingfile,
 					dest_location="archive",
 					dest_file="#arguments.destination#/#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
 			<cfelse>
 				<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
-					source_location="images",
+					source_location=arguments.location,
 					source_file=arguments.existingfile,
 					dest_localpath=getTempDirectory() & "#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
@@ -907,12 +928,12 @@
 		
 	  	<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
 	  	
-	    	<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
-	    		
+	    	<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location=arguments.location,file=arguments.existingfile)>
+
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
 				<cftry>
 					<cfset uploadFileName = application.fc.lib.cdn.ioUploadFile(
-						location="images",
+						location=arguments.location,
 						destination=arguments.existingFile,
 						field=arguments.uploadfield,
 						sizeLimit=arguments.sizeLimit
@@ -930,13 +951,13 @@
 							<cfset application.fc.lib.cdn.ioMoveFile(
 								source_location="archive",
 								source_file=archivedFile,
-								dest_location="images",
+								dest_location=arguments.location,
 								dest_file=arguments.existingFile
 							) />
 						<cfelse>
 							<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
 								source_localpath=archivedFile,
-								dest_location="images",
+								dest_location=arguments.location,
 								dest_file=arguments.existingFile
 							) />
 						</cfif>
@@ -950,7 +971,7 @@
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
 				<cftry>
 					<cfset uploadFileName = application.fc.lib.cdn.ioUploadFile(
-						location="images",
+						location=arguments.location,
 						destination=arguments.destination,
 						acceptextensions=arguments.allowedExtensions,
 						field=arguments.uploadfield,
@@ -980,21 +1001,24 @@
 		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
 		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
 		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
-		
+		<cfargument name="location" type="string" required="false" default="images" hint="Explicit CDN location override; wins over the default images location" />
+
 		<cfset var uploadFileName = "" />
 		<cfset var archivedFile = "" />
 		<cfset var stResult = passed(arguments.existingfile) />
 		<cfset var stFile = structnew() />
 		<cfset var i = 0 />
 		<cfset var errormessage = "" />
-		
+		<!--- Resolve the storage location: an explicit location wins, else the default images location. --->
+		<cfset var location = len(arguments.location) ? arguments.location : "images" />
+
 		<cfset stResult.bChanged = false />
-		
+
 		<!--- If developer has entered an ftDestination, make sure it starts with a slash --->
 		<cfif len(arguments.destination) AND left(arguments.destination,1) NEQ "/">
 			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
-		
+
 		<cfif not fileexists(arguments.localfile)>
 			<cfreturn failed(value=arguments.existingfile,message="Expected file does not exist [#arguments.localfile#]") />
 	  	</cfif>
@@ -1009,17 +1033,17 @@
 			<cfreturn failed(value=arguments.existingfile,message=errormessage) />
 		</cfif>
 
-		<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
+		<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location=location,file=arguments.existingfile)>
 			<cfif arguments.bArchive>
 				<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
-					source_location="images",
+					source_location=location,
 					source_file=arguments.existingfile,
 					dest_location="archive",
 					dest_file="#arguments.destination#/#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
 			<cfelse>
 				<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
-					source_location="images",
+					source_location=location,
 					source_file=arguments.existingfile,
 					dest_localpath=getTempDirectory() & "#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
@@ -1035,7 +1059,7 @@
 				<cffile action="delete" file="#archivedFile#" />
 			</cfif>
 			
-			<cfset application.fc.lib.cdn.ioCopyFile(source_localpath=arguments.localfile,dest_location="images",dest_file=arguments.destination & "/" & uploadFilenName) />
+			<cfset application.fc.lib.cdn.ioCopyFile(source_localpath=arguments.localfile,dest_location=location,dest_file=arguments.destination & "/" & uploadFilenName) />
 			<cfset stResult = passed("#arguments.destination#/#uploadFileName#") />
 			<cfset stResult.bChanged = true />
 			
@@ -1044,7 +1068,7 @@
 			<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
 				<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
 			<cfelseif listFindNoCase(arguments.allowedExtensions,listlast(arguments.localfile,"."))>
-				<cfset uploadFileName = application.fc.lib.cdn.ioMoveFile(source_localpath=arguments.localfile,dest_location="images",dest_file=arguments.destination & "/" & getFileFromPath(arguments.localfile),nameconflict="makeunique") />
+				<cfset uploadFileName = application.fc.lib.cdn.ioMoveFile(source_localpath=arguments.localfile,dest_location=location,dest_file=arguments.destination & "/" & getFileFromPath(arguments.localfile),nameconflict="makeunique") />
 				<cfset stResult = passed(uploadFileName) />
 				<cfset stResult.bChanged = true />
 			<cfelse>
@@ -1061,13 +1085,15 @@
 		<cfargument name="stObject" type="struct" required="true" hint="The full set of object properties" />
 		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
 		<cfargument name="stFields" type="struct" required="true" hint="Full content type property metadata" />
-		
+		<cfargument name="location" type="string" required="false" default="images" hint="The CDN location to store the generated image in (defaults to images; honours the destination field's ftLocation when supplied)" />
+
 		<cfset var sourceFieldName = "" />
 		<cfset var libraryFieldName = "" />
 		<cfset var stImage = structnew() />
 		<cfset var sourcefilename = "" />
 		<cfset var finalfilename = "" />
 		<cfset var uniqueid = 0 />
+		<cfset var sourceLocation = "images" />
 		
 		<cfif not len(arguments.sourceField) and structkeyexists(arguments.stObject,listfirst(arguments.sourceField,":")) and len(arguments.stObject[listfirst(arguments.sourceField,":")])>
 			<cfreturn passed("") />
@@ -1090,23 +1116,30 @@
 				<cfset stImage = application.fapi.getContentObject(objectid="#arguments.stObject[sourceFieldName]#") />
 				<cfif structKeyExists(stImage, libraryFieldName) AND len(stImage[libraryFieldName])>
 					<cfset sourcefilename = stImage[libraryFieldName] />
+					<cfif structKeyExists(application.stCOAPI, stImage.typename) and structKeyExists(application.stCOAPI[stImage.typename].stProps, libraryFieldName)>
+						<cfset sourceLocation = resolveUploadLocation(application.stCOAPI[stImage.typename].stProps[libraryFieldName].metadata) />
+					</cfif>
 				</cfif>
 			<cfelse>
 				<cfset sourcefilename = arguments.stObject[sourceFieldName] />
+				<cfset sourceLocation = resolveUploadLocation(arguments.stFields[sourceFieldName].metadata) />
 			</cfif>
 		<cfelseif isArray(arguments.stObject[sourceFieldName])>
 			<!--- if this is array, use only first item for cropping --->
 			<cfif arrayLen(arguments.stObject[sourceFieldName])>
 				<cfset stImage = application.fapi.getContentObject(objectid="#arguments.stObject[sourceFieldName][1]#") />
 				<cfset sourcefilename = stImage[libraryFieldName] />
+				<cfif structKeyExists(application.stCOAPI, stImage.typename) and structKeyExists(application.stCOAPI[stImage.typename].stProps, libraryFieldName)>
+					<cfset sourceLocation = resolveUploadLocation(application.stCOAPI[stImage.typename].stProps[libraryFieldName].metadata) />
+				</cfif>
 			</cfif>
 		<cfelse>
 			<cfset sourcefilename = "" />
 		</cfif>
-		
+
 		<!--- Copy the source into the new field --->
 		<cfif len(sourcefilename)>
-			<cfset finalfilename = application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=sourcefilename,dest_location="images",dest_file=arguments.destination & "/" & listlast(sourcefilename,"\/"),nameconflict="makeunique",uniqueamong="images") />
+			<cfset finalfilename = application.fc.lib.cdn.ioCopyFile(source_location=sourceLocation,source_file=sourcefilename,dest_location=arguments.location,dest_file=arguments.destination & "/" & listlast(sourcefilename,"\/"),nameconflict="makeunique",uniqueamong=arguments.location) />
 			
 			<cfreturn passed(finalfilename) />
 		<cfelse>
@@ -1156,9 +1189,10 @@
 	
 	<cffunction name="getFileExists" access="public" output="false" returntype="boolean" hint="Returns true if file is non-empty and exists">
 		<cfargument name="file" type="string" required="true" />
-		
+		<cfargument name="location" type="string" required="false" default="images" hint="The CDN location the image is stored in (defaults to images)" />
+
 		<cfif len(arguments.file)>
-			<cfreturn application.fc.lib.cdn.ioFileExists(location="images",file=arguments.file) />
+			<cfreturn application.fc.lib.cdn.ioFileExists(location=arguments.location,file=arguments.file) />
 		<cfelse>
 			<cfreturn false />
 		</cfif>
@@ -1167,18 +1201,19 @@
 	<cffunction name="getImageInfo" access="public" output="false" returntype="struct" hint="Returns information about image">
 		<cfargument name="file" type="string" required="true" />
 		<cfargument name="admin" type="boolean" required="false" default="false" />
-		
+		<cfargument name="location" type="string" required="false" default="images" hint="The CDN location the image is stored in (defaults to images)" />
+
 		<cfset var stImage = structnew() />
 		<cfset var stResult = structnew() />
-		
-		<cfif application.fc.lib.cdn.ioFileExists(location="images",file=arguments.file)>
-			
-				<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.file,datatype='image')#" structName="stImage" />
-				
+
+		<cfif application.fc.lib.cdn.ioFileExists(location=arguments.location,file=arguments.file)>
+
+				<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location=arguments.location,file=arguments.file,datatype='image')#" structName="stImage" />
+
 				<cfset stResult["width"] = stImage.width />
 				<cfset stResult["height"] = stImage.height />
-				<cfset stResult["size"] = application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.file) />
-				<cfset stResult["path"] = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.file,admin=true).path />
+				<cfset stResult["size"] = application.fc.lib.cdn.ioGetFileSize(location=arguments.location,file=arguments.file) />
+				<cfset stResult["path"] = application.fc.lib.cdn.ioGetFileLocation(location=arguments.location,file=arguments.file,admin=true).path />
 				
 	 			<cfif findNoCase("GRAY", stImage.colormodel.colorspace)>
 					<cfset stResult["interpolation"] = "highQuality" />
@@ -1215,6 +1250,7 @@
 		<cfargument name="ResizeMethod" type="string" required="true" default="" hint="The y origin of the crop area. Options are center, topleft, topcenter, topright, left, right, bottomleft, bottomcenter, bottomright" />
 		<cfargument name="watermark" type="string" required="false" default="" hint="The path relative to the webroot of an image to use as a watermark." />
 		<cfargument name="watermarkTransparency" type="string" required="false" default="90" hint="The transparency to apply to the watermark." />
+		<cfargument name="location" type="string" required="false" default="images" hint="The CDN location to read the source from and write the generated image to (defaults to images)" />
 		
 		<cfset var stResult = structNew() />
 		<cfset var imageDestination = "" />
@@ -1247,14 +1283,14 @@
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
 		
-		<cfif not application.fc.lib.cdn.ioFileExists(location="images",file=arguments.source)>
+		<cfif not application.fc.lib.cdn.ioFileExists(location=arguments.location,file=arguments.source)>
 			<cfset stResult.bSuccess = False />
 			<cfset stResult.message = "File doesn't exist" />
 			<cfreturn stResult />
 		</cfif>
 
 		<cfif stResult.bSuccess>
-			<cfset stImage = getImageInfo(file=arguments.source,admin=true) />
+			<cfset stImage = getImageInfo(file=arguments.source,admin=true,location=arguments.location) />
 			<cfif structKeyExists(stImage, "interpolation") AND stImage.interpolation eq "highQuality">
 				<cfset arguments.interpolation = stImage.interpolation />
 			</cfif>
@@ -1280,7 +1316,7 @@
 		<!--- Image has changed --->
 		<cftry>
 			<!--- Read image into memory --->
-			<cfset newImage = application.fc.lib.cdn.ioReadFile(location="images",file=arguments.source,datatype="image") />
+			<cfset newImage = application.fc.lib.cdn.ioReadFile(location=arguments.location,file=arguments.source,datatype="image") />
 			<cfif arguments.bSetAntialiasing is true>
 				<cfset ImageSetAntialiasing(newImage,"on") />
 			</cfif>
@@ -1296,7 +1332,7 @@
 		
 		<cfif arguments.bUploadOnly is true>
 			<!--- We do not want to modify the file, so exit now --->
-			<cfset stResult.filename = application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=arguments.source,dest_location="images",dest_file=imageDestination,nameconflict="makeunique",uniqueamong="images") /> 
+			<cfset stResult.filename = application.fc.lib.cdn.ioCopyFile(source_location=arguments.location,source_file=arguments.source,dest_location=arguments.location,dest_file=imageDestination,nameconflict="makeunique",uniqueamong=arguments.location) />
 			<cfreturn stResult />
 		</cfif>
 		
@@ -1508,9 +1544,9 @@
 		
 		<cfif arguments.ResizeMethod neq "none" or bModified>
 			<cfif NOT arguments.bSelfSourced>
-				<cfset stResult.filename = application.fc.lib.cdn.ioWriteFile(location="images",file=imageDestination,data=newImage,datatype="image",quality=arguments.quality,nameconflict="makeunique",uniqueamong="images") />
+				<cfset stResult.filename = application.fc.lib.cdn.ioWriteFile(location=arguments.location,file=imageDestination,data=newImage,datatype="image",quality=arguments.quality,nameconflict="makeunique",uniqueamong=arguments.location) />
 			<cfelse>
-				<cfset stResult.filename = application.fc.lib.cdn.ioWriteFile(location="images",file=imageDestination,data=newImage,datatype="image",quality=arguments.quality,nameconflict="overwrite") />
+				<cfset stResult.filename = application.fc.lib.cdn.ioWriteFile(location=arguments.location,file=imageDestination,data=newImage,datatype="image",quality=arguments.quality,nameconflict="overwrite") />
 			</cfif>
 		<cfelse>
 			<cfset stResult.filename = imageDestination />
@@ -1535,7 +1571,7 @@
 				
 				<cfparam name="arguments.stFields.#thisfield#.metadata.ftDestination" default="" />    
 				
-				<cfset stResult = handleFileSource(sourceField=arguments.stFields[thisfield].metadata.ftSourceField,stObject=arguments.stProperties,destination=arguments.stFields[thisfield].metadata.ftDestination,stFields=arguments.stFields) />
+				<cfset stResult = handleFileSource(sourceField=arguments.stFields[thisfield].metadata.ftSourceField,stObject=arguments.stProperties,destination=arguments.stFields[thisfield].metadata.ftDestination,stFields=arguments.stFields,location=resolveUploadLocation(arguments.stFields[thisfield].metadata)) />
 				
 				<cfif isdefined("stResult.value") and len(stResult.value)>
 					
@@ -1591,13 +1627,15 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
-		
+
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+
 		<cfif not len(arguments.stObject[arguments.stMetadata.name])>
 			<cfreturn /><!--- No file attached --->
 		</cfif>
 
-		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and application.fc.lib.cdn.ioFileExists(location="images",file="#arguments.stObject[arguments.stMetadata.name]#")>
-			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="#arguments.stObject[arguments.stMetadata.name]#") />
+		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and application.fc.lib.cdn.ioFileExists(location=location,file="#arguments.stObject[arguments.stMetadata.name]#")>
+			<cfset application.fc.lib.cdn.ioDeleteFile(location=location,file="#arguments.stObject[arguments.stMetadata.name]#") />
 		<cfelse>
 			<cfreturn /><!--- File doesn't actually exist --->
 		</cfif>
@@ -1612,9 +1650,10 @@
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		<cfargument name="admin" type="boolean" required="false" default="false" />
 		<cfargument name="bRetrieve" type="boolean" required="false" default="true" />
-		
+
 		<cfset var stResult = structnew() />
-		
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+
 		<!--- Throw an error if the field is empty --->
 		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
 			<cfset stResult = structnew() />
@@ -1623,8 +1662,8 @@
 			<cfset stResult.error = "No file defined" />
 			<cfreturn stResult />
 		</cfif>
-		
-		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stObject[arguments.stMetadata.name],admin=arguments.admin,bRetrieve=arguments.bRetrieve) />
+
+		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location=location,file=arguments.stObject[arguments.stMetadata.name],admin=arguments.admin,bRetrieve=arguments.bRetrieve) />
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -1636,11 +1675,12 @@
 		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the new archive" />
 		
 		<cfset var archiveFile = "" />
-		
-		<cfif len(arguments.stObject[arguments.stMetadata.name]) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.stObject[arguments.stMetadata.name])>
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+
+		<cfif len(arguments.stObject[arguments.stMetadata.name]) and application.fc.lib.cdn.ioFileExists(location=location,file=arguments.stObject[arguments.stMetadata.name])>
 			<cfset archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
-			
-			<cfset application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
+
+			<cfset application.fc.lib.cdn.ioCopyFile(source_location=location,source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
 		</cfif>
 		
 		<cfreturn archiveFile />
@@ -1653,8 +1693,9 @@
 		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the archive being rolled back" />
 		
 		<cfset var archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
-		
-		<cfreturn application.fc.lib.cdn.ioMoveFile(source_location="archive",source_file=archiveFile,dest_location="images",dest_file=arguments.stObject[arguments.stMetadata.name]) />
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+
+		<cfreturn application.fc.lib.cdn.ioMoveFile(source_location="archive",source_file=archiveFile,dest_location=location,dest_file=arguments.stObject[arguments.stMetadata.name]) />
 	</cffunction>
 	
 	<cffunction name="duplicateFile" access="public" output="false" returntype="string" hint="For use with duplicateObject, copies the associated file and returns the new unique filename">
@@ -1663,18 +1704,19 @@
 		
 		<cfset var currentfilename = arguments.stObject[arguments.stMetadata.name] />
 		<cfset var currentlocation = "" />
-		
+		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+
 		<cfif not len(currentfilename)>
 			<cfreturn "" />
 		</cfif>
-		
-		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations="images",file=currentfilename) />
-		
+
+		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations=location,file=currentfilename) />
+
 		<cfif not len(currentlocation)>
 			<cfreturn "" />
 		</cfif>
-		
-		<cfreturn application.fc.lib.cdn.ioCopyFile(source_location="images", source_file=currentfilename, dest_location="images", dest_file=currentfilename, nameconflict="makeunique", uniqueamong="images") />
+
+		<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=location, source_file=currentfilename, dest_location=location, dest_file=currentfilename, nameconflict="makeunique", uniqueamong=location) />
 	</cffunction>
 	
 	<cffunction name="failed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">
@@ -1703,19 +1745,22 @@
 		<cfset var stDestMetadata = application.fapi.getPropertyMetadata(	typename="#arguments.stProperties.typename#", property="#arguments.dest_property#") />
 		<cfset var stProps = application.fapi.getContentTypeMetadata(typename="#arguments.stProperties.typename#").stProps />
 		<cfset var source_image = "" />
+		<cfset var sourceLocation = structkeyexists(stProps,arguments.source_property) ? resolveUploadLocation(stProps[arguments.source_property].metadata) : "images" />
+		<cfset var destLocation = resolveUploadLocation(stDestMetadata) />
 
 
 		<cfset stResult = handleFileSource(	sourceField=#arguments.source_property#,
 											stObject=arguments.stProperties,
 											destination="#stDestMetadata.ftDestination#",
-											stFields=stProps ) />
+											stFields=stProps,
+											location=destLocation ) />
 
-		<cfif isdefined("stResult.value") and len(stResult.value)>	
+		<cfif isdefined("stResult.value") and len(stResult.value)>
 
 
-			<cfset source_image = application.fc.lib.cdn.ioCopyFile(	source_location='images',
+			<cfset source_image = application.fc.lib.cdn.ioCopyFile(	source_location=sourceLocation,
 																		source_file="#stProperties[source_property]#",
-																		dest_location="images", 
+																		dest_location=destLocation,
 																		dest_file="#stDestMetadata.ftDestination#/#GetFileFromPath(stResult.value)#") />
 
 			<cfset stFixed = fixImage(	source_image,

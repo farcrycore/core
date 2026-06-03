@@ -127,8 +127,8 @@
 
 		<!--- Pick the uploader transport from the joined file property's CDN location:
 		      direct-to-S3 for an S3 bucket, else local XHR. The location is resolved
-		      the same way the ajax() upload / finalize branches resolve it (image->images;
-		      file->ftLocation else publicfiles/privatefiles by ftSecure). --->
+		      the same way the ajax() upload / finalize branches resolve it (ftLocation
+		      wins for both types; else image->images, file->publicfiles/privatefiles by ftSecure). --->
 		<cfset uploadLocation = resolveJoinUploadLocation(arguments.stMetadata) />
 		<cfset storageType = application.fc.lib.cdn.getLocationType(uploadLocation) />
 
@@ -953,9 +953,9 @@
 				<cfset arguments.stFieldPost.stSupporting = structnew() />
 			</cfif>
 
-			<!--- Resolve the joined file property's CDN location once (image->images;
-			      file->ftLocation else publicfiles/privatefiles by ftSecure) and use it
-			      for both the local and direct-S3 paths so they stay consistent. --->
+			<!--- Resolve the joined file property's CDN location once (ftLocation wins for
+			      both types; else image->images, file->publicfiles/privatefiles by ftSecure)
+			      and use it for both the local and direct-S3 paths so they stay consistent. --->
 			<cfset joinLocation = resolveJoinUploadLocation(arguments.stMetadata) />
 
 			<cfif structkeyexists(url,"s3op") and url.s3op eq "finalize">
@@ -1080,7 +1080,7 @@
 		<cfreturn "{}" />
 	</cffunction>
 	
-	<cffunction name="resolveJoinUploadLocation" access="private" output="false" returntype="string" hint="Resolves the CDN location of the joined file property, respecting ftLocation and ftSecure for ALL field types. An explicit ftLocation override wins; otherwise a secure property goes to privatefiles; otherwise the type's default public location (images for image, publicfiles for file).">
+	<cffunction name="resolveJoinUploadLocation" access="private" output="false" returntype="string" hint="Resolves the CDN location of the joined file property. An explicit ftLocation override always wins. Otherwise the type's default applies: file honours ftSecure (privatefiles when secure, else publicfiles); image always defaults to images (ftSecure is a file-only concept).">
 		<cfargument name="stMetadata" required="true" type="struct" />
 
 		<cfset var stProp = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata />
@@ -1092,14 +1092,14 @@
 		<cfif len(propLocation)>
 			<cfreturn propLocation />
 		</cfif>
-		<!--- A secure property goes to privatefiles, regardless of type. --->
-		<cfif isBoolean(propSecure) and propSecure>
-			<cfreturn "privatefiles" />
-		</cfif>
-		<!--- Otherwise the type's default public location. --->
+		<!--- file: ftSecure forces privatefiles, otherwise publicfiles. (ftSecure does not apply to images.) --->
 		<cfif propType eq "file">
+			<cfif isBoolean(propSecure) and propSecure>
+				<cfreturn "privatefiles" />
+			</cfif>
 			<cfreturn "publicfiles" />
 		</cfif>
+		<!--- image: always defaults to images. --->
 		<cfreturn "images" />
 	</cffunction>
 
