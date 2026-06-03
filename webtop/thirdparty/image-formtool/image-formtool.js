@@ -234,7 +234,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 		this.views = {};
 		this.elements = {};
 		
-		this.init = function initImageFormtool(url,filetypes,sourceField,width,height,inline,sizeLimit){
+		this.init = function initImageFormtool(url,filetypes,sourceField,width,height,inline,sizeLimit,storage){
 
 			imageformtool.url = url;
 			imageformtool.filetypes = filetypes;
@@ -243,6 +243,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			imageformtool.height = height;
 			imageformtool.inline = inline || false;
 			imageformtool.sizeLimit = sizeLimit || null;
+			imageformtool.storage = storage || "local";
 			
 			imageformtool.inputs.resizemethod  = $j('#'+prefix+property+'RESIZEMETHOD');
 			imageformtool.inputs.quality  = $j('#'+prefix+property+'QUALITY');
@@ -420,6 +421,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 				fileInput:         imageformtool.inputs.newf,
 				fieldName:         property+"NEW",
 				endpoint:          url,
+				storage:           imageformtool.storage,
 				allowedFileTypes:  filetypes,
 				maxFileSize:       imageformtool.sizeLimit,
 				maxNumberOfFiles:  1,

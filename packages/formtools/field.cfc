@@ -158,10 +158,22 @@
 		<cfset r_stResult.stError = structNew() />
 		<cfset r_stResult.stError.message = "" />
 		<cfset r_stResult.stError.class = "" />
-		
+
 		<cfreturn r_stResult />
 	</cffunction>
 
+
+	<cffunction name="getAjaxRequestBody" access="public" output="false" returntype="struct" hint="Parses the JSON body of an ajax request (as sent by $fc.uploader's fetch() calls). Returns an empty struct when there is no JSON body. Generic ajax plumbing, paired with getAjaxURL.">
+		<cfset var requestBody = "" />
+
+		<cfset requestBody = toString(getHTTPRequestData().content) />
+
+		<cfif len(trim(requestBody)) and isJSON(requestBody)>
+			<cfreturn deserializeJSON(requestBody) />
+		</cfif>
+
+		<cfreturn structnew() />
+	</cffunction>
 
 
 	<cffunction name="getAjaxURL" access="public" output="false" returntype="string" hint="Returns the URL to use for custom AJAX functionality">

@@ -25,7 +25,7 @@
  *       dropZone:          ".fc-dropzone",           // selector / jQuery / DOM element to accept dropped files
  *       onDragEnter:       function(event){},        // visual feedback when files enter the zone
  *       onDragLeave:       function(event){},        // visual feedback when files leave or are dropped
- *       storage:           "local"                   // accepted, ignored in Phase 1
+ *       storage:           "local" | "s3"             // "s3" uploads direct-to-bucket via Uppy.AwsS3
  *   });
  *
  *   uploader.cancel(fileId);
@@ -40,10 +40,17 @@
  *   { type: "network", message }     // network failure
  *   { type: "server",  message }     // anything else
  *
- * Forward-compatibility (Phase 2):
- *   The `storage` option is accepted but currently ignored. A future revision
- *   will switch to `@uppy/aws-s3-multipart` when storage === "s3", without any
- *   change to the calling formtools.
+ * Direct-to-S3 (storage === "s3"):
+ *   Instead of XHRUpload, the wrapper uses Uppy.AwsS3 with shouldUseMultipart
+ *   false (presigned POST only). The browser POSTs the file straight to the
+ *   bucket; the FarCry endpoint is hit twice over fetch():
+ *     - `&s3op=sign`     before upload — returns the presigned POST params
+ *                        ({ method, url, fields, headers }) for getUploadParameters
+ *     - `&s3op=finalize` after the object lands in S3 — records the path, runs
+ *                        post-processing, and returns the SAME JSON shape the
+ *                        local XHR path returns, so onComplete is unchanged.
+ *   shouldUseMultipart is the extension point for resumable multipart uploads
+ *   of large files in a later phase — the sign/finalize structure stays.
  */
 (function(jQuery){
 	"use strict";
@@ -138,8 +145,17 @@
 	$fc.uploader.create = function fcUploaderCreate(opts){
 		opts = opts || {};
 
-		if (!window.Uppy || !window.Uppy.Uppy || !window.Uppy.XHRUpload){
-			throw new Error("$fc.uploader.create: window.Uppy.Uppy / window.Uppy.XHRUpload not loaded — check <skin:loadJS id=\"fc-uppy\" />");
+		var storage = opts.storage || "local";
+		var isS3    = (storage === "s3");
+
+		if (!window.Uppy || !window.Uppy.Uppy){
+			throw new Error("$fc.uploader.create: window.Uppy.Uppy not loaded — check <skin:loadJS id=\"fc-uppy\" />");
+		}
+		if (isS3 && !window.Uppy.AwsS3){
+			throw new Error("$fc.uploader.create: window.Uppy.AwsS3 not loaded — check <skin:loadJS id=\"fc-uppy\" />");
+		}
+		if (!isS3 && !window.Uppy.XHRUpload){
+			throw new Error("$fc.uploader.create: window.Uppy.XHRUpload not loaded — check <skin:loadJS id=\"fc-uppy\" />");
 		}
 
 		if (!opts.endpoint){
@@ -207,7 +223,64 @@
 		};
 		if (simultaneous !== null) xhrOpts.limit = simultaneous;
 
-		uppy.use(window.Uppy.XHRUpload, xhrOpts);
+		// --- Direct-to-S3 transport ------------------------------------------
+		// Remembers the server-resolved CDN value per file (an opaque token from
+		// the sign step) so the finalize step can echo it back unchanged — the
+		// server never has to reverse an S3 key into a value.
+		var s3ValueByFileId = {};
+
+		function withParam(url, key, value){
+			return url + (url.indexOf("?") === -1 ? "?" : "&") + encodeURIComponent(key) + "=" + encodeURIComponent(value);
+		}
+
+		function postJSON(url, payload){
+			return fetch(url, {
+				method:      "POST",
+				headers:     { "Content-Type": "application/json", "Accept": "application/json" },
+				credentials: "same-origin",
+				body:        JSON.stringify(payload)
+			}).then(function(res){
+				return res.text().then(function(text){
+					var data;
+					try { data = text ? JSON.parse(text) : {}; }
+					catch (err){ throw new Error("Non-JSON response from server" + (bodySnippet(text) ? ": " + bodySnippet(text) : "")); }
+					if (!res.ok) throw new Error((data && data.error) || ("Request failed (" + res.status + ")"));
+					if (data && data.error) throw new Error(data.error);
+					return data;
+				});
+			});
+		}
+
+		function s3Meta(file){
+			var payload = { filename: file.name, type: file.type, size: file.size };
+			var extra;
+			try { extra = extraFormData() || {}; } catch (e){ extra = {}; }
+			for (var k in extra){ if (Object.prototype.hasOwnProperty.call(extra, k)) payload[k] = extra[k]; }
+			return payload;
+		}
+
+		function fetchSignParams(file){
+			return postJSON(withParam(opts.endpoint, "s3op", "sign"), s3Meta(file)).then(function(data){
+				s3ValueByFileId[file.id] = data.value || "";
+				return data;
+			});
+		}
+
+		function finalizeS3(file){
+			var payload = s3Meta(file);
+			payload.value = s3ValueByFileId[file.id] || "";
+			return postJSON(withParam(opts.endpoint, "s3op", "finalize"), payload);
+		}
+		// ---------------------------------------------------------------------
+
+		if (isS3){
+			uppy.use(window.Uppy.AwsS3, {
+				shouldUseMultipart:  false,   // presigned POST only; extension point for multipart later
+				getUploadParameters: fetchSignParams
+			});
+		} else {
+			uppy.use(window.Uppy.XHRUpload, xhrOpts);
+		}
 
 		// Refresh dynamic POST fields (uploadify scriptData) just before each upload batch.
 		uppy.on("upload", function(){
@@ -230,6 +303,16 @@
 		});
 
 		uppy.on("upload-success", function(file, response){
+			if (isS3){
+				// The object is now in S3; ask the server to record it and run
+				// post-processing, then hand the SAME JSON shape to onComplete.
+				finalizeS3(file).then(function(body){
+					try { onComplete(file, body || {}); } catch (e){}
+				}).catch(function(err){
+					try { onError(file, { type: "server", message: (err && err.message) || "Finalize failed" }); } catch (e){}
+				});
+				return;
+			}
 			var body = (response && response.body !== undefined) ? response.body : response;
 			try { onComplete(file, body || {}); } catch (e){}
 		});

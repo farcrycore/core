@@ -590,6 +590,85 @@
 		<cfreturn urlpath />
 	</cffunction>
 
+	<cffunction name="getPresignedPostData" output="false" access="public" returntype="struct" hint="Builds a SigV4 presigned POST policy for direct browser-to-S3 upload. Returns { url, method, fields } shaped for Uppy AwsS3 getUploadParameters. Honours config.setACL.">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="value" type="string" required="true" hint="CDN-relative path, e.g. /photos/myfile_1.jpg (no bucket, no pathPrefix). The S3 object key is derived from config.pathPrefix + value." />
+		<cfargument name="contentType" type="string" required="false" default="" />
+		<cfargument name="maxSize" type="numeric" required="false" default="0" hint="Maximum allowed file size in bytes. 0 means no limit." />
+
+		<!--- The S3 object key = pathPrefix + the CDN-relative value. All knowledge of
+		      how a value maps to an object key stays inside this component. --->
+		<cfset var key = arguments.config.pathPrefix & arguments.value />
+		<cfset var prefix = "" />
+		<cfset var aclPermission = (structKeyExists(arguments.config, "security") and arguments.config.security eq "private") ? "private" : "public-read" />
+		<cfset var isoTime = application.fapi.dateToISO8601(now()) />
+		<cfset var dateStamp = left(isoTime, 8) />
+		<cfset var credential = "#arguments.config.accessKeyId#/#dateStamp#/#arguments.config.region#/s3/aws4_request" />
+		<cfset var expiry = structKeyExists(arguments.config, "urlExpiry") ? arguments.config.urlExpiry : 60 />
+		<cfset var expiration = dateConvert("local2utc", dateAdd("s", expiry * 60, now())) />
+		<cfset var policy = "" />
+		<cfset var serializedPolicy = "" />
+		<cfset var base64Policy = "" />
+		<cfset var signingKey = "" />
+		<cfset var signature = "" />
+		<cfset var fields = structnew() />
+
+		<!--- Normalise key (no leading slash); the starts-with prefix is the key's directory --->
+		<cfif left(key, 1) eq "/">
+			<cfset key = mid(key, 2, len(key) - 1) />
+		</cfif>
+		<cfset prefix = (find("/", key)) ? left(key, len(key) - len(listLast(key, "/"))) : "" />
+
+		<cfset policy = {
+			"expiration" = dateFormat(expiration, "yyyy-mm-dd") & "T" & timeFormat(expiration, "HH:mm:ss") & "Z",
+			"conditions" = [
+				{ "x-amz-credential" = credential },
+				{ "x-amz-algorithm" = "AWS4-HMAC-SHA256" },
+				{ "x-amz-date" = isoTime },
+				{ "bucket" = arguments.config.bucket },
+				[ "starts-with", "$key", prefix ],
+				{ "success_action_status" = javaCast("string", "201") },
+				[ "starts-with", "$Content-Type", "" ]
+			]
+		} />
+
+		<!--- Only include the acl condition when the cdn config has setACL enabled (bucket owner enforced buckets reject acl). --->
+		<cfif arguments.config.setACL>
+			<cfset arrayAppend(policy.conditions, { "acl" = aclPermission }) />
+		</cfif>
+		<cfif arguments.maxSize gt 0>
+			<cfset arrayAppend(policy.conditions, [ "content-length-range", 0, javaCast("long", arguments.maxSize) ]) />
+		</cfif>
+
+		<cfset serializedPolicy = serializeJSON(policy) />
+		<cfset serializedPolicy = reReplace(serializedPolicy, "[\r\n]+", "", "all") />
+		<cfset base64Policy = binaryEncode(charsetDecode(serializedPolicy, "utf-8"), "base64") />
+
+		<cfset signingKey = getSigningKey(arguments.config.awsSecretKey, dateStamp, arguments.config.region, "s3") />
+		<cfset signature = lcase(binaryEncode(HMAC_SHA256(base64Policy, signingKey), "hex")) />
+
+		<cfset fields["key"] = key />
+		<cfset fields["success_action_status"] = "201" />
+		<cfif len(arguments.contentType)>
+			<cfset fields["Content-Type"] = arguments.contentType />
+		</cfif>
+		<cfif arguments.config.setACL>
+			<cfset fields["acl"] = aclPermission />
+		</cfif>
+		<cfset fields["X-Amz-Algorithm"] = "AWS4-HMAC-SHA256" />
+		<cfset fields["X-Amz-Credential"] = credential />
+		<cfset fields["X-Amz-Date"] = isoTime />
+		<cfset fields["Policy"] = base64Policy />
+		<cfset fields["X-Amz-Signature"] = signature />
+
+		<cfreturn {
+			"method" = "POST",
+			"url" = "https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix#",
+			"fields" = fields,
+			"headers" = structnew()
+		} />
+	</cffunction>
+
 	<cffunction name="getMeta" output="false" access="public" returntype="struct" hint="Returns a metadata struct for setting S3 metadata">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />

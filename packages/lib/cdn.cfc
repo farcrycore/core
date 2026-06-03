@@ -186,14 +186,73 @@
 	<cffunction name="ioFileExists" returntype="boolean" access="public" output="false" hint="Checks that a specified file exists">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
-		
+
 		<cfset var config = this.locations[arguments.location] />
-		
+
 		<cfset arguments.file = normalizePath(arguments.file) />
-		
+
 		<cfreturn this.cdns[config.cdn].ioFileExists(config=config,argumentCollection=arguments) />
 	</cffunction>
-	
+
+	<cffunction name="getLocationType" returntype="string" access="public" output="false" hint="Returns the CDN type backing a location (e.g. 'local', 's3', 'ftp'). Callers use this to pick a client upload transport rather than hard-coding service names.">
+		<cfargument name="location" type="string" required="true" />
+
+		<cfreturn this.locations[arguments.location].cdn />
+	</cffunction>
+
+	<cffunction name="prepareDirectUpload" returntype="struct" access="public" output="false" hint="Resolves a unique target path for a direct browser-to-bucket upload and builds the transport params. Returns { value, params } where value is the CDN-relative path to store and params is the transport-specific upload descriptor. Only supported by CDN types that implement getPresignedPostData (s3).">
+		<cfargument name="location" type="string" required="true" />
+		<cfargument name="destination" type="string" required="true" hint="Directory within the location (ftDestination)" />
+		<cfargument name="filename" type="string" required="true" hint="Original client filename" />
+		<cfargument name="uniqueAmong" type="string" required="false" default="#arguments.location#" hint="Locations the resolved filename must be unique across" />
+		<cfargument name="contentType" type="string" required="false" default="" />
+		<cfargument name="maxSize" type="numeric" required="false" default="0" />
+
+		<cfset var dest = arguments.destination />
+		<cfset var value = "" />
+		<cfset var params = "" />
+
+		<!--- Normalise destination: leading slash, no trailing slash --->
+		<cfif len(dest) and left(dest,1) neq "/">
+			<cfset dest = "/" & dest />
+		</cfif>
+		<cfif len(dest) and right(dest,1) eq "/">
+			<cfset dest = left(dest, len(dest)-1) />
+		</cfif>
+
+		<!--- Field value: relative CDN path, made unique (mirrors local makeunique) --->
+		<cfset value = ioGetUniqueFilename(locations=arguments.uniqueAmong, file="#dest#/#arguments.filename#") />
+
+		<cfset params = getPresignedPostData(
+			location=arguments.location,
+			value=value,
+			contentType=arguments.contentType,
+			maxSize=arguments.maxSize
+		) />
+
+		<cfreturn { "value" = value, "params" = params } />
+	</cffunction>
+
+	<cffunction name="getPresignedPostData" returntype="struct" access="public" output="false" hint="Builds presigned POST params for a direct browser-to-bucket upload of the given CDN-relative value. Only supported by CDN types that implement it (s3).">
+		<cfargument name="location" type="string" required="true" />
+		<cfargument name="value" type="string" required="true" hint="CDN-relative path to store (no pathPrefix); the cdn type derives its own storage key from it" />
+		<cfargument name="contentType" type="string" required="false" default="" />
+		<cfargument name="maxSize" type="numeric" required="false" default="0" />
+
+		<cfset var config = this.locations[arguments.location] />
+
+		<cfif not structKeyExists(this.cdns[config.cdn], "getPresignedPostData")>
+			<cfthrow message="Location [#arguments.location#] (cdn type [#config.cdn#]) does not support direct-to-bucket uploads" />
+		</cfif>
+
+		<cfreturn this.cdns[config.cdn].getPresignedPostData(
+			config=config,
+			value=arguments.value,
+			contentType=arguments.contentType,
+			maxSize=arguments.maxSize
+		) />
+	</cffunction>
+
 	<!--- @@description: 
 		<p>Searches the provided locations, and returns the first that contains the specified file, or an empty string if there isn't any.</p>
 		

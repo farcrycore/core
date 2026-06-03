@@ -147,8 +147,9 @@
 	    <cfset var error = "" />
 	    <cfset var readImageError = "" />
 	    <cfset var imageMaxWidth = 400 />
-		
-		
+	    <cfset var storageType = application.fc.lib.cdn.getLocationType("images") />
+
+
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 	    
@@ -276,7 +277,7 @@
 							</div>
 						</cfif>
 					</div>
-					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#,'#storageType#');</script>
 				</div>
 			</cfoutput></cfsavecontent>
 			
@@ -321,7 +322,7 @@
 							</div>
 						</cfif>
 					</div>
-					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#,'#storageType#');</script>
 					<cfif len(arguments.stMetadata.ftInlineDependants)><div style="margin-top: 10px; margin-left: 20px; font-weight: bold; font-style: italic;">Image sizes:</div></cfif>
 				</cfoutput>
 				
@@ -359,7 +360,8 @@
 	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
-	    
+	    <cfset var storageType = application.fc.lib.cdn.getLocationType("images") />
+
 		<cfparam name="arguments.stMetadata.ftHint" default="" />
 	    <cfparam name="arguments.stMetadata.ftstyle" default="">
 	    <cfparam name="arguments.stMetadata.ftDestination" default="/images">
@@ -428,7 +430,7 @@
 						</div>
 					</div>
 				</cfif>
-				<script type="text/javascript">$fc.imageformtool('#arguments.prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,true,#arguments.stMetadata.ftSizeLimit#);</script>
+				<script type="text/javascript">$fc.imageformtool('#arguments.prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,true,#arguments.stMetadata.ftSizeLimit#,'#storageType#');</script>
 				<br class="clear">
 			</div>
 		</cfoutput></cfsavecontent>
@@ -456,7 +458,11 @@
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-		
+
+		<cfif structkeyexists(url,"s3op")>
+			<cfreturn ajaxS3(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname) />
+		</cfif>
+
 		<cfif structkeyexists(url,"check")>
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif isdefined("url.callback")>
@@ -672,7 +678,97 @@
 			<cfreturn "{}" />
 		</cfif>
 	</cffunction>
-	
+
+	<cffunction name="ajaxS3" access="private" output="false" returntype="string" hint="Handles the sign/finalize steps for direct-to-S3 image uploads (storage:'s3'). The browser POSTs the original straight to the bucket, then finalize runs the same resize pipeline as the local path.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="stObject" required="true" type="struct" />
+		<cfargument name="stMetadata" required="true" type="struct" />
+		<cfargument name="fieldname" required="true" type="string" />
+
+		<cfset var stBody = getAjaxRequestBody() />
+		<cfset var stPrep = structnew() />
+		<cfset var stJSON = structnew() />
+		<cfset var stFixed = structnew() />
+		<cfset var stImage = structnew() />
+		<cfset var stLoc = structnew() />
+		<cfset var resizeMethod = arguments.stMetadata.ftAutoGenerateType />
+		<cfset var quality = arguments.stMetadata.ftQuality />
+		<cfset var value = "" />
+		<cfset var resizeKey = "#arguments.stMetadata.name#RESIZEMETHOD" />
+		<cfset var qualityKey = "#arguments.stMetadata.name#QUALITY" />
+
+		<cfparam name="arguments.stMetadata.ftDestination" default="/images" />
+		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif" />
+		<cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
+		<cfparam name="arguments.stMetadata.ftShowMetadata" default="true" />
+
+		<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+
+		<cfif url.s3op eq "sign">
+			<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
+				location="images",
+				destination=arguments.stMetadata.ftDestination,
+				filename=structkeyexists(stBody,"filename") ? stBody.filename : "upload",
+				uniqueAmong="images",
+				contentType=structkeyexists(stBody,"type") ? stBody.type : "",
+				maxSize=arguments.stMetadata.ftSizeLimit
+			) />
+			<cfset stPrep.params["value"] = stPrep.value />
+			<cfreturn serializeJSON(stPrep.params) />
+		</cfif>
+
+		<!--- finalize: the original now lives in the bucket --->
+		<cfset value = structkeyexists(stBody,"value") ? stBody.value : "" />
+
+		<cfif not len(value) or not getFileExists(value)>
+			<cfset stJSON["error"] = "Uploaded image could not be found" />
+			<cfset stJSON["value"] = "" />
+			<cfreturn serializeJSON(stJSON) />
+		</cfif>
+
+		<!--- Resize method / quality may be supplied via the uploader's extra form data --->
+		<cfif structkeyexists(stBody,resizeKey) and len(stBody[resizeKey])>
+			<cfset resizeMethod = stBody[resizeKey] />
+		</cfif>
+		<cfif structkeyexists(stBody,qualityKey) and isnumeric(stBody[qualityKey])>
+			<cfset quality = stBody[qualityKey] />
+		</cfif>
+
+		<cfset stFixed = fixImage(value,arguments.stMetadata,resizeMethod,quality) />
+
+		<cfset stJSON = structnew() />
+		<cfset stJSON["error"] = "" />
+		<cfif stFixed.bSuccess>
+			<cfset stJSON["resizedetails"] = structnew() />
+			<cfset stJSON["resizedetails"]["method"] = resizeMethod />
+			<cfset stJSON["resizedetails"]["quality"] = round(quality*100) />
+			<cfset value = stFixed.value />
+		</cfif>
+
+		<cfset stImage = duplicate(arguments.stObject) />
+		<cfset stImage[arguments.stMetadata.name] = value />
+		<cfset stLoc = getFileLocation(stObject=stImage,stMetadata=arguments.stMetadata,admin=true) />
+
+		<cfset stJSON["value"] = value />
+		<cfset stJSON["filename"] = listfirst(listlast(value,'/'),"?") />
+		<cfset stJSON["fullpath"] = stLoc.path />
+
+		<cfif arguments.stMetadata.ftShowMetadata>
+			<cfset stImage = getImageInfo(value,true) />
+			<cfset stJSON["size"] = round(stImage.size / 1024) />
+			<cfset stJSON["width"] = stImage.width />
+			<cfset stJSON["height"] = stImage.height />
+		<cfelse>
+			<cfset stJSON["size"] = 0 />
+			<cfset stJSON["width"] = 0 />
+			<cfset stJSON["height"] = 0 />
+		</cfif>
+
+		<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=value) />
+
+		<cfreturn serializeJSON(stJSON) />
+	</cffunction>
+
 	<cffunction name="fixImage" access="public" output="false" returntype="struct" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">
 		<cfargument name="filename" type="string" required="true" hint="The image" />
 		<cfargument name="stMetadata" type="struct" required="true" hint="Property metadata" />

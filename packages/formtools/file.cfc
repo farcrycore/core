@@ -88,7 +88,9 @@
 		<cfset var browseScript = "" />
 		<cfset var i = 0 />
 		<cfset var facade = "" />
-		
+		<cfset var uploadLocation = "" />
+		<cfset var storageType = "local" />
+
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, jquery --->
 		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
@@ -96,6 +98,10 @@
 		<cfif NOT listfindNoCase("html,jquery", arguments.stMetadata.ftRenderType)>
 			<cfset arguments.stMetadata.ftRenderType = "html">
 		</cfif>
+
+		<!--- Pick the uploader transport from the destination CDN: direct-to-S3 when it's an S3 bucket, else local XHR. --->
+		<cfset uploadLocation = resolveUploadLocation(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata) />
+		<cfset storageType = application.fc.lib.cdn.getLocationType(uploadLocation) />
 
 		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="fc-uppy" />
@@ -145,6 +151,7 @@
 								fileInput:        '###arguments.fieldname#NEW',
 								fieldName:        '#arguments.stMetadata.name#NEW',
 								endpoint:         '#getAjaxURL(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata, fieldname=arguments.fieldname, combined=true)#',
+								storage:          '#storageType#',
 								allowedFileTypes: '#arguments.stMetadata.ftAllowedFileExtensions#',
 								maxFileSize:      <cfif isNumeric(arguments.stMetadata.ftMaxSize) and val(arguments.stMetadata.ftMaxSize) gt 0>#val(arguments.stMetadata.ftMaxSize)#<cfelse>0</cfif>,
 								maxNumberOfFiles: 1,
@@ -268,6 +275,11 @@
 		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="" />
 		<cfparam name="arguments.stMetadata.ftMaxSize" default="0" />
 
+		<!--- Direct-to-S3 transport (storage:"s3"): sign before upload, finalize after. --->
+		<cfif structkeyexists(url,"s3op")>
+			<cfreturn ajaxS3(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata, fieldname=arguments.fieldname) />
+		</cfif>
+
 		<!--- Legacy 'check' endpoint (uploadify compatibility — harmless) --->
 		<cfif structkeyexists(url,"check")>
 			<cfreturn "[]" />
@@ -331,6 +343,88 @@
 		</cfif>
 
 		<cfreturn serializeJSON(stJSON) />
+	</cffunction>
+
+	<cffunction name="resolveUploadLocation" access="private" output="false" returntype="string" hint="Determines the CDN location an upload targets, mirroring handleFilePost's location logic">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="stObject" required="true" type="struct" />
+		<cfargument name="stMetadata" required="true" type="struct" />
+
+		<cfset var filepermission = 0 />
+		<cfset var objStatus = structKeyExists(arguments.stObject,"status") ? arguments.stObject.status : "" />
+
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
+
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
+		<cfparam name="arguments.stMetadata.ftLocation" default="" />
+
+		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
+
+		<cfif len(arguments.stMetadata.ftLocation)>
+			<cfreturn arguments.stMetadata.ftLocation />
+		<cfelseif arguments.stMetadata.ftSecure eq "false" and not listfindnocase("draft,pending",objStatus) and filepermission>
+			<cfreturn "publicfiles" />
+		<cfelse>
+			<cfreturn "privatefiles" />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="ajaxS3" access="private" output="false" returntype="string" hint="Handles direct-to-S3 sign / finalize requests (storage:s3). Returns the same JSON contract as ajax() so onComplete is unchanged.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="stObject" required="true" type="struct" />
+		<cfargument name="stMetadata" required="true" type="struct" />
+		<cfargument name="fieldname" required="true" type="string" />
+
+		<cfset var stBody = getAjaxRequestBody() />
+		<cfset var location = resolveUploadLocation(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata) />
+		<cfset var stPrep = "" />
+		<cfset var stJSON = structnew() />
+		<cfset var value = "" />
+
+		<cfparam name="arguments.stMetadata.ftDestination" default="" />
+		<cfparam name="arguments.stMetadata.ftMaxSize" default="0" />
+
+		<cfif url.s3op eq "sign">
+			<cftry>
+				<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
+					location=location,
+					destination=arguments.stMetadata.ftDestination,
+					filename=structKeyExists(stBody,"filename") ? stBody.filename : "upload",
+					uniqueAmong="privatefiles,publicfiles",
+					contentType=structKeyExists(stBody,"type") ? stBody.type : "",
+					maxSize=val(arguments.stMetadata.ftMaxSize)
+				) />
+				<!--- Carry the resolved value to the client so finalize can echo it back
+				      (the client treats it as an opaque token; no key->value reversal needed). --->
+				<cfset stPrep.params["value"] = stPrep.value />
+				<cfreturn serializeJSON(stPrep.params) />
+
+				<cfcatch type="any">
+					<cfreturn serializeJSON({ "error" = cfcatch.message }) />
+				</cfcatch>
+			</cftry>
+
+		<cfelseif url.s3op eq "finalize">
+			<cftry>
+				<cfset value = structKeyExists(stBody,"value") ? stBody.value : "" />
+				<cfset stJSON["objectid"] = arguments.stObject.objectid />
+				<cfset stJSON["value"] = value />
+				<cfset stJSON["filename"] = listLast(value, "/") />
+				<cfset stJSON["error"] = "" />
+				<cfset stJSON["fullpath"] = "" />
+				<cftry>
+					<cfset stJSON["fullpath"] = application.fc.lib.cdn.ioGetFileLocation(location=location, file=value, bRetrieve=false).path />
+					<cfcatch type="any"></cfcatch>
+				</cftry>
+				<cfreturn serializeJSON(stJSON) />
+
+				<cfcatch type="any">
+					<cfreturn serializeJSON({ "objectid"=arguments.stObject.objectid, "value"="", "filename"="", "fullpath"="", "error"=cfcatch.message }) />
+				</cfcatch>
+			</cftry>
+		</cfif>
+
+		<cfreturn serializeJSON({ "error" = "Unknown s3op [#url.s3op#]" }) />
 	</cffunction>
 
 	<cffunction name="display" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
