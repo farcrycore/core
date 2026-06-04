@@ -164,7 +164,7 @@
    byte/percent counter + cancel X, with the progress primitive beneath. */
 
 .fc-uploader-uploading {
-	border: 1px solid #e6e6e6;
+	border: 1px solid #cccccc;
 	border-radius: 5px;
 	padding: 14px 16px;
 	background: #ffffff;
@@ -223,7 +223,7 @@
 /* --- Transient: post-upload details view (file, image) ------- */
 
 .fc-uploader-details {
-	border: 1px solid #e6e6e6;
+	border: 1px solid #cccccc;
 	border-radius: 5px;
 	padding: 12px 14px;
 	background: #ffffff;
@@ -314,12 +314,20 @@
 
 /* --- Action links (orange text + inline FA icon) ------------- */
 
+/* Ghost-button treatment: white bg + hairline border, square corners to
+   match FarCry's .btn geometry. Neutral text keeps them subordinate to the
+   solid-red Delete (one filled primary, the rest outlined secondary). */
 .fc-uploader-action {
 	display: inline-block;
-	margin-left: 14px;
-	color: #e17000;
+	margin-left: 8px;
+	padding: 4px 10px;
+	color: #555555;
+	background: #ffffff;
+	border: 1px solid #e0e0e0;
+	border-radius: 0;
 	text-decoration: none;
 	font-size: 13px;
+	line-height: 1.4;
 	cursor: pointer;
 }
 
@@ -329,12 +337,15 @@
 
 .fc-uploader-action:hover,
 .fc-uploader-action:focus {
-	color: #ff9900;
-	text-decoration: underline;
+	color: #333333;
+	border-color: #bbbbbb;
+	background: #fafafa;
+	text-decoration: none;
 }
 
 .fc-uploader-action .fa {
 	margin-right: 4px;
+	color: #888888;
 }
 
 /* The small "Cancel — keep the current file" link shown during Replace. */
