@@ -349,6 +349,15 @@
 	margin-left: 0;
 }
 
+/* Mouse/programmatic focus gets NO treatment: strip the UA focus ring and any
+   global a:focus underline. (Covers the Preview link being auto-focused after
+   upload, and an _blank link retaining focus when the user returns to the
+   tab.) Keyboard focus is handled by the :focus-visible bloom below. */
+.fc-uploader-action:focus {
+	outline: none;
+	text-decoration: none;
+}
+
 /* Bloom on hover and on keyboard focus only (:focus-visible) — NOT on
    programmatic/mouse focus, so the Preview link isn't lit up when focus is
    moved to it after an upload completes. */
