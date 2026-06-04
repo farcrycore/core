@@ -255,19 +255,23 @@
 								<div class="image-cancel-upload"><a href="##back" class="select-view fc-uploader-cancel-replace">Cancel &mdash; I don't want to upload an image</a></div>
 							</div>
 						</cfif>
-						<div id="#arguments.fieldname#_autogenerate" class="autogenerate-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-							<span class="image-status" title="#metadatainfo#"><i class="fa fa-question-circle fa-fw"></i></span>
-							Image will be automatically generated based on the image selected for #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#.<br>
+						<div id="#arguments.fieldname#_autogenerate" class="autogenerate-view fc-uploader-autogenerate"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+							<div class="fc-uploader-autogenerate-info">
+								<span class="image-status fc-uploader-autogenerate-icon" title="#metadatainfo#"><i class="fa fa-question-circle"></i></span> Image will be automatically generated based on the image selected for <strong>#application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#</strong>.
+							</div>
 							<cfif arguments.stMetadata.ftAllowResize>
-								<div class="image-custom-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
+								<div class="image-custom-crop fc-uploader-autogenerate-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
 									<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 									<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
-									<i class="fa fa-crop fa-fw"></i> <ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" type="button" onclick="return false;" />
-									<div id="#arguments.fieldname#_croperror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-									<div class="alert alert-info image-crop-information" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
+									<a href="##crop" class="image-crop-select-button fc-uploader-action"><i class="fa fa-crop"></i> Select exactly how to crop your image</a>
+									<div id="#arguments.fieldname#_croperror" class="fc-uploader-error" style="display:none;"></div>
+									<div class="image-crop-information fc-uploader-resize-info" style="display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
 								</div>
 							</cfif>
-							<div><i class="fa fa-cloud-upload fa-fw"></i> <cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view">Upload - I want to use my own image</a></cfif><span class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><cfif arguments.stMetadata.ftAllowUpload> | </cfif><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></span></div>
+							<div class="fc-uploader-autogenerate-actions">
+								<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload your own image</a></cfif>
+							</div>
+							<span class="image-cancel-replace"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>><a href="##complete" class="select-view fc-uploader-cancel-replace">Cancel &mdash; keep the current image</a></span>
 						</div>
 						<div id="#arguments.fieldname#_working" class="working-view" style="display:none;">
 							<span class="image-status" title="#metadatainfo#"><i class="fa fa-spinner fa-spin fa-fw"></i></span>
@@ -295,14 +299,14 @@
 										</div>
 									</cfif>
 								</div>
+								<div class="fc-uploader-details-actions">
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<cfif arguments.stMetadata.ftAllowResize><span class="image-recrop-link"><a href="##recrop" class="image-recrop-button fc-uploader-action"><i class="fa fa-crop"></i> Re-crop image</a></span></cfif>
+									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
+								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
-								<div class="fc-uploader-details-actions">
-									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
-									<span class="regenerate-link"><a href="##autogenerate" class="select-view fc-uploader-action"><i class="fa fa-refresh"></i> Regenerate</a></span>
-									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
-								</div>
 							</div>
 						<cfelse>
 							<div id="#arguments.fieldname#_complete" class="complete-view fc-uploader-details" style="display:none;">
@@ -320,14 +324,14 @@
 										</div>
 									</cfif>
 								</div>
+								<div class="fc-uploader-details-actions">
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<cfif arguments.stMetadata.ftAllowResize><span class="image-recrop-link"><a href="##recrop" class="image-recrop-button fc-uploader-action"><i class="fa fa-crop"></i> Re-crop image</a></span></cfif>
+									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
+								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
-								<div class="fc-uploader-details-actions">
-									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank"><i class="fa fa-eye"></i> Preview</a>
-									<span class="regenerate-link"><a href="##autogenerate" class="select-view fc-uploader-action"><i class="fa fa-refresh"></i> Regenerate</a></span>
-									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
-								</div>
 							</div>
 						</cfif>
 					</div>
@@ -388,13 +392,13 @@
 										<button type="button" class="fc-uploader-delete-btn image-delete-trigger" data-deleteall="true" title="Delete" aria-label="Delete image"><i class="fa fa-trash-o"></i></button>
 									</div>
 								</div>
-								<cfif arguments.stMetadata.ftShowMetadata>
-									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
-								</cfif>
 								<div class="fc-uploader-details-actions">
 									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
 									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
 								</div>
+								<cfif arguments.stMetadata.ftShowMetadata>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+								</cfif>
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view fc-uploader-details" style="display:none;">
@@ -410,13 +414,13 @@
 										<button type="button" class="fc-uploader-delete-btn image-delete-trigger" data-deleteall="true" title="Delete" aria-label="Delete image"><i class="fa fa-trash-o"></i></button>
 									</div>
 								</div>
-								<cfif arguments.stMetadata.ftShowMetadata>
-									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
-								</cfif>
 								<div class="fc-uploader-details-actions">
 									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank"><i class="fa fa-eye"></i> Preview</a>
 									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
 								</div>
+								<cfif arguments.stMetadata.ftShowMetadata>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+								</cfif>
 							</div>
 						</cfif>
 					</div>

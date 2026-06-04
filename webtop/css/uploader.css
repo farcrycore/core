@@ -322,6 +322,44 @@
 	color: #2c5d80;
 }
 
+/* --- Autogenerate empty-state (image formtool, derived fields) ---
+   The view a derived image shows before its source image exists: an
+   explanatory line plus the optional "crop" control and an "upload your own"
+   escape hatch. Restyled into a calm light card matching the dropzone/details
+   surfaces — it previously used raw Bootstrap alerts and an old ft:button,
+   which read as a jarring throwback once the rest of the formtool moved on. */
+.fc-uploader-autogenerate {
+	border: 1px solid #e0e0e0;
+	border-radius: 5px;
+	padding: 14px 16px;
+	background: #fafafa;
+}
+
+.fc-uploader-autogenerate-info {
+	color: #555555;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.fc-uploader-autogenerate-icon {
+	color: #888888;
+	margin-right: 4px;
+}
+
+.fc-uploader-autogenerate-crop {
+	margin-top: 12px;
+}
+
+/* The crop link is preceded by two hidden inputs, so it isn't :first-child and
+   keeps the action's default left margin — drop it so it aligns to the edge. */
+.fc-uploader-autogenerate-crop .fc-uploader-action {
+	margin-left: 0;
+}
+
+.fc-uploader-autogenerate-actions {
+	margin-top: 10px;
+}
+
 /* --- Action links (orange text + inline FA icon) ------------- */
 
 /* Hover-reveal actions: bare grey icon+text at rest (quiet), blooming into a

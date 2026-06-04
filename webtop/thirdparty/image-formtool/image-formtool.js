@@ -299,6 +299,20 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 	    			}
 	    		})
     			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function onImageFormtoolCustomCrop(){ imageformtool.beginCrop(true); return false; }).end()
+    			.find("a.image-recrop-button").bind("click",function onImageFormtoolRecrop(){
+    				// Re-crop an existing image straight from the completed view. (The old
+    				// "Regenerate" link round-tripped through the autogenerate empty-state,
+    				// which only offered this same crop action plus a duplicate Upload link.)
+    				// Replicate the one side effect that view had for the crop path: flag the
+    				// current image for replacement so applyCrop regenerates it instead of
+    				// short-circuiting ("image already exists"). _recropPending lets a cancelled
+    				// cropper undo the flag — this path has no view-close to reset it, unlike
+    				// the autogenerate flow.
+    				if (imageformtool.inputs.base.val().length) imageformtool.inputs.deletef.val("true");
+    				imageformtool._recropPending = true;
+    				imageformtool.beginCrop(true);
+    				return false;
+    			}).end()
     			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function onImageFormtoolCancelCrop(){ imageformtool.removeCrop(); return false; }).end()
     			.find("button.image-delete-button").bind("click",function onImageFormtoolDelete(){ imageformtool.deleteImage(); return false; }).end()
     			.find("button.image-deleteall-button").bind("click",function onImageFormtoolDeleteAll(){ imageformtool.deleteAllRelatedImages(); return false; }).end();
@@ -371,8 +385,15 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 						complete.find(".image-resize-information").hide().end();
 					}
 
+					// Only cache-bust plain (local) URLs. Skip when the URL already carries a
+					// query string — e.g. an S3 presigned URL (?X-Amz-...) — because appending a
+					// second "?<timestamp>" corrupts the signature, yielding 403 Forbidden /
+					// net::ERR_BLOCKED_BY_ORB on the preview tooltip image (the href is left
+					// untouched, which is why opening it in a new tab still worked). Presigned
+					// URLs are unique per generation, so they're inherently cache-busted anyway.
+					// (Cloudinary URLs were already excluded.)
 					var cachebust = "";
-					if (! results.fullpath.match(/res.cloudinary.com/gi)) {
+					if (! results.fullpath.match(/res.cloudinary.com/gi) && results.fullpath.indexOf("?") === -1) {
 						cachebust = "?"+new Date().getTime();
 					}
 					if (imageformtool.inline){
@@ -390,9 +411,15 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
 				$j('#'+prefix+property+"_"+action+"error").html(message).show();
 				if (action === "upload") imageformtool.resetUploadView();
-			}).bind("cancelcrop",function(){
-			
+			}).bind("cancelcrop",function onImageFormtoolCancelCropEvent(){
+				// A complete-view "Re-crop image" sets deletef=true up front; if the user
+				// backs out of the cropper we clear it here so a later form save keeps the
+				// current image. Scoped by _recropPending so the autogenerate flow (which
+				// resets deletef on its own view-close) is left exactly as it was.
+				if (imageformtool._recropPending) imageformtool.inputs.deletef.val("false");
+				imageformtool._recropPending = false;
 			}).bind("savecrop",function onImageFormtoolSaveCrop(event,c,q){
+				imageformtool._recropPending = false;
 				imageformtool.inputs.resizemethod.val(parseInt(c.x)+","+parseInt(c.y)+"-"+parseInt(c.x2)+","+parseInt(c.y2));
 				imageformtool.inputs.quality.val(q);
 				imageformtool.multiview.findView("autogenerate")
@@ -520,11 +547,11 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 		this.enableCrop = function imageFormtoolEnableCrop(enabled){
 			if (enabled){
 				imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").show();
-				imageformtool.multiview.findView("complete").find(".regenerate-link").show();
+				imageformtool.multiview.findView("complete").find(".image-recrop-link").show();
 			}
 			else {
 				imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").hide();
-				imageformtool.multiview.findView("complete").find(".regenerate-link").hide();
+				imageformtool.multiview.findView("complete").find(".image-recrop-link").hide();
 			}
 		};
 		
