@@ -225,7 +225,11 @@
 		<skin:registerCSS	id="bulk-upload"
 							baseHREF="#application.url.webtop#/js/bulkUploader"
 							lFiles="bulk-upload.css" />
-							
+
+		<skin:registerCSS	id="uploader"
+							baseHREF="#application.url.webtop#/css"
+							lFiles="uploader.css" />
+
 		<skin:registerCSS 	id="fc-login"
 							baseHREF="#application.url.webtop#/css"
 							lFiles="login7.css" />

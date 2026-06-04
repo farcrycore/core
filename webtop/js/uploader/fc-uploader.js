@@ -469,11 +469,32 @@
 			addFiles(files, "$fc.uploader.drop");
 			try { onDragLeave(e); } catch (err){}
 		}
+
+		// Paste-from-clipboard. Gated on the dropzone being focused so that
+		// multiple uploaders on the same page don't all grab the same paste —
+		// only the one the user has clicked/tabbed into responds. The dropzone
+		// must be focusable (tabindex) in the formtool markup for this to fire.
+		function dropZoneFocused(){
+			var active = document.activeElement;
+			return active && (active === dropZoneEl || dropZoneEl.contains(active));
+		}
+		function onPasteHandler(e){
+			if (!dropZoneFocused()) return;
+			var data = e.clipboardData || window.clipboardData;
+			var files = data && data.files;
+			if (files && files.length){
+				e.preventDefault();
+				addFiles(files, "$fc.uploader.paste");
+			}
+		}
 		if (dropZoneEl){
 			dropZoneEl.addEventListener("dragenter", onDragEnterHandler, false);
 			dropZoneEl.addEventListener("dragover",  onDragOverHandler,  false);
 			dropZoneEl.addEventListener("dragleave", onDragLeaveHandler, false);
 			dropZoneEl.addEventListener("drop",      onDropHandler,      false);
+			// Paste listens on document (clipboard events don't reliably target a
+			// non-editable element) but is gated to fire only when the dropzone holds focus.
+			document.addEventListener("paste", onPasteHandler, false);
 		}
 
 		return {
@@ -490,6 +511,7 @@
 					try { dropZoneEl.removeEventListener("dragover",  onDragOverHandler,  false); } catch (e){}
 					try { dropZoneEl.removeEventListener("dragleave", onDragLeaveHandler, false); } catch (e){}
 					try { dropZoneEl.removeEventListener("drop",      onDropHandler,      false); } catch (e){}
+					try { document.removeEventListener("paste",       onPasteHandler,     false); } catch (e){}
 				}
 				try {
 					if (typeof uppy.destroy === "function") uppy.destroy();
@@ -498,5 +520,127 @@
 			},
 			_uppy: uppy
 		};
+	};
+
+	/**
+	 * $fc.uploader.confirm — a small, framework-agnostic confirm dialog.
+	 *
+	 * Deliberately NOT built on Bootstrap (or any framework) so the planned
+	 * Bootstrap 5 upgrade has nothing here to migrate. Styled by the
+	 * .fc-uploader-confirm-* classes in webtop/css/uploader.css.
+	 *
+	 *   $fc.uploader.confirm({
+	 *       title:   "Delete this file?",
+	 *       message: "This cannot be undone.",
+	 *       buttons: [
+	 *           { label: "Delete", value: "delete", style: "danger" },
+	 *           { label: "Cancel", value: "cancel", style: "cancel", isCancel: true }
+	 *       ],
+	 *       onSelect: function(value){ ... }   // value of the clicked button; "cancel" on Escape/overlay
+	 *   });
+	 *
+	 * Buttons default to a Delete (danger) / Cancel pair when omitted. The
+	 * image formtool passes a three-button set for the related-images case.
+	 * Focus is trapped while open and returned to the previously-focused
+	 * element on close (accessibility baseline in the UI plan).
+	 */
+	$fc.uploader.confirm = function fcUploaderConfirm(opts){
+		opts = opts || {};
+
+		var buttons = (opts.buttons && opts.buttons.length) ? opts.buttons : [
+			{ label: "Delete", value: "delete", style: "danger" },
+			{ label: "Cancel", value: "cancel", style: "cancel", isCancel: true }
+		];
+		var onSelect      = (typeof opts.onSelect === "function") ? opts.onSelect : function(){};
+		var previousFocus = document.activeElement;
+		var closed        = false;
+
+		var overlay = document.createElement("div");
+		overlay.className = "fc-uploader-confirm-overlay";
+		overlay.setAttribute("role", "dialog");
+		overlay.setAttribute("aria-modal", "true");
+
+		var dialog = document.createElement("div");
+		dialog.className = "fc-uploader-confirm-dialog";
+		overlay.appendChild(dialog);
+
+		if (opts.title){
+			var titleEl = document.createElement("h3");
+			titleEl.className = "fc-uploader-confirm-title";
+			titleEl.textContent = opts.title;
+			dialog.appendChild(titleEl);
+		}
+		if (opts.message){
+			var msgEl = document.createElement("div");
+			msgEl.className = "fc-uploader-confirm-message";
+			msgEl.textContent = opts.message;
+			dialog.appendChild(msgEl);
+		}
+
+		var btnBar = document.createElement("div");
+		btnBar.className = "fc-uploader-confirm-buttons";
+		dialog.appendChild(btnBar);
+
+		var cancelValue = null;
+		var btnEls = [];
+		for (var i = 0; i < buttons.length; i++){
+			(function(btn){
+				var b = document.createElement("button");
+				b.type = "button";
+				b.className = "fc-uploader-confirm-btn"
+				            + (btn.style === "danger" ? " fc-uploader-confirm-btn--danger" : "");
+				b.textContent = btn.label;
+				if (btn.isCancel) cancelValue = btn.value;
+				b.addEventListener("click", function(){ close(btn.value); });
+				btnBar.appendChild(b);
+				btnEls.push(b);
+			})(buttons[i]);
+		}
+		// Fall back to the last button as the cancel target for Escape/overlay.
+		if (cancelValue === null && buttons.length) cancelValue = buttons[buttons.length - 1].value;
+
+		function onKeyDown(e){
+			if (e.key === "Escape" || e.keyCode === 27){
+				e.preventDefault();
+				close(cancelValue);
+				return;
+			}
+			if (e.key === "Tab" || e.keyCode === 9){
+				// Trap focus within the dialog's buttons.
+				if (!btnEls.length) return;
+				var first = btnEls[0];
+				var last  = btnEls[btnEls.length - 1];
+				if (e.shiftKey && document.activeElement === first){
+					e.preventDefault();
+					last.focus();
+				} else if (!e.shiftKey && document.activeElement === last){
+					e.preventDefault();
+					first.focus();
+				}
+			}
+		}
+
+		function onOverlayClick(e){
+			if (e.target === overlay) close(cancelValue);
+		}
+
+		function close(value){
+			if (closed) return;
+			closed = true;
+			document.removeEventListener("keydown", onKeyDown, true);
+			overlay.removeEventListener("click", onOverlayClick, false);
+			if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+			try { if (previousFocus && previousFocus.focus) previousFocus.focus(); } catch (e){}
+			try { onSelect(value); } catch (e){}
+		}
+
+		document.addEventListener("keydown", onKeyDown, true);
+		overlay.addEventListener("click", onOverlayClick, false);
+		document.body.appendChild(overlay);
+
+		// Focus the first action button so keyboard users land inside the dialog.
+		if (btnEls.length) { try { btnEls[0].focus(); } catch (e){} }
+
+		return { close: function(){ close(cancelValue); } };
 	};
 })($j);

@@ -1,0 +1,544 @@
+/* ============================================================
+   FarCry shared uploader UI
+   Used by the file, image, bulk-upload and array-upload formtools.
+   Visual primitives only — byte transport is handled by $fc.uploader.
+
+   Two layout modes share this vocabulary:
+     - transient  (file, image): dropzone -> during-upload row -> details view
+     - persistent (bulk, array): dropzone + queue rows that coexist
+
+   Class prefix: .fc-uploader-*
+   Palette: blue #3e84b5, orange #e17000, green #5cb85c, red #d2322d,
+            neutral greys #ccc / #999 / #666.
+   ============================================================ */
+
+/* --- Dropzone ------------------------------------------------- */
+
+.fc-uploader-dropzone {
+	border: 1px dashed #cccccc;
+	border-radius: 5px;
+	background: #ffffff;
+	padding: 22px 16px;
+	text-align: center;
+	color: #666666;
+	-webkit-transition: border-color .15s ease, background-color .15s ease;
+	transition: border-color .15s ease, background-color .15s ease;
+}
+
+.fc-uploader-dropzone:focus,
+.fc-uploader-dropzone.is-focused {
+	outline: none;
+	border-color: #3e84b5;
+	-webkit-box-shadow: 0 0 0 2px rgba(62,132,181,.25);
+	box-shadow: 0 0 0 2px rgba(62,132,181,.25);
+}
+
+.fc-uploader-dropzone.is-dragover {
+	border-style: solid;
+	border-color: #3e84b5;
+	background: #eef5fb;
+}
+
+.fc-uploader-dropzone-icon {
+	font-size: 28px;
+	line-height: 1;
+	color: #aaaaaa;
+	margin-bottom: 10px;
+}
+
+.fc-uploader-dropzone.is-dragover .fc-uploader-dropzone-icon {
+	color: #3e84b5;
+}
+
+.fc-uploader-dropzone-hint {
+	display: block;
+	margin-top: 6px;
+	font-size: 12px;
+	color: #999999;
+}
+
+/* File-picker button — mirrors FarCry's standard button look so it
+   reads as a native webtop control, not a bespoke uploader widget.
+   Used as a <label> wrapping a visually-hidden file input. */
+.fc-uploader-button {
+	display: inline-block;
+	margin: 4px 0;
+	padding: 5px 14px;
+	background: #dddddd;
+	color: #333333;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	font-size: 13px;
+	line-height: 1.4;
+	cursor: pointer;
+	-webkit-transition: background-color .15s ease, color .15s ease;
+	transition: background-color .15s ease, color .15s ease;
+}
+
+.fc-uploader-button:hover,
+.fc-uploader-button:focus {
+	background: #3e84b5;
+	border-color: #3e84b5;
+	color: #ffffff;
+	outline: none;
+}
+
+.fc-uploader-button .fa {
+	margin-right: 5px;
+}
+
+/* The real file input lives inside the label but stays out of view. */
+.fc-uploader-file-input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0,0,0,0);
+	border: 0;
+}
+
+/* --- Constraint text (under the dropzone) -------------------- */
+
+.fc-uploader-constraints {
+	margin-top: 6px;
+	font-size: 12px;
+	color: #999999;
+	line-height: 1.5;
+}
+
+.fc-uploader-constraints span {
+	display: block;
+}
+
+/* --- Progress bar (the single primitive, everywhere) --------- */
+/* Thin grey track + FarCry-blue fill. Width adapts to its container:
+   wide across a transient upload row, ~thumbnail-wide under a queue
+   thumbnail. There is no thick/circle variant — only this. */
+
+.fc-uploader-progress {
+	width: 100%;
+	height: 3px;
+	background: #e6e6e6;
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.fc-uploader-progress-bar {
+	width: 0;
+	height: 100%;
+	background: #3e84b5;
+	-webkit-transition: width .2s ease;
+	transition: width .2s ease;
+}
+
+.fc-uploader-progress-bar.is-complete {
+	background: #5cb85c;
+}
+
+.fc-uploader-progress-bar.is-error {
+	width: 100% !important;
+	background: #d2322d;
+}
+
+/* --- Transient: during-upload row (file, image) -------------- */
+/* Replaces the dropzone while a single file is uploading: filename +
+   byte/percent counter + cancel X, with the progress primitive beneath. */
+
+.fc-uploader-uploading {
+	border: 1px solid #e6e6e6;
+	border-radius: 5px;
+	padding: 10px 12px;
+	background: #ffffff;
+}
+
+.fc-uploader-uploading-row {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+}
+
+.fc-uploader-uploading-name {
+	display: table-cell;
+	vertical-align: middle;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: #333333;
+}
+
+.fc-uploader-uploading-meta {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: right;
+	width: 9em;
+	color: #999999;
+	font-size: 12px;
+	white-space: nowrap;
+}
+
+.fc-uploader-uploading-cancel {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: right;
+	width: 28px;
+}
+
+.fc-uploader-uploading .fc-uploader-progress {
+	margin-top: 8px;
+}
+
+/* --- Transient: post-upload details view (file, image) ------- */
+
+.fc-uploader-details {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+}
+
+.fc-uploader-details-icon {
+	display: table-cell;
+	vertical-align: top;
+	width: 44px;
+	font-size: 32px;
+	line-height: 1;
+	color: #888888;
+	padding-right: 12px;
+}
+
+.fc-uploader-details-body {
+	display: table-cell;
+	vertical-align: top;
+}
+
+.fc-uploader-details-name {
+	font-weight: bold;
+	color: #333333;
+	word-break: break-all;
+}
+
+.fc-uploader-details-meta {
+	margin-top: 2px;
+	font-size: 12px;
+	color: #999999;
+}
+
+.fc-uploader-details-actions {
+	display: table-cell;
+	vertical-align: top;
+	text-align: right;
+	white-space: nowrap;
+	width: 16em;
+}
+
+/* The retained blue "Resized to..." alert in the image formtool. */
+.fc-uploader-resize-info {
+	margin-top: 8px;
+	padding: 6px 10px;
+	background: #eef5fb;
+	border: 1px solid #cfe2f3;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #2c5d80;
+}
+
+/* --- Action links (orange text + inline FA icon) ------------- */
+
+.fc-uploader-action {
+	display: inline-block;
+	margin-left: 14px;
+	color: #e17000;
+	text-decoration: none;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.fc-uploader-action:first-child {
+	margin-left: 0;
+}
+
+.fc-uploader-action:hover,
+.fc-uploader-action:focus {
+	color: #ff9900;
+	text-decoration: underline;
+}
+
+.fc-uploader-action .fa {
+	margin-right: 4px;
+}
+
+/* The small "Cancel — keep the current file" link shown during Replace. */
+.fc-uploader-cancel-replace {
+	display: inline-block;
+	margin-top: 8px;
+	color: #999999;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.fc-uploader-cancel-replace:hover {
+	color: #666666;
+	text-decoration: underline;
+}
+
+/* --- Status pills (persistent uploaders only) ---------------- */
+
+.fc-uploader-pill {
+	display: inline-block;
+	padding: 2px 7px;
+	background: #999999;
+	color: #ffffff;
+	border-radius: 10px;
+	font-size: 11px;
+	line-height: 1.4;
+	white-space: nowrap;
+}
+
+.fc-uploader-pill--uploading {
+	background: #999999;
+}
+
+.fc-uploader-pill--uploaded {
+	background: #5cb85c;
+}
+
+.fc-uploader-pill--error {
+	background: #d2322d;
+}
+
+.fc-uploader-pill .fa {
+	margin-right: 4px;
+}
+
+/* --- Error states -------------------------------------------- */
+
+/* Transient + bulk: red alert info box below the field. */
+.fc-uploader-error {
+	margin-top: 8px;
+	padding: 8px 12px;
+	background: #fdeeed;
+	border: 1px solid #f0c5c3;
+	border-radius: 4px;
+	color: #a82824;
+	font-size: 13px;
+}
+
+/* Array rows: small red text under the filename (no alert box). */
+.fc-uploader-error-text {
+	display: block;
+	margin-top: 2px;
+	color: #d2322d;
+	font-size: 12px;
+}
+
+/* --- Persistent queue rows (bulk, array) --------------------- */
+/* Ported from the plugin-s3upload s3arrayupload row layout, the
+   canonical reference, re-prefixed to .fc-uploader-item*. */
+
+.fc-uploader-item {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+	word-wrap: break-word;
+	word-break: break-all;
+	margin-bottom: 6px;
+}
+
+.fc-uploader-item-row {
+	display: table-row;
+}
+
+.fc-uploader-item-handle {
+	display: table-cell;
+	vertical-align: middle;
+	width: 22px;
+	color: #bbbbbb;
+	cursor: ns-resize;
+	text-align: center;
+}
+
+.fc-uploader-item-thumb {
+	display: table-cell;
+	width: 85px;
+	height: 56px;
+	vertical-align: middle;
+	text-align: center;
+	padding-right: 10px;
+}
+
+.fc-uploader-item-thumb img {
+	display: block;
+	max-width: 75px;
+	max-height: 75px;
+	height: auto;
+	margin: auto;
+}
+
+.fc-uploader-item-thumb-icon {
+	width: 75px;
+	height: 48px;
+	line-height: 48px;
+	background: #f1f1f1;
+	text-align: center;
+	color: #666666;
+	font-size: 1.9em;
+}
+
+/* In a queue row the progress primitive sits under the thumbnail,
+   roughly thumbnail-wide. Same bar, narrower container. */
+.fc-uploader-item-thumb .fc-uploader-progress {
+	max-width: 75px;
+	margin: 4px auto 0 auto;
+}
+
+.fc-uploader-item-info {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.fc-uploader-item-file {
+	max-width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: #333333;
+}
+
+.fc-uploader-item-size {
+	font-size: 12px;
+	color: #999999;
+}
+
+.fc-uploader-item-state {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: right;
+	width: 7em;
+}
+
+.fc-uploader-item-buttons {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: right;
+	width: 4em;
+	white-space: nowrap;
+}
+
+.fc-uploader-item-buttons button,
+.fc-uploader-item-buttons .fc-uploader-icon-btn {
+	border: none;
+	background: none;
+	padding: 0 4px;
+	font-size: 18px;
+	color: #999999;
+	cursor: pointer;
+}
+
+.fc-uploader-item-buttons button:hover,
+.fc-uploader-item-buttons .fc-uploader-icon-btn:hover {
+	color: #333333;
+}
+
+/* --- Cancel / remove icon button (shared) -------------------- */
+
+.fc-uploader-icon-btn {
+	border: none;
+	background: none;
+	padding: 0 4px;
+	font-size: 16px;
+	color: #999999;
+	cursor: pointer;
+}
+
+.fc-uploader-icon-btn:hover,
+.fc-uploader-icon-btn:focus {
+	color: #333333;
+	outline: none;
+}
+
+/* --- Confirm dialog (framework-agnostic; no Bootstrap) ------- */
+/* Driven by $fc.uploader.confirm(...). Styled to match the webtop;
+   intentionally not tied to any CSS framework so the planned
+   Bootstrap 5 upgrade has nothing here to rip out. */
+
+.fc-uploader-confirm-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0,0,0,.45);
+	z-index: 100000;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+}
+
+.fc-uploader-confirm-dialog {
+	background: #ffffff;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 4px 24px rgba(0,0,0,.25);
+	box-shadow: 0 4px 24px rgba(0,0,0,.25);
+	width: 380px;
+	max-width: 90%;
+	overflow: hidden;
+}
+
+.fc-uploader-confirm-title {
+	padding: 14px 18px;
+	margin: 0;
+	font-size: 15px;
+	font-weight: bold;
+	color: #333333;
+	border-bottom: 1px solid #eeeeee;
+}
+
+.fc-uploader-confirm-message {
+	padding: 16px 18px;
+	color: #555555;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.fc-uploader-confirm-buttons {
+	padding: 12px 18px;
+	text-align: right;
+	background: #f7f7f7;
+	border-top: 1px solid #eeeeee;
+}
+
+.fc-uploader-confirm-btn {
+	display: inline-block;
+	margin-left: 8px;
+	padding: 6px 16px;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	background: #dddddd;
+	color: #333333;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.fc-uploader-confirm-btn:hover,
+.fc-uploader-confirm-btn:focus {
+	background: #cccccc;
+	outline: none;
+}
+
+.fc-uploader-confirm-btn--danger {
+	background: #d2322d;
+	border-color: #c12e29;
+	color: #ffffff;
+}
+
+.fc-uploader-confirm-btn--danger:hover,
+.fc-uploader-confirm-btn--danger:focus {
+	background: #c12e29;
+}

@@ -90,6 +90,12 @@
 		<cfset var facade = "" />
 		<cfset var uploadLocation = "" />
 		<cfset var storageType = "local" />
+		<cfset var existingFilename = "" />
+		<cfset var existingBytes = 0 />
+		<cfset var existingLoc = "" />
+		<cfset var allowedExtsDisplay = "" />
+		<cfset var maxSizeText = "" />
+		<cfset var downloadURL = "" />
 
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, jquery --->
@@ -106,142 +112,276 @@
 		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="fc-uppy" />
 		<skin:loadJS id="fc-uploader" />
+		<skin:loadCSS id="uploader" />
+
+		<!--- Pre-compute the details shown for an already-stored file (filename, size, type)
+		      and the constraint text. Size is a best-effort CDN lookup; if it fails the
+		      details meta simply omits size (the ajax contract is unchanged). --->
+		<cfset existingFilename = listLast(arguments.stMetadata.value, "/") />
+		<cfif len(arguments.stMetadata.value)>
+			<cftry>
+				<cfset existingLoc = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles", file=arguments.stMetadata.value) />
+				<cfif len(existingLoc)>
+					<cfset existingBytes = application.fc.lib.cdn.ioGetFileSize(location=existingLoc, file=arguments.stMetadata.value) />
+				</cfif>
+				<cfcatch type="any"></cfcatch>
+			</cftry>
+			<cfset downloadURL = "#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#" />
+		</cfif>
+		<cfset allowedExtsDisplay = ucase(replace(arguments.stMetadata.ftAllowedFileExtensions, ",", ", ", "all")) />
+		<cfif isNumeric(arguments.stMetadata.ftMaxSize) and val(arguments.stMetadata.ftMaxSize) gt 0>
+			<cfset maxSizeText = humanFileSize(val(arguments.stMetadata.ftMaxSize)) />
+		</cfif>
 
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfdefaultcase>
 
 				<cfsavecontent variable="html">
 					<grid:div class="multiField">
-						<!--- File input wrap. Visible by default if there's no value; hidden once a file is uploaded/saved. --->
 						<cfoutput>
-							<div id="#arguments.fieldname#-wrap"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+							<!--- Hidden inputs persist across the dropzone / uploading / details states.
+							      '#arguments.fieldname#' holds the stored value; 'DELETE' marks it for removal
+							      on save; 'NEW' is the file picker the uploader drives. --->
+							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+							<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
 
-								<label class="inlineLabel" for="#arguments.fieldname#">
-									&nbsp;
-									<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-									<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fileUpload #arguments.inputClass# <cfif arguments.stMetadata.ftValidation eq 'required'> required</cfif>" value="" style="#arguments.stMetadata.ftstyle#" />
-									<span id="#arguments.fieldname#-upload-progress" style="display:none;margin-left:0.5em;font-style:italic;color:##0099FF;"></span>
-
+							<!--- (1) Dropzone — initial state, and the Replace state. --->
+							<div id="#arguments.fieldname#-dropzone" class="fc-uploader-dropzone" tabindex="0" role="button" aria-label="Upload file"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+								<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
+								<label class="fc-uploader-button">
+									<i class="fa fa-cloud-upload"></i> Select file
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fc-uploader-file-input #arguments.inputClass#<cfif arguments.stMetadata.ftValidation eq 'required'> required</cfif>" value="" style="#arguments.stMetadata.ftstyle#" />
 								</label>
-
+								<span class="fc-uploader-dropzone-hint">or drag and drop here</span>
+								<span class="fc-uploader-dropzone-hint">or paste from clipboard</span>
+								<a id="#arguments.fieldname#-cancel-replace" class="fc-uploader-cancel-replace" style="display:none;">Cancel &mdash; keep the current file</a>
 							</div>
-						</cfoutput>
 
-						<!--- Preview / actions block. Always rendered so the XHR onComplete can populate it consistently
-						      whether the record is brand-new or being re-edited. Hidden when there's no value. --->
-						<cfoutput>
-							<div id="#arguments.fieldname#previewfile"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-								<cfif len(arguments.stMetadata.value)>
-									<a id="#arguments.fieldname#-preview-file" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#" target="_blank">Preview (#listLast(arguments.stMetadata.value,"/")#)</a>
-								<cfelse>
-									<a id="#arguments.fieldname#-preview-file" href="##" target="_blank">Preview</a>
-								</cfif>
-								<br />
-								<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
-								<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
-								<ft:button type="button" value="Replace" rendertype="link" id="#arguments.fieldname#-replace-btn" onclick="" />
-								<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-replace-btn" onclick="" />
+							<!--- Constraint text. --->
+							<div class="fc-uploader-constraints">
+								<span>Formats accepted: #allowedExtsDisplay#</span>
+								<cfif len(maxSizeText)><span>File size must not exceed #maxSizeText#</span></cfif>
 							</div>
+
+							<!--- (2) During-upload row — filename + size/percent + cancel, with the thin progress bar beneath. --->
+							<div id="#arguments.fieldname#-uploading" class="fc-uploader-uploading" style="display:none;">
+								<div class="fc-uploader-uploading-row">
+									<span class="fc-uploader-uploading-name" id="#arguments.fieldname#-uploading-name"></span>
+									<span class="fc-uploader-uploading-meta" id="#arguments.fieldname#-uploading-meta"></span>
+									<span class="fc-uploader-uploading-cancel">
+										<button type="button" class="fc-uploader-icon-btn" id="#arguments.fieldname#-uploading-cancel" aria-label="Cancel upload"><i class="fa fa-times"></i></button>
+									</span>
+								</div>
+								<div class="fc-uploader-progress">
+									<div class="fc-uploader-progress-bar" id="#arguments.fieldname#-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+								</div>
+							</div>
+
+							<!--- (3) Details view — shown once a file is stored. --->
+							<div id="#arguments.fieldname#-details" class="fc-uploader-details" data-bytes="#existingBytes#"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+								<span class="fc-uploader-details-icon"><i id="#arguments.fieldname#-details-icon" class="fa fa-file-o"></i></span>
+								<div class="fc-uploader-details-body">
+									<div class="fc-uploader-details-name" id="#arguments.fieldname#-details-name"></div>
+									<div class="fc-uploader-details-meta" id="#arguments.fieldname#-details-meta"></div>
+								</div>
+								<div class="fc-uploader-details-actions">
+									<a id="#arguments.fieldname#-preview" class="fc-uploader-action" target="_blank" href="<cfif len(downloadURL)>#downloadURL#<cfelse>##</cfif>"><i class="fa fa-eye"></i> Preview</a>
+									<a id="#arguments.fieldname#-replace" class="fc-uploader-action"><i class="fa fa-upload"></i> Replace</a>
+									<a id="#arguments.fieldname#-delete" class="fc-uploader-action"><i class="fa fa-trash"></i> Delete</a>
+								</div>
+							</div>
+
+							<!--- Error alert + screen-reader live region. --->
+							<div id="#arguments.fieldname#-error" class="fc-uploader-error" style="display:none;"></div>
+							<span id="#arguments.fieldname#-status" class="fc-uploader-file-input" aria-live="polite"></span>
 						</cfoutput>
 
 						<skin:onReady>
 						<cfoutput>
-							$fc.uploader.create({
-								fileInput:        '###arguments.fieldname#NEW',
-								fieldName:        '#arguments.stMetadata.name#NEW',
-								endpoint:         '#getAjaxURL(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata, fieldname=arguments.fieldname, combined=true)#',
-								storage:          '#storageType#',
-								allowedFileTypes: '#arguments.stMetadata.ftAllowedFileExtensions#',
-								maxFileSize:      <cfif isNumeric(arguments.stMetadata.ftMaxSize) and val(arguments.stMetadata.ftMaxSize) gt 0>#val(arguments.stMetadata.ftMaxSize)#<cfelse>0</cfif>,
-								maxNumberOfFiles: 1,
-								autoProceed:      true,
-								onSelect: function(file){
-									$j('###arguments.fieldname#-upload-progress').text('Uploading ' + file.name + '...').show();
-								},
-								onProgress: function(file, percent){
-									if (percent < 100)
-										$j('###arguments.fieldname#-upload-progress').text('Uploading ' + percent + '%');
-									else
-										$j('###arguments.fieldname#-upload-progress').text('Processing...');
-								},
-								onComplete: function(file, results){
-									$j('###arguments.fieldname#-upload-progress').hide();
-									if (results.error) {
-										alert('Upload failed: ' + results.error);
-										return;
-									}
-									$j('###arguments.fieldname#').val(results.value || '');
-									$j('###arguments.fieldname#DELETE').val('');
-									var filename = results.filename || (results.value ? results.value.split('/').pop() : '');
-									// Prefer the CDN-resolved fullpath (works pre-save). Fall back to download.cfm (works post-save).
-									var previewURL = results.fullpath || '#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#';
-									$j('###arguments.fieldname#-preview-file')
-										.attr('href', previewURL)
-										.text('Preview (' + filename + ')')
-										.css('display', 'inline');
-									// Switch to "uploaded" view: hide file input, show preview/actions
-									$j('###arguments.fieldname#-wrap').hide('fast');
-									$j('###arguments.fieldname#previewfile').show('fast');
-									// Reset action-button states
-									$j('###arguments.fieldname#-delete-btn').css('display','inline');
-									$j('###arguments.fieldname#-replace-btn').css('display','inline');
-									$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
-									$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
-								},
-								onError: function(file, error){
-									$j('###arguments.fieldname#-upload-progress').hide();
-									if (error.type === 'size')
-										alert('File exceeds the maximum allowed size.');
-									else if (error.type === 'type')
-										alert('Only files with the following extensions are allowed: #arguments.stMetadata.ftAllowedFileExtensions#');
-									else if (error.type === 'http')
-										alert('Server error (' + (error.status||'') + '): ' + error.message);
-									else if (error.type === 'network')
-										alert('Network error: ' + error.message);
-									else
-										alert('Upload failed: ' + error.message);
+							(function(){
+								var DZ      = '###arguments.fieldname#-dropzone';
+								var UP      = '###arguments.fieldname#-uploading';
+								var DETAILS = '###arguments.fieldname#-details';
+								var ERR     = '###arguments.fieldname#-error';
+								var STATUS  = '###arguments.fieldname#-status';
+								var BAR     = '###arguments.fieldname#-progress-bar';
+								var allowedExts = '#arguments.stMetadata.ftAllowedFileExtensions#';
+
+								function announce(msg){ $j(STATUS).text(msg); }
+
+								function fcFormatBytes(bytes){
+									bytes = Number(bytes) || 0;
+									if (bytes <= 0) return '';
+									var units = ['B','KB','MB','GB','TB'];
+									var i = Math.floor(Math.log(bytes) / Math.log(1024));
+									if (i >= units.length) i = units.length - 1;
+									var v = bytes / Math.pow(1024, i);
+									return (i === 0 ? Math.round(v) : v.toFixed(1)) + ' ' + units[i];
 								}
-							});
 
-							// Initial cancel-button visibility (the two Cancel links default to hidden).
-							$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
-							$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
+								function fcFileIcon(name){
+									var ext = (name && name.indexOf('.') !== -1) ? name.split('.').pop().toLowerCase() : '';
+									var map = {
+										pdf:'fa-file-pdf-o',
+										doc:'fa-file-word-o', docx:'fa-file-word-o',
+										xls:'fa-file-excel-o', xlsx:'fa-file-excel-o', csv:'fa-file-excel-o',
+										ppt:'fa-file-powerpoint-o', pptx:'fa-file-powerpoint-o',
+										jpg:'fa-file-image-o', jpeg:'fa-file-image-o', png:'fa-file-image-o', gif:'fa-file-image-o', bmp:'fa-file-image-o', svg:'fa-file-image-o', webp:'fa-file-image-o',
+										zip:'fa-file-archive-o', rar:'fa-file-archive-o', '7z':'fa-file-archive-o', gz:'fa-file-archive-o', tar:'fa-file-archive-o',
+										mp3:'fa-file-audio-o', wav:'fa-file-audio-o', ogg:'fa-file-audio-o', wma:'fa-file-audio-o', m4a:'fa-file-audio-o',
+										mp4:'fa-file-video-o', mov:'fa-file-video-o', avi:'fa-file-video-o', wmv:'fa-file-video-o', flv:'fa-file-video-o', mkv:'fa-file-video-o', mpg:'fa-file-video-o', mpeg:'fa-file-video-o',
+										txt:'fa-file-text-o', rtf:'fa-file-text-o',
+										js:'fa-file-code-o', css:'fa-file-code-o', html:'fa-file-code-o', htm:'fa-file-code-o', xml:'fa-file-code-o', json:'fa-file-code-o', cfm:'fa-file-code-o', cfc:'fa-file-code-o'
+									};
+									return map[ext] || 'fa-file-o';
+								}
 
-							// Action handlers — always bound. They're a no-op when their target elements
-							// aren't visible (e.g. on a brand-new record with no upload yet).
-							// "Delete" marks the file for deletion on next save; actual file removal happens
-							// server-side via handleFilePost. "Cancel" undoes that intent before save.
-							$j('###arguments.fieldname#-delete-btn').click(function() {
-								$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());
-								$j('###arguments.fieldname#').val('');
-								$j('###arguments.fieldname#-wrap').show('fast');
-								$j('###arguments.fieldname#previewfile').hide('fast');
-								$j('###arguments.fieldname#-delete-btn').css('display','none');
-								$j('###arguments.fieldname#-replace-btn').css('display','none');
-								$j('###arguments.fieldname#-cancel-delete-btn').css('display','inline');
-							});
-							$j('###arguments.fieldname#-cancel-delete-btn').click(function() {
-								$j('###arguments.fieldname#').val($j('###arguments.fieldname#DELETE').val());
-								$j('###arguments.fieldname#DELETE').val('');
-								$j('###arguments.fieldname#-wrap').hide('fast');
-								$j('###arguments.fieldname#previewfile').show('fast');
-								$j('###arguments.fieldname#-delete-btn').css('display','inline');
-								$j('###arguments.fieldname#-replace-btn').css('display','inline');
-								$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
-							});
-							$j('###arguments.fieldname#-replace-btn').click(function() {
-								$j('###arguments.fieldname#-wrap').show('fast');
-								$j('###arguments.fieldname#-delete-btn').css('display','none');
-								$j('###arguments.fieldname#-replace-btn').css('display','none');
-								$j('###arguments.fieldname#-cancel-replace-btn').css('display','inline');
-							});
-							$j('###arguments.fieldname#-cancel-replace-btn').click(function() {
-								$j('###arguments.fieldname#-wrap').hide('fast');
-								$j('###arguments.fieldname#-delete-btn').css('display','inline');
-								$j('###arguments.fieldname#-replace-btn').css('display','inline');
-								$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
-							});
+								function fcRenderDetails(filename, bytes){
+									var ext = (filename && filename.indexOf('.') !== -1) ? filename.split('.').pop().toUpperCase() : '';
+									$j(DETAILS + '-icon').attr('class', 'fa ' + fcFileIcon(filename));
+									$j(DETAILS + '-name').text(filename).attr('title', filename);
+									var meta = [];
+									var sizeText = fcFormatBytes(bytes);
+									if (sizeText) meta.push('Size: ' + sizeText);
+									if (ext) meta.push('Type: ' + ext);
+									$j(DETAILS + '-meta').text(meta.join('  ·  '));
+								}
+
+								function showDropzone(){
+									$j('###arguments.fieldname#-cancel-replace').css('display','none');
+									$j(UP).hide(); $j(DETAILS).hide(); $j(DZ).show();
+								}
+								function showUploading(file){
+									hideError();
+									$j('###arguments.fieldname#-cancel-replace').css('display','none');
+									$j('###arguments.fieldname#-uploading-name').text(file.name).attr('title', file.name);
+									$j('###arguments.fieldname#-uploading-meta').text(fcFormatBytes(file.size));
+									$j(BAR).css('width','0%').attr('aria-valuenow', 0).removeClass('is-complete is-error');
+									$j(DZ).hide(); $j(DETAILS).hide(); $j(UP).show();
+									announce('Uploading ' + file.name);
+								}
+								function showDetails(){
+									$j('###arguments.fieldname#-cancel-replace').css('display','none');
+									$j(DZ).hide(); $j(UP).hide(); $j(DETAILS).show();
+								}
+								function setProgress(file, percent){
+									$j(BAR).css('width', percent + '%').attr('aria-valuenow', percent);
+									var sizeText = fcFormatBytes(file.size);
+									if (percent < 100)
+										$j('###arguments.fieldname#-uploading-meta').text((sizeText ? sizeText + '  ·  ' : '') + percent + '%');
+									else
+										$j('###arguments.fieldname#-uploading-meta').text((sizeText ? sizeText + '  ·  ' : '') + 'Processing...');
+								}
+								function showError(msg){ $j(ERR).text(msg).show(); announce('Upload failed: ' + msg); }
+								function hideError(){ $j(ERR).hide().text(''); }
+
+								var uploader = $fc.uploader.create({
+									fileInput:        '###arguments.fieldname#NEW',
+									fieldName:        '#arguments.stMetadata.name#NEW',
+									endpoint:         '#getAjaxURL(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata, fieldname=arguments.fieldname, combined=true)#',
+									storage:          '#storageType#',
+									allowedFileTypes: allowedExts,
+									maxFileSize:      <cfif isNumeric(arguments.stMetadata.ftMaxSize) and val(arguments.stMetadata.ftMaxSize) gt 0>#val(arguments.stMetadata.ftMaxSize)#<cfelse>0</cfif>,
+									maxNumberOfFiles: 1,
+									autoProceed:      true,
+									dropZone:         DZ,
+									onDragEnter: function(){ $j(DZ).addClass('is-dragover'); },
+									onDragLeave: function(){ $j(DZ).removeClass('is-dragover'); },
+									onSelect: function(file){
+										showUploading(file);
+									},
+									onProgress: function(file, percent){
+										setProgress(file, percent);
+									},
+									onComplete: function(file, results){
+										if (results.error) {
+											showError(results.error);
+											if ($j('###arguments.fieldname#').val()) showDetails(); else showDropzone();
+											return;
+										}
+										$j('###arguments.fieldname#').val(results.value || '');
+										$j('###arguments.fieldname#DELETE').val('');
+										var filename = results.filename || file.name || (results.value ? results.value.split('/').pop() : '');
+										// Prefer the CDN-resolved fullpath (works pre-save). Fall back to download.cfm (works post-save).
+										var previewURL = results.fullpath || '#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#';
+										$j('###arguments.fieldname#-preview').attr('href', previewURL);
+										fcRenderDetails(filename, file.size || 0);
+										showDetails();
+										announce('File uploaded: ' + filename);
+										$j(DETAILS).find('.fc-uploader-action').first().focus();
+									},
+									onError: function(file, error){
+										var msg;
+										if (error.type === 'size')
+											msg = 'File exceeds the maximum allowed size.';
+										else if (error.type === 'type')
+											msg = 'Only files with the following extensions are allowed: ' + allowedExts;
+										else if (error.type === 'http')
+											msg = 'Server error (' + (error.status||'') + '): ' + error.message;
+										else if (error.type === 'network')
+											msg = 'Network error: ' + error.message;
+										else
+											msg = error.message;
+										showError(msg);
+										if ($j('###arguments.fieldname#').val()) showDetails(); else showDropzone();
+									}
+								});
+
+								// Cancel an in-flight upload.
+								$j('###arguments.fieldname#-uploading-cancel').click(function(e){
+									e.preventDefault();
+									uploader.cancelAll();
+									if ($j('###arguments.fieldname#').val()) showDetails(); else showDropzone();
+								});
+
+								// Keyboard: Enter / Space on the focused dropzone opens the file dialog.
+								$j(DZ).on('keydown', function(e){
+									if (e.keyCode === 13 || e.keyCode === 32){
+										e.preventDefault();
+										$j('###arguments.fieldname#NEW').click();
+									}
+								});
+
+								// Replace: return to the dropzone with a "keep current file" escape hatch.
+								$j('###arguments.fieldname#-replace').click(function(e){
+									e.preventDefault();
+									hideError();
+									showDropzone();
+									$j('###arguments.fieldname#-cancel-replace').css('display','inline');
+									$j(DZ).focus();
+								});
+								$j('###arguments.fieldname#-cancel-replace').click(function(e){
+									e.preventDefault();
+									showDetails();
+								});
+
+								// Delete: confirm dialog. On confirm, mark the stored value for removal on save
+								// (same field manipulation the previous inline workflow used) and return to the dropzone.
+								$j('###arguments.fieldname#-delete').click(function(e){
+									e.preventDefault();
+									$fc.uploader.confirm({
+										title:   'Delete this file?',
+										message: 'This file will be removed when you save the form.',
+										buttons: [
+											{ label: 'Delete', value: 'delete', style: 'danger' },
+											{ label: 'Cancel', value: 'cancel', style: 'cancel', isCancel: true }
+										],
+										onSelect: function(value){
+											if (value !== 'delete') return;
+											$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());
+											$j('###arguments.fieldname#').val('');
+											hideError();
+											showDropzone();
+											$j(DZ).focus();
+										}
+									});
+								});
+
+								// Render the details meta for an already-stored file on load.
+								if ($j('###arguments.fieldname#').val()){
+									fcRenderDetails('#jsStringFormat(existingFilename)#', $j(DETAILS).data('bytes'));
+								}
+							})();
 						</cfoutput>
 						</skin:onReady>
 					</grid:div>
@@ -1030,6 +1170,25 @@
 			<cfreturn arguments.stMetadata.ftLocation />
 		</cfif>
 		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="humanFileSize" access="private" output="false" returntype="string" hint="Formats a byte count as a short human-readable size (e.g. '1.2 MB'). Returns empty string for zero/negative.">
+		<cfargument name="bytes" type="numeric" required="true" />
+
+		<cfset var units = "B,KB,MB,GB,TB" />
+		<cfset var i = 1 />
+		<cfset var size = arguments.bytes />
+
+		<cfif arguments.bytes lte 0>
+			<cfreturn "" />
+		</cfif>
+
+		<cfloop condition="size gte 1024 and i lt listlen(units)">
+			<cfset size = size / 1024 />
+			<cfset i = i + 1 />
+		</cfloop>
+
+		<cfreturn (i eq 1 ? round(size) : numberFormat(size, "0.0")) & " " & listGetAt(units, i) />
 	</cffunction>
 
 	<cffunction name="isSecured" access="private" output="false" returntype="boolean" hint="Encapsulates the security check on the file">
