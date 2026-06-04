@@ -23,13 +23,20 @@
 		<cfreturn this />
 	</cffunction>
 	
+	<cffunction name="getS3EndpointHost" output="false" access="private" returntype="string" hint="Returns the AWS regional S3 service host for a region, using the modern dot-style (s3.<region>.amazonaws.com) that AWS recommends for every region - including us-east-1, whose regional endpoint never redirects. The deprecated dash-style (s3-<region>) is never emitted - it does not exist for regions launched after ~2019; the legacy no-region global endpoint (s3.amazonaws.com) is likewise avoided.">
+		<cfargument name="region" type="string" required="true" />
+
+		<cfreturn "s3.#arguments.region#.amazonaws.com" />
+	</cffunction>
+
 	<cffunction name="validateConfig" output="false" access="public" returntype="struct" hint="Returns an array of errors. An empty array means there are no no errors">
 		<cfargument name="config" type="struct" required="true" />
 		
 		<cfset var st = duplicate(arguments.config) />
 		<cfset var stACL = structnew() />
 		<cfset var i = 0 />
-		
+		<cfset var s3host = "" />
+
 		<cfif not structkeyexists(st,"accessKeyId")>
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'accessKeyId' ]) />
 		</cfif>
@@ -46,6 +53,11 @@
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'region' ]) />
 		</cfif>
 
+		<!--- Normalise region once, at the single source. A blank region means us-east-1 (the
+		      canonical value AWS expects in the SigV4 credential scope). Every downstream read of
+		      config.region (signatures, signed URLs, presigned POST) inherits this canonical value. --->
+		<cfset st.region = len(trim(st.region)) ? trim(st.region) : "us-east-1" />
+
 		<cfif structKeyExists(arguments.config, "setACL")>
 			<cfif NOT isBoolean(arguments.config.setACL)>
 				<cfset application.fapi.throw(message="setACL must be a boolean value",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
@@ -54,34 +66,34 @@
 			<cfset st.setACL = true />
 		</cfif>
 		
+		<!--- Modern dot-style regional S3 service host, applied uniformly to every region. --->
+		<cfset s3host = getS3EndpointHost(st.region) />
+
 		<cfif not structkeyexists(st,"domain")>
 			<cfset st.domainType = "s3" />
-			<cfif not structkeyexists(arguments.config,"region") or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
-				<cfset st.domain = "s3.amazonaws.com" />
-			<cfelse>
-				<cfset st.domain = "s3-#st.region#.amazonaws.com" />
-			</cfif>
+			<cfset st.domain = s3host />
 			<cfif find(".", st.bucket)>
-				<cfset st.apiEndpoint = st.domain />
+				<!--- Dotted bucket: path-style, bucket goes in the prefix (TLS wildcard cert cannot cover a dotted label). --->
+				<cfset st.apiEndpoint = s3host />
 				<cfset st.apiEndpointPrefix = "/#st.bucket#">
 			<cfelse>
-				<cfset st.apiEndpoint = "#st.bucket#.s3.amazonaws.com">
+				<!--- Dotless bucket: virtual-hosted, regional host so the bucket is addressed directly and never redirected. --->
+				<cfset st.apiEndpoint = "#st.bucket#.#s3host#">
 				<cfset st.apiEndpointPrefix = "">
 			</cfif>
 		<cfelse>
 			<cfset st.domainType = "custom" />
-			<cfif not structkeyexists(arguments.config,"region") or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
-				<cfset st.apiEndpoint = "s3.amazonaws.com" />
-			<cfelse>
-				<cfset st.apiEndpoint = "s3-#st.region#.amazonaws.com" />
-			</cfif>
+			<cfset st.apiEndpoint = s3host />
 			<cfset st.apiEndpointPrefix = "/#st.bucket#">
 		</cfif>
 
+		<!--- domainHost is the bucket's virtual-hosted S3 host (used to sign custom-domain serving).
+		      Dotted buckets cannot be virtual-hosted over HTTPS, so they fall back to the apiEndpoint
+		      (path-style) host. Both forms reuse the single regional host from getS3EndpointHost. --->
 		<cfif find(".", st.bucket)>
 			<cfset st.domainHost = st.apiEndpoint>
 		<cfelse>
-			<cfset st.domainHost = "#st.bucket#.s3.#st.region#.amazonaws.com">
+			<cfset st.domainHost = "#st.bucket#.#s3host#">
 		</cfif>
 		
 		<cfif structkeyexists(st,"acl") and not isarray(arguments.config.acl)>
