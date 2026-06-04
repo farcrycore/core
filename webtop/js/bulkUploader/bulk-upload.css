@@ -238,6 +238,21 @@
 .alert-error .fa-info {
 	cursor:pointer;
 }
+/* General-error toast (#bubbles) dismiss — now a real <button> for keyboard
+   access (was a bare <i>). It renders into #bubbles in the modal wrapper, i.e.
+   outside .upload-queue, so it doesn't pick up the queue-row bare-icon reset;
+   strip the native button chrome here and inherit the alert's red text. The
+   focus outline is intentionally left intact for keyboard visibility. */
+#bubbles .remove {
+	cursor:pointer;
+	color:inherit;
+	border:0;
+	background:none;
+	padding:0;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	appearance:none;
+}
 
 /* Syntax-highlighted raw error (toggled by the info icon) */
 .info {

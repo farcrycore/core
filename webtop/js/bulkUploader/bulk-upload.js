@@ -120,7 +120,7 @@ FileView = Backbone.View.extend({
 	events : {
 		"click .remove" : "removeFile",
 		"click .save" : "saveFile",
-		"click .icon-info" : "showInfo"
+		"click .fa-info" : "showInfo"
 	},
 	
 	render : function FileView_render(){
@@ -411,15 +411,15 @@ ErrorView = Backbone.View.extend({
 	},
 	events : {
 		"click .remove" : "removeError",
-		"click .icon-info" : "showInfo"
+		"click .fa-info" : "showInfo"
 	},
-	
+
 	render : function Error_render(){
 		this.$el.html(this.template(this.model.attributes));
 	},
-	
-	removeFile : function ErrorView_removeFile(){
-		// remove file from memory and DOM
+
+	removeError : function ErrorView_removeError(){
+		// remove the error bubble from memory and DOM
 		this.collection.remove(this.model);
 		this.remove();
 		delete this.model;

@@ -462,17 +462,17 @@
 				<i class="fa fa-info"></i>
 			</span>
 			{{error.message}}
-			<div class='info'><pre>{{syntaxhighlight error}}</pre></div></div>
+			<div class='info'><pre>{{syntaxhighlight error}}</pre></div>
 		</div>
 	</script>
 	<script id="general-error-template" type="text/x-handlebars-template">
 		<div class="alert alert-error">
-			<i class="remove fa fa-times"></i>
+			<button type="button" class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.dismiss@text',default='Dismiss')#" aria-label="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.dismiss@text',default='Dismiss')#"></button>
 			<span class="pull-right">
 				<i class="fa fa-info"></i>
 			</span>
 			{{error.message}}
-			<div class='info'><pre>{{syntaxhighlight error}}</pre></div></div>
+			<div class='info'><pre>{{syntaxhighlight error}}</pre></div>
 		</div>
 	</script>
 </cfoutput></skin:htmlHead>
