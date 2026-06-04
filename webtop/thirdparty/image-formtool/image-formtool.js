@@ -332,7 +332,10 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
     				message: deleteAll ? "Choose whether to delete just this image, or this image and its related images." : "Are you sure you want to delete this image?",
     				buttons: buttons,
     				onSelect: function(value){
-    					if (value === "one") imageformtool.deleteImage();
+    					// A derived image (one with a source field) falls back to its autogenerate
+    					// empty-state on delete — matching a fresh record, where the field offers to
+    					// re-derive from the source or upload your own — rather than the bare dropzone.
+    					if (value === "one") imageformtool.deleteImage(imageformtool.sourceField.length ? "autogenerate" : "upload");
     					else if (value === "all") imageformtool.deleteAllRelatedImages();
     				}
     			});
@@ -370,6 +373,13 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			$j(imageformtool).bind("filechange",function onImageFormtoolFilechangeUpdate(event,results){
 				if (results.value && results.value.length>0){
 					var imageMaxWidth = (results.width < 400) ? results.width : 400;
+					// Proportional preview box (long edge capped at 400) so the tooltip <img>
+					// reserves its space immediately — tooltipster then positions correctly on
+					// the first hover, before the image bytes load. (Previously it measured a
+					// zero-height image and only snapped into place on a second hover.)
+					var imageMaxHeight = (results.width && results.height) ? Math.round(results.height * imageMaxWidth / results.width) : 0;
+					if (imageMaxHeight > 400) { imageMaxWidth = Math.round(imageMaxWidth * 400 / imageMaxHeight); imageMaxHeight = 400; }
+					var previewDims = (imageMaxWidth ? " width='"+imageMaxWidth+"'" : "") + (imageMaxHeight ? " height='"+imageMaxHeight+"'" : "");
 					var complete = imageformtool.multiview.findView("complete")
 						.find(".image-status").html('<i class="fa fa-file-image-o"></i>').end()
 						.find(".image-filename").html(results.filename).end()
@@ -398,13 +408,13 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					}
 					if (imageformtool.inline){
 						imageformtool.inlineview
-							.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+cachebust+"' style='"+(imageMaxWidth?"width:"+imageMaxWidth+"px":"")+"; max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").end()
+							.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+cachebust+"'"+previewDims+" style='max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").end()
 							.find("span.action-preview").show().end()
 							.find("span.dependant-options").show().end();
 						imageformtool.multiview.selectView("cancel");
 					}
 					else{
-						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+cachebust+"' style='width:"+(imageMaxWidth?"width:"+imageMaxWidth+"px":"")+"px; max-width:400px; max-height:400px;'>");
+						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+cachebust+"'"+previewDims+" style='max-width:400px; max-height:400px;'>");
 						imageformtool.multiview.selectView("complete");
 					}
 				}

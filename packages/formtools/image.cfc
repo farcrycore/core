@@ -149,6 +149,7 @@
 	    <cfset var error = "" />
 	    <cfset var readImageError = "" />
 	    <cfset var imageMaxWidth = 400 />
+	    <cfset var imageMaxHeight = 0 />
 	    <cfset var storageType = application.fc.lib.cdn.getLocationType(location) />
 
 
@@ -202,6 +203,16 @@
 			<cfelse>
 				<cfif stImage.width lt imageMaxWidth>
 					<cfset imageMaxWidth = stImage.width>
+				</cfif>
+				<!--- Proportional preview box so the Preview tooltip <img> reserves its
+				      space immediately (correct tooltipster positioning on first hover,
+				      before the image bytes load). Cap the long edge at 400px. --->
+				<cfif isnumeric(stImage.width) and stImage.width gt 0 and isnumeric(stImage.height) and stImage.height gt 0>
+					<cfset imageMaxHeight = round(stImage.height * imageMaxWidth / stImage.width) />
+					<cfif imageMaxHeight gt 400>
+						<cfset imageMaxWidth = round(imageMaxWidth * 400 / imageMaxHeight) />
+						<cfset imageMaxHeight = 400 />
+					</cfif>
 				</cfif>
 			</cfif>
 		</cfif>
@@ -257,7 +268,7 @@
 						</cfif>
 						<div id="#arguments.fieldname#_autogenerate" class="autogenerate-view fc-uploader-autogenerate"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
 							<div class="fc-uploader-autogenerate-info">
-								<span class="image-status fc-uploader-autogenerate-icon" title="#metadatainfo#"><i class="fa fa-question-circle"></i></span> Image will be automatically generated based on the image selected for <strong>#application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#</strong>.
+								<span class="image-status fc-uploader-autogenerate-icon fc-richtooltip" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#"><i class="fa fa-question-circle"></i></span> Image will be automatically generated based on the image selected for <strong>#application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#</strong>.
 							</div>
 							<cfif arguments.stMetadata.ftAllowResize>
 								<div class="image-custom-crop fc-uploader-autogenerate-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
@@ -300,7 +311,7 @@
 									</cfif>
 								</div>
 								<div class="fc-uploader-details-actions">
-									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#'<cfif imageMaxWidth gt 0> width='#imageMaxWidth#'</cfif><cfif imageMaxHeight gt 0> height='#imageMaxHeight#'</cfif> style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
 									<cfif arguments.stMetadata.ftAllowResize><span class="image-recrop-link"><a href="##recrop" class="image-recrop-button fc-uploader-action"><i class="fa fa-crop"></i> Re-crop image</a></span></cfif>
 									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
 								</div>
@@ -393,7 +404,7 @@
 									</div>
 								</div>
 								<div class="fc-uploader-details-actions">
-									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#'<cfif imageMaxWidth gt 0> width='#imageMaxWidth#'</cfif><cfif imageMaxHeight gt 0> height='#imageMaxHeight#'</cfif> style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
 									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
 								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>

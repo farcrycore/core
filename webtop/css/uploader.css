@@ -687,6 +687,25 @@ a.fc-uploader-action:active {
 	border-top: 1px solid #eeeeee;
 }
 
+/* Stacked layout for 3+ button confirms (e.g. the related-images delete),
+   whose long labels would otherwise wrap mid-button on one row. Each button
+   gets its own full-width row; the primary action sits on top. */
+.fc-uploader-confirm-buttons--stacked {
+	text-align: left;
+}
+
+.fc-uploader-confirm-buttons--stacked .fc-uploader-confirm-btn {
+	display: block;
+	width: 100%;
+	margin-left: 0;
+	margin-top: 8px;
+	text-align: center;
+}
+
+.fc-uploader-confirm-buttons--stacked .fc-uploader-confirm-btn:first-child {
+	margin-top: 0;
+}
+
 /* Mirrors FarCry's standard webtop button (.btn): flat #e8e8e8, square,
    inset hairline. The primary/confirm action uses the .btn-primary blue. */
 .fc-uploader-confirm-btn {

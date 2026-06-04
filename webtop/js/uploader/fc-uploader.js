@@ -595,6 +595,10 @@
 
 		var btnBar = document.createElement("div");
 		btnBar.className = "fc-uploader-confirm-buttons";
+		// Three-or-more buttons (e.g. the related-images delete) carry long labels
+		// that wrap awkwardly side-by-side in the narrow dialog; stack them vertically
+		// so each gets a full row. Two-button confirms stay on one horizontal row.
+		if (buttons.length >= 3) btnBar.className += " fc-uploader-confirm-buttons--stacked";
 		dialog.appendChild(btnBar);
 
 		var cancelValue = null;
