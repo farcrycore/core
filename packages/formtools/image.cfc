@@ -184,9 +184,10 @@
 	    <skin:loadCSS id="jquery-crop" />
 	    <skin:loadCSS id="fc-fontawesome" />
 
+	    <skin:loadCSS id="uploader" />
 	    <skin:loadCSS id="image-formtool" />
 		<skin:loadJS id="image-formtool" />
-	    
+
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
 				<cfoutput>Dimensions: <cfif isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0>#arguments.stMetadata.ftImageWidth#<cfelse>any width</cfif> x <cfif isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0>#arguments.stMetadata.ftImageHeight#<cfelse>any height</cfif> (#predefinedCrops[arguments.stMetadata.ftAutoGenerateType]#)<br>Quality Setting: #round(arguments.stMetadata.ftQuality*100)#%<br></cfoutput>
@@ -224,15 +225,34 @@
 					<div id="#arguments.fieldname#-multiview">
 						<cfif arguments.stMetadata.ftAllowUpload>
 							<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-								<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-								<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;<cfif not len(error)>display:none;</cfif>">#error#</div>
-								<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
-								<div class="image-cancel-upload" style="clear:both;"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to upload an image</a></div>
-							</div>
-							<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
-								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
-								<ft:button class="image-delete-button" id="#arguments.fieldname#DeleteThis" type="button" value="Delete this image" onclick="return false;" />						    		
-								<div class="image-cancel-upload"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
+								<div id="#arguments.fieldname#-dropzone" class="fc-uploader-dropzone" tabindex="0" role="button" aria-label="Upload image">
+									<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
+									<label class="fc-uploader-button">
+										Select file
+										<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" class="fc-uploader-file-input" />
+									</label>
+									<span class="fc-uploader-dropzone-hint">or drag and drop an image, or paste from clipboard</span>
+								</div>
+								<div id="#arguments.fieldname#-uploading" class="fc-uploader-uploading" style="display:none;">
+									<div class="fc-uploader-uploading-row">
+										<span class="fc-uploader-uploading-icon"><i id="#arguments.fieldname#-uploading-icon" class="fa fa-file-image-o"></i></span>
+										<div class="fc-uploader-uploading-body">
+											<span class="fc-uploader-uploading-name" id="#arguments.fieldname#-uploading-name"></span>
+											<span class="fc-uploader-uploading-meta" id="#arguments.fieldname#-uploading-meta"></span>
+										</div>
+										<span class="fc-uploader-uploading-cancel">
+											<button type="button" class="fc-uploader-icon-btn" id="#arguments.fieldname#-uploading-cancel" aria-label="Cancel upload"><i class="fa fa-times"></i></button>
+										</span>
+									</div>
+									<div class="fc-uploader-progress">
+										<div class="fc-uploader-progress-bar" id="#arguments.fieldname#-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+									</div>
+								</div>
+								<div id="#arguments.fieldname#_uploaderror" class="fc-uploader-error" style="<cfif not len(error)>display:none;</cfif>">#error#</div>
+								<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints">
+									<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #numberFormat(arguments.stMetadata.ftSizeLimit/1048576,"0.##")#MB</cfif>
+								</div>
+								<div class="image-cancel-upload"><a href="##back" class="select-view fc-uploader-cancel-replace">Cancel &mdash; I don't want to upload an image</a></div>
 							</div>
 						</cfif>
 						<div id="#arguments.fieldname#_autogenerate" class="autogenerate-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
@@ -259,23 +279,55 @@
 								<cfset filename = listLast(urlDecode(filename), "/") />
 							</cfif>
 							<cfset filename = listFirst(filename, "?") />
-							<div id="#arguments.fieldname#_complete" class="complete-view">
-								<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="alert alert-error alert-error-readimg" style="margin-top:0.7em;margin-bottom:0.7em;">#readImageError#</div></cfif>
-								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
-								<span class="image-filename">#filename#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+							<div id="#arguments.fieldname#_complete" class="complete-view fc-uploader-details">
+								<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="fc-uploader-error alert-error-readimg">#readImageError#</div></cfif>
+								<div class="fc-uploader-details-row">
+									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
+									<div class="fc-uploader-details-body">
+										<div class="fc-uploader-details-name image-filename" title="#filename#">#filename#</div>
+										<cfif arguments.stMetadata.ftShowMetadata>
+											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
+										</cfif>
+									</div>
+									<cfif arguments.stMetadata.ftAllowUpload>
+										<div class="fc-uploader-details-delete">
+											<button type="button" class="fc-uploader-delete-btn image-delete-trigger" title="Delete" aria-label="Delete image"><i class="fa fa-trash-o"></i></button>
+										</div>
+									</cfif>
+								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<i class="fa fa-info-circle-o fa-fw"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
+								<div class="fc-uploader-details-actions">
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<span class="regenerate-link"><a href="##autogenerate" class="select-view fc-uploader-action"><i class="fa fa-refresh"></i> Regenerate</a></span>
+									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
+								</div>
 							</div>
 						<cfelse>
-							<div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
-								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
-								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+							<div id="#arguments.fieldname#_complete" class="complete-view fc-uploader-details" style="display:none;">
+								<div class="fc-uploader-details-row">
+									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
+									<div class="fc-uploader-details-body">
+										<div class="fc-uploader-details-name image-filename" title=""></div>
+										<cfif arguments.stMetadata.ftShowMetadata>
+											<div class="fc-uploader-details-meta">Size: <span class="image-size"></span>KB &middot; <span class="image-width"></span> &times; <span class="image-height"></span>px</div>
+										</cfif>
+									</div>
+									<cfif arguments.stMetadata.ftAllowUpload>
+										<div class="fc-uploader-details-delete">
+											<button type="button" class="fc-uploader-delete-btn image-delete-trigger" title="Delete" aria-label="Delete image"><i class="fa fa-trash-o"></i></button>
+										</div>
+									</cfif>
+								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<i class="fa fa-info-circle-o fa-fw"></i> Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
+								<div class="fc-uploader-details-actions">
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<span class="regenerate-link"><a href="##autogenerate" class="select-view fc-uploader-action"><i class="fa fa-refresh"></i> Regenerate</a></span>
+									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
+								</div>
 							</div>
 						</cfif>
 					</div>
@@ -292,35 +344,79 @@
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<div id="#arguments.fieldname#-multiview">
 						<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-							<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;<cfif not len(error)>display:none;</cfif>">#error#</div>
-							<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
-							<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
-						</div>
-						<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
-							<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
-							<ft:button class="image-delete-button" value="Delete this image" type="button" onclick="return false;" />
-							<ft:button class="image-deleteall-button" value="Delete this and the related images" type="button" onclick="return false;" />
-							<div class="image-cancel-upload"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
+							<div id="#arguments.fieldname#-dropzone" class="fc-uploader-dropzone" tabindex="0" role="button" aria-label="Upload image">
+								<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
+								<label class="fc-uploader-button">
+									Select file
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" class="fc-uploader-file-input" />
+								</label>
+								<span class="fc-uploader-dropzone-hint">or drag and drop an image, or paste from clipboard</span>
+							</div>
+							<div id="#arguments.fieldname#-uploading" class="fc-uploader-uploading" style="display:none;">
+								<div class="fc-uploader-uploading-row">
+									<span class="fc-uploader-uploading-icon"><i id="#arguments.fieldname#-uploading-icon" class="fa fa-file-image-o"></i></span>
+									<div class="fc-uploader-uploading-body">
+										<span class="fc-uploader-uploading-name" id="#arguments.fieldname#-uploading-name"></span>
+										<span class="fc-uploader-uploading-meta" id="#arguments.fieldname#-uploading-meta"></span>
+									</div>
+									<span class="fc-uploader-uploading-cancel">
+										<button type="button" class="fc-uploader-icon-btn" id="#arguments.fieldname#-uploading-cancel" aria-label="Cancel upload"><i class="fa fa-times"></i></button>
+									</span>
+								</div>
+								<div class="fc-uploader-progress">
+									<div class="fc-uploader-progress-bar" id="#arguments.fieldname#-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+								</div>
+							</div>
+							<div id="#arguments.fieldname#_uploaderror" class="fc-uploader-error" style="<cfif not len(error)>display:none;</cfif>">#error#</div>
+							<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints">
+								<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #numberFormat(arguments.stMetadata.ftSizeLimit/1048576,"0.##")#MB</cfif>
+							</div>
+							<div class="image-cancel-upload"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>><a href="##back" class="select-view fc-uploader-cancel-replace">Cancel &mdash; I don't want to replace this image</a></div>
 						</div>
 						<cfif bFileExists>
-							<div id="#arguments.fieldname#_complete" class="complete-view">
-		    					<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="alert alert-error alert-error-readimg" style="margin-top:0.7em;margin-bottom:0.7em;">#readImageError#</div></cfif>
-								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
-								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+							<div id="#arguments.fieldname#_complete" class="complete-view fc-uploader-details">
+		    					<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="fc-uploader-error alert-error-readimg">#readImageError#</div></cfif>
+								<div class="fc-uploader-details-row">
+									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
+									<div class="fc-uploader-details-body">
+										<div class="fc-uploader-details-name image-filename" title="#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</div>
+										<cfif arguments.stMetadata.ftShowMetadata>
+											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
+										</cfif>
+									</div>
+									<div class="fc-uploader-details-delete">
+										<button type="button" class="fc-uploader-delete-btn image-delete-trigger" data-deleteall="true" title="Delete" aria-label="Delete image"><i class="fa fa-trash-o"></i></button>
+									</div>
+								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<i class="fa fa-info-circle-o fa-fw"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-									<div class="image-resize-information alert alert-info" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
+								<div class="fc-uploader-details-actions">
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
+								</div>
 							</div>
 						<cfelse>
-						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
-								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
-								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    <div id="#arguments.fieldname#_complete" class="complete-view fc-uploader-details" style="display:none;">
+								<div class="fc-uploader-details-row">
+									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
+									<div class="fc-uploader-details-body">
+										<div class="fc-uploader-details-name image-filename" title=""></div>
+										<cfif arguments.stMetadata.ftShowMetadata>
+											<div class="fc-uploader-details-meta">Size: <span class="image-size"></span>KB &middot; <span class="image-width"></span> &times; <span class="image-height"></span>px</div>
+										</cfif>
+									</div>
+									<div class="fc-uploader-details-delete">
+										<button type="button" class="fc-uploader-delete-btn image-delete-trigger" data-deleteall="true" title="Delete" aria-label="Delete image"><i class="fa fa-trash-o"></i></button>
+									</div>
+								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<i class="fa fa-info-circle-o fa-fw"></i> Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-									<div class="image-resize-information alert alert-info" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
+								<div class="fc-uploader-details-actions">
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
+								</div>
 							</div>
 						</cfif>
 					</div>
@@ -427,9 +523,33 @@
 					<div id="#arguments.fieldname#-multiview">
 						<div id="#arguments.fieldname#_cancel" class="cancel-view"></div>
 				    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-				    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-				    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-				    		<div><i title="#metadatainfo#" class="fa fa-question-circle fa-fw"></i> <span>Select an image to upload from your computer.</span></div>
+							<div id="#arguments.fieldname#-dropzone" class="fc-uploader-dropzone" tabindex="0" role="button" aria-label="Upload image">
+								<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
+								<label class="fc-uploader-button">
+									Select file
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" class="fc-uploader-file-input" />
+								</label>
+								<span class="fc-uploader-dropzone-hint">or drag and drop an image, or paste from clipboard</span>
+							</div>
+							<div id="#arguments.fieldname#-uploading" class="fc-uploader-uploading" style="display:none;">
+								<div class="fc-uploader-uploading-row">
+									<span class="fc-uploader-uploading-icon"><i id="#arguments.fieldname#-uploading-icon" class="fa fa-file-image-o"></i></span>
+									<div class="fc-uploader-uploading-body">
+										<span class="fc-uploader-uploading-name" id="#arguments.fieldname#-uploading-name"></span>
+										<span class="fc-uploader-uploading-meta" id="#arguments.fieldname#-uploading-meta"></span>
+									</div>
+									<span class="fc-uploader-uploading-cancel">
+										<button type="button" class="fc-uploader-icon-btn" id="#arguments.fieldname#-uploading-cancel" aria-label="Cancel upload"><i class="fa fa-times"></i></button>
+									</span>
+								</div>
+								<div class="fc-uploader-progress">
+									<div class="fc-uploader-progress-bar" id="#arguments.fieldname#-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+								</div>
+							</div>
+				    		<div id="#arguments.fieldname#_uploaderror" class="fc-uploader-error" style="display:none;"></div>
+							<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints">
+								<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #numberFormat(arguments.stMetadata.ftSizeLimit/1048576,"0.##")#MB</cfif>
+							</div>
 						</div>
 					</div>
 				</cfif>

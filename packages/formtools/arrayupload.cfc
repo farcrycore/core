@@ -169,6 +169,7 @@
 		<skin:loadJS id="jquery-modal" />
 		<skin:loadCSS id="jquery-modal" />
 		<skin:loadCSS id="fc-fontawesome" />
+		<skin:loadCSS id="uploader" />
 	    
 		<skin:loadJS id="array-upload"><cfoutput>
 		<!--- <skin:htmlHead id="array-upload-js"><cfoutput><script type="text/javascript"> --->
@@ -284,7 +285,7 @@
 									if (percent < 100)
 										$("##"+fieldname+ID+"ProgressBar").animate({'width': percent + '%'},250);
 									else
-										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##0099FF;font-weight:bold;'>processing image...</span>");
+										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html('<span class="fc-uploader-pill fc-uploader-pill--uploading">Processing&hellip;</span>');
 								},
 								onComplete: function(file, results){
 									var ID = arrayuploadformtool.idMap[file.id];
@@ -293,7 +294,7 @@
 									delete arrayuploadformtool.idMap[file.id];
 
 									if (results.error && results.error.length){
-										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
+										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html('<span class="fc-uploader-error-text">Server error: '+results.error+'</span>');
 									}
 									else {
 										$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
@@ -311,15 +312,15 @@
 									if (ID == null) return;
 									var errorloc = $("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist);
 									if (error.type === "http")
-										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>HTTP error: "+(error.status||"")+"</span>");
+										errorloc.html('<span class="fc-uploader-error-text">HTTP error: '+(error.status||"")+'</span>');
 									else if (error.type === "size")
-										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>File size: File is not within the file size limit of "+Math.round(sizeLimit/1048576).toString()+"MB</span>");
+										errorloc.html('<span class="fc-uploader-error-text">File size: File is not within the file size limit of '+Math.round(sizeLimit/1048576).toString()+'MB</span>');
 									else if (error.type === "type")
-										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>File type: "+error.message+"</span>");
+										errorloc.html('<span class="fc-uploader-error-text">File type: '+error.message+'</span>');
 									else if (error.type === "network")
-										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>Network error: "+error.message+"</span>");
+										errorloc.html('<span class="fc-uploader-error-text">Network error: '+error.message+'</span>');
 									else
-										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>"+(error.type||"server")+": "+error.message+"</span>");
+										errorloc.html('<span class="fc-uploader-error-text">'+(error.type||"server")+': '+error.message+'</span>');
 								}
 							});
 							
@@ -428,6 +429,26 @@
 		    			
 		    			this.removeAllItems = function(){
 		    				arrayuploadformtool.removeItems(arrayuploadformtool.getSelected());
+		    			};
+
+		    			// Styled, framework-agnostic confirm (matches the file/image
+		    			// uploaders) in place of the old native confirm() prompt. The
+		    			// primary action is blue, not red.
+		    			this.confirmRemove = function(itemid){
+		    				var isDelete = arrayuploadformtool.removeType == "delete";
+		    				$fc.uploader.confirm({
+		    					title: isDelete ? "Delete item" : "Remove item",
+		    					message: isDelete
+		    						? "Are you sure you want to delete this item? Doing so will immediately remove this item from the database."
+		    						: "Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.",
+		    					buttons: [
+		    						{ label: isDelete ? "Delete" : "Remove", value: "remove", style: "primary" },
+		    						{ label: "Cancel", value: "cancel", isCancel: true }
+		    					],
+		    					onSelect: function(value){
+		    						if (value == "remove") arrayuploadformtool.removeItems([ itemid ]);
+		    					}
+		    				});
 		    			};
 		    			
 		    			this.refreshItems = function(objectids){
@@ -547,20 +568,28 @@
 		<!--- </script></cfoutput></skin:htmlHead> --->
 		<skin:loadCSS id="array-upload"><style type="text/css"><cfoutput>
 			.fc-arrayupload-item { zoom:1; }
-				.fc-arrayupload-item a, .fc-arrayupload-item a:link, .fc-arrayupload-item a:visited, .fc-arrayupload-item a:hover, .fc-arrayupload-item a:active { background:##FFFFFF; }
-				.uploadifyProgress { background-color:##E5E5E5;margin-top:10px; }
-					.uploadifyProgressBar { background-color:##0099FF; height:3px; width:1px; }
-				.fc-list-view { clear:both; padding:5px; }
-					.fc-list-view-container { background-color:##FFF; cursor:pointer; width:100%; }
+				/* Drag handle: a quiet FontAwesome glyph (no image), tinted on row hover. */
+				.fc-arrayupload-item .fc-grabbar { color:##cccccc; cursor:ns-resize; text-align:center; vertical-align:middle; }
+					.fc-arrayupload-item .fc-grabbar .fa { font-size:14px; }
+					.fc-grabbable .fc-grabbar { color:##999999; }
+				/* Inline action links (edit / remove) reuse the shared icon-button look. */
+				.fc-arrayupload-actions a, .fc-arrayupload-item .fc-edit, .fc-arrayupload-item .fc-remove { display:inline-block; padding:0 4px; color:##999999; font-size:16px; text-decoration:none; }
+					.fc-arrayupload-actions a:hover, .fc-arrayupload-actions a:focus,
+					.fc-arrayupload-item .fc-edit:hover, .fc-arrayupload-item .fc-edit:focus,
+					.fc-arrayupload-item .fc-remove:hover, .fc-arrayupload-item .fc-remove:focus { color:##333333; outline:none; text-decoration:none; }
+					.fc-arrayupload-item .fc-remove:hover, .fc-arrayupload-item .fc-remove:focus { color:##d2322d; }
+				/* Progress: match the shared .fc-uploader-progress primitive. */
+				.uploadifyProgress { background:##e6e6e6; border-radius:2px; overflow:hidden; height:3px; margin-top:8px; }
+					.uploadifyProgressBar { background:##3e84b5; height:3px; width:0; }
+				.fc-list-view { clear:both; padding:8px; }
+					.fc-list-view-container { width:100%; }
 					.fc-list-view-table { width:100%; }
-					.fc-list-view .uploadifyFeedback { width:50%; float:right; }
-					.fc-list-view .fc-grabbar { width:10px; }
-						.fc-grabbable.fc-list-view .fc-grabbar { background:url('#application.url.webtop#/images/draggable.gif') repeat-y; }
+					.fc-list-view .uploadifyFeedback { margin-top:4px; }
+					.fc-list-view .fc-grabbar { width:22px; }
 				.fc-tile-view { float:left; }
-					.fc-tile-view .fc-tile-view-container { padding:10px; text-align:center; overflow:hidden; background-color:##FFF; cursor:pointer; }
-						.fc-tile-view .fc-arrayupload-actions { float:right; }
-					.fc-tile-view .fc-grabbar { float:left; display:none; margin-left:-8px; background:url('#application.url.webtop#/images/draggable.gif') repeat-y; width:8px; height:100%; }
-						.fc-grabbable.fc-tile-view .fc-grabbar { display:block; }
+					.fc-tile-view .fc-tile-view-container { padding:10px; text-align:center; overflow:hidden; cursor:move; position:relative; }
+						.fc-tile-view .fc-arrayupload-actions { position:absolute; top:4px; right:4px; }
+					.fc-tile-view .fc-grabbar { position:absolute; top:4px; left:4px; }
 		</cfoutput></style></skin:loadCSS>
 	
 		<cfsavecontent variable="returnHTML">	
@@ -573,15 +602,15 @@
 						<cfoutput>
 							<li id="join-item-#arguments.stMetadata.name#-#joinItems[i]#" class="sort arrayupload-item fc-tile-view">
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
-									<div class="fc-grabbar">&nbsp;</div>
+									<div class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></div>
 									<div class="fc-arrayupload-actions">
 										<cfif stActions.ftAllowEdit>
 											<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 										</cfif>
 										<cfif stActions.ftRemoveType EQ "delete">
-											<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>
+											<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
 										<cfelseif stActions.ftRemoveType EQ "remove">
-											<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>
+											<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
 										</cfif>
 									</div>
 									<input type="hidden" name="#arguments.fieldname#" value="#joinItems[i]#" />
@@ -595,7 +624,7 @@
 								<div class="fc-list-view-container">
 									<table class="fc-list-view-table">
 										<tr>
-											<td class="fc-grabbar">&nbsp;&nbsp;</td>
+											<td class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></td>
 											<td class="" style="width:100%;padding:3px;"><input type="hidden" name="#arguments.fieldname#" value="#joinItems[i]#" />
 												<skin:view objectid="#joinItems[i]#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" alternateHTML="OBJECT NO LONGER EXISTS" />
 											</td>
@@ -604,9 +633,9 @@
 													<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 												</cfif>
 												<cfif stActions.ftRemoveType EQ "delete">
-													<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-square-o"></i></a>
+													<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
 												<cfelseif stActions.ftRemoveType EQ "remove">
-													<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-square-o"></i></a>
+													<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
 												</cfif>
 											</td>
 										</tr>
@@ -627,7 +656,6 @@
 					
 					<ft:button	Type="button" priority="secondary"
 								renderType="button"
-								class="ui-state-default ui-corner-all"
 								value="Upload"
 								text="upload"
 								id="uploadaction" />
@@ -636,8 +664,7 @@
 					<cfif stActions.ftAllowSelect>
 						<ft:button	Type="button" priority="secondary"
 									renderType="button"
-									class="ui-state-default ui-corner-all"
-									value="select" 
+									value="select"
 									onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;" />
 						
 					</cfif>
@@ -646,16 +673,14 @@
 						<cfif stActions.ftRemoveType EQ "delete">
 							<ft:button	Type="button" priority="secondary" 
 										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Remove All" 
+										value="Remove All"
 										text="remove all" 
 										confirmText="Are you sure you want to delete the attached items? Doing so will immediately remove them from the database."
 										onClick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeAllItems();return false;" />
 						<cfelseif stActions.ftRemoveType EQ "remove">
 							<ft:button	Type="button" priority="secondary" 
 										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Remove All" 
+										value="Remove All"
 										text="remove all" 
 										confirmText="Are you sure you want to remove the attached items? Doing so will only unlink them. The content will remain in the database."
 										onClick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeAllItems();return false;" />
@@ -671,10 +696,10 @@
 						<script type="text/template" id="uploaditem-#arguments.fieldname#">
 							<li id="join-item-{{property}}-{{ID}}" class="sort fc-arrayupload-item fc-tile-view">
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
-									<div class="fc-grabbar">&nbsp;</div>
+									<div class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></div>
 									<div class="fc-arrayupload-actions">
-										<a href="javascript:$fc.arrayuploadformtool('{{prefix}}','{{property}}').cancelByLocalId('{{ID}}')" title="Cancel Upload">
-											<i class="fa fa-times-circle-o"></i>
+										<a href="javascript:$fc.arrayuploadformtool('{{prefix}}','{{property}}').cancelByLocalId('{{ID}}')" class="fc-uploader-icon-btn" title="Cancel upload">
+											<i class="fa fa-times"></i>
 										</a>
 									</div>
 									{{filename}} ({{filesize}})
@@ -689,11 +714,11 @@
 						<script type="text/template" id="newitem-#arguments.fieldname#">
 							<li id="join-item-{{property}}-{{itemid}}" class="sort fc-arrayupload-item fc-tile-view">
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
-									<div class="fc-grabbar">&nbsp;</div>
+									<div class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></div>
 									<div class="fc-arrayupload-actions">
 										{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="fa fa-pencil"></i></a>{{if-allowedit}}
-										{{if-allowdelete}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>{{if-allowdelete}}
-										{{if-allowremove}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>{{if-allowremove}}
+										{{if-allowdelete}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowdelete}}
+										{{if-allowremove}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowremove}}
 									</div>
 									<input type="hidden" name="{{fieldname}}" value="{{itemid}}" />
 									{{displayhtml}}
@@ -708,7 +733,7 @@
 								<div class="fc-list-view-container">
 									<table class="fc-list-view-table">
 										<tr>
-											<td class="fc-grabbar">&nbsp;&nbsp;</td>
+											<td class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></td>
 											<td class="" style="width:100%;padding:3px;">
 												{{filename}} ({{filesize}})
 												<div class="uploadifyFeedback">
@@ -718,8 +743,8 @@
 												</div>
 											</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
-												<a href="javascript:$fc.arrayuploadformtool('{{prefix}}','{{property}}').cancelByLocalId('{{ID}}')" title="Cancel Upload">
-													<i class="fa fa-minus-circle-o"></i>
+												<a href="javascript:$fc.arrayuploadformtool('{{prefix}}','{{property}}').cancelByLocalId('{{ID}}')" class="fc-uploader-icon-btn" title="Cancel upload">
+													<i class="fa fa-times"></i>
 												</a>
 											</td>
 										</tr>
@@ -732,12 +757,12 @@
 								<div class="fc-list-view-container">
 									<table class="fc-list-view-table">
 										<tr>
-											<td class="fc-grabbar">&nbsp;&nbsp;</td>
+											<td class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></td>
 											<td class="" style="width:100%;padding:3px;"><input type="hidden" name="{{fieldname}}" value="{{itemid}}" />{{displayhtml}}</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
 												{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="fa fa-pencil"></i></a>{{if-allowedit}}
-												{{if-allowdelete}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><span class="fa fa-minus-circle-o"></span></a>{{if-allowdelete}}
-												{{if-allowremove}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>{{if-allowremove}}
+												{{if-allowdelete}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowdelete}}
+												{{if-allowremove}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowremove}}
 											</td>
 										</tr>
 									</table>

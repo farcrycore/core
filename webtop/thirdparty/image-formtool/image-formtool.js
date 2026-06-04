@@ -260,7 +260,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			
     		imageformtool.multiview = $j("#"+prefix+property+"-multiview").multiView({ 
 	    			"onOpenTarget" : {
-	    				"upload" : function onImageFormtoolOpenUpload(event){  },
+	    				"upload" : function onImageFormtoolOpenUpload(event){ imageformtool.resetUploadView(); },
 	    				"complete" : function onImageFormtoolOpenComplete(event){ 
 		    				if (imageformtool.inputs.base.val().length){
 			    				$j(this).find(".image-cancel-upload").show();
@@ -302,6 +302,44 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
     			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function onImageFormtoolCancelCrop(){ imageformtool.removeCrop(); return false; }).end()
     			.find("button.image-delete-button").bind("click",function onImageFormtoolDelete(){ imageformtool.deleteImage(); return false; }).end()
     			.find("button.image-deleteall-button").bind("click",function onImageFormtoolDeleteAll(){ imageformtool.deleteAllRelatedImages(); return false; }).end();
+
+    		// Standalone delete button in the details panel opens a framework-agnostic
+    		// confirm dialog. Source images (data-deleteall) offer the related-images variant.
+    		imageformtool.multiview.find(".image-delete-trigger").bind("click",function onImageFormtoolDeleteTrigger(){
+    			var deleteAll = String($j(this).attr("data-deleteall")) === "true";
+    			var buttons = deleteAll
+    				? [ { label:"Delete this image", value:"one", style:"primary" },
+    				    { label:"Delete this and the related images", value:"all" },
+    				    { label:"Cancel", value:"cancel", isCancel:true } ]
+    				: [ { label:"Delete", value:"one", style:"primary" },
+    				    { label:"Cancel", value:"cancel", isCancel:true } ];
+    			$fc.uploader.confirm({
+    				title:   "Delete this image?",
+    				message: deleteAll ? "Choose whether to delete just this image, or this image and its related images." : "Are you sure you want to delete this image?",
+    				buttons: buttons,
+    				onSelect: function(value){
+    					if (value === "one") imageformtool.deleteImage();
+    					else if (value === "all") imageformtool.deleteAllRelatedImages();
+    				}
+    			});
+    			return false;
+    		}).end();
+
+    		// Cancel an in-flight upload from the progress row.
+    		$j("#"+prefix+property+"-uploading-cancel").bind("click",function onImageFormtoolCancelUpload(e){
+    			e.preventDefault();
+    			if (imageformtool.uploader) imageformtool.uploader.cancelAll();
+    			imageformtool.resetUploadView();
+    			if (!imageformtool.inputs.base.val().length) imageformtool.multiview.selectView("upload");
+    		});
+
+    		// Keyboard: Enter / Space on the focused dropzone opens the file dialog.
+    		$j("#"+prefix+property+"-dropzone").on("keydown",function onImageFormtoolDropzoneKey(e){
+    			if (e.keyCode === 13 || e.keyCode === 32){ e.preventDefault(); imageformtool.inputs.newf.click(); }
+    		});
+    		// NB: the constraints '.fc-richtooltip' (and '.image-preview') are initialised by
+    		// the 'jquery-tooltip-auto' library this formtool loads — no manual tooltipster() here.
+
     		if (imageformtool.inline){
     			imageformtool.inlineview = $j("#"+prefix+property+"-inline")
     				.find("a.image-crop-select-button").bind("click",function onImageFormtoolCustomCropInline(){ 
@@ -319,7 +357,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 				if (results.value && results.value.length>0){
 					var imageMaxWidth = (results.width < 400) ? results.width : 400;
 					var complete = imageformtool.multiview.findView("complete")
-						.find(".image-status").html('<i class="fa fa-picture-o fa-fw"></i>').end()
+						.find(".image-status").html('<i class="fa fa-file-image-o"></i>').end()
 						.find(".image-filename").html(results.filename).end()
 						.find(".image-size").html(results.size).end()
 						.find(".image-width").html(results.width).end()
@@ -351,6 +389,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 				}
 			}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
 				$j('#'+prefix+property+"_"+action+"error").html(message).show();
+				if (action === "upload") imageformtool.resetUploadView();
 			}).bind("cancelcrop",function(){
 			
 			}).bind("savecrop",function onImageFormtoolSaveCrop(event,c,q){
@@ -426,6 +465,15 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 				maxFileSize:       imageformtool.sizeLimit,
 				maxNumberOfFiles:  1,
 				autoProceed:       true,
+				dropZone:          "#"+prefix+property+"-dropzone",
+				onDragEnter: function(){ $j("#"+prefix+property+"-dropzone").addClass("is-dragover"); },
+				onDragLeave: function(){ $j("#"+prefix+property+"-dropzone").removeClass("is-dragover"); },
+				onSelect: function(file){
+					imageformtool.showUploading(file);
+				},
+				onProgress: function(file, percent){
+					imageformtool.setUploadProgress(file, percent);
+				},
 				extraFormData: function(){
 					return imageformtool.getPostValues();
 				},
@@ -562,10 +610,48 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 		this.deleteAllRelatedImages = function imageFormtoolDeleteAllRelatedImages(){
 			//trigger related to be deleted
 			$j(imageformtool).trigger("deleteall");
-			
+
 			//delete source
 			imageformtool.deleteImage();
 		}
+
+		// --- During-upload dropzone / progress UI (mirrors the file formtool) ---------
+		this.formatBytes = function imageFormtoolFormatBytes(bytes){
+			bytes = Number(bytes) || 0;
+			if (bytes <= 0) return "";
+			var units = ["B","KB","MB","GB","TB"];
+			var i = Math.floor(Math.log(bytes) / Math.log(1024));
+			if (i >= units.length) i = units.length - 1;
+			var v = bytes / Math.pow(1024, i);
+			return (i === 0 ? Math.round(v) : v.toFixed(1)) + " " + units[i];
+		};
+		this.showUploading = function imageFormtoolShowUploading(file){
+			var base = "#"+prefix+property;
+			$j(base+"_uploaderror").hide().html("");
+			$j(base+"-uploading-icon").attr("class","fa fa-file-image-o");
+			$j(base+"-uploading-name").text(file.name).attr("title", file.name);
+			$j(base+"-uploading-meta").text(imageformtool.formatBytes(file.size));
+			$j(base+"-progress-bar").css("width","0%").attr("aria-valuenow",0).removeClass("is-complete is-error");
+			$j(base+"-dropzone").hide();
+			$j(base+"-constraints").hide();
+			$j(base+"-uploading").show();
+		};
+		this.setUploadProgress = function imageFormtoolSetUploadProgress(file, percent){
+			var base = "#"+prefix+property;
+			$j(base+"-progress-bar").css("width", percent+"%").attr("aria-valuenow", percent);
+			var sizeText = imageformtool.formatBytes(file.size);
+			if (percent < 100)
+				$j(base+"-uploading-meta").text((sizeText ? sizeText+"  ·  " : "") + percent + "%");
+			else
+				$j(base+"-uploading-meta").text((sizeText ? sizeText+"  ·  " : "") + "Processing...");
+		};
+		this.resetUploadView = function imageFormtoolResetUploadView(){
+			var base = "#"+prefix+property;
+			$j(base+"-uploading").hide();
+			$j(base+"-progress-bar").css("width","0%").attr("aria-valuenow",0).removeClass("is-complete is-error");
+			$j(base+"-dropzone").show();
+			$j(base+"-constraints").show();
+		};
 	};
 	
 	if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);

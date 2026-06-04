@@ -1,63 +1,169 @@
+/* Default properties collapsible — native webtop chrome (flat #e8e8e8 header,
+   square, hairline body) to match the rest of the uploader surfaces. */
 #defaultProperties {
 	margin-bottom:10px;
 }
 #defaultProperties .title {
-	background-color:#E8E8E8;
-	padding:5px;
+	background-color:#e8e8e8;
+	padding:6px 10px;
 	cursor:pointer;
+	color:#555555;
+	box-shadow:0 0 1px rgba(0,0,0,.25) inset;
 }
 #defaultProperties .title i {
 	margin:2px;
+	color:#888888;
 }
 #defaultProperties .body {
 	display:none;
-	padding:5px;
-	border:1px #E8E8E8 solid;
+	padding:10px;
+	border:1px #cccccc solid;
+	border-top:0;
 }
 
+/* Drop zone — mirrors the .fc-uploader-dropzone primitive (dashed #ccc, light
+   bg, blue dragover) but sized larger for the standalone bulk dialog. */
 .targetarea {
-	border:2px #0e65a2 dashed;
-	height:200px;
+	border:2px dashed #cccccc;
+	border-radius:5px;
+	background:#ffffff;
+	padding:40px 18px;
 	text-align:center;
+	color:#666666;
+	-webkit-transition:border-color .15s ease, background-color .15s ease;
+	transition:border-color .15s ease, background-color .15s ease;
 }
 .targetarea.dragover {
-	border:4px #3e84b5 dashed;
+	border-style:solid;
+	border-color:#3e84b5;
+	background:#eef5fb;
 }
-.targetarea .fileinput-button{
-	margin-top:70px;
+.targetarea-icon {
+	display:block;
+	font-size:34px;
+	line-height:1;
+	color:#aaaaaa;
+	margin-bottom:12px;
 }
-.targetarea.dragover .fileinput-button{
-	margin-top:68px;
+.targetarea.dragover .targetarea-icon {
+	color:#3e84b5;
 }
+.targetarea-hint {
+	margin:8px 0 0 0;
+	font-size:12px;
+	color:#999999;
+}
+
+/* The transparent native file input is overlaid on the Add-files button so a
+   click anywhere on the button opens the picker. */
 .fileinput-button {
-    overflow: hidden;
-    position: relative;
+	overflow:hidden;
+	position:relative;
 }
 .fileinput-button input {
-    cursor: pointer;
-    direction: ltr;
-    font-size: 23px;
-    margin: 0;
-    opacity: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transform: translate(-300px, 0px) scale(4);
+	cursor:pointer;
+	direction:ltr;
+	font-size:23px;
+	margin:0;
+	opacity:0;
+	position:absolute;
+	right:0;
+	top:0;
+	transform:translate(-300px, 0px) scale(4);
 }
+
+/* Queue rows — each Backbone FileView renders into a plain <div> child of
+   .upload-queue, so we target the direct children rather than a .file class. */
 .upload-queue {
-	margin-top: 20px;
+	margin-top:20px;
 }
-.upload-queue .file {
-	padding: 8px 14px;
-	border-bottom: 1px solid #CCCCCC;
+.upload-queue > div {
+	padding:10px 14px;
+	border:1px solid #cccccc;
+	border-bottom:0;
+}
+.upload-queue > div:last-child {
+	border-bottom:1px solid #cccccc;
 }
 .upload-queue .information span {
 	margin-right:10px;
 }
-.upload-queue .status{
-	font-weight:bold;
+.upload-queue .information .name {
+	color:#333333;
+}
+.upload-queue .information .size {
+	color:#999999;
+	font-size:12px;
+}
+/* Margin only here — leave colour/size to .fc-uploader-pill so the pill
+   states keep their fill and white text. */
+.upload-queue .status {
 	margin-right:10px;
 }
-.upload-queue .remove {
+/* The uploading row keeps a verbose loaded/total/bitrate read-out — render it
+   as muted meta text rather than a pill (too long for a pill). */
+.status-uploading {
+	color:#999999;
+	font-size:12px;
+}
+.upload-queue .remove,
+.upload-queue .save {
+	cursor:pointer;
+	color:#999999;
+	margin-left:8px;
+}
+.upload-queue .remove:hover {
+	color:#d2322d;
+}
+.upload-queue .save:hover {
+	color:#333333;
+}
+
+/* Progress — restyle Bootstrap's .progress/.bar to the shared thin primitive
+   (3px grey track, FarCry-blue fill). JS still animates .bar width. */
+.upload-queue .progress {
+	height:3px;
+	background:#e6e6e6;
+	border-radius:2px;
+	overflow:hidden;
+	margin-top:8px;
+	box-shadow:none;
+}
+.upload-queue .progress .bar {
+	height:3px;
+	background:#3e84b5;
+	width:0;
+}
+
+/* Quick Edit table */
+.upload-queue .file table {
+	width:100%;
+}
+.upload-queue .file td.actions {
+	text-align:right;
+	white-space:nowrap;
+}
+
+/* Error alert — reuse FarCry's validation-alert look (.fc-uploader-error). */
+.alert-error {
+	margin-top:10px;
+	padding:8px 14px;
+	background-color:#f2dede;
+	border:1px solid #eed3d7;
+	color:#b94a48;
+	text-shadow:0 1px 0 rgba(255,255,255,.5);
+	font-size:13px;
+}
+.alert-error .fa-info {
 	cursor:pointer;
 }
+
+/* Syntax-highlighted raw error (toggled by the info icon) */
+.info {
+	display:none;
+}
+	.info .key { color:#a020f0; }
+	.info .number { color:#ff0000; }
+	.info .string { color:#000000; }
+	.info .boolean { color:#ffa500; }
+	.info .null { color:#0000ff; }
