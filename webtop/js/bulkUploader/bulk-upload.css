@@ -77,13 +77,18 @@
 .upload-queue {
 	margin-top:20px;
 }
+/* Each queue row is its own card — full border, gentle radius, and a gap
+   between rows so the uploading-progress rows and the Quick Edit forms read
+   as discrete items rather than one borderless-bottom stack. */
 .upload-queue > div {
 	padding:10px 14px;
 	border:1px solid #cccccc;
-	border-bottom:0;
+	border-radius:4px;
+	background:#ffffff;
+	margin-bottom:10px;
 }
 .upload-queue > div:last-child {
-	border-bottom:1px solid #cccccc;
+	margin-bottom:0;
 }
 .upload-queue .information span {
 	margin-right:10px;
@@ -106,17 +111,69 @@
 	color:#999999;
 	font-size:12px;
 }
+/* The remove/save controls are real <button>s (keyboard-focusable, native
+   Enter/Space activation) rendered as bare icons — strip the native button
+   chrome so they read as plain glyphs. The Quick Edit pair is re-bordered by
+   the td.actions rule below; outline is intentionally NOT removed so keyboard
+   focus stays visible. */
 .upload-queue .remove,
 .upload-queue .save {
 	cursor:pointer;
 	color:#999999;
 	margin-left:8px;
+	border:0;
+	background:none;
+	padding:0;
+	vertical-align:middle;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	appearance:none;
 }
 .upload-queue .remove:hover {
 	color:#d2322d;
 }
 .upload-queue .save:hover {
 	color:#333333;
+}
+
+/* Quick Edit form actions (editable row) — promote the bare Save/Delete
+   glyphs to bordered icon buttons, matching the file formtool's standalone
+   delete button (.fc-uploader-delete-btn): thin coloured border + matching
+   glyph at rest, colours swapping to a solid fill with a white glyph on
+   hover/focus. Save = FarCry blue (affirmative), Delete = red (destructive).
+   Scoped to td.actions so the bare inline icons in the status-pill rows
+   (cancel X, queued/saved trash) are untouched. */
+.upload-queue td.actions .save,
+.upload-queue td.actions .remove {
+	display:inline-block;
+	margin:0 0 6px 0;
+	padding:5px 8px;
+	border:1px solid;
+	border-radius:4px;
+	background:#ffffff;
+	font-size:14px;
+	line-height:1;
+	text-align:center;
+	-webkit-transition:color .12s ease, border-color .12s ease, background-color .12s ease;
+	transition:color .12s ease, border-color .12s ease, background-color .12s ease;
+}
+.upload-queue td.actions .save {
+	color:#3e84b5;
+	border-color:#3e84b5;
+}
+.upload-queue td.actions .save:hover,
+.upload-queue td.actions .save:focus {
+	background:#3e84b5;
+	color:#ffffff;
+}
+.upload-queue td.actions .remove {
+	color:#d2322d;
+	border-color:#d2322d;
+}
+.upload-queue td.actions .remove:hover,
+.upload-queue td.actions .remove:focus {
+	background:#d2322d;
+	color:#ffffff;
 }
 
 /* Progress — restyle Bootstrap's .progress/.bar to the shared thin primitive
@@ -135,13 +192,22 @@
 	width:0;
 }
 
-/* Quick Edit table */
-.upload-queue .file table {
+/* Quick Edit table — rendered directly inside the row <div> (FileView adds no
+   .file class), so target the table/cells without the old dead .file prefix. */
+.upload-queue table {
 	width:100%;
 }
-.upload-queue .file td.actions {
-	text-align:right;
+.upload-queue td.actions {
+	text-align:center;
 	white-space:nowrap;
+}
+/* File-type glyph shown before the teaser for non-image files (images render a
+   server-side thumbnail instead). Mirrors the file formtool details view. */
+.upload-queue td.teaser .fc-teaser-icon {
+	margin-right:6px;
+	color:#888888;
+	font-size:18px;
+	vertical-align:middle;
 }
 
 /* Error alert — reuse FarCry's validation-alert look (.fc-uploader-error). */

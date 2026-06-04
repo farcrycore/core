@@ -353,7 +353,7 @@
 	<script id="added-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status fc-uploader-pill fc-uploader-pill--uploading">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.queuedToUpload@text',default='Queued to upload')#</span>
-			<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
+			<button type="button" class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></button>
 		</span>
 		<div class="information">
 			<span class="name">{{name}}</span>
@@ -363,7 +363,7 @@
 	<script id="uploading-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status status-uploading">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.uploading@text',default='Uploading <span class="progress-loaded">{{filesize progress.loading}}</span> of <span class="progress-total">{{filesize progress.total}}</span>, <span class="progress-bitrate">{{bitrate progress.bitrate}}</span>')#</span>
-			<i class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
+			<button type="button" class="remove fa fa-times" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></button>
 		</span>
 		<div class="information">
 			<span class="name">{{name}}</span>
@@ -376,7 +376,7 @@
 	<script id="uploaddone-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status fc-uploader-pill fc-uploader-pill--uploading"><i class='fa fa-spinner fa-spin'></i> #application.fapi.getResource(key='webtop.utilities.bulkupload.status.queuedForProcessing@text',default='Queued for processing')#</span>
-			<i class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file (this file will still be added to the database)')#"></i>
+			<button type="button" class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file (this file will still be added to the database)')#"></button>
 		</span>
 		<div class="information">
 			<span class="name">{{name}}</span>
@@ -387,14 +387,14 @@
 		<table>
 			<tr>
 				<td width='30%' valign='top' class='teaser'>
-					{{{teaserHTML}}}
+					{{{fileicon name}}}{{{teaserHTML}}}
 				</td>
 				<td width='70%' class='form'>
 					{{{editHTML}}}
 				</td>
 				<td width='50px' valign='top' class='actions'>
-					<i class='save fa fa-save' title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.save@text',default='Save content changes')#"></i>
-					<i class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
+					<button type="button" class='save fa fa-save' title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.save@text',default='Save content changes')#"></button>
+					<button type="button" class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></button>
 				</td>
 			</tr>
 		</table>
@@ -402,7 +402,7 @@
 	<script id="saved-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status fc-uploader-pill fc-uploader-pill--uploaded">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.saved@text',default='Saved')#</span>
-			<i class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
+			<button type="button" class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></button>
 		</span>
 		<div class="information">
 			{{##if teaserHTML}}
@@ -416,7 +416,7 @@
 	<script id="failed-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
 			<span class="status fc-uploader-pill fc-uploader-pill--error">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.failed@text',default='Failed')#</span>
-			<i class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file')#"></i>
+			<button type="button" class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file')#"></button>
 		</span>
 		<div class="information">
 			{{##if teaserHTML}}

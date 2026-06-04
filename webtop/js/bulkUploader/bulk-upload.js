@@ -190,7 +190,9 @@ FileView = Backbone.View.extend({
 		// no updates
 	},
 	editableUpdate : function FileView_editableUpdate(){
-		this.$(".teaser").html(this.model.get("teaserHTML"));
+		// Prepend the file-type glyph (matches the full-render path's
+		// {{{fileicon name}}}) so it survives a teaser-only refresh.
+		this.$(".teaser").html(fileTypeIcon(this.model.get("name")) + this.model.get("teaserHTML"));
 	},
 	savedUpdate : function FileView_savedUpdated(){
 		// no updates
@@ -486,6 +488,35 @@ function formatPercentage(value,total) {
 	return Math.floor(value / total * 100).toString() + '%'
 }
 Handlebars.registerHelper('percentage', safeStringify(formatPercentage));
+
+/* Map a filename to a FontAwesome file-type glyph for the Quick Edit teaser.
+   Mirrors the extension -> icon map in file.cfc's details view so the bulk
+   dialog and the file formtool agree. Returns '' for image extensions, which
+   get a server-rendered thumbnail in the teaser instead of a generic glyph. */
+function fileTypeIcon(filename) {
+	if (typeof filename !== 'string' || filename.indexOf('.') === -1) {
+		return '';
+	}
+	var ext = filename.split('.').pop().toLowerCase();
+	var imageExts = ['jpg','jpeg','png','gif','bmp','svg','webp','tif','tiff','ico'];
+	if (imageExts.indexOf(ext) !== -1) {
+		return '';
+	}
+	var map = {
+		pdf:'fa-file-pdf-o',
+		doc:'fa-file-word-o', docx:'fa-file-word-o',
+		xls:'fa-file-excel-o', xlsx:'fa-file-excel-o', csv:'fa-file-excel-o',
+		ppt:'fa-file-powerpoint-o', pptx:'fa-file-powerpoint-o',
+		zip:'fa-file-archive-o', rar:'fa-file-archive-o', '7z':'fa-file-archive-o', gz:'fa-file-archive-o', tar:'fa-file-archive-o',
+		mp3:'fa-file-audio-o', wav:'fa-file-audio-o', ogg:'fa-file-audio-o', wma:'fa-file-audio-o', m4a:'fa-file-audio-o',
+		mp4:'fa-file-video-o', mov:'fa-file-video-o', avi:'fa-file-video-o', wmv:'fa-file-video-o', flv:'fa-file-video-o', mkv:'fa-file-video-o', mpg:'fa-file-video-o', mpeg:'fa-file-video-o',
+		txt:'fa-file-text-o', rtf:'fa-file-text-o',
+		js:'fa-file-code-o', css:'fa-file-code-o', html:'fa-file-code-o', htm:'fa-file-code-o', xml:'fa-file-code-o', json:'fa-file-code-o', cfm:'fa-file-code-o', cfc:'fa-file-code-o'
+	};
+	var icon = map[ext] || 'fa-file-o';
+	return '<i class="fa ' + icon + ' fc-teaser-icon"></i>';
+}
+Handlebars.registerHelper('fileicon', safeStringify(fileTypeIcon));
 
 function syntaxHighlight(json) {
     if (typeof json != 'string') {
