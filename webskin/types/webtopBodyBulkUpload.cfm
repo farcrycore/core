@@ -384,20 +384,16 @@
 		</div>
 	</script>
 	<script id="editable-file-template" type="text/x-handlebars-template">
-		<table>
-			<tr>
-				<td width='30%' valign='top' class='teaser'>
-					{{{fileicon name}}}{{{teaserHTML}}}
-				</td>
-				<td width='70%' class='form'>
-					{{{editHTML}}}
-				</td>
-				<td width='50px' valign='top' class='actions'>
-					<button type="button" class='save fa fa-save' title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.save@text',default='Save content changes')#"></button>
-					<button type="button" class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></button>
-				</td>
-			</tr>
-		</table>
+		<div class="fc-bulk-edit-header">
+			<span class="fc-bulk-edit-actions">
+				<button type="button" class='save fa fa-save' title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.save@text',default='Save content changes')#"></button>
+				<button type="button" class="remove fa fa-trash-o" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></button>
+			</span>
+			<div class="fc-bulk-edit-heading teaser">{{{fileicon name}}}{{{teaserHTML}}}</div>
+		</div>
+		<div class="fc-bulk-edit-form">
+			{{{editHTML}}}
+		</div>
 	</script>
 	<script id="saved-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">

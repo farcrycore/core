@@ -136,17 +136,18 @@
 	color:#333333;
 }
 
-/* Quick Edit form actions (editable row) — promote the bare Save/Delete
-   glyphs to bordered icon buttons, matching the file formtool's standalone
-   delete button (.fc-uploader-delete-btn): thin coloured border + matching
-   glyph at rest, colours swapping to a solid fill with a white glyph on
-   hover/focus. Save = FarCry blue (affirmative), Delete = red (destructive).
-   Scoped to td.actions so the bare inline icons in the status-pill rows
-   (cancel X, queued/saved trash) are untouched. */
-.upload-queue td.actions .save,
-.upload-queue td.actions .remove {
+/* Quick Edit Save/Delete — a horizontal pair of bordered icon buttons in the
+   card header, matching the file formtool's standalone delete button
+   (.fc-uploader-delete-btn): thin coloured border + matching glyph at rest,
+   colours swapping to a solid fill with a white glyph on hover/focus. Save =
+   FarCry blue (affirmative), Delete = red (destructive). Scoped to
+   .fc-bulk-edit-actions so the bare inline icons in the status-pill rows
+   (cancel X, queued/saved trash) are untouched. Extra .upload-queue prefix so
+   this beats the bare-icon chrome reset above (equal-specificity otherwise). */
+.upload-queue .fc-bulk-edit-actions .save,
+.upload-queue .fc-bulk-edit-actions .remove {
 	display:inline-block;
-	margin:0 0 6px 0;
+	margin:0 0 0 6px;
 	padding:5px 8px;
 	border:1px solid;
 	border-radius:4px;
@@ -157,21 +158,21 @@
 	-webkit-transition:color .12s ease, border-color .12s ease, background-color .12s ease;
 	transition:color .12s ease, border-color .12s ease, background-color .12s ease;
 }
-.upload-queue td.actions .save {
+.upload-queue .fc-bulk-edit-actions .save {
 	color:#3e84b5;
 	border-color:#3e84b5;
 }
-.upload-queue td.actions .save:hover,
-.upload-queue td.actions .save:focus {
+.upload-queue .fc-bulk-edit-actions .save:hover,
+.upload-queue .fc-bulk-edit-actions .save:focus {
 	background:#3e84b5;
 	color:#ffffff;
 }
-.upload-queue td.actions .remove {
+.upload-queue .fc-bulk-edit-actions .remove {
 	color:#d2322d;
 	border-color:#d2322d;
 }
-.upload-queue td.actions .remove:hover,
-.upload-queue td.actions .remove:focus {
+.upload-queue .fc-bulk-edit-actions .remove:hover,
+.upload-queue .fc-bulk-edit-actions .remove:focus {
 	background:#d2322d;
 	color:#ffffff;
 }
@@ -192,18 +193,32 @@
 	width:0;
 }
 
-/* Quick Edit table — rendered directly inside the row <div> (FileView adds no
-   .file class), so target the table/cells without the old dead .file prefix. */
-.upload-queue table {
-	width:100%;
+/* Quick Edit (editable) card. The old 3-column table squeezed the ft:object
+   form into a narrow right-hand column; instead the file identity is a
+   full-width heading with the Save/Delete actions floated top-right, and the
+   form renders beneath at full width so its own label-left / field-right
+   layout reads normally. */
+.fc-bulk-edit-header {
+	overflow:hidden;            /* contain the floated actions; form clears below */
+	margin-bottom:12px;
 }
-.upload-queue td.actions {
-	text-align:center;
+.fc-bulk-edit-actions {
+	float:right;
+	padding-left:12px;
 	white-space:nowrap;
 }
-/* File-type glyph shown before the teaser for non-image files (images render a
+.fc-bulk-edit-heading {
+	overflow:hidden;            /* own block beside the float; ellipsate long names */
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	font-size:14px;
+	font-weight:bold;
+	color:#333333;
+	line-height:1.6;
+}
+/* File-type glyph before the filename for non-image files (images render a
    server-side thumbnail instead). Mirrors the file formtool details view. */
-.upload-queue td.teaser .fc-teaser-icon {
+.fc-bulk-edit-heading .fc-teaser-icon {
 	margin-right:6px;
 	color:#888888;
 	font-size:18px;
