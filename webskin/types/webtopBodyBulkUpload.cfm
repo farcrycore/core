@@ -40,6 +40,26 @@
 </cfif>
 <cfset storageTypeBulk = application.fc.lib.cdn.getLocationType(uploadLocationBulk) />
 
+<!--- Resolve the upload restrictions for the dropzone constraints hint, honouring
+      the target property's formtool conventions: the file formtool stores them as
+      ftAllowedFileExtensions / ftMaxSize, the image formtool as ftAllowedExtensions
+      / ftSizeLimit. Branch on the target's ftType so the hint reflects whichever
+      attributes that property actually uses (the same getPropertyMetadata lookup
+      used for ftLocation / ftType above). --->
+<cfset bulkTargetType = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftType", default="image") />
+<cfif bulkTargetType eq "file">
+	<cfset bulkAllowedExts = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftAllowedFileExtensions", default="") />
+	<cfset bulkSizeLimit = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftMaxSize", default=0) />
+<cfelse>
+	<cfset bulkAllowedExts = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftAllowedExtensions", default="") />
+	<cfset bulkSizeLimit = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftSizeLimit", default=0) />
+</cfif>
+<cfset bulkAllowedExtsDisplay = len(bulkAllowedExts) ? ucase(replace(bulkAllowedExts, ",", ", ", "all")) : "" />
+<cfset bulkMaxSizeText = "" />
+<cfif isnumeric(bulkSizeLimit) and val(bulkSizeLimit) gt 0>
+	<cfset bulkMaxSizeText = numberFormat(val(bulkSizeLimit) / 1048576, "0.##") & "MB" />
+</cfif>
+
 <cfset lFileIDs = "">
 
 <cfset exit = false />
@@ -306,9 +326,16 @@
 <skin:loadJS id="fc-backbone" />
 <skin:loadJS id="fc-handlebars" />
 <skin:loadJS id="bulk-upload" />
+<!--- Tooltipster for the dropzone's accepted-formats hover hint. jquery-tooltip is
+      the library (provides $j.fn.tooltipster), jquery-tooltip-auto the standard
+      .fc-richtooltip init; the dropzone trigger is also inited explicitly in onReady
+      since it's rendered by JS after the auto-init's document-ready pass has run. --->
+<skin:loadJS id="jquery-tooltip" />
+<skin:loadJS id="jquery-tooltip-auto" />
 <skin:loadCSS id="fc-jquery-ui" />
 <skin:loadCSS id="fc-fontawesome" />
 <skin:loadCSS id="uploader" />
+<skin:loadCSS id="jquery-tooltip" />
 <skin:loadCSS id="bulk-upload" />
 
 <skin:htmlHead><cfoutput>
@@ -349,6 +376,14 @@
 			</span>
 			<p class="targetarea-hint">or drag and drop files here</p>
 		</div>
+		<cfif len(bulkAllowedExtsDisplay) or len(bulkMaxSizeText)>
+			<!--- Accepted-formats / max-size hint, matching the file & image
+			      formtools' .fc-uploader-constraints line. Static for the dialog,
+			      so rendered server-side rather than via a Handlebars token. The
+			      full extension list lives in a hover tooltip (inited in onReady)
+			      to keep the line short. --->
+			<div class="fc-uploader-constraints"><cfif len(bulkAllowedExtsDisplay)><span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="Accepted: #bulkAllowedExtsDisplay#">Formats accepted <i class="fa fa-question-circle"></i></span></cfif><cfif len(bulkMaxSizeText)><cfif len(bulkAllowedExtsDisplay)> &middot; </cfif>Max size: #bulkMaxSizeText#</cfif></div>
+		</cfif>
 	</script>
 	<script id="added-file-template" type="text/x-handlebars-template">
 		<span class="pull-right">
@@ -488,7 +523,21 @@
 		saveURL : "#application.fapi.fixURL(addvalues='action=save')#",
 		storage : "#storageTypeBulk#"
 	});
-	
+
+	// Width-constrained hover tooltip for the dropzone's accepted-formats list
+	// (matches the file & image formtools). ft:form loads Tooltipster but the
+	// webtop only auto-inits tooltips in its header, so the dropzone trigger —
+	// rendered into .upload-target by FileUploadView above — is inited here.
+	if ($j.fn.tooltipster){
+		$j(".upload-target .fc-richtooltip").tooltipster({
+			theme:      '.tooltipster-light',
+			position:   'top',
+			fixedWidth: 280,
+			delay:      0,
+			speed:      200
+		});
+	}
+
 	$j("##defaultProperties .title").click(function(){
 		$j("##defaultProperties .body").slideToggle();
 	});
