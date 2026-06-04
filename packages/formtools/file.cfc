@@ -149,16 +149,15 @@
 							<div id="#arguments.fieldname#-dropzone" class="fc-uploader-dropzone" tabindex="0" role="button" aria-label="Upload file"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
 								<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
 								<label class="fc-uploader-button">
-									<i class="fa fa-cloud-upload"></i> Select file
+									Select file
 									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fc-uploader-file-input #arguments.inputClass#<cfif arguments.stMetadata.ftValidation eq 'required'> required</cfif>" value="" style="#arguments.stMetadata.ftstyle#" />
 								</label>
-								<span class="fc-uploader-dropzone-hint">or drag and drop here</span>
-								<span class="fc-uploader-dropzone-hint">or paste from clipboard</span>
+								<span class="fc-uploader-dropzone-hint">or drag and drop a file, or paste from clipboard</span>
 								<a id="#arguments.fieldname#-cancel-replace" class="fc-uploader-cancel-replace" style="display:none;">Cancel &mdash; keep the current file</a>
 							</div>
 
-							<!--- Constraint text. --->
-							<div class="fc-uploader-constraints">
+							<!--- Constraint text. Hidden while a file is present (only relevant when picking). --->
+							<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
 								<span>Formats accepted: #allowedExtsDisplay#</span>
 								<cfif len(maxSizeText)><span>File size must not exceed #maxSizeText#</span></cfif>
 							</div>
@@ -187,7 +186,7 @@
 								<div class="fc-uploader-details-actions">
 									<a id="#arguments.fieldname#-preview" class="fc-uploader-action" target="_blank" href="<cfif len(downloadURL)>#downloadURL#<cfelse>##</cfif>"><i class="fa fa-eye"></i> Preview</a>
 									<a id="#arguments.fieldname#-replace" class="fc-uploader-action"><i class="fa fa-upload"></i> Replace</a>
-									<a id="#arguments.fieldname#-delete" class="fc-uploader-action"><i class="fa fa-trash"></i> Delete</a>
+									<a id="#arguments.fieldname#-delete" class="fc-uploader-action"><i class="fa fa-trash-o"></i> Delete</a>
 								</div>
 							</div>
 
@@ -199,12 +198,13 @@
 						<skin:onReady>
 						<cfoutput>
 							(function(){
-								var DZ      = '###arguments.fieldname#-dropzone';
-								var UP      = '###arguments.fieldname#-uploading';
-								var DETAILS = '###arguments.fieldname#-details';
-								var ERR     = '###arguments.fieldname#-error';
-								var STATUS  = '###arguments.fieldname#-status';
-								var BAR     = '###arguments.fieldname#-progress-bar';
+								var DZ          = '###arguments.fieldname#-dropzone';
+								var UP          = '###arguments.fieldname#-uploading';
+								var DETAILS     = '###arguments.fieldname#-details';
+								var CONSTRAINTS = '###arguments.fieldname#-constraints';
+								var ERR         = '###arguments.fieldname#-error';
+								var STATUS      = '###arguments.fieldname#-status';
+								var BAR         = '###arguments.fieldname#-progress-bar';
 								var allowedExts = '#arguments.stMetadata.ftAllowedFileExtensions#';
 
 								function announce(msg){ $j(STATUS).text(msg); }
@@ -249,7 +249,7 @@
 
 								function showDropzone(){
 									$j('###arguments.fieldname#-cancel-replace').css('display','none');
-									$j(UP).hide(); $j(DETAILS).hide(); $j(DZ).show();
+									$j(UP).hide(); $j(DETAILS).hide(); $j(CONSTRAINTS).show(); $j(DZ).show();
 								}
 								function showUploading(file){
 									hideError();
@@ -257,12 +257,12 @@
 									$j('###arguments.fieldname#-uploading-name').text(file.name).attr('title', file.name);
 									$j('###arguments.fieldname#-uploading-meta').text(fcFormatBytes(file.size));
 									$j(BAR).css('width','0%').attr('aria-valuenow', 0).removeClass('is-complete is-error');
-									$j(DZ).hide(); $j(DETAILS).hide(); $j(UP).show();
+									$j(DZ).hide(); $j(DETAILS).hide(); $j(CONSTRAINTS).hide(); $j(UP).show();
 									announce('Uploading ' + file.name);
 								}
 								function showDetails(){
 									$j('###arguments.fieldname#-cancel-replace').css('display','none');
-									$j(DZ).hide(); $j(UP).hide(); $j(DETAILS).show();
+									$j(DZ).hide(); $j(UP).hide(); $j(CONSTRAINTS).hide(); $j(DETAILS).show();
 								}
 								function setProgress(file, percent){
 									$j(BAR).css('width', percent + '%').attr('aria-valuenow', percent);
@@ -363,8 +363,8 @@
 										title:   'Delete this file?',
 										message: 'This file will be removed when you save the form.',
 										buttons: [
-											{ label: 'Delete', value: 'delete', style: 'danger' },
-											{ label: 'Cancel', value: 'cancel', style: 'cancel', isCancel: true }
+											{ label: 'Delete', value: 'delete', style: 'primary' },
+											{ label: 'Cancel', value: 'cancel', isCancel: true }
 										],
 										onSelect: function(value){
 											if (value !== 'delete') return;

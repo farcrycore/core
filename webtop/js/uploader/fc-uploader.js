@@ -402,23 +402,39 @@
 			try { onProgress(file, percent); } catch (e){}
 		});
 
+		// Drop a finished file from Uppy's internal state once we're done with it.
+		// Uppy keeps completed AND errored files in state; with maxNumberOfFiles
+		// set (e.g. 1 for the file/image formtools) the lingering entry blocks the
+		// next add — re-picking the same file trips duplicate detection (which
+		// classifyRestriction mislabels "size") and picking another trips the count
+		// limit. Removing it returns a transient uploader to an empty slot so
+		// Replace / re-upload work. Deferred so we don't mutate state mid-dispatch.
+		function releaseFile(file){
+			if (!file) return;
+			setTimeout(function(){ try { uppy.removeFile(file.id); } catch (e){} }, 0);
+		}
+
 		uppy.on("upload-success", function(file, response){
 			if (isS3){
 				// The object is now in S3; ask the server to record it and run
 				// post-processing, then hand the SAME JSON shape to onComplete.
 				finalizeS3(file).then(function(body){
 					try { onComplete(file, body || {}); } catch (e){}
+					releaseFile(file);
 				}).catch(function(err){
 					try { onError(file, { type: "server", message: (err && err.message) || "Finalize failed" }); } catch (e){}
+					releaseFile(file);
 				});
 				return;
 			}
 			var body = (response && response.body !== undefined) ? response.body : response;
 			try { onComplete(file, body || {}); } catch (e){}
+			releaseFile(file);
 		});
 
 		uppy.on("upload-error", function(file, error, response){
 			try { onError(file, categorizeError(file, error, response)); } catch (e){}
+			releaseFile(file);
 		});
 
 		uppy.on("restriction-failed", function(file, error){
@@ -588,7 +604,7 @@
 				var b = document.createElement("button");
 				b.type = "button";
 				b.className = "fc-uploader-confirm-btn"
-				            + (btn.style === "danger" ? " fc-uploader-confirm-btn--danger" : "");
+				            + (btn.style ? " fc-uploader-confirm-btn--" + btn.style : "");
 				b.textContent = btn.label;
 				if (btn.isCancel) cancelValue = btn.value;
 				b.addEventListener("click", function(){ close(btn.value); });

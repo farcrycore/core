@@ -15,7 +15,7 @@
 /* --- Dropzone ------------------------------------------------- */
 
 .fc-uploader-dropzone {
-	border: 1px dashed #cccccc;
+	border: 2px dashed #cccccc;
 	border-radius: 5px;
 	background: #ffffff;
 	padding: 22px 16px;
@@ -57,30 +57,39 @@
 	color: #999999;
 }
 
-/* File-picker button — mirrors FarCry's standard button look so it
-   reads as a native webtop control, not a bespoke uploader widget.
+/* File-picker button — mirrors FarCry's standard webtop button (.btn in
+   webtop7.css: flat #e8e8e8, square corners, inset hairline shadow) so it
+   reads as a native control, not a bespoke uploader widget.
    Used as a <label> wrapping a visually-hidden file input. */
 .fc-uploader-button {
 	display: inline-block;
 	margin: 4px 0;
 	padding: 5px 14px;
-	background: #dddddd;
-	color: #333333;
-	border: 1px solid #cccccc;
-	border-radius: 3px;
+	background: #e8e8e8;
+	color: #555555;
+	border: 0;
+	border-radius: 0;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.25) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,.25) inset;
+	font-family: Arial, Helvetica, sans-serif;
 	font-size: 13px;
 	line-height: 1.4;
 	cursor: pointer;
-	-webkit-transition: background-color .15s ease, color .15s ease;
-	transition: background-color .15s ease, color .15s ease;
+	-webkit-transition: background-color .15s ease, box-shadow .15s ease;
+	transition: background-color .15s ease, box-shadow .15s ease;
 }
 
 .fc-uploader-button:hover,
 .fc-uploader-button:focus {
-	background: #3e84b5;
-	border-color: #3e84b5;
-	color: #ffffff;
+	background: #f8f8f8;
+	color: #555555;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.4) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,.4) inset;
 	outline: none;
+}
+
+.fc-uploader-button:active {
+	background: #cccccc;
 }
 
 .fc-uploader-button .fa {
@@ -313,14 +322,18 @@
 
 /* --- Error states -------------------------------------------- */
 
-/* Transient + bulk: red alert info box below the field. */
+/* Transient + bulk: alert box below the field. Matches FarCry's existing
+   form validation alert (.control-group.error .text-error in webtop7.css):
+   #f2dede fill, #eed3d7 border, #b94a48 text, square corners. */
 .fc-uploader-error {
-	margin-top: 8px;
-	padding: 8px 12px;
-	background: #fdeeed;
-	border: 1px solid #f0c5c3;
-	border-radius: 4px;
-	color: #a82824;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 8px 14px;
+	background-color: #f2dede;
+	border: 1px solid #eed3d7;
+	border-radius: 0;
+	color: #b94a48;
+	text-shadow: 0 1px 0 rgba(255,255,255,.5);
 	font-size: 13px;
 }
 
@@ -483,7 +496,8 @@
 
 .fc-uploader-confirm-dialog {
 	background: #ffffff;
-	border-radius: 5px;
+	border: 1px solid #c0c0c0;
+	border-radius: 2px;
 	-webkit-box-shadow: 0 4px 24px rgba(0,0,0,.25);
 	box-shadow: 0 4px 24px rgba(0,0,0,.25);
 	width: 380px;
@@ -514,31 +528,50 @@
 	border-top: 1px solid #eeeeee;
 }
 
+/* Mirrors FarCry's standard webtop button (.btn): flat #e8e8e8, square,
+   inset hairline. The primary/confirm action uses the .btn-primary blue. */
 .fc-uploader-confirm-btn {
 	display: inline-block;
 	margin-left: 8px;
 	padding: 6px 16px;
-	border: 1px solid #cccccc;
-	border-radius: 3px;
-	background: #dddddd;
-	color: #333333;
+	border: 0;
+	border-radius: 0;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.25) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,.25) inset;
+	background: #e8e8e8;
+	color: #555555;
+	font-family: Arial, Helvetica, sans-serif;
 	font-size: 13px;
 	cursor: pointer;
 }
 
 .fc-uploader-confirm-btn:hover,
 .fc-uploader-confirm-btn:focus {
-	background: #cccccc;
+	background: #f8f8f8;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.4) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,.4) inset;
 	outline: none;
 }
 
-.fc-uploader-confirm-btn--danger {
-	background: #d2322d;
-	border-color: #c12e29;
-	color: #ffffff;
+.fc-uploader-confirm-btn:active {
+	background: #cccccc;
 }
 
-.fc-uploader-confirm-btn--danger:hover,
-.fc-uploader-confirm-btn--danger:focus {
-	background: #c12e29;
+.fc-uploader-confirm-btn--primary {
+	background: #3e84b5;
+	color: #ffffff;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+}
+
+.fc-uploader-confirm-btn--primary:hover,
+.fc-uploader-confirm-btn--primary:focus {
+	background: #0e65a2;
+	color: #ffffff;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.7) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,.7) inset;
+}
+
+.fc-uploader-confirm-btn--primary:active {
+	background: #0c5582;
 }
