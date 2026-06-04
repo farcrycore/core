@@ -349,11 +349,20 @@
 	margin-left: 0;
 }
 
+/* Action links are <a> elements, so global a:link/visited/hover/active (0,1,1) beat
+   the .fc-uploader-action class. Qualify every state with `a` (0,2,1) and keep
+   L-V-focus-H-A order so the bloom isn't overridden by the resting :link rule. */
+a.fc-uploader-action:link,
+a.fc-uploader-action:visited {
+	color: #666666;
+	text-decoration: none;
+}
+
 /* Mouse/programmatic focus gets NO treatment: strip the UA focus ring and any
    global a:focus underline. (Covers the Preview link being auto-focused after
    upload, and an _blank link retaining focus when the user returns to the
    tab.) Keyboard focus is handled by the :focus-visible bloom below. */
-.fc-uploader-action:focus {
+a.fc-uploader-action:focus {
 	outline: none;
 	text-decoration: none;
 }
@@ -361,15 +370,15 @@
 /* Bloom on hover and on keyboard focus only (:focus-visible) — NOT on
    programmatic/mouse focus, so the Preview link isn't lit up when focus is
    moved to it after an upload completes. */
-.fc-uploader-action:hover,
-.fc-uploader-action:focus-visible {
+a.fc-uploader-action:hover,
+a.fc-uploader-action:focus-visible {
 	color: #e17000;
 	border-color: #e17000;
 	background: #fff8f1;
 	text-decoration: none;
 }
 
-.fc-uploader-action:active {
+a.fc-uploader-action:active {
 	color: #c45f00;
 	border-color: #c45f00;
 	background: #fdeede;
