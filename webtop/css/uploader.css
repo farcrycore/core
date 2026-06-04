@@ -280,25 +280,35 @@
 
 /* Standalone destructive button (details header, right): FarCry red, square,
    white glyph. Distinct from the modal confirm, which stays blue/neutral. */
+/* Outline-red at rest (calm, clearly destructive), filling solid red on
+   hover/focus — the strong red returns at the moment of intent, just before
+   the confirm dialog. 4px radius matches the Preview/Replace actions. */
 .fc-uploader-delete-btn {
 	display: inline-block;
 	padding: 6px 11px;
-	border: 0;
-	border-radius: 0;
-	background: #d2322d;
-	color: #ffffff;
+	border: 1px solid #d2322d;
+	border-radius: 4px;
+	background: #ffffff;
+	color: #d2322d;
 	font-size: 14px;
 	line-height: 1;
 	cursor: pointer;
-	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
-	box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+	-webkit-transition: color .12s ease, border-color .12s ease, background-color .12s ease;
+	transition: color .12s ease, border-color .12s ease, background-color .12s ease;
 }
 
 .fc-uploader-delete-btn:hover,
 .fc-uploader-delete-btn:focus {
-	background: #c12e29;
+	background: #d2322d;
 	color: #ffffff;
+	border-color: #d2322d;
 	outline: none;
+}
+
+.fc-uploader-delete-btn:active {
+	background: #c12e29;
+	border-color: #c12e29;
+	color: #ffffff;
 }
 
 /* The retained blue "Resized to..." alert in the image formtool. */
@@ -326,7 +336,7 @@
 	color: #666666;
 	background: transparent;
 	border: 1px solid transparent;
-	border-radius: 0;
+	border-radius: 4px;
 	text-decoration: none;
 	font-size: 13px;
 	line-height: 1.4;
@@ -339,8 +349,11 @@
 	margin-left: 0;
 }
 
+/* Bloom on hover and on keyboard focus only (:focus-visible) — NOT on
+   programmatic/mouse focus, so the Preview link isn't lit up when focus is
+   moved to it after an upload completes. */
 .fc-uploader-action:hover,
-.fc-uploader-action:focus {
+.fc-uploader-action:focus-visible {
 	color: #e17000;
 	border-color: #e17000;
 	background: #fff8f1;
@@ -359,7 +372,7 @@
 }
 
 .fc-uploader-action:hover .fa,
-.fc-uploader-action:focus .fa {
+.fc-uploader-action:focus-visible .fa {
 	color: #e17000;
 }
 
