@@ -314,21 +314,25 @@
 
 /* --- Action links (orange text + inline FA icon) ------------- */
 
-/* Ghost-button treatment: white bg + hairline border, square corners to
-   match FarCry's .btn geometry. Neutral text keeps them subordinate to the
-   solid-red Delete (one filled primary, the rest outlined secondary). */
+/* Hover-reveal actions: bare grey icon+text at rest (quiet), blooming into a
+   FarCry-orange ghost button on hover/focus. Orange appears only on
+   interaction, reintroducing the Core accent without it being loud at rest.
+   The rest-state border is transparent (not absent) so the box doesn't shift
+   when the orange border appears. Square corners match FarCry .btn geometry. */
 .fc-uploader-action {
 	display: inline-block;
 	margin-left: 8px;
 	padding: 4px 10px;
-	color: #555555;
-	background: #ffffff;
-	border: 1px solid #e0e0e0;
+	color: #666666;
+	background: transparent;
+	border: 1px solid transparent;
 	border-radius: 0;
 	text-decoration: none;
 	font-size: 13px;
 	line-height: 1.4;
 	cursor: pointer;
+	-webkit-transition: color .12s ease, border-color .12s ease, background-color .12s ease;
+	transition: color .12s ease, border-color .12s ease, background-color .12s ease;
 }
 
 .fc-uploader-action:first-child {
@@ -337,15 +341,30 @@
 
 .fc-uploader-action:hover,
 .fc-uploader-action:focus {
-	color: #333333;
-	border-color: #bbbbbb;
-	background: #fafafa;
+	color: #e17000;
+	border-color: #e17000;
+	background: #fff8f1;
 	text-decoration: none;
+}
+
+.fc-uploader-action:active {
+	color: #c45f00;
+	border-color: #c45f00;
+	background: #fdeede;
 }
 
 .fc-uploader-action .fa {
 	margin-right: 4px;
 	color: #888888;
+}
+
+.fc-uploader-action:hover .fa,
+.fc-uploader-action:focus .fa {
+	color: #e17000;
+}
+
+.fc-uploader-action:active .fa {
+	color: #c45f00;
 }
 
 /* The small "Cancel — keep the current file" link shown during Replace. */
