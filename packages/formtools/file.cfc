@@ -156,17 +156,20 @@
 								<a id="#arguments.fieldname#-cancel-replace" class="fc-uploader-cancel-replace" style="display:none;">Cancel &mdash; keep the current file</a>
 							</div>
 
-							<!--- Constraint text. Hidden while a file is present (only relevant when picking). --->
+							<!--- Constraint text. Hidden while a file is present (only relevant when picking).
+							      The full extension list lives in a hover tooltip to keep this line short. --->
 							<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-								<span>Formats accepted: #allowedExtsDisplay#</span>
-								<cfif len(maxSizeText)><span>File size must not exceed #maxSizeText#</span></cfif>
+								<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="Accepted: #allowedExtsDisplay#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif len(maxSizeText)> &middot; Max size: #maxSizeText#</cfif>
 							</div>
 
 							<!--- (2) During-upload row — filename + size/percent + cancel, with the thin progress bar beneath. --->
 							<div id="#arguments.fieldname#-uploading" class="fc-uploader-uploading" style="display:none;">
 								<div class="fc-uploader-uploading-row">
-									<span class="fc-uploader-uploading-name" id="#arguments.fieldname#-uploading-name"></span>
-									<span class="fc-uploader-uploading-meta" id="#arguments.fieldname#-uploading-meta"></span>
+									<span class="fc-uploader-uploading-icon"><i id="#arguments.fieldname#-uploading-icon" class="fa fa-file-o"></i></span>
+									<div class="fc-uploader-uploading-body">
+										<span class="fc-uploader-uploading-name" id="#arguments.fieldname#-uploading-name"></span>
+										<span class="fc-uploader-uploading-meta" id="#arguments.fieldname#-uploading-meta"></span>
+									</div>
 									<span class="fc-uploader-uploading-cancel">
 										<button type="button" class="fc-uploader-icon-btn" id="#arguments.fieldname#-uploading-cancel" aria-label="Cancel upload"><i class="fa fa-times"></i></button>
 									</span>
@@ -176,17 +179,23 @@
 								</div>
 							</div>
 
-							<!--- (3) Details view — shown once a file is stored. --->
+							<!--- (3) Details view — shown once a file is stored. Header row carries the
+							      file-type icon, name/meta and the standalone red Delete button; Preview and
+							      Replace sit on their own row beneath. --->
 							<div id="#arguments.fieldname#-details" class="fc-uploader-details" data-bytes="#existingBytes#"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-								<span class="fc-uploader-details-icon"><i id="#arguments.fieldname#-details-icon" class="fa fa-file-o"></i></span>
-								<div class="fc-uploader-details-body">
-									<div class="fc-uploader-details-name" id="#arguments.fieldname#-details-name"></div>
-									<div class="fc-uploader-details-meta" id="#arguments.fieldname#-details-meta"></div>
+								<div class="fc-uploader-details-row">
+									<span class="fc-uploader-details-icon"><i id="#arguments.fieldname#-details-icon" class="fa fa-file-o"></i></span>
+									<div class="fc-uploader-details-body">
+										<div class="fc-uploader-details-name" id="#arguments.fieldname#-details-name"></div>
+										<div class="fc-uploader-details-meta" id="#arguments.fieldname#-details-meta"></div>
+									</div>
+									<div class="fc-uploader-details-delete">
+										<button type="button" id="#arguments.fieldname#-delete" class="fc-uploader-delete-btn" title="Delete" aria-label="Delete file"><i class="fa fa-trash-o"></i></button>
+									</div>
 								</div>
 								<div class="fc-uploader-details-actions">
 									<a id="#arguments.fieldname#-preview" class="fc-uploader-action" target="_blank" href="<cfif len(downloadURL)>#downloadURL#<cfelse>##</cfif>"><i class="fa fa-eye"></i> Preview</a>
 									<a id="#arguments.fieldname#-replace" class="fc-uploader-action"><i class="fa fa-upload"></i> Replace</a>
-									<a id="#arguments.fieldname#-delete" class="fc-uploader-action"><i class="fa fa-trash-o"></i> Delete</a>
 								</div>
 							</div>
 
@@ -254,6 +263,7 @@
 								function showUploading(file){
 									hideError();
 									$j('###arguments.fieldname#-cancel-replace').css('display','none');
+									$j('###arguments.fieldname#-uploading-icon').attr('class', 'fa ' + fcFileIcon(file.name));
 									$j('###arguments.fieldname#-uploading-name').text(file.name).attr('title', file.name);
 									$j('###arguments.fieldname#-uploading-meta').text(fcFormatBytes(file.size));
 									$j(BAR).css('width','0%').attr('aria-valuenow', 0).removeClass('is-complete is-error');
@@ -380,6 +390,19 @@
 								// Render the details meta for an already-stored file on load.
 								if ($j('###arguments.fieldname#').val()){
 									fcRenderDetails('#jsStringFormat(existingFilename)#', $j(DETAILS).data('bytes'));
+								}
+
+								// Width-constrained hover tooltip for the accepted-formats list.
+								// ft:form loads the Tooltipster library but the webtop only auto-inits
+								// tooltips in its header, so edit-form triggers must be initialised here.
+								if ($j.fn.tooltipster){
+									$j(CONSTRAINTS).find('.fc-richtooltip').tooltipster({
+										theme:      '.tooltipster-light',
+										position:   'top',
+										fixedWidth: 280,
+										delay:      0,
+										speed:      200
+									});
 								}
 							})();
 						</cfoutput>

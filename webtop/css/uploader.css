@@ -18,7 +18,7 @@
 	border: 2px dashed #cccccc;
 	border-radius: 5px;
 	background: #ffffff;
-	padding: 22px 16px;
+	padding: 28px 18px;
 	text-align: center;
 	color: #666666;
 	-webkit-transition: border-color .15s ease, background-color .15s ease;
@@ -111,14 +111,22 @@
 /* --- Constraint text (under the dropzone) -------------------- */
 
 .fc-uploader-constraints {
-	margin-top: 6px;
+	margin-top: 8px;
 	font-size: 12px;
 	color: #999999;
 	line-height: 1.5;
 }
 
-.fc-uploader-constraints span {
-	display: block;
+/* Compact "Formats accepted (?)" trigger — the full extension list lives in a
+   width-constrained Tooltipster tooltip rather than spelled out inline. */
+.fc-uploader-help {
+	cursor: help;
+	border-bottom: 1px dotted #bbbbbb;
+}
+
+.fc-uploader-help .fa {
+	margin-left: 3px;
+	color: #bbbbbb;
 }
 
 /* --- Progress bar (the single primitive, everywhere) --------- */
@@ -158,7 +166,7 @@
 .fc-uploader-uploading {
 	border: 1px solid #e6e6e6;
 	border-radius: 5px;
-	padding: 10px 12px;
+	padding: 14px 16px;
 	background: #ffffff;
 }
 
@@ -168,9 +176,25 @@
 	table-layout: fixed;
 }
 
-.fc-uploader-uploading-name {
+/* Mirrors the details header: icon, stacked name/meta, cancel — so the
+   uploading and completed states share the same height and rhythm. */
+.fc-uploader-uploading-icon {
 	display: table-cell;
 	vertical-align: middle;
+	width: 22px;
+	font-size: 22px;
+	line-height: 1;
+	color: #888888;
+	padding-right: 10px;
+}
+
+.fc-uploader-uploading-body {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.fc-uploader-uploading-name {
+	display: block;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -178,10 +202,8 @@
 }
 
 .fc-uploader-uploading-meta {
-	display: table-cell;
-	vertical-align: middle;
-	text-align: right;
-	width: 9em;
+	display: block;
+	margin-top: 2px;
 	color: #999999;
 	font-size: 12px;
 	white-space: nowrap;
@@ -195,12 +217,20 @@
 }
 
 .fc-uploader-uploading .fc-uploader-progress {
-	margin-top: 8px;
+	margin-top: 12px;
 }
 
 /* --- Transient: post-upload details view (file, image) ------- */
 
 .fc-uploader-details {
+	border: 1px solid #e6e6e6;
+	border-radius: 5px;
+	padding: 12px 14px;
+	background: #ffffff;
+}
+
+/* Header row: file-type icon, name + meta, and the standalone Delete button. */
+.fc-uploader-details-row {
 	display: table;
 	width: 100%;
 	table-layout: fixed;
@@ -208,17 +238,17 @@
 
 .fc-uploader-details-icon {
 	display: table-cell;
-	vertical-align: top;
-	width: 44px;
-	font-size: 32px;
+	vertical-align: middle;
+	width: 22px;
+	font-size: 22px;
 	line-height: 1;
 	color: #888888;
-	padding-right: 12px;
+	padding-right: 10px;
 }
 
 .fc-uploader-details-body {
 	display: table-cell;
-	vertical-align: top;
+	vertical-align: middle;
 }
 
 .fc-uploader-details-name {
@@ -233,12 +263,42 @@
 	color: #999999;
 }
 
-.fc-uploader-details-actions {
+.fc-uploader-details-delete {
 	display: table-cell;
-	vertical-align: top;
+	vertical-align: middle;
 	text-align: right;
-	white-space: nowrap;
-	width: 16em;
+	width: 3em;
+}
+
+/* Preview / Replace sit on their own row beneath the file info, aligned under
+   the body (icon column width + its right padding). Delete is the standalone
+   red button up in the header row. */
+.fc-uploader-details-actions {
+	margin-top: 10px;
+	padding-left: 32px;
+}
+
+/* Standalone destructive button (details header, right): FarCry red, square,
+   white glyph. Distinct from the modal confirm, which stays blue/neutral. */
+.fc-uploader-delete-btn {
+	display: inline-block;
+	padding: 6px 11px;
+	border: 0;
+	border-radius: 0;
+	background: #d2322d;
+	color: #ffffff;
+	font-size: 14px;
+	line-height: 1;
+	cursor: pointer;
+	-webkit-box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,.5) inset;
+}
+
+.fc-uploader-delete-btn:hover,
+.fc-uploader-delete-btn:focus {
+	background: #c12e29;
+	color: #ffffff;
+	outline: none;
 }
 
 /* The retained blue "Resized to..." alert in the image formtool. */
