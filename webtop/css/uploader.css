@@ -297,12 +297,24 @@
 	transition: color .12s ease, border-color .12s ease, background-color .12s ease;
 }
 
-.fc-uploader-delete-btn:hover,
-.fc-uploader-delete-btn:focus {
+.fc-uploader-delete-btn:hover {
 	background: #d2322d;
 	color: #ffffff;
 	border-color: #d2322d;
+}
+
+/* Red fill is for hover only. The confirm modal returns focus to this button
+   on close, so a :focus fill would leave it stuck "active/red" after Cancel.
+   Keyboard users still get a visible ring via :focus-visible (which a
+   mouse-driven focus-return does NOT match), so the button returns to its
+   resting white state after a click-and-cancel. */
+.fc-uploader-delete-btn:focus {
 	outline: none;
+}
+
+.fc-uploader-delete-btn:focus-visible {
+	outline: 2px solid #d2322d;
+	outline-offset: 2px;
 }
 
 .fc-uploader-delete-btn:active {
@@ -358,6 +370,37 @@
 
 .fc-uploader-autogenerate-actions {
 	margin-top: 10px;
+}
+
+/* --- Working / generating state ------------------------------ */
+
+/* Shown while a derived image is (re)generating. A calm inline card matching
+   the autogenerate empty-state: a smooth arc spinner aligned on the same
+   baseline as the label (the old markup stacked an inline icon above a block
+   label, leaving the spinner floating up-left). */
+.fc-uploader-working {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	border: 1px solid #e0e0e0;
+	border-radius: 5px;
+	padding: 14px 16px;
+	background: #fafafa;
+	color: #555555;
+	font-size: 13px;
+}
+
+.fc-uploader-working-icon {
+	color: #3e84b5;
+	font-size: 15px;
+	margin-right: 10px;
+}
+
+.fc-uploader-working-text {
+	line-height: 1;
 }
 
 /* --- Action links (orange text + inline FA icon) ------------- */
@@ -699,7 +742,8 @@ a.fc-uploader-action:active {
 	width: 100%;
 	margin-left: 0;
 	margin-top: 8px;
-	text-align: center;
+	padding-left: 14px;
+	text-align: left;
 }
 
 .fc-uploader-confirm-buttons--stacked .fc-uploader-confirm-btn:first-child {

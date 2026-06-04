@@ -284,9 +284,9 @@
 							</div>
 							<span class="image-cancel-replace"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>><a href="##complete" class="select-view fc-uploader-cancel-replace">Cancel &mdash; keep the current image</a></span>
 						</div>
-						<div id="#arguments.fieldname#_working" class="working-view" style="display:none;">
-							<span class="image-status" title="#metadatainfo#"><i class="fa fa-spinner fa-spin fa-fw"></i></span>
-						    <div style="margin-left:15px;">Generating image...</div>
+						<div id="#arguments.fieldname#_working" class="working-view fc-uploader-working" style="display:none;">
+							<span class="image-status fc-uploader-working-icon"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></span>
+							<span class="fc-uploader-working-text">Generating image&hellip;</span>
 						</div>
 						<cfif bFileExists>
 							<cfset filename = listLast(arguments.stMetadata.value, "/") />

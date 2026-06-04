@@ -678,9 +678,9 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			$j(base+"-progress-bar").css("width", percent+"%").attr("aria-valuenow", percent);
 			var sizeText = imageformtool.formatBytes(file.size);
 			if (percent < 100)
-				$j(base+"-uploading-meta").text((sizeText ? sizeText+"  ·  " : "") + percent + "%");
+				$j(base+"-uploading-meta").text((sizeText ? sizeText+"  \u00B7  " : "") + percent + "%");
 			else
-				$j(base+"-uploading-meta").text((sizeText ? sizeText+"  ·  " : "") + "Processing...");
+				$j(base+"-uploading-meta").text((sizeText ? sizeText+"  \u00B7  " : "") + "Processing...");
 		};
 		this.resetUploadView = function imageFormtoolResetUploadView(){
 			var base = "#"+prefix+property;
