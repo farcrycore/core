@@ -24,7 +24,7 @@
 /* Drop zone — mirrors the .fc-uploader-dropzone primitive (dashed #ccc, light
    bg, blue dragover) but sized larger for the standalone bulk dialog. */
 .targetarea {
-	border:2px dashed #cccccc;
+	border:2px dashed #bcd0dd;
 	border-radius:5px;
 	background:#ffffff;
 	padding:40px 18px;
@@ -32,6 +32,10 @@
 	color:#666666;
 	-webkit-transition:border-color .15s ease, background-color .15s ease;
 	transition:border-color .15s ease, background-color .15s ease;
+}
+.targetarea:hover {
+	border-color:#3e84b5;
+	background:#f7fafc;
 }
 .targetarea.dragover {
 	border-style:solid;
@@ -42,7 +46,7 @@
 	display:block;
 	font-size:34px;
 	line-height:1;
-	color:#aaaaaa;
+	color:#3e84b5;
 	margin-bottom:12px;
 }
 .targetarea.dragover .targetarea-icon {

@@ -15,7 +15,7 @@
 /* --- Dropzone ------------------------------------------------- */
 
 .fc-uploader-dropzone {
-	border: 2px dashed #cccccc;
+	border: 2px dashed #bcd0dd;
 	border-radius: 5px;
 	background: #ffffff;
 	padding: 28px 18px;
@@ -23,6 +23,13 @@
 	color: #666666;
 	-webkit-transition: border-color .15s ease, background-color .15s ease;
 	transition: border-color .15s ease, background-color .15s ease;
+}
+
+/* Hover lifts the frame to full blue with a faint wash — a gentle "this is
+   interactive" cue. Placed before :focus/.is-dragover so those still win. */
+.fc-uploader-dropzone:hover {
+	border-color: #3e84b5;
+	background: #f7fafc;
 }
 
 .fc-uploader-dropzone:focus,
@@ -42,7 +49,7 @@
 .fc-uploader-dropzone-icon {
 	font-size: 28px;
 	line-height: 1;
-	color: #aaaaaa;
+	color: #3e84b5;
 	margin-bottom: 10px;
 }
 
