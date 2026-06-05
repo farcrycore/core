@@ -299,7 +299,7 @@
 								<div class="fc-uploader-details-row">
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
-										<div class="fc-uploader-details-name image-filename" title="#filename#">#filename#</div>
+										<div class="fc-uploader-details-name" title="#filename#"><span class="image-filename">#filename#</span></div>
 										<cfif arguments.stMetadata.ftShowMetadata>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
 										</cfif>
@@ -324,7 +324,7 @@
 								<div class="fc-uploader-details-row">
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
-										<div class="fc-uploader-details-name image-filename" title=""></div>
+										<div class="fc-uploader-details-name" title=""><span class="image-filename"></span></div>
 										<cfif arguments.stMetadata.ftShowMetadata>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size"></span>KB &middot; <span class="image-width"></span> &times; <span class="image-height"></span>px</div>
 										</cfif>
@@ -394,7 +394,7 @@
 								<div class="fc-uploader-details-row">
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
-										<div class="fc-uploader-details-name image-filename" title="#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</div>
+										<div class="fc-uploader-details-name" title="#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#"><span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span></div>
 										<cfif arguments.stMetadata.ftShowMetadata>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
 										</cfif>
@@ -416,7 +416,7 @@
 								<div class="fc-uploader-details-row">
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
-										<div class="fc-uploader-details-name image-filename" title=""></div>
+										<div class="fc-uploader-details-name" title=""><span class="image-filename"></span></div>
 										<cfif arguments.stMetadata.ftShowMetadata>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size"></span>KB &middot; <span class="image-width"></span> &times; <span class="image-height"></span>px</div>
 										</cfif>
