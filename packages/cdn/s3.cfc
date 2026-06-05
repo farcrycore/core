@@ -789,10 +789,17 @@
 	<cffunction name="ioGetFileSize" returntype="numeric" output="false" hint="Returns the size of the file in bytes">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
-		
-		<cfset var stInfo = getFileInfo(getS3Path(config=arguments.config,file=arguments.file)) />
-		
-		<cfreturn stInfo.size />
+
+		<cfset var cachePath = getCachedFile(config=arguments.config,file=arguments.file) />
+
+		<!--- Read size from the local cache when present: CF's s3:// VFS caches object
+		      metadata and doesn't invalidate on in-place overwrite, so it can report a
+		      stale size. Fall back to the s3:// path only when uncached. --->
+		<cfif len(cachePath)>
+			<cfreturn getFileInfo(cachePath).size />
+		</cfif>
+
+		<cfreturn getFileInfo(getS3Path(config=arguments.config,file=arguments.file)).size />
 	</cffunction>
 	
 	<cffunction name="ioGetFileLocation" returntype="struct" output="false" hint="Returns serving information for the file - either method=redirect + path=URL OR method=stream + path=local path">
