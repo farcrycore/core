@@ -9,7 +9,7 @@
 		ftSeq="12" ftwizardStep="Body" ftFieldset="Body" ftLabel="Body" 
 		ftType="richtext" 
 		ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
-		ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
+		ftTemplateTypeList="dmImage,dmFile,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
 		ftLinkListFilterTypenames="dmFile,dmNavigation,dmHTML"
 		ftTemplateSnippetWebskinPrefix="insertSnippet">
 	</code>
