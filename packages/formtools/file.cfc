@@ -82,12 +82,7 @@
 		<cfargument name="inputClass" required="false" type="string" default="" hint="This is the class value that will be applied to the input field.">
 
 		<cfset var html = "" />
-		<cfset var previewURL = "" />
-		<cfset var uploadScript = "" />
-		<cfset var swftag = "" />
-		<cfset var browseScript = "" />
 		<cfset var i = 0 />
-		<cfset var facade = "" />
 		<cfset var uploadLocation = "" />
 		<cfset var storageType = "local" />
 		<cfset var existingFilename = "" />
