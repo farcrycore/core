@@ -389,6 +389,12 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 
 					if (results.resizedetails){
 						complete.find(".image-quality").html(results.resizedetails.quality.toString()).end();
+						// When no transform happened the server reports resized:false — say "Uploaded"
+						// rather than "Resized to" so the dimensions read accurately. Backwards-compatible:
+						// only an explicit false (boolean or "false" string, depending on the CF engine's
+						// JSON serialization) flips the verb; a missing key falls back to "Resized to".
+						var bNoResize = (results.resizedetails.resized === false || results.resizedetails.resized === "false");
+						complete.find(".image-resize-verb").html(bNoResize ? "Uploaded" : "Resized to").end();
 						complete.find(".image-resize-information").show().end();
 					}
 					else {

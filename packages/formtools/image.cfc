@@ -316,7 +316,7 @@
 									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
 								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;"><span class="image-resize-verb">Resized to</span> <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						<cfelse>
@@ -341,7 +341,7 @@
 									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
 								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;"><span class="image-resize-verb">Resized to</span> <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						</cfif>
@@ -408,7 +408,7 @@
 									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
 								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;"><span class="image-resize-verb">Resized to</span> <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						<cfelse>
@@ -430,7 +430,7 @@
 									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
 								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<div class="image-resize-information fc-uploader-resize-info" style="display:none;">Resized to <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information fc-uploader-resize-info" style="display:none;"><span class="image-resize-verb">Resized to</span> <span class="image-width"></span>px &times; <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						</cfif>
@@ -589,6 +589,7 @@
 		<cfset var stImage = structnew() />
 		<cfset var stLoc = structnew() />
 		<cfset var resizeinfo = "" />
+		<cfset var stResizeInfo = structnew() />
 		<cfset var sourceField = "" />
 		<cfset var html = "" />
 		<cfset var json = "" />
@@ -717,13 +718,14 @@
 				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
 				
-				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
-				
+				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality,false,stResizeInfo) />
+
 				<cfset stJSON = structnew() />
 				<cfif stFixed.bSuccess>
 					<cfset stJSON["resizedetails"] = structnew() />
 					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
+					<cfset stJSON["resizedetails"]["resized"] = (not structkeyexists(stResizeInfo,"bResized")) or stResizeInfo.bResized />
 					<cfset stResult.value = stFixed.value />
 				<cfelseif structkeyexists(stFixed,"error")>
 					<!--- Do nothing - an error from fixImage means there was no resize --->
@@ -769,13 +771,14 @@
 				
 			<cfif len(stResult.value)>
 				<cfparam name="form.bForceCrop" default="false">
-				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality,form.bForceCrop) />
-				
+				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality,form.bForceCrop,stResizeInfo) />
+
 				<cfset stJSON = structnew() />
 				<cfif stFixed.bSuccess>
 					<cfset stJSON["resizedetails"] = structnew() />
 					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
+					<cfset stJSON["resizedetails"]["resized"] = (not structkeyexists(stResizeInfo,"bResized")) or stResizeInfo.bResized />
 				<cfelseif structkeyexists(stFixed,"error")>
 					<!--- Do nothing - an error from fixImage means there was no resize --->
 				</cfif>
@@ -916,13 +919,17 @@
 		<cfargument name="resizeMethod" type="string" required="true" default="#arguments.stMetadata.ftAutoGenerateType#" hint="The resizing method to use to fix the size." />
 		<cfargument name="quality" type="string" required="true" default="#arguments.stMetadata.ftQuality#" hint="Quality setting to use for resizing" />
 		<cfargument name="bForceCrop" type="boolean" required="false" default="false" hint="Used to force the custom cropping" />
-	
+		<cfargument name="stResizeInfo" type="struct" required="false" hint="Optional out-param (by reference). fixImage sets stResizeInfo.bResized to whether a transform (GenerateImage) was actually performed, so callers can distinguish a real resize from a pass-through upload without inspecting the validation result." />
+
 		<cfset var stGeneratedImageArgs = structnew() />
 		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
 		<cfset var stImage = getImageInfo(file=arguments.filename,location=location) />
 		<cfset var stGeneratedImage = structnew() />
 		<cfset var q = "" />
-		
+
+		<!--- Default the out-param to a throwaway struct so callers that don't care can ignore it. --->
+		<cfif not structKeyExists(arguments,"stResizeInfo")><cfset arguments.stResizeInfo = structnew() /></cfif>
+
 		<cfparam name="arguments.stMetadata.ftCropPosition" default="center" />
 		<cfparam name="arguments.stMetadata.ftCustomEffectsObjName" default="imageEffects" />
 		<cfparam name="arguments.stMetadata.ftLCustomEffects" default="" />
@@ -975,17 +982,21 @@
 			<!--- image is too small - only generate image for specific methods --->
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 
+			<cfset arguments.stResizeInfo.bResized = true />
 			<cfreturn passed(stGeneratedImage.filename) />
-			
+
 		<cfelseif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width lt stImage.width)
 			or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height lt stImage.height)
 			or len(stGeneratedImageArgs.lCustomEffects)
 			or arguments.bForceCrop>
-			
+
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
+			<cfset arguments.stResizeInfo.bResized = true />
 			<cfreturn passed(stGeneratedImage.filename) />
-			
+
 		<cfelse>
+			<!--- no transform happened - image was uploaded at its native dimensions --->
+			<cfset arguments.stResizeInfo.bResized = false />
 			<cfreturn passed(arguments.filename) />
 		</cfif>
 	</cffunction>
