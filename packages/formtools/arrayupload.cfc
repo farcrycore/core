@@ -17,13 +17,17 @@
 		options="true,false"
 		hint="Allows user edit new record within the library picker">
 
-	<cfproperty name="ftAllowRemoveAll" required="false" default="false" 
+	<cfproperty name="ftAllowRemove" required="false" default="true"
+		options="true,false"
+		hint="Allows user to remove individual items. Set false to hide the per-item remove control.">
+
+	<cfproperty name="ftAllowRemoveAll" required="false" default="false"
 		options="true,false"
 		hint="Allows user to remove all items at once">
 
-	<cfproperty name="ftRemoveType" required="false" default="remove" 
-		options="delete,detach"
-		hint="detach will only remove from the join, delete will remove from the database">
+	<cfproperty name="ftRemoveType" required="false" default="remove"
+		options="remove,delete,detach"
+		hint="remove/detach will only remove from the join, delete will remove from the database">
 
 	<cfproperty name="ftFileProperty" required="false" default=""
 		hint="The property on the related type that the file is uploaded against. This defaults to sourceImage for dmImage and filename for dmFile. Other relationships must have an explicit value.">
@@ -141,8 +145,9 @@
 		<cfset stActions.ftAllowSelect = arguments.stMetadata.ftAllowSelect />
 		<cfset stActions.ftAllowCreate = arguments.stMetadata.ftAllowCreate />
 		<cfset stActions.ftAllowEdit = arguments.stMetadata.ftAllowEdit />
+		<cfset stActions.ftAllowRemove = arguments.stMetadata.ftAllowRemove />
 		<cfset stActions.ftRemoveType = arguments.stMetadata.ftRemoveType />
-		
+
 		<cfif structKeyExists(arguments.stMetadata, "ftAllowAttach")>
 			<cfset stActions.ftAllowSelect = arguments.stMetadata.ftAllowAttach />
 		</cfif>
@@ -183,7 +188,22 @@
 						if (fcForm.arrayuploadfields[id]) fcForm.arrayuploadfields[id].beginSelect();
 						fcForm.traditionalOpenLibrarySelect(typename,objectid,property,id,urlparameters);
 					};
-					
+
+					// Create (ftAllowCreate): the displayLibraryAdd modal appends the new
+					// objectid to the #fieldname# hidden input then triggers refreshProperty,
+					// which routes to finishSelect() below. Seed beforeSelect first (exactly
+					// as openLibrarySelect does) so the diff sees only the new id as an add
+					// and doesn't mistake the existing rows for removals. editing is cleared
+					// since Create never edits an existing item.
+					fcForm.traditionalOpenLibraryAdd = fcForm.openLibraryAdd;
+					fcForm.openLibraryAdd = function(typename,objectid,property,id) {
+						if (fcForm.arrayuploadfields[id]) {
+							fcForm.editing = "";
+							fcForm.arrayuploadfields[id].beginSelect();
+						}
+						fcForm.traditionalOpenLibraryAdd(typename,objectid,property,id);
+					};
+
 					fcForm.traditionalRefreshProperty = fcForm.refreshProperty;
 					fcForm.refreshProperty = function(typename,objectid,property,id) {
 						if (fcForm.arrayuploadfields[id]) return fcForm.arrayuploadfields[id].finishSelect(fcForm.editing);
@@ -227,7 +247,7 @@
 							return filename;
 		    			};
 		    			
-		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,removeType,quickEdit,view,tilewidth,tileheight,storage){
+		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,allowRemove,removeType,quickEdit,view,tilewidth,tileheight,storage){
 		    				var fieldname = prefix + property;
 							arrayuploadformtool.displaylist = $("##join-"+objectid+"-"+property);
 							arrayuploadformtool.uploadify = $("##"+fieldname+"UPLOAD");
@@ -237,6 +257,7 @@
 							arrayuploadformtool.filetypes = filetypes;
 							arrayuploadformtool.sizeLimit = sizeLimit;
 							arrayuploadformtool.allowEdit = allowEdit;
+							arrayuploadformtool.allowRemove = allowRemove;
 							arrayuploadformtool.removeType = removeType;
 							arrayuploadformtool.beforeSelect = [];
 							arrayuploadformtool.quickEdit = quickEdit;
@@ -264,6 +285,9 @@
 								maxFileSize:         sizeLimit,
 								simultaneousUploads: uploadLimit,
 								autoProceed:         true,
+								dropZone:            "##"+fieldname+"-dropzone",
+								onDragEnter: function(){ $("##"+fieldname+"-dropzone").addClass("is-dragover"); },
+								onDragLeave: function(){ $("##"+fieldname+"-dropzone").removeClass("is-dragover"); },
 								extraFormData: function(){
 									return arrayuploadformtool.getPostValues();
 								},
@@ -329,18 +353,7 @@
 							}).on("mouseout",function(e){
 								$(this).removeClass("fc-grabbable");
 							});
-							
-							setTimeout(function(){
-								var buttonoffset = $("##uploadaction").offset();
-								$("###arguments.fieldname#-library-wrapper object").css({
-									width			: $("##uploadaction").width(),
-									height			: $("##uploadaction").height(),
-									position		: "relative",
-									left			: $("##uploadaction").width()+5,
-									top				: 4
-								});
-							},500);
-		    			    
+
 		    			};
 		    			
 		    			this.getPostValues = function imageFormtoolGetPostValues(){
@@ -363,8 +376,8 @@
 		    					property 		: property,
 		    					fieldname 		: prefix+property,
 								allowedit		: arrayuploadformtool.allowEdit,
-								allowremove		: arrayuploadformtool.removeType=="remove",
-								allowdelete		: arrayuploadformtool.removeType=="delete",
+								allowremove		: arrayuploadformtool.allowRemove && arrayuploadformtool.removeType!="delete",
+								allowdelete		: arrayuploadformtool.allowRemove && arrayuploadformtool.removeType=="delete",
 								quickedit		: arrayuploadformtool.quickEdit
 		    				});
 		    				
@@ -450,7 +463,28 @@
 		    					}
 		    				});
 		    			};
-		    			
+
+		    			// Remove All uses the same framework-agnostic confirm as the
+		    			// per-item remove (the toolbar <a> lost the old native confirmText
+		    			// when it became an icon button). Wording is delete-vs-unlink
+		    			// depending on removeType, and operates on every attached item.
+		    			this.confirmRemoveAll = function(){
+		    				var isDelete = arrayuploadformtool.removeType == "delete";
+		    				$fc.uploader.confirm({
+		    					title: isDelete ? "Delete all items" : "Remove all items",
+		    					message: isDelete
+		    						? "Are you sure you want to delete all attached items? Doing so will immediately remove them from the database."
+		    						: "Are you sure you want to remove all attached items? Doing so will only unlink them. The content will remain in the database.",
+		    					buttons: [
+		    						{ label: isDelete ? "Delete all" : "Remove all", value: "remove", style: "primary" },
+		    						{ label: "Cancel", value: "cancel", isCancel: true }
+		    					],
+		    					onSelect: function(value){
+		    						if (value == "remove") arrayuploadformtool.removeAllItems();
+		    					}
+		    				});
+		    			};
+
 		    			this.refreshItems = function(objectids){
 		    				var updated = 0;
 		    				for (var i=0;i<objectids.length;i++){
@@ -567,7 +601,9 @@
 		</cfoutput></skin:loadJS>
 		<!--- </script></cfoutput></skin:htmlHead> --->
 		<skin:loadCSS id="array-upload"><style type="text/css"><cfoutput>
-			.fc-arrayupload-item { zoom:1; }
+			/* Add-files dropzone sits directly beneath the (bordered) item list. */
+				.fc-arrayupload-dropzone { margin-top:10px; }
+				.fc-arrayupload-item { zoom:1; }
 				/* Drag handle: a quiet FontAwesome glyph (no image), tinted on row hover. */
 				.fc-arrayupload-item .fc-grabbar { color:##cccccc; cursor:ns-resize; text-align:center; vertical-align:middle; }
 					.fc-arrayupload-item .fc-grabbar .fa { font-size:14px; }
@@ -607,10 +643,8 @@
 										<cfif stActions.ftAllowEdit>
 											<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 										</cfif>
-										<cfif stActions.ftRemoveType EQ "delete">
-											<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
-										<cfelseif stActions.ftRemoveType EQ "remove">
-											<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
+										<cfif stActions.ftAllowRemove>
+											<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="<cfif stActions.ftRemoveType EQ 'delete'>Delete<cfelse>Remove</cfif>"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i></a>
 										</cfif>
 									</div>
 									<input type="hidden" name="#arguments.fieldname#" value="#joinItems[i]#" />
@@ -632,10 +666,8 @@
 												<cfif stActions.ftAllowEdit>
 													<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 												</cfif>
-												<cfif stActions.ftRemoveType EQ "delete">
-													<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
-												<cfelseif stActions.ftRemoveType EQ "remove">
-													<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>
+												<cfif stActions.ftAllowRemove>
+													<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="<cfif stActions.ftRemoveType EQ 'delete'>Delete<cfelse>Remove</cfif>"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i></a>
 												</cfif>
 											</td>
 										</tr>
@@ -651,46 +683,49 @@
 					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 				</cfoutput>
 				
-				<ft:buttonPanel><cfoutput>
-					<input type="file" name="#arguments.fieldname#UPLOAD" id="#arguments.fieldname#UPLOAD" />
-					
-					<ft:button	Type="button" priority="secondary"
-								renderType="button"
-								value="Upload"
-								text="upload"
-								id="uploadaction" />
-					
-				
-					<cfif stActions.ftAllowSelect>
-						<ft:button	Type="button" priority="secondary"
-									renderType="button"
-									value="select"
-									onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;" />
-						
+				<cfoutput>
+					<!--- Modern dropzone: file picker + drag-drop + paste, mirroring the file/image
+					      formtools. Multi-file (this is an array). The #arguments.fieldname#UPLOAD
+					      input keeps the id/name the JS binds to ($fc.uploader attaches Uppy to it),
+					      and the dropzone id is what init() passes to create() as the dropZone. --->
+					<div id="#arguments.fieldname#-dropzone" class="fc-uploader-dropzone fc-arrayupload-dropzone" tabindex="0" role="button" aria-label="Upload files">
+						<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
+						<label class="fc-uploader-button">
+							Select files
+							<input type="file" name="#arguments.fieldname#UPLOAD" id="#arguments.fieldname#UPLOAD" multiple class="fc-uploader-file-input" />
+						</label>
+						<span class="fc-uploader-dropzone-hint">or drag and drop files, or paste from clipboard</span>
+					</div>
+					<cfif len(arguments.stMetadata.ftAllowedFileExtensions)>
+						<div class="fc-uploader-constraints">Formats accepted: #ucase(replace(arguments.stMetadata.ftAllowedFileExtensions, ",", ", ", "all"))#</div>
 					</cfif>
-					
-					<cfif arguments.stMetadata.ftAllowRemoveAll>
-						<cfif stActions.ftRemoveType EQ "delete">
-							<ft:button	Type="button" priority="secondary" 
-										renderType="button"
-										value="Remove All"
-										text="remove all" 
-										confirmText="Are you sure you want to delete the attached items? Doing so will immediately remove them from the database."
-										onClick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeAllItems();return false;" />
-						<cfelseif stActions.ftRemoveType EQ "remove">
-							<ft:button	Type="button" priority="secondary" 
-										renderType="button"
-										value="Remove All"
-										text="remove all" 
-										confirmText="Are you sure you want to remove the attached items? Doing so will only unlink them. The content will remain in the database."
-										onClick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeAllItems();return false;" />
-							
+				</cfoutput>
+
+				<cfif stActions.ftAllowCreate or stActions.ftAllowSelect or arguments.stMetadata.ftAllowRemoveAll>
+					<ft:buttonPanel style="border:none; text-align:left;"><cfoutput>
+						<cfif stActions.ftAllowCreate>
+							<!--- Create a brand-new related record. fcForm.openLibraryAdd reads
+							      the "-add-type" hidden input below for the type to create (always
+							      the single ftJoin here), saves via the displayLibraryAdd modal,
+							      then routes back through the wrapped refreshProperty -> finishSelect. --->
+							<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-plus"></i> Create</a>
+							<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 						</cfif>
-					</cfif>
-					
-				</cfoutput>	</ft:buttonPanel>
+
+						<cfif stActions.ftAllowSelect>
+							<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-search"></i> Select</a>
+						</cfif>
+
+						<cfif arguments.stMetadata.ftAllowRemoveAll>
+							<!--- Remove All routes through confirmRemoveAll() so it uses the same
+							      framework-agnostic confirm as the per-item remove (delete vs detach
+							      wording is decided client-side from removeType). --->
+							<a class="btn" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemoveAll();return false;"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i> Remove All</a>
+						</cfif>
+					</cfoutput>	</ft:buttonPanel>
+				</cfif>
 				
-				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
+				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
 				<cfif arguments.stMetadata.ftView eq 'tiled'>
 					<cfoutput>
 						<script type="text/template" id="uploaditem-#arguments.fieldname#">
@@ -717,8 +752,8 @@
 									<div class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></div>
 									<div class="fc-arrayupload-actions">
 										{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="fa fa-pencil"></i></a>{{if-allowedit}}
-										{{if-allowdelete}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowdelete}}
-										{{if-allowremove}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowremove}}
+										{{if-allowdelete}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Delete"><i class="fa fa-trash-o"></i></a>{{if-allowdelete}}
+										{{if-allowremove}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-times"></i></a>{{if-allowremove}}
 									</div>
 									<input type="hidden" name="{{fieldname}}" value="{{itemid}}" />
 									{{displayhtml}}
@@ -761,8 +796,8 @@
 											<td class="" style="width:100%;padding:3px;"><input type="hidden" name="{{fieldname}}" value="{{itemid}}" />{{displayhtml}}</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
 												{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="fa fa-pencil"></i></a>{{if-allowedit}}
-												{{if-allowdelete}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowdelete}}
-												{{if-allowremove}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-trash-o"></i></a>{{if-allowremove}}
+												{{if-allowdelete}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Delete"><i class="fa fa-trash-o"></i></a>{{if-allowdelete}}
+												{{if-allowremove}}<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('{{prefix}}','{{property}}').confirmRemove('{{itemid}}');return false;" title="Remove"><i class="fa fa-times"></i></a>{{if-allowremove}}
 											</td>
 										</tr>
 									</table>
