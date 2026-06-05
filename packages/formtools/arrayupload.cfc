@@ -101,6 +101,7 @@
 		<cfset var i = "" />
 		<cfset var counter = "" />
 		<cfset var returnHTML = "" />
+		<cfset var factoryScript = "" />
 		<cfset var qArrayField = "" />
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 	    <cfset var uploadLocation = "" />
@@ -176,8 +177,14 @@
 		<skin:loadCSS id="fc-fontawesome" />
 		<skin:loadCSS id="uploader" />
 	    
-		<skin:loadJS id="array-upload"><cfoutput>
-		<!--- <skin:htmlHead id="array-upload-js"><cfoutput><script type="text/javascript"> --->
+		<!--- Capture the factory into factoryScript so it ships *inside* returnHTML.
+		      A <skin:loadJS> body registers to a page JS zone, which is NOT re-emitted
+		      when this formtool is rendered into an AJAX-loaded modal (only returnHTML
+		      travels into the modal). That left $fc.arrayuploadformtool undefined when
+		      the inline init() script ran. Emitting the factory as a guarded inline
+		      <script> within returnHTML makes it available in every load context. --->
+		<cfsavecontent variable="factoryScript"><cfoutput><script type="text/javascript">
+			if (typeof $fc.arrayuploadformtool !== "function") {
 			(function($){
 				if (!fcForm.arrayuploadwrapped){
 					fcForm.arrayuploadwrapped = true;
@@ -598,11 +605,21 @@
 		    		return this[prefix+property];
 		    	};
 			})(jQuery);
-		</cfoutput></skin:loadJS>
-		<!--- </script></cfoutput></skin:htmlHead> --->
+			}
+		</script></cfoutput></cfsavecontent>
 		<skin:loadCSS id="array-upload"><style type="text/css"><cfoutput>
-			/* Add-files dropzone sits directly beneath the (bordered) item list. */
-				.fc-arrayupload-dropzone { margin-top:10px; }
+			/* Bordered array-field panel: frames the item list, the add dropzone and the
+			   action toolbar into one cohesive control (the s3arrayupload look, modern dropzone). */
+				.fc-arrayupload-panel { border:1px solid ##dddddd; border-radius:3px; background:##ffffff; overflow:hidden; }
+				/* Row separators come from forms.css (ul.arrayDetailView li { border-bottom });
+				   the panel supplies the outer frame, so the list itself needs no border. */
+				.fc-arrayupload-panel > ul.arrayDetailView { border:none; }
+				/* Add dropzone sits inset within the panel, below any existing items. */
+				.fc-arrayupload-dropzone { margin:10px; }
+				.fc-arrayupload-panel .fc-uploader-constraints { margin:0 10px 10px; }
+				/* Action toolbar rendered as a footer bar (Create / Select / Remove All). */
+				.fc-arrayupload-toolbar { padding:8px 10px; background:##f5f5f5; border-top:1px solid ##e5e5e5; text-align:left; }
+					.fc-arrayupload-toolbar .btn { margin-right:4px; }
 				.fc-arrayupload-item { zoom:1; }
 				/* Drag handle: a quiet FontAwesome glyph (no image), tinted on row hover. */
 				.fc-arrayupload-item .fc-grabbar { color:##cccccc; cursor:ns-resize; text-align:center; vertical-align:middle; }
@@ -631,7 +648,7 @@
 		<cfsavecontent variable="returnHTML">	
 			<grid:div class="multiField">
 			
-				<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;overflow:auto;"></cfoutput>
+				<cfoutput><div class="fc-arrayupload-panel"><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;margin:0px;overflow:auto;"></cfoutput>
 				
 				<cfloop from="1" to="#arraylen(joinItems)#" index="i">
 					<cfif arguments.stMetadata.ftView eq 'tiled'>
@@ -702,7 +719,7 @@
 				</cfoutput>
 
 				<cfif stActions.ftAllowCreate or stActions.ftAllowSelect or arguments.stMetadata.ftAllowRemoveAll>
-					<ft:buttonPanel style="border:none; text-align:left;"><cfoutput>
+					<cfoutput><div class="fc-arrayupload-toolbar">
 						<cfif stActions.ftAllowCreate>
 							<!--- Create a brand-new related record. fcForm.openLibraryAdd reads
 							      the "-add-type" hidden input below for the type to create (always
@@ -722,9 +739,16 @@
 							      wording is decided client-side from removeType). --->
 							<a class="btn" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemoveAll();return false;"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i> Remove All</a>
 						</cfif>
-					</cfoutput>	</ft:buttonPanel>
+					</div></cfoutput>
 				</cfif>
-				
+
+				<!--- Close .fc-arrayupload-panel (opened before the item list). --->
+				<cfoutput></div></cfoutput>
+
+				<!--- Ship the factory inline with returnHTML so it is defined before init()
+				      runs, including in AJAX-loaded modals where page JS zones don't re-emit. --->
+				<cfoutput>#factoryScript#</cfoutput>
+
 				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
 				<cfif arguments.stMetadata.ftView eq 'tiled'>
 					<cfoutput>
