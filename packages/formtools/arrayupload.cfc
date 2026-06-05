@@ -533,22 +533,10 @@
 								data: {
 									item:objectid
 								},
-								dataType: "json",
-								success: function(result){
+								dataType: "html",
+								success: function(data){
 		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
-									// Load the form's CSS/JS into the page (skip onready) before showing it.
-									for (var i = 0, ii = result.htmlhead.length; i < ii; i++) {
-										if (result.htmlhead[i].id !== "onready" && $("##" + result.htmlhead[i].id).size() === 0) {
-											$("head").append(result.htmlhead[i].html);
-										}
-									}
-									$fc.openModal(result.html,"auto","auto",true);
-									// Run onready now the fields are in the DOM.
-									for (var i = 0, ii = result.htmlhead.length; i < ii; i++) {
-										if (result.htmlhead[i].id === "onready") {
-											eval(result.htmlhead[i].html);
-										}
-									}
+									$fc.openModal(data,"auto","auto",true);
 								}
 							});
 		    			};
@@ -917,11 +905,9 @@
 	    <cfset var stPrep = "" />
 	    <cfset var uploadLocationS3 = "" />
 	    <cfset var joinLocation = "" />
-	    <cfset var aHead = [] />
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-		<cfimport taglib="/farcry/core/tags/core" prefix="core" />
 
 		<!--- Recover ftJoin from the URL when COAPI has none (render-time-injected ftJoin).
 		      Gated to genuine arrayupload fields so the endpoint can't be repurposed against
@@ -1015,11 +1001,8 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"edit")><!--- Edit an array item --->
-			<!--- Returns the modal form + its head resources as JSON, so editItem can
-			      load the field CSS/JS into the page (a raw HTML dump can't init them). --->
-			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif not isdefined("form.item") or not len(form.item)>
-				<cfreturn serializeJSON({ "html" = "No item specified", "htmlhead" = [] }) />
+				<cfreturn "No item specified" />
 			</cfif>
 
 			<cfset request.mode.ajax = true />
@@ -1034,9 +1017,7 @@
 				</div>
 			</cfoutput></cfsavecontent>
 
-			<!--- Capture the field CSS/JS/onready the form just registered. --->
-			<core:inHead variable="aHead" />
-			<cfreturn serializeJSON({ "html" = html, "htmlhead" = aHead }) />
+			<cfreturn html />
 		</cfif>
 		
 		<cfif structkeyexists(url,"update")><!--- Update an array item --->
