@@ -636,8 +636,8 @@
 				.fc-arrayupload-dropzone { margin:10px; }
 				/* Action toolbar rendered as a footer bar (Create / Select / Remove All). */
 				.fc-arrayupload-toolbar { padding:8px 10px; background:##f5f5f5; border-top:1px solid ##e5e5e5; text-align:left; }
-				/* Constraint caption sits below the toolbar on the panel's white base (no box). */
-				.fc-arrayupload-panel .fc-uploader-constraints { margin:0; padding:8px 10px; }
+				/* Constraint caption sits just below the panel (outside its border). */
+				.fc-arrayupload-constraints { margin:6px 0 0; }
 					.fc-arrayupload-toolbar .btn { margin-right:4px; }
 				.fc-arrayupload-item { zoom:1; }
 				/* Drag handle: a quiet FontAwesome glyph (no image), tinted on row hover. */
@@ -762,17 +762,17 @@
 					</cfif>
 				</div></cfoutput>
 
-				<!--- Constraint caption: sits below the toolbar on the panel's white base (no
-				      box), mirroring file/image. Short label + the full ext list in a hover
-				      tooltip, plus max size when configured. Not the field-level hint. --->
-				<cfif len(allowedExtsDisplay) or len(maxSizeText)>
-					<cfoutput>
-						<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints"><cfif len(allowedExtsDisplay)><span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="Accepted: #allowedExtsDisplay#">Formats accepted <i class="fa fa-question-circle"></i></span></cfif><cfif len(maxSizeText)><cfif len(allowedExtsDisplay)> &middot; </cfif>Max size: #maxSizeText#</cfif></div>
-					</cfoutput>
-				</cfif>
-
 				<!--- Close .fc-arrayupload-panel (opened before the item list). --->
 				<cfoutput></div></cfoutput>
+
+				<!--- Constraint caption: sits just below the panel (outside its border), so the
+				      short label + ext-list tooltip + max size read as a caption for the control.
+				      Not the field-level hint, which remains its own thing. --->
+				<cfif len(allowedExtsDisplay) or len(maxSizeText)>
+					<cfoutput>
+						<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints fc-arrayupload-constraints"><cfif len(allowedExtsDisplay)><span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="Accepted: #allowedExtsDisplay#">Formats accepted <i class="fa fa-question-circle"></i></span></cfif><cfif len(maxSizeText)><cfif len(allowedExtsDisplay)> &middot; </cfif>Max size: #maxSizeText#</cfif></div>
+					</cfoutput>
+				</cfif>
 
 				<!--- Factory must be defined before init() runs. --->
 				<cfoutput>#factoryScript#</cfoutput>
