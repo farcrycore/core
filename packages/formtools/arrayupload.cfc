@@ -521,13 +521,25 @@
 								cache: false,
 								type: "POST",
 					 			url: arrayuploadformtool.url+"/edit/1",
-								data: { 
+								data: {
 									item:objectid
 								},
-								dataType: "html",
-								success: function(data){
+								dataType: "json",
+								success: function(result){
 		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
-									$fc.openModal(data,"auto","auto",true);
+									// Load the form's CSS/JS into the page (skip onready) before showing it.
+									for (var i = 0, ii = result.htmlhead.length; i < ii; i++) {
+										if (result.htmlhead[i].id !== "onready" && $("##" + result.htmlhead[i].id).size() === 0) {
+											$("head").append(result.htmlhead[i].html);
+										}
+									}
+									$fc.openModal(result.html,"auto","auto",true);
+									// Run onready now the fields are in the DOM.
+									for (var i = 0, ii = result.htmlhead.length; i < ii; i++) {
+										if (result.htmlhead[i].id === "onready") {
+											eval(result.htmlhead[i].html);
+										}
+									}
 								}
 							});
 		    			};
@@ -715,29 +727,33 @@
 					</cfif>
 				</cfoutput>
 
-				<cfif stActions.ftAllowCreate or stActions.ftAllowSelect or arguments.stMetadata.ftAllowRemoveAll>
-					<cfoutput><div class="fc-arrayupload-toolbar">
-						<cfif stActions.ftAllowCreate>
-							<!--- Create a brand-new related record. fcForm.openLibraryAdd reads
-							      the "-add-type" hidden input below for the type to create (always
-							      the single ftJoin here), saves via the displayLibraryAdd modal,
-							      then routes back through the wrapped refreshProperty -> finishSelect. --->
-							<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-plus"></i> Create</a>
-							<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
-						</cfif>
+				<!--- Toolbar always renders so it anchors the panel as an array field (not a
+				      bare upload box). Upload is always first; the others are gated by flags. --->
+				<cfoutput><div class="fc-arrayupload-toolbar">
+					<!--- Upload: opens the file picker by triggering the dropzone's file input
+					      (same input Uppy is bound to), so selections flow through one transport. --->
+					<a class="btn" onclick="document.getElementById('#arguments.fieldname#UPLOAD').click();return false;"><i class="fa fa-cloud-upload"></i> Upload</a>
 
-						<cfif stActions.ftAllowSelect>
-							<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-search"></i> Select</a>
-						</cfif>
+					<cfif stActions.ftAllowCreate>
+						<!--- Create a brand-new related record. fcForm.openLibraryAdd reads
+						      the "-add-type" hidden input below for the type to create (always
+						      the single ftJoin here), saves via the displayLibraryAdd modal,
+						      then routes back through the wrapped refreshProperty -> finishSelect. --->
+						<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-plus"></i> Create</a>
+						<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
+					</cfif>
 
-						<cfif arguments.stMetadata.ftAllowRemoveAll>
-							<!--- Remove All routes through confirmRemoveAll() so it uses the same
-							      framework-agnostic confirm as the per-item remove (delete vs detach
-							      wording is decided client-side from removeType). --->
-							<a class="btn" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemoveAll();return false;"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i> Remove All</a>
-						</cfif>
-					</div></cfoutput>
-				</cfif>
+					<cfif stActions.ftAllowSelect>
+						<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-search"></i> Select</a>
+					</cfif>
+
+					<cfif arguments.stMetadata.ftAllowRemoveAll>
+						<!--- Remove All routes through confirmRemoveAll() so it uses the same
+						      framework-agnostic confirm as the per-item remove (delete vs detach
+						      wording is decided client-side from removeType). --->
+						<a class="btn" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemoveAll();return false;"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i> Remove All</a>
+					</cfif>
+				</div></cfoutput>
 
 				<!--- Close .fc-arrayupload-panel (opened before the item list). --->
 				<cfoutput></div></cfoutput>
@@ -868,9 +884,11 @@
 	    <cfset var stPrep = "" />
 	    <cfset var uploadLocationS3 = "" />
 	    <cfset var joinLocation = "" />
+	    <cfset var aHead = [] />
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+		<cfimport taglib="/farcry/core/tags/core" prefix="core" />
 
 		<!--- Recover ftJoin from the URL when COAPI has none (render-time-injected ftJoin).
 		      Gated to genuine arrayupload fields so the endpoint can't be repurposed against
@@ -964,12 +982,13 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"edit")><!--- Edit an array item --->
-			<!--- This branch returns HTML for the edit-item modal.
-			      No Content-Type set; the CFML default (text/html) is correct. --->
+			<!--- Returns the modal form + its head resources as JSON, so editItem can
+			      load the field CSS/JS into the page (a raw HTML dump can't init them). --->
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 			<cfif not isdefined("form.item") or not len(form.item)>
-				<cfreturn "No item specified" />
+				<cfreturn serializeJSON({ "html" = "No item specified", "htmlhead" = [] }) />
 			</cfif>
-			
+
 			<cfset request.mode.ajax = true />
 			<cfsavecontent variable="html"><cfoutput>
 				<div style="border: 1px solid ##c8c8c8\9;background-color:##FFFFFF;padding:15px;-webkit-box-shadow: 0 0 8px rgba(128,128,128,0.75);-moz-box-shadow: 0 0 8px rgba(128,128,128,0.75);box-shadow: 0 0 8px rgba(128,128,128,0.75);">
@@ -981,8 +1000,10 @@
 					</ft:form>
 				</div>
 			</cfoutput></cfsavecontent>
-			
-			<cfreturn html />
+
+			<!--- Capture the field CSS/JS/onready the form just registered. --->
+			<core:inHead variable="aHead" />
+			<cfreturn serializeJSON({ "html" = html, "htmlhead" = aHead }) />
 		</cfif>
 		
 		<cfif structkeyexists(url,"update")><!--- Update an array item --->
