@@ -102,6 +102,7 @@
 		<cfset var counter = "" />
 		<cfset var returnHTML = "" />
 		<cfset var factoryScript = "" />
+		<cfset var uploadAjaxURL = "" />
 		<cfset var qArrayField = "" />
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 	    <cfset var uploadLocation = "" />
@@ -177,12 +178,8 @@
 		<skin:loadCSS id="fc-fontawesome" />
 		<skin:loadCSS id="uploader" />
 	    
-		<!--- Capture the factory into factoryScript so it ships *inside* returnHTML.
-		      A <skin:loadJS> body registers to a page JS zone, which is NOT re-emitted
-		      when this formtool is rendered into an AJAX-loaded modal (only returnHTML
-		      travels into the modal). That left $fc.arrayuploadformtool undefined when
-		      the inline init() script ran. Emitting the factory as a guarded inline
-		      <script> within returnHTML makes it available in every load context. --->
+		<!--- Capture the factory so it ships inside returnHTML (a <skin:loadJS> page zone
+		      isn't re-emitted in AJAX modals). Guarded so repeat emits are no-ops. --->
 		<cfsavecontent variable="factoryScript"><cfoutput><script type="text/javascript">
 			if (typeof $fc.arrayuploadformtool !== "function") {
 			(function($){
@@ -745,11 +742,13 @@
 				<!--- Close .fc-arrayupload-panel (opened before the item list). --->
 				<cfoutput></div></cfoutput>
 
-				<!--- Ship the factory inline with returnHTML so it is defined before init()
-				      runs, including in AJAX-loaded modals where page JS zones don't re-emit. --->
+				<!--- Factory must be defined before init() runs. --->
 				<cfoutput>#factoryScript#</cfoutput>
 
-				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
+				<!--- Carry ftJoin in the URL; ajax() rebuilds stMetadata from COAPI and would
+				      otherwise lose a render-time-injected ftJoin (e.g. the bulk-upload form). --->
+				<cfset uploadAjaxURL = application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true) & "/ftjoin/" & listFirst(arguments.stMetadata.ftJoin) />
+				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#uploadAjaxURL#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
 				<cfif arguments.stMetadata.ftView eq 'tiled'>
 					<cfoutput>
 						<script type="text/template" id="uploaditem-#arguments.fieldname#">
@@ -872,7 +871,16 @@
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-		
+
+		<!--- Recover ftJoin from the URL when COAPI has none (render-time-injected ftJoin).
+		      Gated to genuine arrayupload fields so the endpoint can't be repurposed against
+		      an unrelated property via URL tampering. --->
+		<cfif (not structKeyExists(arguments.stMetadata,"ftJoin") or not listlen(arguments.stMetadata.ftJoin) eq 1)
+				and structKeyExists(arguments.stMetadata,"ftType") and arguments.stMetadata.ftType EQ "arrayupload"
+				and structKeyExists(url,"ftjoin") and listlen(url.ftjoin) eq 1>
+			<cfset arguments.stMetadata.ftJoin = url.ftjoin />
+		</cfif>
+
 	    <cfif not listlen(arguments.stMetadata.ftJoin) eq 1>
 			<cfthrow message="One related type must be specified in the ftJoin attribute" />
 		</cfif>
@@ -1026,6 +1034,12 @@
 		
 		<cfif structkeyexists(url,"upload")><!--- Upload / finalise a new array item --->
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+
+			<!--- Upload creates a new ftJoin record, so require Create permission on that
+			      type. Guards both the URL-recovered ftJoin and the declared-in-type path. --->
+			<cfif not application.security.checkPermission(permission="Create", type=arguments.stMetadata.ftJoin)>
+				<cfreturn serializeJSON({ "error" = "You do not have permission to create #arguments.stMetadata.ftJoin# records." }) />
+			</cfif>
 
 			<!--- stFieldPost is supplied by the dispatcher for form posts but may be
 			      absent on a direct-S3 finalize (an AJAX fetch); guard it so the
