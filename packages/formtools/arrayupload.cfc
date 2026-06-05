@@ -263,7 +263,7 @@
 		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,allowRemove,removeType,quickEdit,view,tilewidth,tileheight,storage){
 		    				var fieldname = prefix + property;
 							arrayuploadformtool.displaylist = $("##join-"+objectid+"-"+property);
-							arrayuploadformtool.uploadify = $("##"+fieldname+"UPLOAD");
+							arrayuploadformtool.fileInput = $("##"+fieldname+"UPLOAD");
 							arrayuploadformtool.typename = typename;
 							arrayuploadformtool.objectid = objectid;
 							arrayuploadformtool.url = url;
@@ -291,7 +291,7 @@
 							arrayuploadformtool.idCounter = 0;
 
 				    		arrayuploadformtool.uploader = $fc.uploader.create({
-								fileInput:           arrayuploadformtool.uploadify,
+								fileInput:           arrayuploadformtool.fileInput,
 								fieldName:           property+"UPLOAD",
 								endpoint:            url+"/upload/1",
 								storage:             arrayuploadformtool.storage,
@@ -323,7 +323,7 @@
 									if (percent < 100)
 										$("##"+fieldname+ID+"ProgressBar").animate({'width': percent + '%'},250);
 									else
-										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html('<span class="fc-uploader-pill fc-uploader-pill--uploading">Processing&hellip;</span>');
+										$("##join-item-#arguments.stMetadata.name#-"+ID+" .fc-arrayupload-feedback",arrayuploadformtool.displaylist).html('<span class="fc-uploader-pill fc-uploader-pill--uploading">Processing&hellip;</span>');
 								},
 								onComplete: function(file, results){
 									var ID = arrayuploadformtool.idMap[file.id];
@@ -332,7 +332,7 @@
 									delete arrayuploadformtool.idMap[file.id];
 
 									if (results.error && results.error.length){
-										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html('<span class="fc-uploader-error-text">Server error: '+results.error+'</span>');
+										$("##join-item-#arguments.stMetadata.name#-"+ID+" .fc-arrayupload-feedback",arrayuploadformtool.displaylist).html('<span class="fc-uploader-error-text">Server error: '+results.error+'</span>');
 									}
 									else {
 										$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
@@ -348,7 +348,7 @@
 										delete arrayuploadformtool.idMap[file.id];
 									}
 									if (ID == null) return;
-									var errorloc = $("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist);
+									var errorloc = $("##join-item-#arguments.stMetadata.name#-"+ID+" .fc-arrayupload-feedback",arrayuploadformtool.displaylist);
 									if (error.type === "http")
 										errorloc.html('<span class="fc-uploader-error-text">HTTP error: '+(error.status||"")+'</span>');
 									else if (error.type === "size")
@@ -649,12 +649,12 @@
 					.fc-arrayupload-item .fc-remove:hover, .fc-arrayupload-item .fc-remove:focus { color:##333333; outline:none; text-decoration:none; }
 					.fc-arrayupload-item .fc-remove:hover, .fc-arrayupload-item .fc-remove:focus { color:##d2322d; }
 				/* Progress: match the shared .fc-uploader-progress primitive. */
-				.uploadifyProgress { background:##e6e6e6; border-radius:2px; overflow:hidden; height:3px; margin-top:8px; }
-					.uploadifyProgressBar { background:##3e84b5; height:3px; width:0; }
+				.fc-arrayupload-progress { background:##e6e6e6; border-radius:2px; overflow:hidden; height:3px; margin-top:8px; }
+					.fc-arrayupload-progress-bar { background:##3e84b5; height:3px; width:0; }
 				.fc-list-view { clear:both; padding:8px; }
 					.fc-list-view-container { width:100%; }
 					.fc-list-view-table { width:100%; }
-					.fc-list-view .uploadifyFeedback { margin-top:4px; }
+					.fc-list-view .fc-arrayupload-feedback { margin-top:4px; }
 					.fc-list-view .fc-grabbar { width:22px; }
 				.fc-tile-view { float:left; }
 					.fc-tile-view .fc-tile-view-container { padding:10px; text-align:center; overflow:hidden; cursor:move; position:relative; }
@@ -808,9 +808,9 @@
 										</a>
 									</div>
 									{{filename}} ({{filesize}})
-									<div class="uploadifyFeedback">
-										<div class="uploadifyProgress">
-											<div id="{{fieldname}}{{ID}}ProgressBar" class="uploadifyProgressBar"><!--Progress Bar--></div>
+									<div class="fc-arrayupload-feedback">
+										<div class="fc-arrayupload-progress">
+											<div id="{{fieldname}}{{ID}}ProgressBar" class="fc-arrayupload-progress-bar"><!--Progress Bar--></div>
 										</div>
 									</div>
 								</div>
@@ -841,9 +841,9 @@
 											<td class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></td>
 											<td class="" style="width:100%;padding:3px;">
 												{{filename}} ({{filesize}})
-												<div class="uploadifyFeedback">
-													<div class="uploadifyProgress">
-														<div id="{{fieldname}}{{ID}}ProgressBar" class="uploadifyProgressBar"><!--Progress Bar--></div>
+												<div class="fc-arrayupload-feedback">
+													<div class="fc-arrayupload-progress">
+														<div id="{{fieldname}}{{ID}}ProgressBar" class="fc-arrayupload-progress-bar"><!--Progress Bar--></div>
 													</div>
 												</div>
 											</td>
