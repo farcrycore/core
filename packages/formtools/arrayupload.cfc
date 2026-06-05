@@ -273,6 +273,7 @@
 							arrayuploadformtool.allowRemove = allowRemove;
 							arrayuploadformtool.removeType = removeType;
 							arrayuploadformtool.beforeSelect = [];
+							arrayuploadformtool.pendingSelect = false;
 							arrayuploadformtool.quickEdit = quickEdit;
 							arrayuploadformtool.storage = storage;
 		    				
@@ -510,7 +511,7 @@
 										items:thisid,
 										startindex:$("> li",arrayuploadformtool.displaylist).size()
 									},
-									dataType: "html",
+									dataType: "json",
 									success: function(data){
 										for (var i=0;i<data.length;i++)
 											$("##join-item-#arguments.stMetadata.name#-"+data[i].objectid,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
@@ -571,26 +572,35 @@
 		    			};
 		    			
 		    			this.beginSelect = function beginSelect(){
+		    				arrayuploadformtool.pendingSelect = true;
 		    				arrayuploadformtool.beforeSelect = arrayuploadformtool.getSelected();
 		    				$("##"+prefix+property).val(arrayuploadformtool.beforeSelect.join(","));
 		    			};
 		    			
 		    			this.finishSelect = function finishSelect(editid){
-		    				var afterSelect = $("##"+prefix+property).val().split(",");
-		    				var aAdd = [];
-		    				var aRemove = [];
-		    				for (var i=0;i<arrayuploadformtool.beforeSelect.length;i++){
-		    					var stillSelected = false;
-		    					for (var j=0;j<afterSelect.length;j++) stillSelected = stillSelected || afterSelect[j]==arrayuploadformtool.beforeSelect[i];
-		    					if (!stillSelected)	aRemove.push(arrayuploadformtool.beforeSelect[i]);	
+		    				// refreshProperty fires after BOTH Select/Create (membership may change)
+		    				// and Edit (only the row's rendered content changes). The add/remove diff
+		    				// is meaningful ONLY when a Select/Create seeded it via beginSelect; on a
+		    				// pure edit beforeSelect is stale and the scratch field is empty, so the
+		    				// diff would misread every attached item as a removal. Gate it accordingly.
+		    				if (arrayuploadformtool.pendingSelect) {
+		    					var afterSelect = $("##"+prefix+property).val().split(",");
+		    					var aAdd = [];
+		    					var aRemove = [];
+		    					for (var i=0;i<arrayuploadformtool.beforeSelect.length;i++){
+		    						var stillSelected = false;
+		    						for (var j=0;j<afterSelect.length;j++) stillSelected = stillSelected || afterSelect[j]==arrayuploadformtool.beforeSelect[i];
+		    						if (!stillSelected)	aRemove.push(arrayuploadformtool.beforeSelect[i]);
+		    					}
+		    					if (aRemove.length) arrayuploadformtool.removeItems(aRemove);
+		    					for (var i=0;i<afterSelect.length;i++){
+		    						if ($("##join-item-#arguments.stMetadata.name#-"+afterSelect[i],arrayuploadformtool.displaylist).size()==0) aAdd.push(afterSelect[i]);
+		    					}
+		    					if (aAdd.length) arrayuploadformtool.addItems(aAdd);
+		    					$("##"+prefix+property).val("");
+		    					arrayuploadformtool.pendingSelect = false;
 		    				}
-		    				if (aRemove.length) arrayuploadformtool.removeItems(aRemove);
-		    				for (var i=0;i<afterSelect.length;i++){
-		    					if ($("##join-item-#arguments.stMetadata.name#-"+afterSelect[i],arrayuploadformtool.displaylist).size()==0) aAdd.push(afterSelect[i]);	
-		    				}
-		    				if (aAdd.length) arrayuploadformtool.addItems(aAdd);
-		    				if (editid.length) arrayuploadformtool.refreshItems([ editid ]);
-		    				$("##"+prefix+property).val("");
+		    				if (editid && editid.length) arrayuploadformtool.refreshItems([ editid ]);
 		    			}
 
 		    			this.cancelByLocalId = function arrayUploadCancelByLocalId(localId){
