@@ -107,6 +107,8 @@
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 	    <cfset var uploadLocation = "" />
 	    <cfset var storageType = "local" />
+	    <cfset var allowedExtsDisplay = "" />
+	    <cfset var maxSizeText = "" />
 
 	    <cfif not listlen(arguments.stMetadata.ftJoin) eq 1>
 			<cfthrow message="One related type must be specified in the ftJoin attribute" />
@@ -129,6 +131,13 @@
 			<cfset arguments.stMetadata.ftSizeLimit = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftSizeLimit />
 		<cfelse>
 			<cfset arguments.stMetadata.ftSizeLimit = -1 />
+		</cfif>
+
+		<!--- Constraint caption values: short ext list (full list goes in a tooltip) and
+		      a human-readable max size (ftSizeLimit is bytes, like file.cfc's ftMaxSize). --->
+		<cfset allowedExtsDisplay = ucase(replace(arguments.stMetadata.ftAllowedFileExtensions, ",", ", ", "all")) />
+		<cfif val(arguments.stMetadata.ftSizeLimit) gt 0>
+			<cfset maxSizeText = humanFileSize(val(arguments.stMetadata.ftSizeLimit)) />
 		</cfif>
 
 		<!--- Pick the uploader transport from the joined file property's CDN location:
@@ -625,9 +634,10 @@
 				.fc-arrayupload-panel > ul.arrayDetailView { border:none; }
 				/* Add dropzone sits inset within the panel, below any existing items. */
 				.fc-arrayupload-dropzone { margin:10px; }
-				.fc-arrayupload-panel .fc-uploader-constraints { margin:0 10px 10px; }
 				/* Action toolbar rendered as a footer bar (Create / Select / Remove All). */
 				.fc-arrayupload-toolbar { padding:8px 10px; background:##f5f5f5; border-top:1px solid ##e5e5e5; text-align:left; }
+				/* Constraint caption sits below the toolbar on the panel's white base (no box). */
+				.fc-arrayupload-panel .fc-uploader-constraints { margin:0; padding:8px 10px; }
 					.fc-arrayupload-toolbar .btn { margin-right:4px; }
 				.fc-arrayupload-item { zoom:1; }
 				/* Drag handle: a quiet FontAwesome glyph (no image), tinted on row hover. */
@@ -722,9 +732,6 @@
 						</label>
 						<span class="fc-uploader-dropzone-hint">or drag and drop files, or paste from clipboard</span>
 					</div>
-					<cfif len(arguments.stMetadata.ftAllowedFileExtensions)>
-						<div class="fc-uploader-constraints">Formats accepted: #ucase(replace(arguments.stMetadata.ftAllowedFileExtensions, ",", ", ", "all"))#</div>
-					</cfif>
 				</cfoutput>
 
 				<!--- Toolbar always renders so it anchors the panel as an array field (not a
@@ -755,6 +762,15 @@
 					</cfif>
 				</div></cfoutput>
 
+				<!--- Constraint caption: sits below the toolbar on the panel's white base (no
+				      box), mirroring file/image. Short label + the full ext list in a hover
+				      tooltip, plus max size when configured. Not the field-level hint. --->
+				<cfif len(allowedExtsDisplay) or len(maxSizeText)>
+					<cfoutput>
+						<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints"><cfif len(allowedExtsDisplay)><span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="Accepted: #allowedExtsDisplay#">Formats accepted <i class="fa fa-question-circle"></i></span></cfif><cfif len(maxSizeText)><cfif len(allowedExtsDisplay)> &middot; </cfif>Max size: #maxSizeText#</cfif></div>
+					</cfoutput>
+				</cfif>
+
 				<!--- Close .fc-arrayupload-panel (opened before the item list). --->
 				<cfoutput></div></cfoutput>
 
@@ -765,6 +781,23 @@
 				      otherwise lose a render-time-injected ftJoin (e.g. the bulk-upload form). --->
 				<cfset uploadAjaxURL = application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true) & "/ftjoin/" & listFirst(arguments.stMetadata.ftJoin) />
 				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#uploadAjaxURL#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#','#len(arguments.stMetadata.ftEditableProperties) gt 0#','#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
+
+			<!--- Width-constrained hover tooltip for the accepted-formats list. ft:form loads
+			      Tooltipster but the webtop only auto-inits tooltips in its header, so edit-form
+			      triggers must be initialised here (same as file/image). --->
+			<skin:onReady>
+				<cfoutput>
+					if ($j.fn.tooltipster){
+						$j('###arguments.fieldname#-constraints').find('.fc-richtooltip').tooltipster({
+							theme:      '.tooltipster-light',
+							position:   'top',
+							fixedWidth: 280,
+							delay:      0,
+							speed:      200
+						});
+					}
+				</cfoutput>
+			</skin:onReady>
 				<cfif arguments.stMetadata.ftView eq 'tiled'>
 					<cfoutput>
 						<script type="text/template" id="uploaditem-#arguments.fieldname#">
@@ -1387,7 +1420,25 @@
 		</cfsavecontent>
 		
 		<cfreturn resultHTML />
-	</cffunction>		
-	
-	
+	</cffunction>
+
+	<cffunction name="humanFileSize" access="private" output="false" returntype="string" hint="Formats a byte count as a short human-readable size (e.g. '1.2 MB'). Returns empty string for zero/negative.">
+		<cfargument name="bytes" type="numeric" required="true" />
+
+		<cfset var units = "B,KB,MB,GB,TB" />
+		<cfset var i = 1 />
+		<cfset var size = arguments.bytes />
+
+		<cfif arguments.bytes lte 0>
+			<cfreturn "" />
+		</cfif>
+
+		<cfloop condition="size gte 1024 and i lt listlen(units)">
+			<cfset size = size / 1024 />
+			<cfset i = i + 1 />
+		</cfloop>
+
+		<cfreturn (i eq 1 ? round(size) : numberFormat(size, "0.0")) & " " & listGetAt(units, i) />
+	</cffunction>
+
 </cfcomponent>
