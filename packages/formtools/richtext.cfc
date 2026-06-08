@@ -119,9 +119,36 @@
 					<cfif len(configJS)>
 						#configJS#,
 					</cfif>
-					image_list : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=imageoptions&relatedTypename=#arguments.stMetadata.ftImageListFilterTypename#&relatedProperty=#arguments.stMetadata.ftImageListFilterProperty#"
+					image_list : function (success) {
+						$j.ajax({
+							url : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=imageoptions&relatedTypename=#arguments.stMetadata.ftImageListFilterTypename#&relatedProperty=#arguments.stMetadata.ftImageListFilterProperty#",
+							cache : false,
+							success : function (data) {
+								if (typeof data === "string") { data = JSON.parse(data); }
+								var items = ((data || {}).images) || [];
+								success(items.map(function (it) {
+									return { title : it.title || it.text, value : it.value || it.url };
+								}));
+							},
+							error : function () { success([]); }
+						});
+					}
 					<cfif len(arguments.stMetadata.ftLinkListFilterTypenames)>
-						, link_list : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=linkoptions&relatedTypename=#arguments.stMetadata.ftLinkListFilterTypenames#"
+						, link_list : function (success) {
+							$j.ajax({
+								url : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=linkoptions&relatedTypename=#arguments.stMetadata.ftLinkListFilterTypenames#",
+								cache : false,
+								success : function (data) {
+									if (typeof data === "string") { data = JSON.parse(data); }
+									var mapItem = function (it) {
+										return it.menu ? { title : it.title || it.text, menu : it.menu.map(mapItem) } : { title : it.title || it.text, value : it.value || it.url };
+									};
+									var items = ((data || {}).links) || [];
+									success(items.map(mapItem));
+								},
+								error : function () { success([]); }
+							});
+						}
 					</cfif>
 					<cfif len(imageUploadField)>
 						, imageUploadField : #serializeJSON(imageUploadField)#
@@ -578,7 +605,7 @@
 	<cffunction name="getConfigJSON" access="public" output="false" returntype="struct" hint="Returns the base TinyMCE config as a struct so projects can override individual options without string manipulation. Keys are set with bracket notation so serializeJSON preserves their case.">
 		<cfargument name="stConfig" required="false" type="struct" default="#structNew()#" hint="An optional config struct to populate and return; defaults to a new struct.">
 
-		<cfset arguments.stConfig["plugins"] = "farcrycontenttemplates,image_farcry,link_farcry,insertdatetime,media,searchreplace,directionality,fullscreen,visualchars,nonbreaking,anchor,charmap,lists,table,code" />
+		<cfset arguments.stConfig["plugins"] = "farcrycontenttemplates,image,link,insertdatetime,media,searchreplace,directionality,fullscreen,visualchars,nonbreaking,anchor,charmap,lists,table,code" />
 		<cfset arguments.stConfig["extended_valid_elements"] = "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],ul,ol,li" />
 		<cfset arguments.stConfig["menubar"] = false />
 		<cfset arguments.stConfig["toolbar"] = "undo redo | cut copy paste pastetext | styles | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen" />
