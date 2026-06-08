@@ -32,7 +32,7 @@
 			var aRelatedIDs = $j('.array input[type=hidden],.uuid input[type=hidden]').map(function () {
 				return this.value.search(/^(,?\w{8}-\w{4}-\w{4}-\w{16}),?$/) === -1 ? null : this.value;
 			}).get();
-			$j('li[id^="join-item-aObjectIDs"]').each(function () {
+			$j('li[id^="join-item-"]').each(function () {
 				aRelatedIDs.push($j(this).attr('serialize'));
 			});
 			return aRelatedIDs.join(',');
@@ -121,6 +121,10 @@
 			icon: 'template',
 			tooltip: 'FarCry content templates',
 			fetch: function (callback) {
+				if (!farcryRelatedTypes.length) {
+					callback([{ type: 'menuitem', text: 'No related content types configured', enabled: false, onAction: function () {} }]);
+					return;
+				}
 				callback(farcryRelatedTypes.map(function (stType) {
 					return { type: 'menuitem', text: stType.label, onAction: function () { openTemplateDialog(stType); } };
 				}));
