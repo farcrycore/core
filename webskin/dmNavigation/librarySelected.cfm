@@ -14,13 +14,10 @@
     <cfset lAncestorNames = listDeleteAt(lAncestorNames, 1, myDelimeter) />
   </cfif>
 
-  <!--- (optional) Now change all ">" symbols to the string "&gt;" --->
-  <cfset lAncestorNames = replace(lAncestorNames, ">", "&gt;", "all") />
-
   <cfoutput>
   <div class="librarySelect">
-    <span>#stObj.label#</span><br>
-    <span class="muted">#lAncestorNames#</span>
+    <span>#application.fc.lib.esapi.encodeForHTML(stObj.label)#</span><br>
+    <span class="muted">#application.fc.lib.esapi.encodeForHTML(lAncestorNames)#</span>
   </div>
   </cfoutput>
 </cfif>

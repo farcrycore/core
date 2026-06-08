@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Library list item --->
 
-<cfoutput>#stObj.title#</cfoutput>
+<cfoutput>#application.fc.lib.esapi.encodeForHTML(stObj.title)#</cfoutput>
 
 <cfsetting enablecfoutputonly="false" />

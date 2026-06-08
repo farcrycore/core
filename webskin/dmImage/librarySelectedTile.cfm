@@ -5,7 +5,7 @@
 <cfif StructKeyExists(stObj,"thumbnailImage") AND len(stobj.thumbnailImage)>
 	<cfoutput>
 		<img src="#getFileLocation(stObject=stObj,fieldname='thumbnailImage',admin=true).path#" title="#application.fc.lib.esapi.encodeForHTMLAttribute(stObj.title)#" style="clear:both;" />
-		#stObj.title#
+		#application.fc.lib.esapi.encodeForHTML(stObj.title)#
 		<cfif len(stobj.alt)><br /><em>(#application.fc.lib.esapi.encodeForHTML(stobj.alt)#)</em></cfif>
 	</cfoutput>
 <cfelseif len(stobj.label)>
