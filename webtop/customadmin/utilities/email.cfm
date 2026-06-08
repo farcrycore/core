@@ -40,8 +40,12 @@
 <ft:form>
 	<cfoutput><h1>Send Email</h1></cfoutput>
 	
-	<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>"><cfoutput><li>#encodeForHTML(message.message)#</li></cfoutput></skin:pop>
-	<skin:pop start="<ul id='OKMsg'>" end="</ul>"><cfoutput>#encodeForHTML(message.message)#</li></cfoutput></skin:pop>
+	<skin:pop tags="email"><cfoutput>
+		<div class="alert<cfif listfindnocase(message.tags,'info')> alert-info<cfelseif listfindnocase(message.tags,'error')> alert-error<cfelseif listfindnocase(message.tags,'success')> alert-success</cfif>">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			#encodeForHTML(message.message)#
+		</div>
+	</cfoutput></skin:pop>
 	
 	<ft:field label="To"><cfoutput><input type="text" class="textInput" name="to" value="#encodeForHTMLAttribute(form.to)#"></cfoutput></ft:field>
 	<ft:field label="BCC"><cfoutput><input type="text" class="textInput" name="bcc" value="#encodeForHTMLAttribute(form.bcc)#"></cfoutput></ft:field>
