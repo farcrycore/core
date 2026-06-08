@@ -215,7 +215,7 @@
 		<skin:loadJS id="category-formtool" />
 		<skin:loadJS id="jquery-modal" />
 		<skin:loadCSS id="jquery-modal" />
-		<skin:loadCSS id="fc-icons" />
+		<skin:loadCSS id="fc-fontawesome" />
 		
 		<cfif (len(arguments.stMetadata.ftAlias) AND arguments.stMetadata.ftAlias eq "root") or not application.fapi.checkCatID(arguments.stMetadata.ftAlias)>
 			<cfset stBranch = stTree />

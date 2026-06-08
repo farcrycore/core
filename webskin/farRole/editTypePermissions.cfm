@@ -10,7 +10,7 @@
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
-<skin:loadCSS id="fc-font-awesome" />
+<skin:loadCSS id="fc-fontawesome" />
 
 
 <skin:htmlHead>
