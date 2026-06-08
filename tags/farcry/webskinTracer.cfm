@@ -20,8 +20,8 @@
 			<skin:htmlHead id="webskin-tracer">
 				<cfoutput>
 					<style type="text/css">
-					.webskin-tracer-close {background:transparent url(#application.url.webtop#/thirdparty/jquery-tooltip/shadow.png) top no-repeat;height:26px;}
-					.webskin-tracer-bubble {background:transparent url(#application.url.webtop#/thirdparty/jquery-tooltip/shadow-bottom.png) bottom no-repeat;width:369px;height:auto;display:block;}
+					.webskin-tracer-close {background:transparent url(#application.url.webtop#/images/webskinTracer/shadow.png) top no-repeat;height:26px;}
+					.webskin-tracer-bubble {background:transparent url(#application.url.webtop#/images/webskinTracer/shadow-bottom.png) bottom no-repeat;width:369px;height:auto;display:block;}
 					.webskin-tracer-bubble-inner {padding:0px 25px 25px 25px;font-size:10px;display:block;}
 					.webskin-tracer-bubble-inner table.webskin-tracer-table {border:none;}
 					.webskin-tracer-bubble-inner table.webskin-tracer-table th {font-size:10px;color:black;font-weight:bold;padding:1px;vertical-align:top;}
