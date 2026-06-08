@@ -40,14 +40,14 @@
 <ft:form>
 	<cfoutput><h1>Send Email</h1></cfoutput>
 	
-	<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>"><cfoutput><li>#message.message#</li></cfoutput></skin:pop>
-	<skin:pop start="<ul id='OKMsg'>" end="</ul>"><cfoutput>#message.message#</li></cfoutput></skin:pop>
+	<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>"><cfoutput><li>#encodeForHTML(message.message)#</li></cfoutput></skin:pop>
+	<skin:pop start="<ul id='OKMsg'>" end="</ul>"><cfoutput>#encodeForHTML(message.message)#</li></cfoutput></skin:pop>
 	
-	<ft:field label="To"><cfoutput><input type="text" class="textInput" name="to" value="#form.to#"></cfoutput></ft:field>
-	<ft:field label="BCC"><cfoutput><input type="text" class="textInput" name="bcc" value="#form.bcc#"></cfoutput></ft:field>
-	<ft:field label="From"><cfoutput><input type="text" class="textInput" name="from" value="#form.from#"></cfoutput></ft:field>
-	<ft:field label="Subject"><cfoutput><input type="text" class="textInput" name="subject" value="#form.subject#"></cfoutput></ft:field>
-	<ft:field label="Body (Text)"><cfoutput><textarea name="bodyPlain" class="textareaInput">#form.bodyPlain#</textarea></cfoutput></ft:field>
+	<ft:field label="To"><cfoutput><input type="text" class="textInput" name="to" value="#encodeForHTMLAttribute(form.to)#"></cfoutput></ft:field>
+	<ft:field label="BCC"><cfoutput><input type="text" class="textInput" name="bcc" value="#encodeForHTMLAttribute(form.bcc)#"></cfoutput></ft:field>
+	<ft:field label="From"><cfoutput><input type="text" class="textInput" name="from" value="#encodeForHTMLAttribute(form.from)#"></cfoutput></ft:field>
+	<ft:field label="Subject"><cfoutput><input type="text" class="textInput" name="subject" value="#encodeForHTMLAttribute(form.subject)#"></cfoutput></ft:field>
+	<ft:field label="Body (Text)"><cfoutput><textarea name="bodyPlain" class="textareaInput">#encodeForHTML(form.bodyPlain)#</textarea></cfoutput></ft:field>
 	<ft:field label="Body (HTML)">
 		<cfset stRichtext = structNew() />
 		<!--- richtext.edit() needs a registered host type (it calls getContentType()); dmHTML is a neutral core type. This form has no backing record. --->
