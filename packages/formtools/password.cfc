@@ -97,10 +97,42 @@
 
 		
 		<cfset var html = "" />
-		
-		
+
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
+		<skin:loadJS id="fc-jquery" />
+		<skin:loadCSS id="fc-fontawesome" />
+
 		<cfsavecontent variable="html">
-			<cfoutput><a href="##" onclick="alert('#encodeForJavaScript(arguments.stMetadata.value)#');">****************</a></cfoutput>
+			<cfoutput>
+				<span class="fc-password-reveal" data-secret="#encodeForHTMLAttribute(arguments.stMetadata.value)#" style="display:inline-flex;align-items:center;gap:6px;">
+					<span class="fc-password-reveal-value" style="font-family:inherit;letter-spacing:2px;">●●●●●●●●</span>
+					<button type="button" class="fc-password-reveal-toggle" aria-label="Show password" title="Show password" style="background:none;border:0;cursor:pointer;color:inherit;padding:0;line-height:1;">
+						<i class="fa fa-eye"></i>
+					</button>
+				</span>
+				<script>
+					(function(){
+						if (window.fcPasswordRevealBound) return;
+						window.fcPasswordRevealBound = true;
+						$j(document).on("click.fcpwd", ".fc-password-reveal-toggle", function(){
+							var $btn = $j(this);
+							var $wrap = $btn.closest(".fc-password-reveal");
+							var $value = $wrap.find(".fc-password-reveal-value");
+							var $icon = $btn.find("i");
+							if ($icon.hasClass("fa-eye")) {
+								$value.text($wrap.attr("data-secret"));
+								$icon.removeClass("fa-eye").addClass("fa-eye-slash");
+								$btn.attr("aria-label", "Hide password").attr("title", "Hide password");
+							} else {
+								$value.text("●●●●●●●●");
+								$icon.removeClass("fa-eye-slash").addClass("fa-eye");
+								$btn.attr("aria-label", "Show password").attr("title", "Show password");
+							}
+						});
+					})();
+				</script>
+			</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
