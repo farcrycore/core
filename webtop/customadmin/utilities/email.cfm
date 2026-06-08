@@ -34,27 +34,6 @@
 
 
 <skin:loadJS id="fc-jquery" />
-<skin:loadJS id="tinymce" />
-<skin:onReady><cfoutput>
-	tinymce.init({
-
-		selector: '##bodyHTML',
-
-		script_url : '#application.url.webtop#/thirdparty/tiny_mce/tinymce.min.js',
-
-		plugins : "farcrycontenttemplates,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,code,textcolor",
-		extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
-		menubar : false,
-		toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table | code",
-		remove_linebreaks : false,
-		forced_root_block : 'p',
-		relative_urls : false,
-		entity_encoding : 'raw',
-		
-		width : "98%",
-		height : "280px"
-	});
-</cfoutput></skin:onReady>
 
 <admin:header>
 
@@ -69,7 +48,29 @@
 	<ft:field label="From"><cfoutput><input type="text" class="textInput" name="from" value="#form.from#"></cfoutput></ft:field>
 	<ft:field label="Subject"><cfoutput><input type="text" class="textInput" name="subject" value="#form.subject#"></cfoutput></ft:field>
 	<ft:field label="Body (Text)"><cfoutput><textarea name="bodyPlain" class="textareaInput">#form.bodyPlain#</textarea></cfoutput></ft:field>
-	<ft:field label="Body (HTML)"><cfoutput><textarea id="bodyHTML" name="bodyHTML">#form.bodyHTML#</textarea></cfoutput></ft:field>
+	<ft:field label="Body (HTML)">
+		<cfset stRichtext = structNew() />
+		<!--- richtext.edit() needs a registered host type (it calls getContentType()); dmHTML is a neutral core type. This form has no backing record. --->
+		<cfset stRichtext.typename = "dmHTML" />
+		<cfset stRichtext.stObject = structNew() />
+		<cfset stRichtext.stObject.objectid = createUUID() />
+		<cfset stRichtext.stObject.typename = "dmHTML" />
+		<cfset stRichtext.stMetadata = structNew() />
+		<cfset stRichtext.stMetadata.name = "bodyHTML" />
+		<cfset stRichtext.stMetadata.ftType = "richtext" />
+		<cfset stRichtext.stMetadata.value = form.bodyHTML />
+		<cfset stRichtext.stMetadata.ftImageListFilterTypename = "" />
+		<cfset stRichtext.stMetadata.ftImageListFilterProperty = "" />
+		<cfset stRichtext.stMetadata.ftLinkListFilterTypenames = "" />
+		<cfset stRichtext.stMetadata.ftTemplateTypeList = "" />
+		<cfset stRichtext.stMetadata.ftContentCSS = "" />
+		<cfset stRichtext.stMetadata.ftWidth = "98%" />
+		<cfset stRichtext.stMetadata.ftHeight = "280px" />
+		<cfset stRichtext.stMetadata.ftClass = "" />
+		<cfset stRichtext.stMetadata.ftStyle = "" />
+		<cfset stRichtext.fieldname = "bodyHTML" />
+		<cfoutput>#application.formtools.richtext.oFactory.edit(argumentCollection=stRichtext)#</cfoutput>
+	</ft:field>
 	<ft:field label="Attachment"><cfoutput><input type="file" class="textInput" name="attachment"></cfoutput></ft:field>
 	
 	<ft:buttonPanel>
