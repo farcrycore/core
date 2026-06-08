@@ -558,10 +558,11 @@
 		
 		<cfsavecontent variable="configJS">
 			<cfoutput>			
-				plugins : "farcrycontenttemplates,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,codemirror,textcolor,lists",
+				license_key : "gpl",
+				plugins : "farcrycontenttemplates,image_farcry,link_farcry,insertdatetime,media,searchreplace,directionality,fullscreen,visualchars,nonbreaking,anchor,charmap,lists,table,code",
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],ul,ol,li",
 				menubar : false,
-				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen",
+				toolbar : "undo redo | cut copy paste pastetext | styles | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
 				relative_urls : false,
