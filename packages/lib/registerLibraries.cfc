@@ -44,7 +44,7 @@
 		
 		<skin:registerJS 	id="fc-handlebars" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/handlebars"
-							lFiles="handlebars.js" />
+							lFiles="handlebars.min.js" />
 		<skin:registerJS 	id="handlebars" aliasof="fc-handlebars" core="false" />
 		
 		<skin:registerJS 	id="tinymce" core="true" bCombine="false"
