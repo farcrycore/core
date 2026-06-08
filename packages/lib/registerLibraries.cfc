@@ -42,7 +42,7 @@
 							lFiles="backbone.js" />
 		<skin:registerJS 	id="backbone" aliasof="fc-backbone" core="false" />
 		
-		<skin:registerJS 	id="fc-handlebars" core="true"
+		<skin:registerJS 	id="fc-handlebars" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/handlebars"
 							lFiles="handlebars.min.js" />
 		<skin:registerJS 	id="handlebars" aliasof="fc-handlebars" core="false" />
