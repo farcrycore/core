@@ -137,7 +137,7 @@
 							<!--- Hidden inputs persist across the dropzone / uploading / details states.
 							      '#arguments.fieldname#' holds the stored value; 'DELETE' marks it for removal
 							      on save; 'NEW' is the file picker the uploader drives. --->
-							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" />
 							<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
 
 							<!--- (1) Dropzone — initial state, and the Replace state. --->
@@ -594,7 +594,7 @@
 		<cfset var html = "" />
 	
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&fieldname=#arguments.stmetadata.name#">#listLast(arguments.stMetadata.value,"/")#</a></cfoutput>
+			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#encodeForHTMLAttribute(arguments.stobject.objectid)#&typename=#encodeForHTMLAttribute(arguments.typename)#&fieldname=#encodeForHTMLAttribute(arguments.stmetadata.name)#">#encodeForHTML(listLast(arguments.stMetadata.value,"/"))#</a></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>

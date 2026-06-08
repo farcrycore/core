@@ -31,7 +31,7 @@
 		
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
-				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" maxLength="4" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
+				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" maxLength="4" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
 				&nbsp;&nbsp;<a href="http://www.cvvnumber.com/cvv.html" target="_blank">what is this?</a>
 			</div>
 		</cfoutput></cfsavecontent>

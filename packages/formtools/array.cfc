@@ -116,7 +116,7 @@
 										#html#								
 										<!---<cfinclude template="/farcry/projects/#application.projectDirectoryName#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
 									<cfelse>
-										#stobj.label#
+										#encodeForHTML(stobj.label)#
 									</cfif>
 								<cfelse>
 									INVALID ATTACHMENT (#q.typename#)
@@ -309,7 +309,7 @@
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
 				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#">
-				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+				<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
 				
@@ -380,7 +380,7 @@
 						<li id="#arguments.fieldname#_#dataID#:#dataSEQ#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 							<div class="buttonGripper"><p>&nbsp;</p></div>
 														
-							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#dataID#:#dataSEQ#" />
+							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#encodeForHTMLAttribute("#dataID#:#dataSEQ#")#" />
 
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 								<p>#HTML#</p>

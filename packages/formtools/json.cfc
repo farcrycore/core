@@ -39,7 +39,7 @@
 				<div class="multiField">
 					<div id="#arguments.fieldname#DIV" style="#fieldStyle#;">
 						<div class="blockLabel">
-							<textarea name="#arguments.fieldname#jsonData" id="#arguments.fieldname#jsonData" class="textareaInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#">#serializeJSON(stValue.jsonData?:'')#</textarea>
+							<textarea name="#arguments.fieldname#jsonData" id="#arguments.fieldname#jsonData" class="textareaInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#encodeForHTMLAttribute(arguments.stMetadata.ftPlaceholder)#">#encodeForHTML(serializeJSON(stValue.jsonData?:''))#</textarea>
 						</div>
 					</div>
 				</div>

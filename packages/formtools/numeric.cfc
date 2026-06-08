@@ -38,7 +38,7 @@
 		</cfif>
 		
 		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" /></cfoutput>
+			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute("#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#")#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -73,7 +73,7 @@
 		</cfif>
 		
 		<cfsavecontent variable="html">
-			<cfoutput>#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#</cfoutput>
+			<cfoutput>#encodeForHTML("#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#")#</cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>

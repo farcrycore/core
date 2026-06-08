@@ -61,7 +61,7 @@
 		
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
-				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" maxLength="7" placeholder="MM/YYYY" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
+				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" maxLength="7" placeholder="MM/YYYY" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
 			</div>
 		</cfoutput></cfsavecontent>
 		

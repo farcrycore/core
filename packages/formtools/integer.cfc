@@ -21,7 +21,7 @@
 		<cfparam name="arguments.stMetadata.ftSuffix" default="">
 	
 		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftPrefix##numberFormat(arguments.stMetadata.value)##arguments.stMetadata.ftSuffix#" style="#arguments.stMetadata.ftstyle#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftClass#" /></cfoutput>
+			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute("#arguments.stMetadata.ftPrefix##numberFormat(arguments.stMetadata.value)##arguments.stMetadata.ftSuffix#")#" style="#arguments.stMetadata.ftstyle#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftClass#" /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html />

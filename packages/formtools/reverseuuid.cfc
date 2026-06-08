@@ -83,7 +83,7 @@
 			</cfif>	
 		
 			<cfoutput>
-				<input type="hidden" id="#arguments.fieldname#" value="#valueList(q.objectid)#">
+				<input type="hidden" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(valueList(q.objectid))#">
 				<script type="text/javascript">
 					$j(function() {
 

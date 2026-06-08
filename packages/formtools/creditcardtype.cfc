@@ -70,7 +70,7 @@
 		
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
-				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftClass#">
+				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" class="#arguments.stMetadata.ftClass#">
 				<div id="#arguments.fieldname#-images">
 					<cfloop list="#arguments.stMetadata.ftAcceptTypes#" index="thistype">
 						<img class="creditcard-#lcase(thistype)#" src="#application.url.webtop#/images/creditcards/#thistype#.png" data-type="#lcase(thistype)#" width="40px" alt="#ucase(left(thistype,1))##lcase(mid(thistype,2,100))#" title="#ucase(left(thistype,1))##lcase(mid(thistype,2,100))#">
@@ -141,7 +141,7 @@
 							}).css("cursor","pointer");
 						</cfif>
 						
-						selectCard('#arguments.stMetadata.value#',false);
+						selectCard('#encodeForJavaScript(arguments.stMetadata.value)#',false);
 					})($j);
 				</script>
 			</div>

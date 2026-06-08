@@ -675,10 +675,10 @@
 									<div class="fc-grabbar" title="Drag to reorder"><i class="fa fa-sort"></i></div>
 									<div class="fc-arrayupload-actions">
 										<cfif stActions.ftAllowEdit>
-											<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
+											<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#encodeForJavaScript(joinItems[i])#');<cfelse>fcForm.openLibraryEdit('#encodeForJavaScript(arguments.typename)#','#encodeForJavaScript(arguments.stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#','#encodeForJavaScript(joinItems[i])#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 										</cfif>
 										<cfif stActions.ftAllowRemove>
-											<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="<cfif stActions.ftRemoveType EQ 'delete'>Delete<cfelse>Remove</cfif>"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i></a>
+											<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#encodeForJavaScript(joinItems[i])#');return false;" title="<cfif stActions.ftRemoveType EQ 'delete'>Delete<cfelse>Remove</cfif>"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i></a>
 										</cfif>
 									</div>
 									<input type="hidden" name="#arguments.fieldname#" value="#joinItems[i]#" />
@@ -698,10 +698,10 @@
 											</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
 												<cfif stActions.ftAllowEdit>
-													<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
+													<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#encodeForJavaScript(joinItems[i])#');<cfelse>fcForm.openLibraryEdit('#encodeForJavaScript(arguments.typename)#','#encodeForJavaScript(arguments.stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#','#encodeForJavaScript(joinItems[i])#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 												</cfif>
 												<cfif stActions.ftAllowRemove>
-													<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#joinItems[i]#');return false;" title="<cfif stActions.ftRemoveType EQ 'delete'>Delete<cfelse>Remove</cfif>"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i></a>
+													<a href="##" class="fc-remove" onclick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').confirmRemove('#encodeForJavaScript(joinItems[i])#');return false;" title="<cfif stActions.ftRemoveType EQ 'delete'>Delete<cfelse>Remove</cfif>"><i class="fa <cfif stActions.ftRemoveType EQ 'delete'>fa-trash-o<cfelse>fa-times</cfif>"></i></a>
 												</cfif>
 											</td>
 										</tr>
@@ -744,12 +744,12 @@
 						      the "-add-type" hidden input below for the type to create (always
 						      the single ftJoin here), saves via the displayLibraryAdd modal,
 						      then routes back through the wrapped refreshProperty -> finishSelect. --->
-						<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-plus"></i> Create</a>
+						<a class="btn" onclick="fcForm.openLibraryAdd('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-plus"></i> Create</a>
 						<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 					</cfif>
 
 					<cfif stActions.ftAllowSelect>
-						<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-search"></i> Select</a>
+						<a class="btn" onclick="fcForm.openLibrarySelect('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#');return false;"><i class="fa fa-search"></i> Select</a>
 					</cfif>
 
 					<cfif arguments.stMetadata.ftAllowRemoveAll>
@@ -778,7 +778,7 @@
 				<!--- Carry ftJoin in the URL; ajax() rebuilds stMetadata from COAPI and would
 				      otherwise lose a render-time-injected ftJoin (e.g. the bulk-upload form). --->
 				<cfset uploadAjaxURL = application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true) & "/ftjoin/" & listFirst(arguments.stMetadata.ftJoin) />
-				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#arguments.typename#','#arguments.stObject.objectid#','#uploadAjaxURL#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#',#len(arguments.stMetadata.ftEditableProperties) gt 0#,'#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
+				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#encodeForJavaScript(arguments.typename)#','#encodeForJavaScript(arguments.stObject.objectid)#','#uploadAjaxURL#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#',#len(arguments.stMetadata.ftEditableProperties) gt 0#,'#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
 
 			<!--- Width-constrained hover tooltip for the accepted-formats list. ft:form loads
 			      Tooltipster but the webtop only auto-inits tooltips in its header, so edit-form

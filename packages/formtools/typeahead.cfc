@@ -89,7 +89,7 @@
 								data-typename="#arguments.typename#" 
 								data-allowcreate="#arguments.stMetadata.ftAllowCreate#" 
 								data-prefix="#left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name))#" 
-								data-objectid="#arguments.stObject.objectid#" 
+								data-objectid="#encodeForHTMLAttribute(arguments.stObject.objectid)#"
 								data-multiple="#arguments.stMetadata.type eq 'array'#" 
 								data-watch="#arguments.stMetadata.ftWatch#" 
 								data-placeholder="#arguments.stMetadata.ftPlaceholder#" 
@@ -98,13 +98,13 @@
 								data-data="#replace(getResultsAsJSON(typename=arguments.stMetadata.ftJoin,objectId=arguments.stObject.objectid,ftLibraryData=arguments.stMetadata.ftLibraryData,ftLibraryDataTypename=arguments.stMetadata.ftLibraryDataTypename,search='',paginate=false,lValidStatus=lValidStatus),'"','&quot;','ALL')#"
 								data-createoptions='#getCreatesAsJSON(createOptions=createOptions)#'
 								
-								value="<cfif arguments.stMetadata.type eq 'array'>#arraytolist(arguments.stMetadata.value)#<cfelse>#arguments.stMetadata.value#</cfif>" />
+								value="<cfif arguments.stMetadata.type eq 'array'>#encodeForHTMLAttribute(arraytolist(arguments.stMetadata.value))#<cfelse>#encodeForHTMLAttribute(arguments.stMetadata.value)#</cfif>" />
 					<cfelse>
 						<input	type="hidden" class="typeahead" style="width:100%;" id="#arguments.fieldname#" name="#arguments.fieldname#" 
 								data-typename="#arguments.typename#" 
 								data-allowcreate="#arguments.stMetadata.ftAllowCreate#" 
 								data-prefix="#left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name))#" 
-								data-objectid="#arguments.stObject.objectid#" 
+								data-objectid="#encodeForHTMLAttribute(arguments.stObject.objectid)#"
 								data-multiple="#arguments.stMetadata.type eq 'array'#" 
 								data-watch="#arguments.stMetadata.ftWatch#" 
 								data-placeholder="#arguments.stMetadata.ftPlaceholder#" 
@@ -112,7 +112,7 @@
 								
 								data-ajaxurl="#jsstringformat(getAjaxURL(argumentCollection=arguments))#"
 								
-								value="<cfif arguments.stMetadata.type eq 'array'>#arraytolist(arguments.stMetadata.value)#<cfelse>#arguments.stMetadata.value#</cfif>" />
+								value="<cfif arguments.stMetadata.type eq 'array'>#encodeForHTMLAttribute(arraytolist(arguments.stMetadata.value))#<cfelse>#encodeForHTMLAttribute(arguments.stMetadata.value)#</cfif>" />
 					</cfif>
 					<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 				</div>

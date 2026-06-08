@@ -80,7 +80,7 @@
 			<cfdefaultcase>
 				<cfsavecontent variable="html">
 					<cfoutput>
-						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#arguments.stMetadata.value#</cfif>" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" />
+						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="<cfif arguments.stMetadata.ftRenderType eq 'editpassword'>#encodeForHTMLAttribute(arguments.stMetadata.value)#</cfif>" autocomplete="off" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" />
 					</cfoutput>
 				</cfsavecontent>
 			</cfdefaultcase>
@@ -100,7 +100,7 @@
 		
 		
 		<cfsavecontent variable="html">
-			<cfoutput><a href="##" onclick="alert('#arguments.stMetadata.value#');">****************</a></cfoutput>
+			<cfoutput><a href="##" onclick="alert('#encodeForJavaScript(arguments.stMetadata.value)#');">****************</a></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>

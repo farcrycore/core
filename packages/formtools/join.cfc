@@ -131,7 +131,7 @@
 					<cfif len(arguments.stMetadata.ftFirstListLabel) AND NOT arguments.stMetadata.ftSelectMultiple>
 						<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 					</cfif>
-					<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"<cfif listFindNoCase(joinItems,qLibraryList.objectid)> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+					<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif listFindNoCase(joinItems,qLibraryList.objectid)> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
 					</select>
 					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 					
@@ -205,7 +205,7 @@
 										<cfelseif isArray(arguments.stObject[arguments.stMetaData.Name]) and listFindNoCase(getJoinList(arguments.stObject[arguments.stMetaData.Name]),qLibraryList.objectid)>
 										checked="checked"
 										</cfif> 
-										value="#qLibraryList.objectid#" />
+										value="#encodeForHTMLAttribute(qLibraryList.objectid)#" />
 									<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
 								</label>
 							</cfloop>
@@ -264,7 +264,7 @@
 												class="small"
 												value="Edit"
 												text="Edit" 
-												onClick="fcForm.openLibraryEdit('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
+												onClick="fcForm.openLibraryEdit('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#','#encodeForJavaScript(i)#');" />
 								
 										</cfif>
 										
@@ -276,7 +276,7 @@
 												value="Delete" 
 												text="Delete" 
 												confirmText="Are you sure you want to delete this item? Doing so will immediately remove this item from the database." 
-												onClick="fcForm.deleteLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
+												onClick="fcForm.deleteLibraryItem('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#','#encodeForJavaScript(i)#');" />
 										<cfelseif stActions.ftRemoveType EQ "remove">
 											<ft:button
 												Type="button" 
@@ -285,7 +285,7 @@
 												value="Remove" 
 												text="Remove" 
 												confirmText="Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database." 
-												onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
+												onClick="fcForm.detachLibraryItem('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#','#encodeForJavaScript(i)#');" />
 								 
 										</cfif>
 										
@@ -297,7 +297,7 @@
 							</cfloop>
 						<cfoutput></ul></cfoutput>
 						
-						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#joinItems#" /></cfoutput>
+						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#encodeForHTMLAttribute(joinItems)#" /></cfoutput>
 					<cfelse>
 						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" /></cfoutput>
 					</cfif>
@@ -313,12 +313,12 @@
 										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus"></i> Create &nbsp;&nbsp;<i class="fa fa-caret-down" style="margin-right:-4px;"></i></a>
 										<ul class="dropdown-menu">
 											<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
-												<li value="#trim(i)#"><a onclick="$j('###arguments.fieldname#-add-type').val('#trim(i)#'); fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
+												<li value="#trim(i)#"><a onclick="$j('###arguments.fieldname#-add-type').val('#trim(i)#'); fcForm.openLibraryAdd('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
 											</cfloop>
 										</ul>
 									</div>
 								<cfelse>
-									<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-plus"></i> Create</a>
+									<a class="btn" onclick="fcForm.openLibraryAdd('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-plus"></i> Create</a>
 								</cfif>
 								<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 
@@ -338,20 +338,20 @@
 										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cloud-upload"></i> Bulk Upload &nbsp;&nbsp;<i class="fa fa-caret-down" style="margin-right:-4px;"></i></a>
 										<ul class="dropdown-menu">
 											<cfloop list="#lBulkUploadable#" index="i">
-												<li value="#trim(i)#"><a id="#arguments.fieldname#-bulkupload-btn" onclick="$j('###arguments.fieldname#-bulkupload-type').val('#trim(i)#'); fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
+												<li value="#trim(i)#"><a id="#arguments.fieldname#-bulkupload-btn" onclick="$j('###arguments.fieldname#-bulkupload-type').val('#trim(i)#'); fcForm.openLibraryBulkUpload('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
 											</cfloop>
 										</ul>
 									</div>
 									<input type="hidden" id="#arguments.fieldname#-bulkupload-type" value="#lBulkUploadable#" />
 								<cfelseif len(lBulkUploadable)>
-									<a class="btn" onclick="fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-cloud-upload"></i> Bulk Upload</a>
+									<a class="btn" onclick="fcForm.openLibraryBulkUpload('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-cloud-upload"></i> Bulk Upload</a>
 									<input type="hidden" id="#arguments.fieldname#-bulkupload-type" value="#lBulkUploadable#" />
 								</cfif>
 
 							</cfif>
 							
 							<cfif stActions.ftAllowSelect>
-								<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-search"></i> Select</a>
+								<a class="btn" onclick="fcForm.openLibrarySelect('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-search"></i> Select</a>
 							</cfif>
 							
 							<cfif listLen(joinItems) and arguments.stMetadata.ftAllowRemoveAll>
@@ -363,7 +363,7 @@
 												value="Delete All" 
 												text="delete all" 
 												confirmText="Are you sure you want to delete all the attached items?"
-												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
+												onClick="fcForm.deleteAllLibraryItems('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#','#encodeForJavaScript(joinItems)#');" />
 								<cfelseif stActions.ftRemoveType EQ "remove">
 									<ft:button	Type="button" 
 												priority="secondary"
@@ -371,7 +371,7 @@
 												value="Remove All" 
 												text="Remove All" 
 												confirmText="Are you sure you want to remove all the attached items?"
-												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
+												onClick="fcForm.detachAllLibraryItems('#encodeForJavaScript(stObject.typename)#','#encodeForJavaScript(stObject.objectid)#','#arguments.stMetadata.name#','#arguments.fieldname#','#encodeForJavaScript(joinItems)#');" />
 									
 								</cfif>
 							</cfif>
@@ -448,7 +448,7 @@
 											#html#								
 											<!---<cfinclude template="/farcry/projects/#application.projectDirectoryName#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
 										<cfelse>
-											#stobj.label#
+											#encodeForHTML(stobj.label)#
 										</cfif>
 									<cfelse>
 										INVALID ATTACHMENT (#q.typename#)
@@ -739,7 +739,7 @@
 				<cfif qLibraryList.recordcount>
 					<cfoutput>
 					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" class="selectInput #arguments.stMetadata.class#">
-					<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+					<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
 					</select>
 					</cfoutput>
 					
@@ -805,7 +805,7 @@
 								id="#arguments.fieldname#_#replace(qLibraryList.objectid,'-','','ALL')#" 
 								name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
 								<cfif arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid> checked</cfif> 
-								value="#qLibraryList.objectid#" />
+								value="#encodeForHTMLAttribute(qLibraryList.objectid)#" />
 							<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
 						</label>
 					</cfloop>
@@ -878,7 +878,7 @@
 							<li id="#arguments.fieldname#_#dataID#:#dataSEQ#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 								<div class="buttonGripper"><p>&nbsp;</p></div>
 															
-								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#dataID#:#dataSEQ#" />
+								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#encodeForHTMLAttribute("#dataID#:#dataSEQ#")#" />
 	
 								<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 									<p>#HTML#</p>

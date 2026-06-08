@@ -27,14 +27,14 @@
 				<table>
 				<tr>
 					<td valign="top">
-						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" />
 						<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" />
 					</td>
 					
 					<cfif len(#arguments.stMetadata.value#)>
 						<td valign="top">
 							<div id="#arguments.fieldname#previewfile">
-								#arguments.stMetadata.value#
+								#encodeForHTML(arguments.stMetadata.value)#
 								<ft:button type="button" value="Delete Video" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};$j('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewfile');" />
 							</div>
 						</td>
@@ -61,7 +61,7 @@
 	
 
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#arguments.stMetadata.value#"><cfif len(stobject.Title)>#stObject.Title#<cfelse>#arguments.stMetadata.value#</cfif></a></cfoutput>			
+			<cfoutput><a target="_blank" href="#encodeForHTMLAttribute(arguments.stMetadata.value)#"><cfif len(stobject.Title)>#encodeForHTML(stObject.Title)#<cfelse>#encodeForHTML(arguments.stMetadata.value)#</cfif></a></cfoutput>			
 		</cfsavecontent>
 		
 		<cfreturn html>

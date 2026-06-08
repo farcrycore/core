@@ -195,7 +195,7 @@
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
 				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" style="width:auto;">
-				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+				<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
 				
@@ -231,7 +231,7 @@
 							<cfif len(joinTypename)>
 								<cfset oData = createObject("component", application.stcoapi[joinTypename].packagePath) />
 							<cfelse>
-								<cfoutput><p>#arguments.stObject[arguments.stMetaData.Name]#: objectid does not exist in the database.</p></cfoutput>
+								<cfoutput><p>#encodeForHTML(arguments.stObject[arguments.stMetaData.Name])#: objectid does not exist in the database.</p></cfoutput>
 								<cfabort>
 							</cfif>
 						<cfelse>
@@ -254,7 +254,7 @@
 							<div class="buttonGripper"><p>&nbsp;</p></div>
 							
 							<cfif arguments.stMetadata.ftShowRemoveSelected OR arguments.stMetadata.ftAllowLibraryEdit>
-								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#encodeForHTMLAttribute(arguments.stObject[arguments.stMetaData.Name])#" />
 							</cfif>
 							
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">

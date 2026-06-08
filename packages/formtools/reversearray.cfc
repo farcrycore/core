@@ -70,7 +70,7 @@
 							<cfoutput><option value="">#arguments.stMetadata.ftFirstListLabel#</option></cfoutput>
 						</cfif>					
 						<cfloop query="qLibraryList">
-							<cfoutput><option value="#qLibraryList.objectid#"<cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> selected="selected"</cfif>>#qLibraryList.label#</option></cfoutput>
+							<cfoutput><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> selected="selected"</cfif>>#encodeForHTML(qLibraryList.label)#</option></cfoutput>
 						</cfloop>
 						<cfoutput></select></cfoutput>
 					<cfelse>
@@ -87,8 +87,8 @@
 						<div class="fieldsection optional">
 							<div class="fieldwrap">
 								<cfloop query="qLibraryList">
-									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(qLibraryList.recordcount eq currentrow ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />										
-									#label#
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(qLibraryList.recordcount eq currentrow ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(qLibraryList.objectid)#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />										
+									#encodeForHTML(label)#
 									<br class="fieldsectionbreak" />
 								</cfloop>
 							</div>										
@@ -105,7 +105,7 @@
 						<div class="fieldsection optional">
 							<div class="fieldwrap">
 								<cfloop query="qLibraryList">
-									<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="formCheckbox #IIF(qLibraryList.recordcount eq currentrow,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />
+									<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="formCheckbox #IIF(qLibraryList.recordcount eq currentrow,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#encodeForHTMLAttribute(qLibraryList.objectid)#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />
 									<br class="fieldsectionbreak" />
 								</cfloop>												
 							</div>

@@ -231,7 +231,7 @@
 			<!--- This image will be generated from the source field --->
 			<cfsavecontent variable="html"><cfoutput>
 				<div class="multiField" style="padding-top:5px">
-					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" />
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<div id="#arguments.fieldname#-multiview">
 						<cfif arguments.stMetadata.ftAllowUpload>
@@ -299,7 +299,7 @@
 								<div class="fc-uploader-details-row">
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
-										<div class="fc-uploader-details-name" title="#filename#"><span class="image-filename">#filename#</span></div>
+										<div class="fc-uploader-details-name" title="#encodeForHTMLAttribute(filename)#"><span class="image-filename">#encodeForHTML(filename)#</span></div>
 										<cfif arguments.stMetadata.ftShowMetadata>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
 										</cfif>
@@ -355,7 +355,7 @@
 			<!--- This IS the source field --->
 		    <cfsavecontent variable="html"><cfoutput>
 			    <div class="multiField">
-					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" />
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<div id="#arguments.fieldname#-multiview">
 						<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
@@ -394,7 +394,7 @@
 								<div class="fc-uploader-details-row">
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
-										<div class="fc-uploader-details-name" title="#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#"><span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span></div>
+										<div class="fc-uploader-details-name" title="#encodeForHTMLAttribute(listfirst(listlast(arguments.stMetadata.value,"/"),"?"))#"><span class="image-filename">#encodeForHTML(listfirst(listlast(arguments.stMetadata.value,"/"),"?"))#</span></div>
 										<cfif arguments.stMetadata.ftShowMetadata>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
 										</cfif>
@@ -515,7 +515,7 @@
 		<cfsavecontent variable="html"><cfoutput>
 			<div id="#arguments.fieldname#-inline" style="margin-left:20px;">
 			
-				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" />
 				<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 				<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><i class="fa fa-picture-o fa-fw"></i></span>
@@ -524,7 +524,7 @@
 					(
 						<span class="not-cancel">
 							<span class="action-preview action"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-								<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank" title="#preview#">Preview</a> | 
+								<a class="image-preview" href="#application.url.imageroot##encodeForHTMLAttribute(arguments.stMetadata.value)#" target="_blank" title="#preview#">Preview</a> | 
 							</span>
 							<span class="action-crop action"<cfif not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
 								<a class="image-crop-select-button" href="##">Custom crop</a><cfif arguments.stMetadata.ftAllowUpload> | </cfif>
