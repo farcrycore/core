@@ -64,10 +64,11 @@
 			<cfelse>
 				<cfset configJS = arguments.stMetadata.ftRichtextConfig>
 			</cfif>
-		<cfelseif application.fapi.getConfig("tinyMCE","bUseConfig",false) and len(application.fapi.getConfig("tinyMCE","tinyMCE4_config",""))>
-			<cfset configJS = application.fapi.getConfig("tinyMCE","tinyMCE4_config") />
+		<cfelseif application.fapi.getConfig("tinyMCE","bUseConfig",false) and len(application.fapi.getConfig("tinyMCE","tinyMCE8Config",""))>
+			<cfset configJS = application.fapi.getConfig("tinyMCE","tinyMCE8Config") />
 		<cfelse>
-			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
+			<cfset configJS = trim(serializeJSON(getConfigJSON())) />
+			<cfset configJS = mid(configJS, 2, len(configJS) - 2) />
 		</cfif>	
 		
 		<cfif not len(arguments.stMetadata.ftContentCSS)>
@@ -109,6 +110,8 @@
 					selector: '###arguments.fieldname#',
 
 					script_url : '#application.url.webtop#/thirdparty/tiny_mce/tinymce.min.js',
+					license_key : "#application.fapi.getConfig("tinyMCE","licenseKey","gpl")#",
+					cache_suffix : "?v=8.6.0",
 
 					farcryrelatedtypes: #serializeJSON(aRelatedTypes)#,
 					optionsURL: "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=templateoptions",
@@ -134,7 +137,28 @@
 						,content_css : "#arguments.stMetadata.ftContentCSS#"
 					</cfif>			
 					
-					});
+					})
+					.then(function(editors) {
+						// Heads-up if an overridden config (ftRichtextConfig / tinyMCE8Config) still lists plugins removed in v8.
+						var aRemovedPlugins = ["hr","textcolor","paste","contextmenu","noneditable","colorpicker","imagetools","spellchecker","textpattern","toc","print","bbcode","fullpage","legacyoutput","tabfocus","codemirror"];
+						(editors || []).forEach(function(editor) {
+							try {
+								var sPlugins = editor.options.get("plugins");
+								sPlugins = (Array.isArray(sPlugins) ? sPlugins.join(" ") : (sPlugins || "")) + "";
+								var aStale = aRemovedPlugins.filter(function(name) {
+									return new RegExp("(^|[ ,])" + name + "([ ,]|$)").test(sPlugins);
+								});
+								if (aStale.length) {
+									editor.notificationManager.open({
+										type: "warning",
+										text: "This rich text editor is using an outdated TinyMCE configuration (removed plugins: " + aStale.join(", ") + "). It was likely set up for an older TinyMCE version - please update your TinyMCE config.",
+										timeout: 0
+									});
+								}
+							} catch (e) {}
+						});
+					})
+					.catch(function() {});
 				});
 				</script>
 				
@@ -551,31 +575,26 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="getConfig" access="public" output="false" returntype="string" hint="This will return the configuration that will be used by the richtext field">
-		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
-		
-		<cfset var configJS = "" />
-		
-		<cfsavecontent variable="configJS">
-			<cfoutput>			
-				license_key : "gpl",
-				plugins : "farcrycontenttemplates,image_farcry,link_farcry,insertdatetime,media,searchreplace,directionality,fullscreen,visualchars,nonbreaking,anchor,charmap,lists,table,code",
-				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],ul,ol,li",
-				menubar : false,
-				toolbar : "undo redo | cut copy paste pastetext | styles | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen",
-				remove_linebreaks : false,
-				forced_root_block : 'p',
-				relative_urls : false,
-				entity_encoding : 'raw',
-				codemirror: {
-					indentOnInit: true, // Whether or not to indent code on init.
-					fullscreen: true,   // Default setting is false
-					saveCursorPosition: false
-				}				
-			</cfoutput>
-		</cfsavecontent>
-		
-		<cfreturn configJS />
+	<cffunction name="getConfigJSON" access="public" output="false" returntype="struct" hint="Returns the base TinyMCE config as a struct so projects can override individual options without string manipulation. Keys are set with bracket notation so serializeJSON preserves their case.">
+		<cfargument name="stConfig" required="false" type="struct" default="#structNew()#" hint="An optional config struct to populate and return; defaults to a new struct.">
+
+		<cfset arguments.stConfig["plugins"] = "farcrycontenttemplates,image_farcry,link_farcry,insertdatetime,media,searchreplace,directionality,fullscreen,visualchars,nonbreaking,anchor,charmap,lists,table,code" />
+		<cfset arguments.stConfig["extended_valid_elements"] = "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],ul,ol,li" />
+		<cfset arguments.stConfig["menubar"] = false />
+		<cfset arguments.stConfig["toolbar"] = "undo redo | cut copy paste pastetext | styles | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen" />
+		<cfset arguments.stConfig["remove_linebreaks"] = false />
+		<cfset arguments.stConfig["forced_root_block"] = "p" />
+		<cfset arguments.stConfig["relative_urls"] = false />
+		<cfset arguments.stConfig["entity_encoding"] = "raw" />
+
+		<cfreturn arguments.stConfig />
+	</cffunction>
+
+	<cffunction name="getConfig" access="public" output="false" returntype="string" hint="DEPRECATED: override getConfigJSON() instead. Returns the base config as a brace-less JS object fragment derived from getConfigJSON(), for backwards compatibility with callers expecting a string.">
+		<cfargument name="stMetadata" required="false" type="struct" default="#structNew()#" hint="Unused; retained for signature compatibility.">
+
+		<cfset var json = trim(serializeJSON(getConfigJSON())) />
+		<cfreturn mid(json, 2, len(json) - 2) />
 	</cffunction>
 
 </cfcomponent>
