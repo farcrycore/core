@@ -119,7 +119,7 @@ $in: attribute -- description $
 						</cfquery>
 						
 						<tr class="<cfif i mod 2 eq 0> alt</cfif>">
-							<td><input type="checkbox" name="content_types" id="content_types_#i#" value="#aFUTypes[i]#"></td>
+							<td><input type="checkbox" name="content_types" id="content_types_#i#" value="#encodeForHTMLAttribute(aFUTypes[i])#"></td>
 							<td><label for="content_types_#i#">#aFUTypes[i]# (#qCount.counter#)</label></td>
 						</tr>
 					</cfloop>

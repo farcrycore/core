@@ -97,7 +97,7 @@ manage friendly urls for a particular object id
 		<cfelse>
 			<i class="fa fa-file"></i>
 		</cfif>
-		#stobj.label#
+		#encodeForHTML(stobj.label)#
 	</h1>
 </cfoutput>
 
@@ -159,7 +159,7 @@ manage friendly urls for a particular object id
 								<cfif qFUCurrent.bDefault EQ 1>
 									<td>&nbsp;</td>
 								<cfelse>
-									<td><input type="checkbox" name="lArchiveObjectID" value="#qFUCurrent.objectid#"></td>
+									<td><input type="checkbox" name="lArchiveObjectID" value="#encodeForHTMLAttribute(qFUCurrent.objectid)#"></td>
 								</cfif>
 								
 								<cfif qFUCurrent.fuStatus EQ 1>
@@ -226,7 +226,7 @@ manage friendly urls for a particular object id
 
 					<cfoutput>
 					<tr class="alt">
-						<td><input type="checkbox" name="lDeleteObjectID" value="#qFUArchived.objectid#"></td>
+						<td><input type="checkbox" name="lDeleteObjectID" value="#encodeForHTMLAttribute(qFUArchived.objectid)#"></td>
 						<td>#qFUArchived.friendlyurl#</td>							
 					</tr>
 					</cfoutput>

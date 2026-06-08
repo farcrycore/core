@@ -28,8 +28,8 @@
 			<!--- EDIT RULE --->
 			<a title="Configure Rule" 
 				class="con-admin con-edit-rule" 
-				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=editInPlace&originalID=#stParam.originalID#&iframe" 
-				rule:title="#ruleDisplayName#"
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#encodeForHTMLAttribute(stObj.objectid)#&typename=#encodeForHTMLAttribute(stObj.typename)#&method=editInPlace&originalID=#encodeForHTMLAttribute(stParam.originalID)#&iframe"
+				rule:title="#encodeForHTMLAttribute(ruleDisplayName)#"
 				con:id="#containerID#"
 				con:url="#containerURL#">
 				

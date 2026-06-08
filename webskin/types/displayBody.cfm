@@ -20,7 +20,7 @@
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 <cfoutput>
-<h1>#stObj.label#</h1>
+<h1>#encodeForHTML(stObj.label)#</h1>
 <cfif structKeyExists(stObj, "body")>
 	#stObj.body#
 </cfif>

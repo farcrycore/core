@@ -48,7 +48,7 @@
 	<div class="developer-actions">
 		<div class="objectid" style="display:none;">#stObj.objectid#</div>
 		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid"><i class="fa fa-tag"></i></a>
-		<a onclick="$fc.openDialog('Property Dump', '#application.url.webtop#/index.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&view=webtopDump');return false;" title="Open a window containing all the raw data of this content item"><i class="fa fa-list"></i></a>
+		<a onclick="$fc.openDialog('Property Dump', '#application.url.webtop#/index.cfm?objectid=#encodeForJavaScript(stObj.objectid)#&typename=#encodeForJavaScript(stObj.typename)#&view=webtopDump');return false;" title="Open a window containing all the raw data of this content item"><i class="fa fa-list"></i></a>
 	</div>
 </cfoutput>
 

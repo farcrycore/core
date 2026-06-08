@@ -117,7 +117,7 @@ Webtop, Section, SubSection, Menu, MenuItem
 				<option value="#iPermission#" <cfif iPermission EQ form.selectPermission>selected="selected"</cfif>>#application.security.factory.permission.getLabel(iPermission)#</option>
 			</cfloop>
 		</select>
-		<input type="hidden" name="permissionID" value="#form.selectPermission#">
+		<input type="hidden" name="permissionID" value="#encodeForHTMLAttribute(form.selectPermission)#">
 	</cfoutput>
 </ft:field>
 

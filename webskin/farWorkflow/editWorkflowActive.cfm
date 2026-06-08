@@ -120,8 +120,8 @@
 <cfoutput><div style="border:1px dotted grey;margin:25px;padding:25px;"></cfoutput>
 
 <cfoutput>
-<h3>#stobj.title# (#stWorkflowDef.title#)</h3>
-<p>#stobj.description#</p>
+<h3>#encodeForHTML(stobj.title)# (#encodeForHTML(stWorkflowDef.title)#)</h3>
+<p>#encodeForHTML(stobj.description)#</p>
 </cfoutput>
 
 <cfoutput>

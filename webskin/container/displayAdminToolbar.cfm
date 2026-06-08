@@ -161,10 +161,10 @@ $j('body').on(
 			<!--- ADD A RULE --->
 			<a title="Add new rule to container"
 				class="con-admin con-add-rule" 
-				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&lRules=#stParam.lRules#&lExcludedRules=#stParam.lExcludedRules#&method=editAddRule&iframe" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#encodeForHTMLAttribute(stObj.objectid)#&typename=#encodeForHTMLAttribute(stObj.typename)#&lRules=#encodeForHTMLAttribute(stParam.lRules)#&lExcludedRules=#encodeForHTMLAttribute(stParam.lExcludedRules)#&method=editAddRule&iframe"
 				con:id="#containerID#"
 				con:url="#containerURL#"
-				rule:title="#stParam.desc#: Add Rule To Container">
+				rule:title="#encodeForHTMLAttribute(stParam.desc)#: Add Rule To Container">
 				
 				<span class="ui-icon ui-icon-plusthick" style="float:left;">&nbsp;</span>
 			</a>	
@@ -173,10 +173,10 @@ $j('body').on(
 			<!--- MANAGE REFLECTION --->
 			<a title="Manage Reflection"
 				class="con-admin con-manage-reflection" 
-				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stParam.originalID#&typename=container&method=editManageReflection&iframe" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#encodeForHTMLAttribute(stParam.originalID)#&typename=container&method=editManageReflection&iframe"
 				con:id="#containerID#"
 				con:url="#containerURL#"
-				rule:title="#stParam.desc#: Manage Reflection">
+				rule:title="#encodeForHTMLAttribute(stParam.desc)#: Manage Reflection">
 				
 				<span class="ui-icon ui-icon-copy" style="float:left;">&nbsp;</span>
 			</a>

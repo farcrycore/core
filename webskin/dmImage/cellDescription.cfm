@@ -2,9 +2,9 @@
 <!--- @@displayname: Image Description Cell --->
 
 <cfoutput>
-    #stObj.title#
+    #encodeForHTML(stObj.title)#
     <cfif len(stObj.alt)>
-        <br><em>#stObj.alt#</em>
+        <br><em>#encodeForHTML(stObj.alt)#</em>
     </cfif>
 </cfoutput>
 

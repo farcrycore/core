@@ -10,8 +10,8 @@
 	
 	<cfoutput><div style="border:1px dotted grey;margin:10px;padding:10px;"></cfoutput>
 	<cfoutput>
-		<h3><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#stReferenceObject.objectid#">#stReferenceObject.label# (#stobj.title#)</a></h3>
-		<p>#stobj.description#</p>
+		<h3><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#encodeForHTMLAttribute(stReferenceObject.objectid)#">#encodeForHTML(stReferenceObject.label)# (#encodeForHTML(stobj.title)#)</a></h3>
+		<p>#encodeForHTML(stobj.description)#</p>
 	</cfoutput>
 	
 	<cfif arrayLen(stobj.aTaskIDs)>

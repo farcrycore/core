@@ -2,7 +2,7 @@
 <!--- @@displayname: Job description --->
 
 <cfif len(stObj.description)>
-	<cfoutput>#stObj.description#</cfoutput>
+	<cfoutput>#encodeForHTML(stObj.description)#</cfoutput>
 <cfelse>
 	<cfset methodname = listFirst(listLast(stObj.template, "/"), ".") />
 	<cftry>

@@ -43,7 +43,7 @@
 	</tr>
 	<tr>
 		<th><admin:resource key='tray.summary.label@label'>Label</admin:resource></th>
-		<td>#stobj.label#</td>
+		<td>#encodeForHTML(stobj.label)#</td>
 	</tr>
 	<tr>
 		<th><admin:resource key='tray.summary.pageview@label'>Page View</admin:resource></th>

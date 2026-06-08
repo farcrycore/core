@@ -42,11 +42,11 @@
 				<ft:field label="&nbsp;<strong>#thistable#</strong>" bMultiField="true" style="font-weight:bold; border-bottom:2px solid ##ddd;">
 					<cfoutput>
 						<label for="field_#thistable#_ignore" class="radio inline">
-							<input type="radio" name="field_#thistable#" id="field_#thistable#_ignore" value="#thistable#" checked onclick="$j('.table-#thistable#.ignore').prop('checked',true);" />
+							<input type="radio" name="field_#thistable#" id="field_#thistable#_ignore" value="#encodeForHTMLAttribute(thistable)#" checked onclick="$j('.table-#thistable#.ignore').prop('checked',true);" />
 							Ignore All
 						</label>
 						<label for="field_#thistable#_deploy" class="radio inline">
-							<input type="radio" name="field_#thistable#" id="field_#thistable#_deploy" value="#thistable#" onclick="$j('.table-#thistable#.default').prop('checked',true);" />
+							<input type="radio" name="field_#thistable#" id="field_#thistable#_deploy" value="#encodeForHTMLAttribute(thistable)#" onclick="$j('.table-#thistable#.default').prop('checked',true);" />
 							Deploy All Defaults
 						</label>
 					</cfoutput>
@@ -104,7 +104,7 @@
 											<cfloop collection="#stDiff.tables[thistable].fields#" item="otherfield">
 												<cfif structkeyexists(stDiff.tables[thistable].fields[otherfield],"resolution") and stDiff.tables[thistable].fields[thisfield].resolution eq "-">
 													<cfif otherfield neq thisfield>
-														<option value="#otherfield#">#otherfield#</option>
+														<option value="#encodeForHTMLAttribute(otherfield)#">#encodeForHTML(otherfield)#</option>
 														<cfset foundoption = true />
 													</cfif>
 												</cfif>

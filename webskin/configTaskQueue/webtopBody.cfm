@@ -59,7 +59,7 @@
 			<cfoutput>
 				<tr class="">
 					<td style="white-space:nowrap;">
-						<input class="formCheckbox" type="checkbox" onclick="setRowBackground(this);" value="#stThreads[thisthread].threadID#" name="selectedObjectID">
+						<input class="formCheckbox" type="checkbox" onclick="setRowBackground(this);" value="#encodeForHTMLAttribute(stThreads[thisthread].threadID)#" name="selectedObjectID">
 					</td>
 					<td class="objectadmin-actions" nowrap="nowrap" style="">
 						<cfif application.sysinfo.engine.engine eq "coldfusion">

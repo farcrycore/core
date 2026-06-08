@@ -12,7 +12,7 @@
 </cfif>
 
 <cfoutput>
-	<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=farConfig&method=edit&ref=dialogiframe" onclick="$fc.objectAdminAction('#title#', this.href + '&iframe=1'); return false;">#title#</a>
+	<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#encodeForHTMLAttribute(stObj.objectid)#&typename=farConfig&method=edit&ref=dialogiframe" onclick="$fc.objectAdminAction('#encodeForJavaScript(title)#', this.href + '&iframe=1'); return false;">#encodeForHTML(title)#</a>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

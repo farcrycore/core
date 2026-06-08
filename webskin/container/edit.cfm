@@ -59,7 +59,7 @@
 
 	<cfelse>
 
-		<h1><i class="fa fa-wrench"></i> #stObj.label#</h1>
+		<h1><i class="fa fa-wrench"></i> #encodeForHTML(stObj.label)#</h1>
 
 		<con:container objectid="#stObj.objectid#" label="#stObj.label#">
 

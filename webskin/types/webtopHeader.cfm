@@ -109,7 +109,7 @@
 								<cfloop query="qSessions">
 									<li class="media">
 										<a class="pull-right" style="clear:none; margin-left:0;" href="#application.fapi.fixURL(addvalues='endsession=#qSessions.sessionID#')#"><i class="fa fa-times"></i></a>
-										<a class="media-body" style="clear:none;" href="#application.fapi.fixURL(addvalues='switchsession=#qSessions.sessionID#')#">#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)</a>
+										<a class="media-body" style="clear:none;" href="#application.fapi.fixURL(addvalues='switchsession=#qSessions.sessionID#')#">#encodeForHTML(qSessions.user)# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)</a>
 									</li>
 								</cfloop>
 							</cfif>

@@ -54,7 +54,7 @@
 		<grid:div style="margin:0 0 10px auto;"><!---  style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; " --->
 			<cfoutput>
 				<div class="filter-field-wrap input-prepend input-append">
-					<input type="text" placeholder="Search..." id="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" name="searchTypename" class="textInput" value="#form.searchTypename#" style="width:300px;" />
+					<input type="text" placeholder="Search..." id="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" name="searchTypename" class="textInput" value="#encodeForHTMLAttribute(form.searchTypename)#" style="width:300px;" />
 					<cfif len(form.searchTypename)>
 						<button style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value',''); $j('##submit-#stobj.typename#-#url.property#-#url.filterTypename#').click(); return false;" class="btn" type="button">&times;</button>
 					</cfif>

@@ -179,7 +179,7 @@
 					<select name="startPoint" id="startPoint">
 						<option value="#application.fapi.getCatID("root")#" selected>#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
 						<cfloop query="qNodes">
-							<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+							<option value="#encodeForHTMLAttribute(qNodes.objectId)#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #encodeForHTML(qNodes.objectName)#</option>
 						</cfloop>
 					</select>
 				</div>

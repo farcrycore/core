@@ -76,7 +76,7 @@ ENVIRONMENT VARIABLES
 		FROM 	farBarnacle
 		WHERE 	objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
 				AND farBarnacle.roleid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRoleIDs#">)
-				AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.selectPermission#">
+				AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#encodeForHTMLAttribute(form.selectPermission)#">
 	</cfquery>
 
 	<cfquery datasource="#application.dsn#" name="qRoles">
@@ -109,7 +109,7 @@ ENVIRONMENT VARIABLES
 	</ft:field>
 	
 	<cfoutput>
-		<input type="hidden" name="permissionID" value="#form.selectPermission#" />
+		<input type="hidden" name="permissionID" value="#encodeForHTMLAttribute(form.selectPermission)#" />
 		<div id="webtopTreeWrap" <cfif allowAccess EQ -1>style="display:none;"</cfif>>
 	</cfoutput>
 	
@@ -120,7 +120,7 @@ ENVIRONMENT VARIABLES
 		<div>
 		<cfloop query="qRoles">
 			<div style="float:right;width:100px;text-align:center;">
-				<strong>#qRoles.title#</strong>
+				<strong>#encodeForHTML(qRoles.title)#</strong>
 			</div>
 		</cfloop>
 		</div>	
@@ -162,9 +162,9 @@ ENVIRONMENT VARIABLES
 			<cfloop query="qRoles">
 				<div style="float:right;width:100px;text-align:center;">
 					<cfif application.security.checkPermission(permission="admin",role="#qRoles.objectid#")>
-						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
 					<cfelse>
-						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
 					</cfif>
 				</div>
 			</cfloop>
@@ -534,9 +534,9 @@ ENVIRONMENT VARIABLES
 				
 				<cfif qNodeBarnacle.recordCount>
 					<cfif qNodeBarnacle.barnacleValue EQ 1>
-						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
 					<cfelseif qNodeBarnacle.barnacleValue EQ -1>
-						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#qRoles.title#"></i>
+						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
 					<cfelse>
 						&nbsp;
 					</cfif>

@@ -15,7 +15,7 @@
 	
 	
 	<!--- SET SOME SESSION VARIABLE TO MESSAGE THAT THE OBJECT WAS DELETED. --->
-	<cfoutput><p>#stobj.label# was deleted.</p></cfoutput>
+	<cfoutput><p>#encodeForHTML(stobj.label)# was deleted.</p></cfoutput>
 	<cfabort>
 </cfif>
 

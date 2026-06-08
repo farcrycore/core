@@ -77,7 +77,7 @@ ENVIRONMENT VARIABLES
 <ft:field label="Access Permissions" bMultiField="true">
 	<cfoutput>
 	<div id="webtopTreeWrap" <cfif allowAccess EQ -1>style="display:none;"</cfif>>
-		<input type="hidden" name="permissionID" value="#form.selectPermission#" />
+		<input type="hidden" name="permissionID" value="#encodeForHTMLAttribute(form.selectPermission)#" />
 		<ul id="webtopTree">
 			<li>
 	</cfoutput>

@@ -51,7 +51,7 @@
 <skin:view stObject="#stObj#" webskin="displayMetatags" />
 
 <cfoutput>
-	<h1>#stObj.title#</h1>
+	<h1>#encodeForHTML(stObj.title)#</h1>
 </cfoutput>
 
 <cfif len(stObj.subtitle)>
@@ -88,7 +88,7 @@
 </cfoutput>
 
 <cfif len(stObj.feedimage)>
-	<cfoutput><img class="feedimage" src="#application.fapi.getImageWebRoot()##stobj.feedimage#" alt="#stObj.title#" /></cfoutput>
+	<cfoutput><img class="feedimage" src="#application.fapi.getImageWebRoot()##encodeForHTMLAttribute(stobj.feedimage)#" alt="#encodeForHTMLAttribute(stObj.title)#" /></cfoutput>
 </cfif>
 <cfif len(stObj.url)>
 	<cfoutput><p>URL: <a href="#stObj.url#">#stObj.url#</a></p></cfoutput>
@@ -98,7 +98,7 @@
 		<p>
 			Editor: #stObj.editor#
 			<cfif len(stObj.editoremail)>
-				(<a href="mailto:#stObj.editoremail#">#stObj.editoremail#</a>)
+				(<a href="mailto:#encodeForHTMLAttribute(stObj.editoremail)#">#encodeForHTML(stObj.editoremail)#</a>)
 			</cfif>
 		</p>
 	</cfoutput>

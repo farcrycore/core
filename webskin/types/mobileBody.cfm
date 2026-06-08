@@ -5,7 +5,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
 <cfoutput>
-<h1>#stObj.label#</h1>
+<h1>#encodeForHTML(stObj.label)#</h1>
 <cfif structKeyExists(stObj, "body")>
 	#stObj.body#
 </cfif>

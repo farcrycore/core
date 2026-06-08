@@ -26,7 +26,7 @@
 
 <!--- EDIT OBJECT --->
 <ft:form>
-	<cfoutput><h1>#stobj.label#</h1></cfoutput>
+	<cfoutput><h1>#encodeForHTML(stobj.label)#</h1></cfoutput>
 	
 	<ft:object objectid="#stObj.objectid#" lFields="title,teaser,teaserImage" legend="General Details" />
 	
