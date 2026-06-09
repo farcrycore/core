@@ -38,8 +38,8 @@
 	<cfif qRelatedImages.recordCount>
 	<!--- Get the information for the array to be passed back. --->
 	<cfquery datasource="#application.dsn#" name="qImages">
-	SELECT objectid,label,#url.ftImageListFilterProperty# as image
-	FROM #url.ftImageListFilterTypename#
+	SELECT objectid,label,#stImageListFilterProp.name# as image
+	FROM #listLast(stRelatedType.name, '.')#
 	WHERE ObjectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valueList(qRelatedImages.objectid)#">)
 	</cfquery>
 	<cfset oType = createObject("component", application.types[url.ftImageListFilterTypename].packagePath) />
