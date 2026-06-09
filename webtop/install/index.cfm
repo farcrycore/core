@@ -988,13 +988,19 @@ $(function(){
 
 
 		<!--- update password for the farcry user account --->
-		<cfquery datasource="#form.dsn#">
-			UPDATE #form.dbowner#farUser
-			SET
-				password = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.farcryUserPassword#">
-			WHERE
-				userid = <cfqueryparam cfsqltype="cf_sql_varchar" value="farcry">
-		</cfquery>
+		<!--- validate the dbowner prefix before using it as a raw table-name prefix: letters/digits/underscores, optionally one trailing dot (e.g. "dbo.") --->
+		<cfif reFind("^[A-Za-z0-9_]*\.?$", form.dbowner)>
+			<cfquery datasource="#form.dsn#">
+				UPDATE #form.dbowner#farUser
+				SET
+					password = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.farcryUserPassword#">
+				WHERE
+					userid = <cfqueryparam cfsqltype="cf_sql_varchar" value="farcry">
+			</cfquery>
+		<cfelse>
+			<cfoutput><strong>ERROR: Invalid database owner "#encodeForHTML(form.dbowner)#". It may contain only letters, numbers and underscores, optionally followed by a single dot (e.g. "dbo."). The farcry user password was not updated.</strong><br></cfoutput>
+			<cfset stResult.bSuccess = false>
+		</cfif>
 
 
 		<!--- for skeleton installs, copy the project skeleton into the projects folder  --->
