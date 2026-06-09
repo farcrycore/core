@@ -119,7 +119,7 @@ function reinstateRuleListing()
 			<!--- Get all the containers that are more than likely associated with this object. Relies on correct naming of containers at the moment which is not zehr gut. --->
 			<cfquery name="q" datasource="#application.dsn#">
 				SELECT * FROM #application.dbowner#container
-				where label LIKE ('%#URL.objectid#%')
+				where label LIKE (<cfqueryparam cfsqltype="cf_sql_varchar" value="%#URL.objectid#%">)
 			</cfquery>
 			
 			<cfoutput query="q">
