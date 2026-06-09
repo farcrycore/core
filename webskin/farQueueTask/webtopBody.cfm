@@ -54,6 +54,12 @@
 <cfset arrayappend(aColumns,"taskStatus") />
 <cfset arrayappend(aColumns,"taskTimestamp") />
 
+<cfif isValid("uuid", url.jobID)>
+	<cfset sqlWhere = "jobID='#url.jobID#'" />
+<cfelse>
+	<cfset sqlWhere = "1=0" />
+</cfif>
+
 <ft:objectAdmin
 	typename="#stObj.name#"
 	columnList="taskStatus,taskTimestamp"
@@ -61,7 +67,7 @@
 	aCustomColumns="#aColumns#"
 	lFilterFields="jobID,taskStatus"
 	sqlOrderBy="taskTimestamp DESC"
-	sqlWhere="jobID='#url.jobID#'"
+	sqlWhere="#sqlWhere#"
 	lButtons="testtask,canceltask"
 	aButtons="#aButtons#"
 	lButtonsEmpty="testtask"
