@@ -75,13 +75,13 @@
 
 <cfset sqlWhere = "bDeleted=1" />
 
-<cfif structkeyexists(url,"archivetype")>
+<cfif structkeyexists(url,"archivetype") AND structKeyExists(application.stCOAPI, url.archivetype)>
 	<cfset sqlWhere = sqlWhere & " and objectTypename='#url.archivetype#'" />
 	
 	<cfif isdefined("application.stCOAPI.#url.archivetype#.displayname")>
 		<cfset title = "Undelete #application.stCOAPI[url.archivetype].displayname#" />
 	<cfelse>
-		<cfset title = "Undelete #url.archiveType#" />
+		<cfset title = "Undelete #encodeForHTML(url.archiveType)#" />
 	</cfif>
 	
 	<cfset stButton = structnew() />
