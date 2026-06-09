@@ -731,45 +731,6 @@
 	</cffunction>
 	
 	
-	<!--- THESE FUNCTIONS ARE DEPRECIATED --->
-	<cffunction name="getUsers" access="public" output="false" returntype="string" hint="Returns a list of the users that have this permission">
-		<cfargument name="permission" type="uuid" required="true" hint="The permission to query" />
-	
-		<cfset var qRoles = "" />
-		<cfset var qGroups = "" />
-		<cfset var group = "" />
-		<cfset var result = "" />
-	
-		<farcry:deprecated message="security.getUsers() is deprecated" />
-		
-		<!--- Get roles with that permission --->
-		<cfquery datasource="#application.dsn#" name="qRoles">
-			select	parentid
-			from	#application.dbowner#farRole_aPermissions
-			where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-		</cfquery>
-		
-		<cfif qRoles.recorcount>
-			<!--- Get the groups for those roles --->
-			<cfquery datasource="#application.dsn#" name="qGroups">
-				select	data
-				from	#appliation.dbowner#farRole_aGroups
-				where	parentid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qRoles.parentid)#" />)
-			</cfquery>
-			
-			<!--- Get the users for those groups --->
-			<cfloop query="qGroups">
-				<cfif structkeyexist(this.userdirectories,listlast(data,"_"))>
-					<cfloop list="#this.userdirectories['CLIENTUD'].getGroupUsers(listfirst(data,'_'))#" index="group">
-						<cfset result = application.factory.oUtils.listMerge(result,"#group#_#listlast(data,'_')#") />
-					</cfloop>
-				</cfif>
-			</cfloop>
-		</cfif>
-		
-		<cfreturn result />
-	</cffunction>
-
 	<cffunction name="defaultRequestMode" access="public" output="false" hint="Default the request.mode struct">
 
 		<!--- init request.mode with defaults --->
