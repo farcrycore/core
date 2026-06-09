@@ -140,17 +140,34 @@
 			SELECT 	object, type, event, userid, location, ipaddress, datetimecreated, notes
 			FROM 	#application.dbowner#farLog
 			WHERE 	1=1
-					<cfif structkeyexists(arguments,"objectid")>AND object = '#arguments.objectid#'</cfif>
+					<cfif structkeyexists(arguments,"objectid")>AND object = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" /></cfif>
 					<cfif structkeyexists(arguments,"type") and len(arguments.type) and arguments.type neq "all">AND type in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.type#" />)</cfif>
 					<cfif structkeyexists(arguments,"event") and len(arguments.event) and arguments.event neq "all">AND event in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.event#" />)</cfif>
 					<cfif structkeyexists(arguments,"userid") and len(arguments.userid) and arguments.userid neq "all">AND userid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.userid#" />)</cfif>
-					<cfif structkeyexists(arguments,"location")>AND location = '#arguments.location#'</cfif>
-					<cfif structkeyexists(arguments,"before")>AND datetimecreated < #arguments.before#</cfif>
-					<cfif structkeyexists(arguments,"after")>AND datetimecreated > #arguments.after#</cfif>
-			ORDER BY #arguments.orderby#
+					<cfif structkeyexists(arguments,"location")>AND location = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.location#" /></cfif>
+					<cfif structkeyexists(arguments,"before")>AND datetimecreated < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.before#" /></cfif>
+					<cfif structkeyexists(arguments,"after")>AND datetimecreated > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#arguments.after#" /></cfif>
+			ORDER BY #sanitizeSQLOrderBy(arguments.orderby)#
 		</cfquery>
 		
 		<cfreturn qLog>
-	</cffunction> 
+	</cffunction>
+
+	<cffunction name="sanitizeSQLOrderBy" access="private" returntype="string" output="false" hint="Whitelist an ORDER BY clause to known farLog columns and direction before it reaches SQL. Mirrors tags/formtools/objectadmin.cfm sanitizeSQLOrderBy.">
+		<cfargument name="sqlorderby" type="string" required="true" />
+
+		<cfset var sortableColumns = "datetimecreated,event,userid,type,location,object">
+		<cfset var resultColumn = "datetimecreated">
+		<cfset var resultDirection = "desc">
+
+		<cfif listLen(arguments.sqlorderby, " ") gte 1 AND listFindNoCase(sortableColumns, listFirst(arguments.sqlorderby, " "))>
+			<cfset resultColumn = listFirst(arguments.sqlorderby, " ")>
+		</cfif>
+		<cfif listLen(arguments.sqlorderby, " ") eq 2 AND listFindNoCase("ASC,DESC", listLast(arguments.sqlorderby, " "))>
+			<cfset resultDirection = listLast(arguments.sqlorderby, " ")>
+		</cfif>
+
+		<cfreturn "#resultColumn# #resultDirection#">
+	</cffunction>
 
 </cfcomponent>
