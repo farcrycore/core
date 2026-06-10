@@ -9,19 +9,8 @@ Project: https://handlebarsjs.com / https://github.com/handlebars-lang/handlebar
 
 Previously shipped: Handlebars 1.0.0 (May 2013).
 
-Upgraded to close the following CVEs:
-  - CVE-2019-19919 — Prototype Pollution leading to RCE (pre 3.0.8 / 4.3.0)
-  - CVE-2019-20920 — Arbitrary code execution via lookup helper (pre 4.6.0)
-  - CVE-2019-20922 — RCE if template options compiled at runtime (pre 4.6.0)
-  - CVE-2021-23369 — Template RCE via lookup compilation flags (pre 4.7.7)
-  - CVE-2026-33916 — Prototype Pollution leading to XSS through Partial
-                     Template Injection (4.0.0 through 4.7.8; fixed in 4.7.9)
-  - CVE-2026-33941 — CLI Precompiler Injection (4.0.0 through 4.7.8; fixed
-                     in 4.7.9, not exploitable here as FarCry compiles at runtime)
-
-CVE-2026-33937 (AST Injection RCE) requires the caller to pass an AST object
-to Handlebars.compile() — FarCry only ever passes template strings, so this
-vector is not exploitable in current code; the upgrade closes it defensively.
+Upgraded from 1.0.0 (2013) to close known vulnerabilities accumulated over
+the intervening decade and to land on a maintained release.
 
 API stability:
   - Handlebars.compile(string)       — stable since 1.x, unchanged
