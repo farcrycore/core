@@ -326,17 +326,6 @@
 		<cfreturn qGetData>
 	</cffunction>
 	
-	<cffunction name="deployCategories" access="public" output="false" returntype="struct" hint="Creates tables required for categorisation actions">
-		<cfargument name="bDropTables" type="boolean" required="false" default="false">
-		<cfargument name="dsn" required="Yes" >
-		<cfargument name="dbtype" required="Yes"> 
-		<cfargument name="dbowner" required="Yes"> 
-		
-		<cfinclude template="_category/deployCategories.cfm">
-		
-		<cfreturn stStatus>
-	</cffunction>
-
 	<cffunction name="getHierarchies" access="public" output="false" hint="Returns a query of all first level nodes keyed by typename 'categories' in the nested tree model." returntype="query" bDocument="true">
 		<cfset var qroot="">
 		<cfset var qHierarchies="">
@@ -431,8 +420,28 @@
 		<cfset var qChildren = ''>
 		<cfset var stStatus = structNew()>
 		<cfset var position = 0>
-		
-		<cfinclude template="_category/addCategory.cfm">
+		<cfset var stProperties = structNew() />
+		<cfset var stResult = "" />
+		<cfset var stReturn = "" />
+
+		<cfscript>
+			stStatus.message = '';
+			stStatus.status = false;
+		</cfscript>
+
+		<cfset stProperties.objectid = arguments.categoryID />
+		<cfset stProperties.categoryLabel = arguments.categoryLabel />
+		<cfset stProperties.label = arguments.categoryLabel />
+		<cfset stResult = createObject("component", application.stcoapi["dmCategory"].packagePath).createData(stProperties="#stProperties#") />
+
+		<cfscript>
+			qChildren = application.factory.oTree.getChildren(objectid=arguments.parentID,typename='dmCategory');
+			position = qChildren.recordCount + 1;
+			stReturn = application.factory.oTree.setChild(objectName=arguments.categoryLabel,typename='dmCategory',parentID=arguments.parentID,objectID=arguments.categoryID,pos=position);
+
+			stStatus.message = '#arguments.categoryLabel# successfully added';
+			stStatus.status = true;
+		</cfscript>
 		
 		<cfreturn stStatus>
 	</cffunction>
@@ -442,16 +451,46 @@
 		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
 		<cfargument name="bDeleteBranch" type="boolean" required="false" default="false">
 				
-		<cfinclude template="_category/deleteCategory.cfm">
+		<cfset var stStatus = structNew() />
+		<cfset var qDesc = "" />
+		<cfset var stReturn = "" />
+
+		<cfscript>
+			stStatus.message = '';
+			stStatus.status = false;
+		</cfscript>
+
+		<cfset qDesc = application.factory.oTree.getDescendants(objectid=arguments.categoryID,bIncludeSelf=1) />
+
+		<cftry>
+			<cftransaction>
+				<cfif qDesc.recordcount>
+					<cfquery datasource="#arguments.dsn#">
+						DELETE FROM #application.dbowner#dmCategory
+						WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qDesc.objectid)#" />)
+					</cfquery>
+					<cfquery datasource="#arguments.dsn#">
+						DELETE FROM #application.dbowner#refCategories
+						WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qDesc.objectid)#" />)
+					</cfquery>
+				</cfif>
+			</cftransaction>
+			<!--- Remove the branch from nested_tree_objects --->
+			<cfinvoke component="#application.packagepath#.farcry.tree" method="deleteBranch" objectID="#arguments.categoryID#" returnvariable="stReturn">
+
+			<cfscript>
+				stStatus.message = '#arguments.categoryID# deleted successfully';
+				stStatus.status = true;
+			</cfscript>
+
+			<cfcatch type="any">
+				<cfscript>
+					stStatus.message = 'Deletion of #arguments.categoryID#  FAILED';
+					stStatus.status = false;
+				</cfscript>
+			</cfcatch>
+		</cftry>
 		
-		<cfreturn stStatus>
-	</cffunction>
-	
-	<cffunction name="moveCategory" returntype="struct" access="public" hint="Moves a branch of categorys - a facade to tree.cfc.movebranch" bDocument="true">
-		<cfargument name="categoryID" type="uuid" hint="Category ID" required="true">
-		<cfargument name="parentID" type="uuid" hint="New parent ID that branch will sit under">
-		
-		<cfinclude template="_category/moveCategory.cfm">
 		<cfreturn stStatus>
 	</cffunction>
 	
@@ -546,7 +585,43 @@
 		<cfargument name="alias" type="string" hint="The alias of the section of the category tree that is going to be re-asigned.">  
 		<cfargument name="dsn" type="string" required="no" default="#application.dsn#" hint="Database DSN">
 		
-		<cfinclude template="_category/assignCategories.cfm">
+		<cfset var stStatus = structNew() />
+		<cfset var lDescendents = "" />
+		<cfset var aCategoryIds = listToArray(arguments.lCategoryIDs) />
+		<cfset var i = "" />
+
+		<!--- categoryIDs must be UUIDs; an empty list is allowed (it clears the object's categories). Validate before the DELETE so malformed input changes nothing. --->
+		<cfloop from="1" to="#arrayLen(aCategoryIds)#" index="i">
+			<cfif NOT isValid("uuid", aCategoryIds[i])>
+				<cfthrow type="farcry.category" message="Invalid categoryID passed to assignCategories; category IDs must be UUIDs." />
+			</cfif>
+		</cfloop>
+
+		<!---
+			If an alias was supplied the user could only pick from a particular point in the tree,
+			so only delete categories selected from that branch.
+		--->
+		<cfif isDefined("arguments.Alias") and len(arguments.Alias) and application.fapi.checkCatID(arguments.Alias)>
+			<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.fapi.getCatID(arguments.Alias)) />
+		</cfif>
+
+		<cfquery datasource="#arguments.dsn#">
+			DELETE FROM #application.dbowner#refCategories
+			WHERE objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
+			<cfif len(lDescendents)>
+				AND categoryid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lDescendents#" />)
+			</cfif>
+		</cfquery>
+
+		<cfloop from="1" to="#arrayLen(aCategoryIds)#" index="i">
+			<cfquery datasource="#arguments.dsn#">
+				INSERT INTO #application.dbowner#refCategories (categoryID,objectID)
+				VALUES (<cfqueryparam cfsqltype="cf_sql_varchar" value="#aCategoryIds[i]#">, <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#">)
+			</cfquery>
+		</cfloop>
+
+		<cfset stStatus.message = "#arguments.objectID# categories successfully assigned" />
+		<cfset stStatus.status = true />
 		
 		<cfreturn stStatus>
 	</cffunction>  
