@@ -87,14 +87,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				INSERT INTO #arguments.dbowner#refContainers
 				(objectid,containerID)
 				VALUES
-				('#arguments.objectid#','#arguments.containerid#')
+				(<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#">, <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.containerid#">)
 			</cfquery> 
 		</cfif>
 	</cffunction>
 	
 	<cffunction name="deleteRefContainerData" hint="Delete data in refContainers relevant to a particular object">
-		<cfargument name="objectid" required="false">
-		<cfargument name="containerid" required="false">
+		<cfargument name="objectid" required="false" type="UUID">
+		<cfargument name="containerid" required="false" type="UUID">
 		<cfargument name="dsn" required="false" default="#application.dsn#">
 		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 				
@@ -103,9 +103,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			FROM #arguments.dbowner#refContainers
 			WHERE
 			<cfif isDefined("arguments.objectid")>
-				OBJECTID = '#arguments.objectid#'
+				OBJECTID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#">
 			<cfelse>
-				CONTAINERID = '#arguments.containerid#'
+				CONTAINERID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.containerid#">
 			</cfif>
 		</cfquery>
 	
@@ -271,7 +271,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cffunction>
 	
 	<cffunction name="delete" hint="deletes all container data by objectid" returntype="struct">
-		<cfargument name="objectid" required="Yes">
+		<cfargument name="objectid" required="Yes" type="UUID">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfset var qRefObjects = ''>
 		<cfset var qObjs = ''>
@@ -292,14 +292,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfquery name="qUpdate" datasource="#application.dsn#">
 		UPDATE	#application.dbowner#container
 		SET		mirrorid = ''
-		WHERE	mirrorid = '#arguments.objectid#'
+		WHERE	mirrorid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#">
 		</cfquery>
 
 		<!--- delete container from [refcontainers] for object content types --->
 		<cfquery name="qDelete" datasource="#application.dsn#">
 		DELETE
 		FROM	#application.dbowner#refContainers
-		WHERE	containerid = '#arguments.objectid#'
+		WHERE	containerid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#">
 		</cfquery>
 
 		<cfreturn stReturn>
@@ -328,7 +328,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfquery name="q" datasource="#application.dsn#">
 			SELECT distinct(objectid) 
 			FROM refContainers 
-			WHERE containerid IN ('#listChangeDelims(arguments.lContainerIds,"','")#')
+			WHERE containerid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lContainerIds#">)
 		</cfquery>
 		
 		<cfreturn q>
@@ -337,14 +337,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	
 	<cffunction name="getObjectsByContainer" hint="gets all parent objects that a container may belong to" returntype="query">
-		<cfargument name="containerid" required="Yes">
+		<cfargument name="containerid" required="Yes" type="UUID">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfset var q = ''>
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
 			FROM refContainers r
-			WHERE containerid = '#arguments.containerid#'
+			WHERE containerid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.containerid#">
 		</cfquery>
 		
 		<cfreturn q>
@@ -352,7 +352,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cffunction> 		
 	
 	<cffunction name="getContainersByObject" hint="gets all container objects that are attached to a particular object" returntype="query">
-		<cfargument name="objectid" required="Yes">
+		<cfargument name="objectid" required="Yes" type="UUID">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		<cfset var q = ''>
@@ -360,7 +360,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
 			FROM #arguments.dbowner#refContainers r
-			WHERE objectid = '#arguments.objectid#'
+			WHERE objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#">
 		</cfquery>
 		
 		<cfreturn q>
@@ -368,8 +368,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cffunction> 	
 	
 	<cffunction name="refContainerDataExists" hint="gets refContainer Entries for a given container and object">
-		<cfargument name="containerid" required="Yes">
-		<cfargument name="objectid" required="Yes">
+		<cfargument name="containerid" required="Yes" type="UUID">
+		<cfargument name="objectid" required="Yes" type="UUID">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		<cfset var q = ''>
@@ -377,8 +377,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT *
 			FROM #arguments.dbowner#refContainers r
-			WHERE objectid = '#arguments.objectid#'
-			AND containerid = '#arguments.containerid#'
+			WHERE objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#">
+			AND containerid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.containerid#">
 		</cfquery>
 		<cfreturn q>
 
@@ -480,9 +480,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			FROM #application.dbowner#container 
 			WHERE 
 			<cfif isDefined("arguments.objectID")>
-				objectID = '#objectID#'
+				objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#objectID#">
 			<cfelse>
-				label = '#arguments.label#'
+				label = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.label#">
 			</cfif>
 			
 			<cfif arguments.bShared>
