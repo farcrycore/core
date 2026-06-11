@@ -134,7 +134,7 @@
 			
 			<cfcontent type="application/json" variable="#ToBinary( ToBase64( serializeJSON(aResult) ) )#" reset="yes" />
 		<cfelse>
-			<cfparam name="url.search" />
+			<cfparam name="url.search" default="" />
 			<cfparam name="url.page" default="1" />
 			<cfparam name="url.#arguments.stMetadata.name#" default="" />
 			
