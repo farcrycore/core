@@ -20,7 +20,7 @@
 				prefix : self.data("prefix"),
 				objectid : self.data("objectid"),
 				ajaxurl : self.data("ajaxurl"),
-				multiple : self.data("multiple"),
+				multiple : self.prop("multiple"),
 				watch : self.data("watch") || "",
 				placeholder : self.data("placeholder"),
 				data : self.data("data") || undefined,

@@ -90,7 +90,6 @@
 						data-allowcreate="#encodeForHTMLAttribute(arguments.stMetadata.ftAllowCreate)#"
 						data-prefix="#encodeForHTMLAttribute(left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)))#"
 						data-objectid="#encodeForHTMLAttribute(arguments.stObject.objectid)#"
-						data-multiple="#arguments.stMetadata.type eq 'array'#"
 						data-watch="#encodeForHTMLAttribute(arguments.stMetadata.ftWatch)#"
 						data-placeholder="#encodeForHTMLAttribute(arguments.stMetadata.ftPlaceholder)#"
 						<cfif arguments.stMetadata.ftInlineData>data-data="#replace(getResultsAsJSON(typename=arguments.stMetadata.ftJoin,objectId=arguments.stObject.objectid,ftLibraryData=arguments.stMetadata.ftLibraryData,ftLibraryDataTypename=arguments.stMetadata.ftLibraryDataTypename,search='',paginate=false,lValidStatus=lValidStatus),'"','&quot;','ALL')#" data-createoptions='#getCreatesAsJSON(createOptions=createOptions)#'<cfelse>data-ajaxurl="#encodeForHTMLAttribute(getAjaxURL(argumentCollection=arguments))#"</cfif>>
