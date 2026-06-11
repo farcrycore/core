@@ -533,6 +533,13 @@ default handlers
 			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
 			<cfset setdata(stProperties="#stProperties#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSetDefaultCoreProperties="false", bSessionOnly="#bSessionOnly#")>
 
+			<!--- getData reads the session TempObjectStore ahead of the DB, and setData above did not refresh it. --->
+			<!--- Sync the lock fields in place (not purge) so the overview reflects the unlock without losing session edits. --->
+			<cfif NOT bSessionOnly AND structKeyExists(session, "TempObjectStore") AND structKeyExists(session.TempObjectStore, stProperties.objectid)>
+				<cfset session.TempObjectStore[stProperties.objectid].locked = arguments.locked />
+				<cfset session.TempObjectStore[stProperties.objectid].lockedby = arguments.lockedby />
+			</cfif>
+
 		</cfif>
 	</cffunction>
 	
