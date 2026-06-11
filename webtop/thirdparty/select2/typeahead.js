@@ -38,7 +38,8 @@
 			// (librarySelected) is server-side-encoded HTML, so render it via a jQuery
 			// object; the plain label falls through as a string and stays auto-escaped.
 			function templateResult(item){
-				if (item.librarySelected) return $("<span>").html(item.librarySelected);
+				var ls = item.librarySelected || (item.element ? $(item.element).data("librarySelected") : null);
+				if (ls) return $("<span>").html(ls);
 				return item.text;
 			};
 
@@ -66,19 +67,23 @@
 			};
 
 			if (thisconfig.data) {
-				// In-memory / inline-data mode: the searchable pool is the server-embedded
-				// data minus anything already selected (rendered as <option selected>), plus
-				// the create options. 4.x's built-in matcher searches the option `text`.
-				var selected = {};
-				self.find("option").each(function(){ if (this.selected) selected[this.value] = true; });
-				var pool = thisconfig.data.filter(function(item){ return !selected[item.id]; });
+				// Inline-data mode: append the pool as real <option>s (4.x's `data:` array
+				// won't merge into a <select> that already has <option>s). librarySelected
+				// rides on each option for templateResult; create options are appended too.
+				var pool = thisconfig.data.slice();
 				if (thisconfig.createoptions) pool = pool.concat(thisconfig.createoptions);
+				for (var pi=0; pi<pool.length; pi++){
+					if (!self.find("option[value='"+pool[pi].id+"']").length){
+						var opt = new Option(pool[pi].text, pool[pi].id, false, false);
+						if (pool[pi].librarySelected) $(opt).data("librarySelected", pool[pi].librarySelected);
+						self.append(opt);
+					}
+				}
 				self.select2({
 					minimumInputLength: thisconfig.minimumInputLength,
 					allowClear: !thisconfig.multiple,
 					placeholder: thisconfig.placeholder,
-					templateResult: templateResult,
-					data: pool
+					templateResult: templateResult
 				});
 			}
 			else {
