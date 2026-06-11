@@ -153,9 +153,9 @@
 							baseHREF='#application.url.webtop#/js'
 							lFiles="webtop7.js" />
 
-		<skin:registerJS	id="typeahead" core="true"
+		<skin:registerJS	id="typeahead" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/select2" 
-							lFiles="select2.js,typeahead.js" />
+							lFiles="select2.full.min.js,typeahead.js" />
 
 		<skin:registerJS	id="fc-moment" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/moment" 
@@ -312,9 +312,9 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltipster/css"
 							lFiles="tooltipster.css,themes/tooltipster-light.css" />
 
-		<skin:registerCSS	id="typeahead" 
+		<skin:registerCSS	id="typeahead" bCombine="false" 
 							baseHREf="#application.url.webtop#/thirdparty/select2" 
-							lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />	
+							lFiles="select2.min.css" />	
 
 		<skin:registerCSS	id="fc-chardin" 
 							baseHREf="#application.url.webtop#/thirdparty/chardin" 
