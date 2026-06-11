@@ -849,7 +849,16 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfreturn stObj>
 	</cffunction>
-	
+
+	<cffunction name="isPersistedObject" access="public" output="false" returntype="boolean" hint="Returns true if a database record exists for this objectid. Unlike fapi.isDefaultObject, this bypasses the session TempObjectStore and object broker, so the answer is reliable even when stale session copies exist.">
+		<cfargument name="objectid" type="UUID" required="true" hint="The objectid to check for in the database." />
+
+		<!--- bArraysAsStructs must be numeric (getData ignores boolean values for this argument); it forces a direct db read with no temp store or broker involvement --->
+		<cfset var stObj = getData(objectid=arguments.objectid, bUseInstanceCache=false, bArraysAsStructs=1) />
+
+		<cfreturn NOT (structKeyExists(stObj, "bDefaultObject") AND stObj.bDefaultObject) />
+	</cffunction>
+
 	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
 		<cfargument name="dsn" type="string" required="false" default="">
