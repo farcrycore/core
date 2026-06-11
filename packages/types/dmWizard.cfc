@@ -33,8 +33,8 @@
 			<cfquery datasource="#application.dsn#" name="qwizard">
 			SELECT *
 			FROM dmWizard
-			WHERE ReferenceID = '#arguments.ReferenceID#'
-			AND UserLogin = '#arguments.UserLogin#'
+			WHERE ReferenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ReferenceID#">
+			AND UserLogin = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.UserLogin#">
 			</cfquery>
 			
 			<!--- If the wizard exists, create the CF struct to return --->

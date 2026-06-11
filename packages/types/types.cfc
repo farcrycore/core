@@ -1571,7 +1571,7 @@ default handlers
 		<cfquery datasource="#application.dsn#" name="q">
 		SELECT *
 		FROM #arguments.typename#_#arguments.Fieldname#
-		WHERE #arguments.typename#_#arguments.Fieldname#.parentID = '#arguments.ObjectID#'
+		WHERE #arguments.typename#_#arguments.Fieldname#.parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ObjectID#">
 		ORDER BY #arguments.typename#_#arguments.Fieldname#.seq ASC
 		</cfquery>		
 	
