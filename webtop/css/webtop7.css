@@ -1214,6 +1214,16 @@ legend + .control-group {
 .controls .select2-selection--multiple .select2-search--inline .select2-search__field {
 	margin-left: 0;
 }
+/* Bootstrap sets ul{margin-left:25px}; the chip/search row is a <ul> and Select2 resets
+   only its padding, not its margin. Kill the margin and zero the chip/search leading
+   margins so content sits flush-left. */
+.controls .select2-selection__rendered {
+	margin: 0;
+}
+.controls .select2-selection--multiple .select2-selection__choice {
+	margin-left: 0;
+	margin-right: 5px;
+}
 .controls .select2-container.typeahead-single .select2-selection--multiple {
 	position: relative;
 	padding-right: 20px;
