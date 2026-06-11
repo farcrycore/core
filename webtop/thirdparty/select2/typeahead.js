@@ -130,16 +130,17 @@
 			if (!fcForm.typeaheadOldRefreshProperty){
 				fcForm.typeaheadOldRefreshProperty = fcForm.refreshProperty
 				fcForm.refreshProperty = function(typename,objectid,property,id){
-					if ($j("#"+id).siblings(".select2-container").length){
-						$j.getJSON(thisconfig.ajaxurl,{ resolvelabels:$j("#"+id).val() },function(data){
-							var self = $j("#"+id), thisconfig = self.data("typeahead-config");
-							if (thisconfig.data) thisconfig.data.push(data[data.length-1]);
-							// 4.x can only select values that exist as <option>s: add any missing ones, then set the value.
+					var el = $j("#"+id), cfg = el.data("typeahead-config");
+					// Ajax-mode typeahead: after a library add/create the new id is attached
+					// server-side, so re-sync from the object's current value (the modal's
+					// select.val() write cannot select an option that does not exist yet).
+					if (el.siblings(".select2-container").length && cfg && cfg.ajaxurl){
+						$j.getJSON(cfg.ajaxurl,{ resolvecurrent:1 },function(data){
 							$j.each(data,function(i,item){
-								if (!self.find("option[value='"+item.id+"']").length)
-									self.append(new Option(item.text,item.id,true,true));
+								if (!el.find("option[value='"+item.id+"']").length)
+									el.append(new Option(item.text,item.id,true,true));
 							});
-							self.val(thisconfig.multiple ? $j.map(data,function(item){ return item.id; }) : (data.length ? data[0].id : "")).trigger("change");
+							el.val(cfg.multiple ? $j.map(data,function(item){ return item.id; }) : (data.length ? data[0].id : "")).trigger("change");
 						});
 					}
 					else{

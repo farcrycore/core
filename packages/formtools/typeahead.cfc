@@ -132,6 +132,22 @@
 			</cfloop>
 			
 			<cfcontent type="application/json" variable="#ToBinary( ToBase64( serializeJSON(aResult) ) )#" reset="yes" />
+		<cfelseif isdefined("url.resolvecurrent")>
+			<!--- Resolve the object's CURRENT attached value(s) for this property, so the field can
+			      repaint after a library add/create. The new id is attached server-side, but a
+			      select.val() cannot select an option that does not exist on the element yet. --->
+			<cfloop list="#convertPropertyToValue(arguments.stObject[arguments.stMetadata.name],arguments.stMetadata.ftJoin)#" index="id" delimiters=";">
+				<cfset st = structnew() />
+				<cfset st["id"] = listfirst(id,"|") />
+				<cfset st["text"] = listlast(id,"|") />
+
+				<skin:view objectid="#st['id']#" typename="#arguments.typename#" webskin="librarySelected" alteranateHTML="#st['text']#" r_html="html" />
+				<cfset st["librarySelected"] = trim(html) />
+
+				<cfset arrayappend(aResult,st) />
+			</cfloop>
+
+			<cfcontent type="application/json" variable="#ToBinary( ToBase64( serializeJSON(aResult) ) )#" reset="yes" />
 		<cfelse>
 			<cfparam name="url.search" default="" />
 			<cfparam name="url.page" default="1" />
