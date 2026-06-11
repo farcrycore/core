@@ -14,6 +14,7 @@
 		this.each(function(){
 			var self = $(this);
 			var fieldname = this.id;
+			var single = self.hasClass("typeahead-single");
 
 			var thisconfig = jQuery.extend({
 				typename : self.data("typename"),
@@ -25,7 +26,7 @@
 				placeholder : self.data("placeholder"),
 				data : self.data("data") || undefined,
 				createoptions : self.data("createoptions") || undefined,
-				minimumInputLength : self.data("minimuminputlength")===undefined ? 3 : self.data("minimuminputlength"),
+				minimumInputLength : self.data("minimuminputlength")===undefined ? (self.data("data") ? 0 : 3) : self.data("minimuminputlength"),
 				pagesize : 15
 			},config);
 			thisconfig.multiple = stringtruthyness[thisconfig.multiple];
@@ -126,6 +127,17 @@
 					fcForm.openLibraryAdd(thisconfig.typename,thisconfig.objectid,propertyname,fieldname);
 				}
 			});
+
+			if (single) {
+				self.next(".select2-container").addClass("typeahead-single");
+				// Single (uuid) fields use the multiple widget for a consistent inline-search look
+				// but only ever hold one value: replace the previous pick instead of stacking.
+				self.on("select2:select",function(e){
+					var id = e.params && e.params.data ? e.params.data.id : null;
+					if (typeof(id)=="string" && id.slice(0,1)=="_") return;
+					if (self.val() && self.val().length > 1) self.val([id]).trigger("change");
+				});
+			}
 
 			if (!fcForm.typeaheadOldRefreshProperty){
 				fcForm.typeaheadOldRefreshProperty = fcForm.refreshProperty

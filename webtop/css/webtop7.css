@@ -1211,6 +1211,26 @@ legend + .control-group {
 	max-width: none;
 	min-height: 0;
 }
+.controls .select2-selection--multiple .select2-search--inline .select2-search__field {
+	margin-left: 0;
+}
+.controls .select2-container.typeahead-single .select2-selection--multiple {
+	position: relative;
+	padding-right: 20px;
+}
+.controls .select2-container.typeahead-single .select2-selection--multiple::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	right: 8px;
+	margin-top: -2px;
+	width: 0;
+	height: 0;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-top: 5px solid #888;
+	pointer-events: none;
+}
 .controls .select2-container--default .select2-selection--multiple {
 	border-color: #ccc;
 }

@@ -85,7 +85,7 @@
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<div class="multiField">
-					<select class="typeahead" style="width:100%;" id="#arguments.fieldname#" name="#arguments.fieldname#"<cfif arguments.stMetadata.type eq "array"> multiple</cfif>
+					<select class="typeahead<cfif arguments.stMetadata.type neq "array"> typeahead-single</cfif>" style="width:100%;" id="#arguments.fieldname#" name="#arguments.fieldname#" multiple
 						data-typename="#encodeForHTMLAttribute(arguments.typename)#"
 						data-allowcreate="#encodeForHTMLAttribute(arguments.stMetadata.ftAllowCreate)#"
 						data-prefix="#encodeForHTMLAttribute(left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)))#"
@@ -93,7 +93,6 @@
 						data-watch="#encodeForHTMLAttribute(arguments.stMetadata.ftWatch)#"
 						data-placeholder="#encodeForHTMLAttribute(arguments.stMetadata.ftPlaceholder)#"
 						<cfif arguments.stMetadata.ftInlineData>data-data="#replace(getResultsAsJSON(typename=arguments.stMetadata.ftJoin,objectId=arguments.stObject.objectid,ftLibraryData=arguments.stMetadata.ftLibraryData,ftLibraryDataTypename=arguments.stMetadata.ftLibraryDataTypename,search='',paginate=false,lValidStatus=lValidStatus),'"','&quot;','ALL')#" data-createoptions='#getCreatesAsJSON(createOptions=createOptions)#'<cfelse>data-ajaxurl="#encodeForHTMLAttribute(getAjaxURL(argumentCollection=arguments))#"</cfif>>
-						<cfif arguments.stMetadata.type neq "array"><option></option></cfif>
 						<cfloop list="#convertPropertyToValue(arguments.stMetadata.value,arguments.stMetadata.ftJoin)#" index="pair" delimiters=";"><option value="#encodeForHTMLAttribute(listFirst(pair,'|'))#" selected>#encodeForHTML(listRest(pair,'|'))#</option></cfloop>
 					</select>
 					<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
