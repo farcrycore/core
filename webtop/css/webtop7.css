@@ -1220,12 +1220,9 @@ legend + .control-group {
 .controls .select2-selection__rendered {
 	margin: 0;
 }
-.controls .select2-selection--multiple .select2-selection__choice {
+.controls .select2-container--default .select2-selection--multiple .select2-selection__choice {
 	margin-left: 0;
-}
-/* 5px gap before any chip/search that follows another item; the first item stays flush. */
-.controls .select2-selection--multiple .select2-selection__rendered > li + li {
-	margin-left: 5px;
+	margin-right: 5px;
 }
 /* small left breathing room on the box (like a normal input), not flush to the border */
 .controls .select2-selection--multiple {
