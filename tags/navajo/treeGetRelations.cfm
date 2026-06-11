@@ -107,7 +107,7 @@ need to call tag or fourq function that has status as an option somehow
 		<cfquery name="qChildren" datasource="#application.dsn#">
 		SELECT a.data AS objectID, b.title AS objectname from #application.dbowner##attributes.typename#_aObjectIDs a
 		JOIN #application.dbowner##attributes.typename# b ON a.data = b.objectID
-		WHERE a.parentID =  '#attributes.objectID#'
+		WHERE a.parentID =  <cfqueryparam cfsqltype="cf_sql_varchar" value="#attributes.objectID#">
 		</cfquery>
 	<cfelse>
 		<cfset qChildren = QueryNew("objectid")>
@@ -134,7 +134,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 		AND objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lObjectIDs#" />)
 	</cfif>
 	<cfif len(attributes.lstatus)>
-		AND status = '#attributes.lstatus#'
+		AND status = <cfqueryparam cfsqltype="cf_sql_varchar" value="#attributes.lstatus#" />
 	</cfif>
 </cfquery>
 
@@ -176,7 +176,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 	<cfif attributes.typename is attributes.nodetype>
 		<cfquery name="qGetParent" datasource="#application.dsn#">
 			select  parentid from #application.dbowner#nested_tree_objects 
-		    where objectid  = '#attributes.objectid#'
+		    where objectid  = <cfqueryparam cfsqltype="cf_sql_varchar" value="#attributes.objectid#">
 		</cfquery>	
 	<cfelse>	
 		<!--- TODO - MAJOR hack here.  --->
@@ -189,7 +189,7 @@ this should be a COAPI call and *not* a straight SQL shortcut
 				
 			<cfquery name="qGetParent" datasource="#application.dsn#">
 				SELECT parentID FROM #application.dbowner##listGetAt(searchlist,listIndex)#_aObjectIDs 
-				WHERE data = '#attributes.objectID#'	
+				WHERE data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#attributes.objectID#">	
 			</cfquery>	
 			<cfif qGetParent.recordCount GT 0>
 				<cfset loop = false>
