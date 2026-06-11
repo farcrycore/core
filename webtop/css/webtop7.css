@@ -1208,6 +1208,10 @@ legend + .control-group {
 }
 .controls .select2-search__field {
 	min-width: 40px;
+	min-height: 0;
+	width: auto;
+	max-width: 100%;
+	box-sizing: border-box;
 }
 .controls .select2-container--default .select2-selection--multiple {
 	border-color: #ccc;
