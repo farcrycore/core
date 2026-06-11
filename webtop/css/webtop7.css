@@ -1222,7 +1222,14 @@ legend + .control-group {
 }
 .controls .select2-selection--multiple .select2-selection__choice {
 	margin-left: 0;
-	margin-right: 5px;
+}
+/* 5px gap before any chip/search that follows another item; the first item stays flush. */
+.controls .select2-selection--multiple .select2-selection__rendered > li + li {
+	margin-left: 5px;
+}
+/* small left breathing room on the box (like a normal input), not flush to the border */
+.controls .select2-selection--multiple {
+	padding-left: 6px;
 }
 .controls .select2-container.typeahead-single .select2-selection--multiple {
 	position: relative;
