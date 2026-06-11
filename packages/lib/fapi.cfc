@@ -372,6 +372,7 @@
 		<cfset var newObjectID = "" />
 		<cfset var stNewObject = "" />
 		<cfset var stResult = "" />
+		<cfset var candidateID = "" />
 		<cfset var o = application.fapi.getContentType("#arguments.typename#") />
 
 		<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
@@ -386,10 +387,16 @@
 		
 		<cfif len(arguments.key)>
 			<cfif structKeyExists(session.stTempObjectStoreKeys[arguments.typename], arguments.key)>
-				<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[arguments.typename][arguments.key])>
-					<cfset newObjectID = session.stTempObjectStoreKeys[arguments.typename][arguments.key] />
+				<cfset candidateID = session.stTempObjectStoreKeys[arguments.typename][arguments.key] />
+				<cfif structKeyExists(Session.TempObjectStore, candidateID)>
+					<cfif NOT o.isPersistedObject(objectid=candidateID)>
+						<cfset newObjectID = candidateID />
+					<cfelse>
+						<!--- a saved record must never be re-bound to a "create new" form; mint a fresh id below --->
+						<cfset systemOutput("getNewContentObject: keyed temp object #candidateID# (#arguments.typename#/#arguments.key#) already persisted; minting new id", true) />
+					</cfif>
 				</cfif>
-			</cfif>	
+			</cfif>
 			
 			<cfif not len(newObjectID)>				
 				<cfset newObjectID = application.fc.utils.createJavaUUID() />
