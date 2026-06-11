@@ -77,21 +77,6 @@ $out:$
 		<cfreturn stLock>
 	</cffunction>
 	
-	<cffunction name="getLockedObjects" access="public" returntype="query" hint="Returns a query of all object currenty locked by user">
-		<cfargument name="userLogin" type="string" required="true">
-		<cfargument name="types" type="string" required="false" default="#structKeyList(application.types)#">
-		
-		<cfset var qLockedObjects = queryNew("objectId,objectTitle,createdBy,objectLastUpdated,objectType,objectParent")>
-		<cfset var i = "">
-		<cfset var qLockedObjects2 = "">
-		<cfset var qGetObjects = "">
-		<cfset var qGetParent = "">		
-		
-		<cfinclude template="_locking/getLockedObjects.cfm">
-		
-		<cfreturn qLockedObjects2>
-	</cffunction>
-	
 	<cffunction name="scheduledUnlock" access="public" returntype="query" hint="Unlocks objects that have been locked for a specified period">
 		<cfargument name="days" type="numeric" required="true" default="5" hint="allowable number of days since locked object last updated">
 		<cfargument name="types" type="string" required="false" default="dmHTML,dmNews,dmCSS,dmImage,dmFile,dmNavigation,dmInclude">
