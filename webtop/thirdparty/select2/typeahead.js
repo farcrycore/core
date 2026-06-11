@@ -24,9 +24,9 @@
 				multiple : self.prop("multiple"),
 				watch : self.data("watch") || "",
 				placeholder : self.data("placeholder"),
-				data : self.data("data") || undefined,
+				data : self.data("inlinedata") || undefined,
 				createoptions : self.data("createoptions") || undefined,
-				minimumInputLength : self.data("minimuminputlength")===undefined ? (self.data("data") ? 0 : 3) : self.data("minimuminputlength"),
+				minimumInputLength : self.data("minimuminputlength")===undefined ? (self.data("inlinedata") ? 0 : 3) : self.data("minimuminputlength"),
 				pagesize : 15
 			},config);
 			thisconfig.multiple = stringtruthyness[thisconfig.multiple];

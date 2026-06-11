@@ -92,7 +92,7 @@
 						data-objectid="#encodeForHTMLAttribute(arguments.stObject.objectid)#"
 						data-watch="#encodeForHTMLAttribute(arguments.stMetadata.ftWatch)#"
 						data-placeholder="#encodeForHTMLAttribute(arguments.stMetadata.ftPlaceholder)#"
-						<cfif arguments.stMetadata.ftInlineData>data-data="#replace(getResultsAsJSON(typename=arguments.stMetadata.ftJoin,objectId=arguments.stObject.objectid,ftLibraryData=arguments.stMetadata.ftLibraryData,ftLibraryDataTypename=arguments.stMetadata.ftLibraryDataTypename,search='',paginate=false,lValidStatus=lValidStatus),'"','&quot;','ALL')#" data-createoptions='#getCreatesAsJSON(createOptions=createOptions)#'<cfelse>data-ajaxurl="#encodeForHTMLAttribute(getAjaxURL(argumentCollection=arguments))#"</cfif>>
+						<cfif arguments.stMetadata.ftInlineData>data-inlinedata="#replace(getResultsAsJSON(typename=arguments.stMetadata.ftJoin,objectId=arguments.stObject.objectid,ftLibraryData=arguments.stMetadata.ftLibraryData,ftLibraryDataTypename=arguments.stMetadata.ftLibraryDataTypename,search='',paginate=false,lValidStatus=lValidStatus),'"','&quot;','ALL')#" data-createoptions='#getCreatesAsJSON(createOptions=createOptions)#'<cfelse>data-ajaxurl="#encodeForHTMLAttribute(getAjaxURL(argumentCollection=arguments))#"</cfif>>
 						<cfloop list="#convertPropertyToValue(arguments.stMetadata.value,arguments.stMetadata.ftJoin)#" index="pair" delimiters=";"><option value="#encodeForHTMLAttribute(listFirst(pair,'|'))#" selected>#encodeForHTML(listRest(pair,'|'))#</option></cfloop>
 					</select>
 					<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
