@@ -207,6 +207,7 @@
 		<cfargument name="uniqueAmong" type="string" required="false" default="#arguments.location#" hint="Locations the resolved filename must be unique across" />
 		<cfargument name="contentType" type="string" required="false" default="" />
 		<cfargument name="maxSize" type="numeric" required="false" default="0" />
+		<cfargument name="acceptExtensions" type="string" required="false" default="" hint="comma list of allowed extensions; when set, the key's extension is validated before signing (empty = allow all)" />
 
 		<cfset var dest = arguments.destination />
 		<cfset var value = "" />
@@ -222,6 +223,11 @@
 
 		<!--- Field value: relative CDN path, made unique (mirrors local makeunique) --->
 		<cfset value = ioGetUniqueFilename(locations=arguments.uniqueAmong, file="#dest#/#arguments.filename#") />
+
+		<!--- reject a disallowed extension before signing; same check as the local ioUploadFile path --->
+		<cfif len(arguments.acceptExtensions) and not listfindnocase(arguments.acceptExtensions,listlast(value,"."))>
+			<cfset application.fapi.throw(message="Invalid extension. Valid extensions are {1}",type="uploaderror",substituteValues=[ replace(arguments.acceptExtensions,",",", ","ALL") ]) />
+		</cfif>
 
 		<cfset params = getPresignedPostData(
 			location=arguments.location,

@@ -108,7 +108,8 @@
 			filename = structKeyExists(stBody,"filename") ? stBody.filename : "upload",
 			uniqueAmong = uploadLocationBulk,
 			contentType = structKeyExists(stBody,"type") ? stBody.type : "",
-			maxSize = (val(sizeLimit) gt 0) ? val(sizeLimit) : 0
+			maxSize = (val(sizeLimit) gt 0) ? val(sizeLimit) : 0,
+			acceptExtensions = bulkAllowedExts
 		) />
 		<!--- Carry the resolved value to the client so finalize can echo it back. --->
 		<cfset stPrep.params["value"] = stPrep.value />
@@ -372,7 +373,7 @@
 				<i class="fa fa-plus"></i>
 				<span>Add files&hellip;</span>
 				<!-- The file input field used as target for the file upload widget -->
-				<input id="fileupload" type="file" name="file" multiple>
+				<input id="fileupload" type="file" name="file" multiple<cfif len(bulkAllowedExts)> accept=".#replace(bulkAllowedExts,",",",.","all")#"</cfif>>
 			</span>
 			<p class="targetarea-hint">or drag and drop files here</p>
 		</div>
@@ -507,16 +508,13 @@
 		uploaderID : Window.app.uploaderID,
 		defaultProperties : #serializeJSON(listtoarray(lDefaultFields))#,
 		
-		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftSizeLimit") 
-			and len(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftSizeLimit)>
-			
-			sizeLimit : #application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftSizeLimit#,
+		<!--- ftType-aware values resolved above, so file targets get client restrictions too --->
+		<cfif isnumeric(bulkSizeLimit) and val(bulkSizeLimit) gt 0>
+			sizeLimit : #val(bulkSizeLimit)#,
 		</cfif>
-		
-		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftAllowedExtensions") 
-			and len(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftAllowedExtensions)>
-			
-			allowedExtensions : "#application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftAllowedExtensions#",
+
+		<cfif len(bulkAllowedExts)>
+			allowedExtensions : "#bulkAllowedExts#",
 		</cfif>
 		
 		uploadURL : "#application.fapi.fixURL(addValues='action=upload')#",

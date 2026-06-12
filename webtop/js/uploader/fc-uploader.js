@@ -65,9 +65,9 @@
 		for (var i = 0; i < raw.length; i++){
 			var token = String(raw[i] || "").trim();
 			if (!token) continue;
-			// strip leading "*.", "*", or "."
+			// normalise "*.jpg" / ".jpg" / "jpg" -> ".jpg"; allow-all is an empty list, not "*"
 			token = token.replace(/^\*\.?/, "").replace(/^\./, "");
-			if (token && token !== "*") out.push("." + token.toLowerCase());
+			if (token) out.push("." + token.toLowerCase());
 		}
 		return out.length ? out : null;
 	}

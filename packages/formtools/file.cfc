@@ -94,7 +94,10 @@
 
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, jquery --->
-		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
+		<!--- COAPI normally fills this from the cfproperty; guard only fires if a caller passed partial metadata --->
+		<cfif not structKeyExists(arguments.stMetadata, "ftAllowedFileExtensions")>
+			<cfset arguments.stMetadata.ftAllowedFileExtensions = application.fapi.getFormtoolMetadata(formtool="file", property="ftAllowedFileExtensions", md="default") />
+		</cfif>
 		
 		<cfif NOT listfindNoCase("html,jquery", arguments.stMetadata.ftRenderType)>
 			<cfset arguments.stMetadata.ftRenderType = "html">
@@ -145,7 +148,7 @@
 								<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
 								<label class="fc-uploader-button">
 									Select file
-									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fc-uploader-file-input #arguments.inputClass#<cfif arguments.stMetadata.ftValidation eq 'required'> required</cfif>" value="" style="#arguments.stMetadata.ftstyle#" />
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#"<cfif len(arguments.stMetadata.ftAllowedFileExtensions)> accept=".#replace(arguments.stMetadata.ftAllowedFileExtensions,",",",.","all")#"</cfif> class="fc-uploader-file-input #arguments.inputClass#<cfif arguments.stMetadata.ftValidation eq 'required'> required</cfif>" value="" style="#arguments.stMetadata.ftstyle#" />
 								</label>
 								<span class="fc-uploader-dropzone-hint">or drag and drop a file, or paste from clipboard</span>
 								<a id="#arguments.fieldname#-cancel-replace" class="fc-uploader-cancel-replace" style="display:none;">Cancel &mdash; keep the current file</a>
@@ -541,6 +544,8 @@
 
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
 		<cfparam name="arguments.stMetadata.ftMaxSize" default="0" />
+		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="" /><!--- real default comes from the file cfproperty via COAPI; "" mirrors ajax() --->
+
 
 		<cfif url.s3op eq "sign">
 			<cftry>
@@ -550,7 +555,8 @@
 					filename=structKeyExists(stBody,"filename") ? stBody.filename : "upload",
 					uniqueAmong="privatefiles,publicfiles",
 					contentType=structKeyExists(stBody,"type") ? stBody.type : "",
-					maxSize=val(arguments.stMetadata.ftMaxSize)
+					maxSize=val(arguments.stMetadata.ftMaxSize),
+					acceptExtensions=arguments.stMetadata.ftAllowedFileExtensions
 				) />
 				<!--- Carry the resolved value to the client so finalize can echo it back
 				      (the client treats it as an opaque token; no key->value reversal needed). --->
@@ -565,6 +571,12 @@
 		<cfelseif url.s3op eq "finalize">
 			<cftry>
 				<cfset value = structKeyExists(stBody,"value") ? stBody.value : "" />
+
+				<!--- confirm the object actually landed before recording the client value (mirrors image.cfc) --->
+				<cfif not len(value) or not application.fc.lib.cdn.ioFileExists(location=location, file=value)>
+					<cfreturn serializeJSON({ "objectid"=arguments.stObject.objectid, "value"="", "filename"="", "fullpath"="", "error"="Uploaded file could not be found" }) />
+				</cfif>
+
 				<cfset stJSON["objectid"] = arguments.stObject.objectid />
 				<cfset stJSON["value"] = value />
 				<cfset stJSON["filename"] = listLast(value, "/") />
@@ -623,7 +635,10 @@
 		<cfparam name="arguments.stMetadata.ftLocation" default="" />
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" />
-		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
+		<!--- COAPI normally fills this from the cfproperty; guard only fires if a caller passed partial metadata --->
+		<cfif not structKeyExists(arguments.stMetadata, "ftAllowedFileExtensions")>
+			<cfset arguments.stMetadata.ftAllowedFileExtensions = application.fapi.getFormtoolMetadata(formtool="file", property="ftAllowedFileExtensions", md="default") />
+		</cfif>
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="html">

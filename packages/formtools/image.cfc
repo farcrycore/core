@@ -171,7 +171,10 @@
 	    <cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 	    <cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 	    <cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
-	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
+	    <!--- COAPI normally fills this from the cfproperty; guard only fires if a caller passed partial metadata --->
+	    <cfif not structKeyExists(arguments.stMetadata, "ftAllowedExtensions")>
+	    	<cfset arguments.stMetadata.ftAllowedExtensions = application.fapi.getFormtoolMetadata(formtool="image", property="ftAllowedExtensions", md="default") />
+	    </cfif>
 	    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
 		
 	    <skin:loadJS id="fc-jquery" />
@@ -240,7 +243,7 @@
 									<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
 									<label class="fc-uploader-button">
 										Select file
-										<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" class="fc-uploader-file-input" />
+										<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW"<cfif len(arguments.stMetadata.ftAllowedExtensions)> accept=".#replace(arguments.stMetadata.ftAllowedExtensions,",",",.","all")#"</cfif> class="fc-uploader-file-input" />
 									</label>
 									<span class="fc-uploader-dropzone-hint">or drag and drop an image, or paste from clipboard</span>
 								</div>
@@ -363,7 +366,7 @@
 								<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
 								<label class="fc-uploader-button">
 									Select file
-									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" class="fc-uploader-file-input" />
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW"<cfif len(arguments.stMetadata.ftAllowedExtensions)> accept=".#replace(arguments.stMetadata.ftAllowedExtensions,",",",.","all")#"</cfif> class="fc-uploader-file-input" />
 								</label>
 								<span class="fc-uploader-dropzone-hint">or drag and drop an image, or paste from clipboard</span>
 							</div>
@@ -490,8 +493,12 @@
 	    <cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 	    <cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 	    <cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
-	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
-	    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
+	    <!--- COAPI normally fills this from the cfproperty; guard only fires if a caller passed partial metadata --->
+	    <cfif not structKeyExists(arguments.stMetadata, "ftAllowedExtensions")>
+	    	<cfset arguments.stMetadata.ftAllowedExtensions = application.fapi.getFormtoolMetadata(formtool="image", property="ftAllowedExtensions", md="default") />
+	    </cfif>
+
+		<cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
 		
 	    <!--- Metadata --->
 	    <cfsavecontent variable="metadatainfo">
@@ -542,7 +549,7 @@
 								<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
 								<label class="fc-uploader-button">
 									Select file
-									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" class="fc-uploader-file-input" />
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW"<cfif len(arguments.stMetadata.ftAllowedExtensions)> accept=".#replace(arguments.stMetadata.ftAllowedExtensions,",",",.","all")#"</cfif> class="fc-uploader-file-input" />
 								</label>
 								<span class="fc-uploader-dropzone-hint">or drag and drop an image, or paste from clipboard</span>
 							</div>
@@ -842,23 +849,31 @@
 		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
 
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images" />
-		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif" />
+		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="" /><!--- real default comes from the image cfproperty via COAPI --->
+
 		<cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
 		<cfparam name="arguments.stMetadata.ftShowMetadata" default="true" />
 
 		<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 
 		<cfif url.s3op eq "sign">
-			<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
-				location=location,
-				destination=arguments.stMetadata.ftDestination,
-				filename=structkeyexists(stBody,"filename") ? stBody.filename : "upload",
-				uniqueAmong=location,
-				contentType=structkeyexists(stBody,"type") ? stBody.type : "",
-				maxSize=arguments.stMetadata.ftSizeLimit
-			) />
-			<cfset stPrep.params["value"] = stPrep.value />
-			<cfreturn serializeJSON(stPrep.params) />
+			<cftry>
+				<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
+					location=location,
+					destination=arguments.stMetadata.ftDestination,
+					filename=structkeyexists(stBody,"filename") ? stBody.filename : "upload",
+					uniqueAmong=location,
+					contentType=structkeyexists(stBody,"type") ? stBody.type : "",
+					maxSize=arguments.stMetadata.ftSizeLimit,
+					acceptExtensions=arguments.stMetadata.ftAllowedExtensions
+				) />
+				<cfset stPrep.params["value"] = stPrep.value />
+				<cfreturn serializeJSON(stPrep.params) />
+
+				<cfcatch type="any">
+					<cfreturn serializeJSON({ "error" = cfcatch.message }) />
+				</cfcatch>
+			</cftry>
 		</cfif>
 
 		<!--- finalize: the original now lives in the bucket --->

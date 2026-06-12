@@ -14,14 +14,23 @@
 		<cfset var thisfield = "" />
 		<cfset var securefile = false />
 		<cfset var destinationLocation = "images">
+		<cfset var targetType = application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftType", default="image") />
+		<cfset var allowedExtensions = "" />
+		<cfset var sizeLimit = 0 />
 
-		<cfif application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftType", default="image") eq "file">
+		<!--- ftType-aware: file uses ftAllowedFileExtensions/ftMaxSize, image uses ftAllowedExtensions/ftSizeLimit --->
+		<cfif targetType eq "file">
 			<cfset securefile = application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftSecure", default=false)>
 			<cfif isBoolean(securefile) AND securefile eq true>
 				<cfset destinationLocation = "privatefiles">
 			<cfelse>
 				<cfset destinationLocation = "publicfiles">
 			</cfif>
+			<cfset allowedExtensions = application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftAllowedFileExtensions", default="")>
+			<cfset sizeLimit = application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftMaxSize", default=0)>
+		<cfelse>
+			<cfset allowedExtensions = application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftAllowedExtensions", default="")>
+			<cfset sizeLimit = application.fapi.getPropertyMetadata(typename=details.typename, property=details.targetfield, md="ftSizeLimit", default=0)>
 		</cfif>
 
 		<cfif structkeyexists(arguments.details,"directValue") and len(arguments.details.directValue)>
@@ -42,13 +51,13 @@
 				secure = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSecure", false),
 				location = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftLocation", ""),
 				status = structKeyExists(stObject, "status") ? stObject.status : "approved",
-				allowedExtensions = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftAllowedExtensions"),
-				sizeLimit = application.fapi.getPropertyMetadata(stObject.typename, arguments.details.targetfield, "ftSizeLimit", 0),
+				allowedExtensions = allowedExtensions,
+				sizeLimit = sizeLimit,
 				bArchive = false
 			) />
 			<cfif not stResult.bSuccess>
 				<cflog file="bulkupload" text="Could not handle #arguments.details.tempfile#: #stResult.stError.message#" />
-				<creturn "" />
+				<cfreturn />
 			</cfif>
 			<cfset stObject[arguments.details.targetfield] = stResult.value />
 		</cfif>

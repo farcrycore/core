@@ -109,6 +109,7 @@
 	    <cfset var storageType = "local" />
 	    <cfset var allowedExtsDisplay = "" />
 	    <cfset var maxSizeText = "" />
+	    <cfset var stJoinRestrict = "" />
 
 	    <cfif not listlen(arguments.stMetadata.ftJoin) eq 1>
 			<cfthrow message="One related type must be specified in the ftJoin attribute" />
@@ -122,15 +123,13 @@
 				<cfthrow message="ftFileProperty is a required attribute" />
 			</cfif>
 		</cfif>
-	    <cfif not len(arguments.stMetadata.ftAllowedFileExtensions) and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#arguments.stMetadata.ftFileProperty#.metadata.ftAllowedFileExtensions") and len(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedFileExtensions)>
-			<cfset arguments.stMetadata.ftAllowedFileExtensions = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedFileExtensions />
-		<cfelseif not len(arguments.stMetadata.ftAllowedFileExtensions) and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#arguments.stMetadata.ftFileProperty#.metadata.ftAllowedExtensions") and len(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedExtensions)>
-			<cfset arguments.stMetadata.ftAllowedFileExtensions = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedExtensions />
+	    <!--- inherit restrictions from the joined file property (ftType-aware; COAPI has merged in the formtool defaults). an explicit override on the arrayupload field still wins. --->
+	    <cfset stJoinRestrict = resolveJoinUploadRestrictions(arguments.stMetadata) />
+	    <cfif not len(arguments.stMetadata.ftAllowedFileExtensions)>
+			<cfset arguments.stMetadata.ftAllowedFileExtensions = stJoinRestrict.extensions />
 		</cfif>
-	    <cfif not len(arguments.stMetadata.ftSizeLimit) and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#arguments.stMetadata.ftFileProperty#.metadata.ftSizeLimit") and len(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftSizeLimit)>
-			<cfset arguments.stMetadata.ftSizeLimit = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftSizeLimit />
-		<cfelse>
-			<cfset arguments.stMetadata.ftSizeLimit = -1 />
+	    <cfif not len(arguments.stMetadata.ftSizeLimit)>
+			<cfset arguments.stMetadata.ftSizeLimit = stJoinRestrict.sizeLimit />
 		</cfif>
 
 		<!--- Constraint caption values: short ext list (full list goes in a tooltip) and
@@ -726,7 +725,7 @@
 						<div class="fc-uploader-dropzone-icon"><i class="fa fa-cloud-upload"></i></div>
 						<label class="fc-uploader-button">
 							Select files
-							<input type="file" name="#arguments.fieldname#UPLOAD" id="#arguments.fieldname#UPLOAD" multiple class="fc-uploader-file-input" />
+							<input type="file" name="#arguments.fieldname#UPLOAD" id="#arguments.fieldname#UPLOAD" multiple<cfif len(arguments.stMetadata.ftAllowedFileExtensions)> accept=".#replace(arguments.stMetadata.ftAllowedFileExtensions,",",",.","all")#"</cfif> class="fc-uploader-file-input" />
 						</label>
 						<span class="fc-uploader-dropzone-hint">or drag and drop files, or paste from clipboard</span>
 					</div>
@@ -915,6 +914,7 @@
 	    <cfset var stPrep = "" />
 	    <cfset var uploadLocationS3 = "" />
 	    <cfset var joinLocation = "" />
+	    <cfset var stJoinRestrict = "" />
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -940,15 +940,14 @@
 				<cfthrow message="ftFileProperty is a required attribute" />
 			</cfif>
 		</cfif>
-	    <cfif not len(arguments.stMetadata.ftAllowedFileExtensions) and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#arguments.stMetadata.ftFileProperty#.metadata.ftAllowedFileExtensions") and len(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedFileExtensions)>
-			<cfset arguments.stMetadata.ftAllowedFileExtensions = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedFileExtensions />
-		<cfelseif not len(arguments.stMetadata.ftAllowedFileExtensions) and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#arguments.stMetadata.ftFileProperty#.metadata.ftAllowedExtensions") and len(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedExtensions)>
-			<cfset arguments.stMetadata.ftAllowedFileExtensions = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAllowedExtensions />
+	    <!--- inherit restrictions from the joined file property (ftType-aware; COAPI has merged in the formtool defaults). an explicit override on the arrayupload field still wins. --->
+	    <cfset stJoinRestrict = resolveJoinUploadRestrictions(arguments.stMetadata) />
+	    <cfif not len(arguments.stMetadata.ftAllowedFileExtensions)>
+			<cfset arguments.stMetadata.ftAllowedFileExtensions = stJoinRestrict.extensions />
 		</cfif>
-	    <cfif not len(arguments.stMetadata.ftSizeLimit) and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#arguments.stMetadata.ftFileProperty#.metadata.ftSizeLimit") and len(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftSizeLimit)>
-			<cfset arguments.stMetadata.ftSizeLimit = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftSizeLimit />
-		<cfelse>
-			<cfset arguments.stMetadata.ftSizeLimit = -1 />
+	    <cfif not len(arguments.stMetadata.ftSizeLimit)>
+			<cfset arguments.stMetadata.ftSizeLimit = stJoinRestrict.sizeLimit />
+
 		</cfif>
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -967,7 +966,8 @@
 					filename=structKeyExists(stBody,"filename") ? stBody.filename : "upload",
 					uniqueAmong=listfindnocase("publicfiles,privatefiles", uploadLocationS3) ? "privatefiles,publicfiles" : uploadLocationS3,
 					contentType=structKeyExists(stBody,"type") ? stBody.type : "",
-					maxSize=(val(arguments.stMetadata.ftSizeLimit) gt 0) ? val(arguments.stMetadata.ftSizeLimit) : 0
+					maxSize=(val(arguments.stMetadata.ftSizeLimit) gt 0) ? val(arguments.stMetadata.ftSizeLimit) : 0,
+					acceptExtensions=arguments.stMetadata.ftAllowedFileExtensions
 				) />
 				<!--- Carry the resolved value to the client so finalize can echo it back. --->
 				<cfset stPrep.params["value"] = stPrep.value />
@@ -1244,6 +1244,24 @@
 		</cfif>
 		<!--- image: always defaults to images. --->
 		<cfreturn "images" />
+	</cffunction>
+
+	<cffunction name="resolveJoinUploadRestrictions" access="private" output="false" returntype="struct" hint="Resolves the upload extension list + size limit from the joined file property, reading its ftType-appropriate formtool attributes (image: ftAllowedExtensions/ftSizeLimit; file: ftAllowedFileExtensions/ftMaxSize). COAPI merges each formtool's defaults into the property metadata, so an unset attribute resolves to the formtool default.">
+		<cfargument name="stMetadata" required="true" type="struct" />
+
+		<cfset var stProp = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata />
+		<cfset var propType = structKeyExists(stProp,"ftType") ? stProp.ftType : "image" />
+		<cfset var stResult = { "extensions" = "", "sizeLimit" = 0 } />
+
+		<cfif propType eq "file">
+			<cfset stResult.extensions = structKeyExists(stProp,"ftAllowedFileExtensions") ? stProp.ftAllowedFileExtensions : "" />
+			<cfset stResult.sizeLimit  = (structKeyExists(stProp,"ftMaxSize")  and isNumeric(stProp.ftMaxSize))  ? stProp.ftMaxSize  : 0 />
+		<cfelse>
+			<cfset stResult.extensions = structKeyExists(stProp,"ftAllowedExtensions") ? stProp.ftAllowedExtensions : "" />
+			<cfset stResult.sizeLimit  = (structKeyExists(stProp,"ftSizeLimit") and isNumeric(stProp.ftSizeLimit)) ? stProp.ftSizeLimit : 0 />
+		</cfif>
+
+		<cfreturn stResult />
 	</cffunction>
 
 	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
