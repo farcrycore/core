@@ -137,6 +137,8 @@
 	                    });
 	                    
 	                } else {
+	                    // submit blocked by validation: re-enable any button disabled on click so the user can resubmit
+	                    $j("###attributes.Name# .fc-btn[disabled], ###attributes.Name# .fc-btn-link[disabled]").removeAttr('disabled');
 	                    $fc.fv#attributes.Name#.focusInvalid();
 	                    return false;
 	                }
