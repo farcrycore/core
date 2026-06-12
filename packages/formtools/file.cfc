@@ -213,6 +213,7 @@
 								var STATUS      = '###arguments.fieldname#-status';
 								var BAR         = '###arguments.fieldname#-progress-bar';
 								var allowedExts = '#arguments.stMetadata.ftAllowedFileExtensions#';
+								var maxBytes    = <cfif isNumeric(arguments.stMetadata.ftMaxSize) and val(arguments.stMetadata.ftMaxSize) gt 0>#val(arguments.stMetadata.ftMaxSize)#<cfelse>0</cfif>;
 
 								function announce(msg){ $j(STATUS).text(msg); }
 
@@ -321,7 +322,7 @@
 									onError: function(file, error){
 										var msg;
 										if (error.type === 'size')
-											msg = 'File exceeds the maximum allowed size.';
+											msg = (file && file.name ? file.name + ' ' : '') + 'is not within the file size limit of ' + fcFormatBytes(maxBytes);
 										else if (error.type === 'type')
 											// space after each comma so the list wraps at extension boundaries (not mid-token)
 											msg = 'Only files with the following extensions are allowed: ' + allowedExts.split(',').join(', ');
