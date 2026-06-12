@@ -544,6 +544,7 @@ a.fc-uploader-action:active {
 	color: #b94a48;
 	text-shadow: 0 1px 0 rgba(255,255,255,.5);
 	font-size: 13px;
+	overflow-wrap: break-word;
 }
 
 /* Array rows: small red text under the filename (no alert box). */
@@ -552,6 +553,7 @@ a.fc-uploader-action:active {
 	margin-top: 2px;
 	color: #d2322d;
 	font-size: 12px;
+	overflow-wrap: break-word;
 }
 
 /* --- Persistent queue rows (bulk, array) --------------------- */

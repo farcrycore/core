@@ -323,7 +323,8 @@
 										if (error.type === 'size')
 											msg = 'File exceeds the maximum allowed size.';
 										else if (error.type === 'type')
-											msg = 'Only files with the following extensions are allowed: ' + allowedExts;
+											// space after each comma so the list wraps at extension boundaries (not mid-token)
+											msg = 'Only files with the following extensions are allowed: ' + allowedExts.split(',').join(', ');
 										else if (error.type === 'http')
 											msg = 'Server error (' + (error.status||'') + '): ' + error.message;
 										else if (error.type === 'network')
