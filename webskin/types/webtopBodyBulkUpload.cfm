@@ -57,7 +57,7 @@
 <cfset bulkAllowedExtsDisplay = len(bulkAllowedExts) ? ucase(replace(bulkAllowedExts, ",", ", ", "all")) : "" />
 <cfset bulkMaxSizeText = "" />
 <cfif isnumeric(bulkSizeLimit) and val(bulkSizeLimit) gt 0>
-	<cfset bulkMaxSizeText = numberFormat(val(bulkSizeLimit) / 1048576, "0.##") & "MB" />
+	<cfset bulkMaxSizeText = numberFormat(val(bulkSizeLimit) / 1048576, "0.99") & "MB" />
 </cfif>
 
 <cfset lFileIDs = "">
