@@ -372,6 +372,11 @@ FileUploadView = Backbone.View.extend({
 	/* Replaces the failure branch of the old uploadDone + uploadFail. Wrapper
 	   has already categorised the error (restriction / http / network / etc). */
 	onUppyError : function FileUploadView_onUppyError(file, error){
+		// Size errors: restate the limit using the same humanFileSize text as the dropzone hint,
+		// so the value matches everywhere (Uppy's own message formats the size differently).
+		if (error && error.type === "size" && this.options.maxSizeText){
+			error = { type: "size", message: (file && file.name ? file.name + " " : "") + "is not within the file size limit of " + this.options.maxSizeText };
+		}
 		var fileModel = file ? this.collection.get(file.id) : null;
 		if (fileModel){
 			fileModel.set({ status: "failed", error: error });
@@ -447,19 +452,19 @@ ErrorCollectionView = Backbone.View.extend({
 
 /* FORMATTING HELPERS */
 function formatFileSize(bytes) {
-	if (typeof bytes !== 'number') {
+	// Binary (1024) units, 1 decimal — matches the canonical fapi.humanFileSize and the
+	// other uploaders' byte formatters so displayed sizes are consistent everywhere.
+	if (typeof bytes !== 'number' || isNaN(bytes) || bytes < 0) {
 		return '';
 	}
-	
-	if (bytes >= 1000000000) {
-		return (bytes / 1000000000).toFixed(2) + ' GB';
+	if (bytes === 0) {
+		return '0 B';
 	}
-	
-	if (bytes >= 1000000) {
-		return (bytes / 1000000).toFixed(2) + ' MB';
-	}
-	
-	return (bytes / 1000).toFixed(2) + ' KB';
+	var units = ['B','KB','MB','GB','TB'];
+	var i = Math.floor(Math.log(bytes) / Math.log(1024));
+	if (i >= units.length) i = units.length - 1;
+	var v = bytes / Math.pow(1024, i);
+	return (i === 0 ? Math.round(v) : v.toFixed(1)) + ' ' + units[i];
 };
 Handlebars.registerHelper('filesize', safeStringify(formatFileSize));
 

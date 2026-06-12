@@ -136,7 +136,7 @@
 		      a human-readable max size (ftSizeLimit is bytes, like file.cfc's ftMaxSize). --->
 		<cfset allowedExtsDisplay = ucase(replace(arguments.stMetadata.ftAllowedFileExtensions, ",", ", ", "all")) />
 		<cfif val(arguments.stMetadata.ftSizeLimit) gt 0>
-			<cfset maxSizeText = humanFileSize(val(arguments.stMetadata.ftSizeLimit)) />
+			<cfset maxSizeText = application.fapi.humanFileSize(val(arguments.stMetadata.ftSizeLimit)) />
 		</cfif>
 
 		<!--- Pick the uploader transport from the joined file property's CDN location:
@@ -239,19 +239,13 @@
 		    			this.elements = {};
 		    			
 		    			function getBytesOutput(bytes){
-							var byteSize = Math.round(bytes / 1024 * 100) * .01;
-							var suffix = 'KB';
-							if (byteSize > 1000) {
-								byteSize = Math.round(byteSize *.001 * 100) * .01;
-								suffix = 'MB';
-							};
-							var sizeParts = byteSize.toString().split('.');
-							if (sizeParts.length > 1) {
-								byteSize = sizeParts[0] + '.' + sizeParts[1].substr(0,2);
-							} else {
-								byteSize = sizeParts[0];
-							}
-							return byteSize.toString() + suffix;
+							bytes = Number(bytes) || 0;
+							if (bytes <= 0) return "";
+							var units = ["B","KB","MB","GB","TB"];
+							var i = Math.floor(Math.log(bytes) / Math.log(1024));
+							if (i >= units.length) i = units.length - 1;
+							var v = bytes / Math.pow(1024, i);
+							return (i === 0 ? Math.round(v) : v.toFixed(1)) + " " + units[i];
 		    			};
 		    			
 		    			function getFilenameOutput(filename){
@@ -351,7 +345,7 @@
 									if (error.type === "http")
 										errorloc.html('<span class="fc-uploader-error-text">HTTP error: '+(error.status||"")+'</span>');
 									else if (error.type === "size")
-										errorloc.html('<span class="fc-uploader-error-text">File size: File is not within the file size limit of '+Math.round(sizeLimit/1048576).toString()+'MB</span>');
+										errorloc.html('<span class="fc-uploader-error-text">File size: File is not within the file size limit of '+getBytesOutput(sizeLimit)+'</span>');
 									else if (error.type === "type")
 										errorloc.html('<span class="fc-uploader-error-text">File type: '+error.message+'</span>');
 									else if (error.type === "network")
@@ -1431,23 +1425,5 @@
 		<cfreturn resultHTML />
 	</cffunction>
 
-	<cffunction name="humanFileSize" access="private" output="false" returntype="string" hint="Formats a byte count as a short human-readable size (e.g. '1.2 MB'). Returns empty string for zero/negative.">
-		<cfargument name="bytes" type="numeric" required="true" />
-
-		<cfset var units = "B,KB,MB,GB,TB" />
-		<cfset var i = 1 />
-		<cfset var size = arguments.bytes />
-
-		<cfif arguments.bytes lte 0>
-			<cfreturn "" />
-		</cfif>
-
-		<cfloop condition="size gte 1024 and i lt listlen(units)">
-			<cfset size = size / 1024 />
-			<cfset i = i + 1 />
-		</cfloop>
-
-		<cfreturn (i eq 1 ? round(size) : numberFormat(size, "0.0")) & " " & listGetAt(units, i) />
-	</cffunction>
 
 </cfcomponent>

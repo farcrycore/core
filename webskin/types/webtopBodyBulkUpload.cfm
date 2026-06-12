@@ -57,7 +57,7 @@
 <cfset bulkAllowedExtsDisplay = len(bulkAllowedExts) ? ucase(replace(bulkAllowedExts, ",", ", ", "all")) : "" />
 <cfset bulkMaxSizeText = "" />
 <cfif isnumeric(bulkSizeLimit) and val(bulkSizeLimit) gt 0>
-	<cfset bulkMaxSizeText = numberFormat(val(bulkSizeLimit) / 1048576, "0.99") & "MB" />
+	<cfset bulkMaxSizeText = application.fapi.humanFileSize(val(bulkSizeLimit)) />
 </cfif>
 
 <cfset lFileIDs = "">
@@ -511,6 +511,7 @@
 		<!--- ftType-aware values resolved above, so file targets get client restrictions too --->
 		<cfif isnumeric(bulkSizeLimit) and val(bulkSizeLimit) gt 0>
 			sizeLimit : #val(bulkSizeLimit)#,
+			maxSizeText : "#bulkMaxSizeText#",
 		</cfif>
 
 		<cfif len(bulkAllowedExts)>

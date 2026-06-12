@@ -654,7 +654,7 @@
 		
 		<!--- Check the size of the uploaded file --->
 		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit and filesize gt arguments.sizeLimit>
-			<cfreturn "#listlast(arguments.localpath,'\/')# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB" />
+			<cfreturn "#listlast(arguments.localpath,'\/')# is not within the file size limit of #application.fapi.humanFileSize(arguments.sizeLimit)#" />
 		</cfif>
 		
 		<!--- DESTINATION can specify a directory or a file --->
@@ -715,7 +715,7 @@
 		<!--- Check the size of the uploaded file --->
 		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit and getFileInfo("#tmpdir##cffile.serverFile#").size gt arguments.sizeLimit>
 			<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
-			<cfset application.fapi.throw(message="{1} is not within the file size limit of {2}MB",type="uploaderror",substituteValues=[ cffile.serverFile, round(arguments.sizeLimit/1048576) ]) />
+			<cfset application.fapi.throw(message="{1} is not within the file size limit of {2}",type="uploaderror",substituteValues=[ cffile.serverFile, application.fapi.humanFileSize(arguments.sizeLimit) ]) />
 		</cfif>
 		
 		<!--- DESTINATION can specify a directory or a file --->

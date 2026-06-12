@@ -539,7 +539,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					if (error.type === "http")
 						$j(imageformtool).trigger("fileerror",[ "upload",String(error.status||""),'Error HTTP: '+(error.status||error.message) ]);
 					else if (error.type === "size")
-						$j(imageformtool).trigger("fileerror",[ "upload","filesize",(file&&file.name?file.name+" ":"")+"is not within the file size limit of "+Math.round(imageformtool.sizeLimit/1048576)+"MB" ]);
+						$j(imageformtool).trigger("fileerror",[ "upload","filesize",(file&&file.name?file.name+" ":"")+"is not within the file size limit of "+imageformtool.formatBytes(imageformtool.sizeLimit) ]);
 					else if (error.type === "type")
 						$j(imageformtool).trigger("fileerror",[ "upload","filetype",error.message ]);
 					else if (error.type === "network")

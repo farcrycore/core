@@ -128,7 +128,7 @@
 		</cfif>
 		<cfset allowedExtsDisplay = ucase(replace(arguments.stMetadata.ftAllowedFileExtensions, ",", ", ", "all")) />
 		<cfif isNumeric(arguments.stMetadata.ftMaxSize) and val(arguments.stMetadata.ftMaxSize) gt 0>
-			<cfset maxSizeText = humanFileSize(val(arguments.stMetadata.ftMaxSize)) />
+			<cfset maxSizeText = application.fapi.humanFileSize(val(arguments.stMetadata.ftMaxSize)) />
 		</cfif>
 
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
@@ -1204,25 +1204,6 @@
 			<cfreturn arguments.stMetadata.ftLocation />
 		</cfif>
 		<cfreturn "" />
-	</cffunction>
-
-	<cffunction name="humanFileSize" access="private" output="false" returntype="string" hint="Formats a byte count as a short human-readable size (e.g. '1.2 MB'). Returns empty string for zero/negative.">
-		<cfargument name="bytes" type="numeric" required="true" />
-
-		<cfset var units = "B,KB,MB,GB,TB" />
-		<cfset var i = 1 />
-		<cfset var size = arguments.bytes />
-
-		<cfif arguments.bytes lte 0>
-			<cfreturn "" />
-		</cfif>
-
-		<cfloop condition="size gte 1024 and i lt listlen(units)">
-			<cfset size = size / 1024 />
-			<cfset i = i + 1 />
-		</cfloop>
-
-		<cfreturn (i eq 1 ? round(size) : numberFormat(size, "0.0")) & " " & listGetAt(units, i) />
 	</cffunction>
 
 	<cffunction name="isSecured" access="private" output="false" returntype="boolean" hint="Encapsulates the security check on the file">

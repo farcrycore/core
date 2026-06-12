@@ -264,7 +264,7 @@
 								</div>
 								<div id="#arguments.fieldname#_uploaderror" class="fc-uploader-error" style="<cfif not len(error)>display:none;</cfif>">#error#</div>
 								<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints">
-									<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #numberFormat(arguments.stMetadata.ftSizeLimit/1048576,"0.99")#MB</cfif>
+									<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #application.fapi.humanFileSize(arguments.stMetadata.ftSizeLimit)#</cfif>
 								</div>
 								<div class="image-cancel-upload"><a href="##back" class="select-view fc-uploader-cancel-replace">Cancel &mdash; I don't want to upload an image</a></div>
 							</div>
@@ -387,7 +387,7 @@
 							</div>
 							<div id="#arguments.fieldname#_uploaderror" class="fc-uploader-error" style="<cfif not len(error)>display:none;</cfif>">#error#</div>
 							<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints">
-								<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #numberFormat(arguments.stMetadata.ftSizeLimit/1048576,"0.99")#MB</cfif>
+								<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #application.fapi.humanFileSize(arguments.stMetadata.ftSizeLimit)#</cfif>
 							</div>
 							<div class="image-cancel-upload"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>><a href="##back" class="select-view fc-uploader-cancel-replace">Cancel &mdash; I don't want to replace this image</a></div>
 						</div>
@@ -570,7 +570,7 @@
 							</div>
 				    		<div id="#arguments.fieldname#_uploaderror" class="fc-uploader-error" style="display:none;"></div>
 							<div id="#arguments.fieldname#-constraints" class="fc-uploader-constraints">
-								<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #numberFormat(arguments.stMetadata.ftSizeLimit/1048576,"0.99")#MB</cfif>
+								<span class="fc-richtooltip fc-uploader-help" data-tooltip-position="top" data-tooltip-width="280" title="#trim(metadatainfo)#">Formats accepted <i class="fa fa-question-circle"></i></span><cfif isnumeric(arguments.stMetadata.ftSizeLimit) and arguments.stMetadata.ftSizeLimit gt 0> &middot; Max size: #application.fapi.humanFileSize(arguments.stMetadata.ftSizeLimit)#</cfif>
 							</div>
 						</div>
 					</div>
@@ -1227,7 +1227,7 @@
 		<cfelse>
 			
 			<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
-				<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
+				<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #application.fapi.humanFileSize(arguments.sizeLimit)#") />
 			<cfelseif listFindNoCase(arguments.allowedExtensions,listlast(arguments.localfile,"."))>
 				<cfset uploadFileName = application.fc.lib.cdn.ioMoveFile(source_localpath=arguments.localfile,dest_location=location,dest_file=arguments.destination & "/" & getFileFromPath(arguments.localfile),nameconflict="makeunique") />
 				<cfset stResult = passed(uploadFileName) />

@@ -803,7 +803,26 @@
 
 		<cfreturn duplicate(result) />
 	</cffunction>
-	
+
+	<cffunction name="humanFileSize" access="public" output="false" returntype="string" hint="Formats a byte count as a short human-readable size (e.g. '1.2 MB'). Returns empty string for zero/negative. Canonical size formatter used by the upload formtools so the value is identical everywhere.">
+		<cfargument name="bytes" type="numeric" required="true" />
+
+		<cfset var units = "B,KB,MB,GB,TB" />
+		<cfset var i = 1 />
+		<cfset var size = arguments.bytes />
+
+		<cfif arguments.bytes lte 0>
+			<cfreturn "" />
+		</cfif>
+
+		<cfloop condition="size gte 1024 and i lt listlen(units)">
+			<cfset size = size / 1024 />
+			<cfset i = i + 1 />
+		</cfloop>
+
+		<cfreturn (i eq 1 ? round(size) : numberFormat(size, "0.0")) & " " & listGetAt(units, i) />
+	</cffunction>
+
 	<cffunction name="stream" access="public" output="false" returntype="void" hint="Stream content to the user with the specified mime type">
 		<cfargument name="content" type="any" required="true" />
 		<cfargument name="type" type="string" required="true" />
