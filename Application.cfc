@@ -136,41 +136,15 @@
 		<cfset this.defaultIPs = "" />
 		<cfset this.botIPs = __plusMinusStateMachine(this.defaultIPs, this.botIPs) />
 		
-		<cfparam name="cookie.sessionScopeTested" default="false" />
-		<cfparam name="cookie.hasSessionScope" default="false" />
-
-		<cfif NOT isBoolean(cookie.sessionScopeTested)>
-			<cfcookie name="sessionScopeTested" value="false" expires="never" httpOnly="true" />
-		</cfif>
-
-		<cfif NOT isBoolean(cookie.hasSessionScope)>
-			<cfcookie name="hasSessionScope" value="false" httpOnly="true">
-		</cfif>
-
-		<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or arrayFind(this.botIPs,cgi.remote_addr)>
+		<!--- Bots are identified by user agent / IP on every request and given a very short
+			session to limit session storage bloat from crawler traffic --->
+		<cfif not len(cgi.http_user_agent) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or arrayFind(this.botIPs,cgi.remote_addr)>
 			<cfset THIS.sessiontimeout = createTimeSpan(0,0,0,2) />
 			<cfset request.fc.hasSessionScope = false />
-			
-			<cfif not cookie.sessionScopeTested>
-				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never" httpOnly="true" />
-					<cfcookie name="hasSessionScope" value="false" expires="never" httpOnly="true" />
-					<cfcatch></cfcatch>
-				</cftry>
-			</cfif>
 		<cfelse>
 			<cfset request.fc.hasSessionScope = true />
-			
-			<cfif not cookie.sessionScopeTested><!--- Sessions are OK for this user, set the cookie --->
-				<cftry>
-					<cfcookie name="sessionScopeTested" value="true" expires="never" httpOnly="true" />
-					<cfcookie name="hasSessionScope" value="true" expires="never" httpOnly="true" />
-					<cfcatch></cfcatch>
-				</cftry>
-			</cfif>
 		</cfif>
 	<cfelse>
-		<cfset request.fc.sessionScopeTested = true />
 		<cfset request.fc.hasSessionScope = true />
 	</cfif>
 	
