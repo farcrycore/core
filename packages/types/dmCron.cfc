@@ -79,17 +79,17 @@ type properties
 		ftSeq="31" ftFieldset="Task Schedule" ftLabel="Frequency"
 		ftType="list" 
 		ftList="Once:Run once,Daily:Every day,Weekly:Every week,Monthly:Every month,3600:Every hour,1800:Every half-hour,900:Every 15. minute,60:Every minute"
-		fthint="How often the task is run.">
+		fthint="How often the task is run. The sub-daily frequencies (hourly, half-hourly, every 15 minutes, every minute) repeat only between the start and end times-of-day each day, forming a daily window. Once, Daily, Weekly and Monthly run once per period at the start time.">
 
 	<cfproperty name="startDate" type="date" required="true" default=""
 		ftSeq="32" ftFieldset="Task Schedule" ftLabel="Start Date"
 		ftType="datetime" ftValidation="required"
-		fthint="Start date/time for the task.">
+		fthint="Start date and time for the task. For the repeating sub-daily frequencies, the time-of-day is the start of the daily run window.">
 
 	<cfproperty name="endDate" type="date" required="true" default=""
 		ftSeq="33" ftFieldset="Task Schedule" ftLabel="End Date"
 		ftType="datetime" ftValidation="required"
-		fthint="End date/time for the task.">
+		fthint="End date and time for the task. The task stops after this. For the repeating sub-daily frequencies, the time-of-day is the end of the daily run window.">
 
 	<cfproperty name="timeOut" type="integer" required="no" default="60" 
 		ftSeq="34" ftFieldset="Task Schedule" ftLabel="Timeout"
@@ -150,22 +150,32 @@ type properties
 	<cfif structIsEmpty(stobject)>
 		<cfthrow type="Application" message="Argument *stobject* is empty.">
 	</cfif>
-	
+
+	<!--- if called with a partial struct, back-fill missing schedule fields from the stored record --->
+	<cfif structKeyExists(arguments.stobject, "objectid") and not structKeyExists(arguments.stobject, "bAutoStart")>
+		<cfset structAppend(arguments.stobject, getData(objectid=arguments.stobject.objectid), false) />
+	</cfif>
+
 	<cfscript>
 	attr.action = "UPDATE";
 	attr.task = "#application.applicationName#: #stobject.title#";
 	attr.operation = "HTTPRequest";
 	attr.url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#";
-	attr.interval = "#stobject.frequency#";
-	if (application.fapi.getConfig('tasks', 'bEnabled')) {
+	// Work around a Lucee scheduler bug (5.3 + 6.2): its end-of-schedule guard
+	// (endDate < todayDate && endTime < todayTime) rarely trips, so Lucee keeps running a
+	// task past its end date. Instead of trusting that guard we only hand Lucee a live
+	// recurring job; anything that should not auto-fire is emitted as a past-dated "once",
+	// which Lucee explicitly will not auto-run, while leaving it listed so it stays
+	// manually runnable (action="run") and visible in the webtop.
+	if (shouldAutoFire(stobject)) {
+		attr.interval = "#stobject.frequency#";
 		attr.startdate = "#dateFormat(stobject.startDate,'dd/mmm/yyyy')#";
 		attr.starttime = "#timeFormat(stobject.startDate,'hh:mm tt')#";
 		attr.enddate = "#dateFormat(stobject.endDate,'dd/mmm/yyyy')#";
 		attr.endtime= "#timeFormat(stobject.endDate,'hh:mm tt')#";
 	}
 	else {
-		// when scheduled tasks are "disabled", tasks are created as a run-once task in the
-		// past so that they can still be executed from the webtop
+		attr.interval = "once";
 		attr.startdate = "#dateFormat(dt,'dd/mmm/yyyy')#";
 		attr.starttime = "#timeFormat(dt,'hh:mm tt')#";
 		attr.enddate = "#dateFormat(dt,'dd/mmm/yyyy')#";
@@ -235,7 +245,7 @@ type properties
 	<cfreturn qJobs>
 </cffunction>
 
-<cffunction name="addMissingJobs" returntype="boolean" output="true" hint="Add any missing tasks to the app server jobs list.">
+<cffunction name="addMissingJobs" returntype="boolean" output="true" hint="Add any missing tasks to the app server jobs list. Deprecated, use reassertJobs() which re-asserts all autostart tasks (not just missing ones).">
 	<cfset var qTasks = application.fapi.getcontentobjects(typename="dmCron", lproperties="objectid, title", bAutoStart_eq="1")>
 	<cfset var qJobs = listJobs()>
 	<cfset var qJobCheck = queryNew("")>
@@ -248,6 +258,31 @@ type properties
 			<cfset addJob(qTasks.objectid)>
 		</cfif>
 	</cfloop>
+
+	<cfreturn true>
+</cffunction>
+
+<cffunction name="reassertJobs" returntype="boolean" output="true" hint="Re-asserts every autostart task's job via addJob so expired/disabled ones get neutralised. Run at app start to also correct jobs that were created live but have since reached their end date.">
+	<cfset var qTasks = application.fapi.getContentObjects(typename="dmCron", lproperties="objectid", bAutoStart_eq="1") />
+	<cfset var failed = 0 />
+	<cfset var stErr = "" />
+
+	<cfloop query="qTasks">
+		<cftry>
+			<cfset addJob(qTasks.objectid) />
+			<cfcatch>
+				<!--- isolate a single bad task so the rest still get scheduled, but never silently --->
+				<cfset failed = failed + 1 />
+				<cfset stErr = application.fc.lib.error.normalizeError(cfcatch) />
+				<cfset stErr.message = "reassertJobs: could not (re)assert scheduled task #qTasks.objectid# - " & stErr.message />
+				<cfset application.fc.lib.error.logData(stErr) />
+			</cfcatch>
+		</cftry>
+	</cfloop>
+
+	<cfif failed>
+		<cflog file="cron" type="error" text="reassertJobs: #failed# of #qTasks.recordcount# autostart tasks failed to (re)assert (see preceding cron-log entries)" />
+	</cfif>
 
 	<cfreturn true>
 </cffunction>
@@ -286,7 +321,7 @@ type properties
 
 	<cfset var stExistingObj	= '' />
 	
-	<cfif not arguments.bSessionOnly and structKeyExists(arguments.stProperties,"title")>
+	<cfif arguments.bUpdateTask and not arguments.bSessionOnly and structKeyExists(arguments.stProperties,"title")>
 		<!--- check if task has been renamed --->
 		<cfset stExistingObj = getData(arguments.stProperties.objectid)>	
 		<cfif stExistingObj.title neq arguments.stProperties.title>
@@ -449,6 +484,15 @@ type properties
 	</cfif>
 
 	<cfreturn recentWindow.start lte now() and now() lte recentWindow.end />
+</cffunction>
+
+<cffunction name="shouldAutoFire" access="public" output="false" returntype="boolean" hint="True if the task should be on the live auto-run schedule right now: enabled, autostart, and not past its end date. Used to keep expired/disabled tasks off the live schedule given the Lucee end-date bug.">
+	<cfargument name="stCron" type="struct" required="true">
+	<cfargument name="dt" type="datetime" required="false" default="#now()#">
+
+	<cfreturn application.fapi.getConfig("tasks", "bEnabled")
+		and arguments.stCron.bAutoStart
+		and arguments.dt lte arguments.stCron.endDate />
 </cffunction>
 
 <!--- 
