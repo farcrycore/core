@@ -479,7 +479,7 @@
 			- only picks up tasks that are set to auto-start
 		-------------------------------------------------------->
 		<cftry>
-			<cfset application.fapi.getContentType(typename="dmcron").addMissingJobs()>
+			<cfset application.fapi.getContentType(typename="dmcron").reassertJobs()>
 			<cfcatch>
 			<!--- fails if bAutoStart property has not been deployed; remove legacy entries --->
 			<cfset application.fapi.getContentType(typename="dmcron").removeLegacyJobs()>			
