@@ -41,7 +41,7 @@
 <cfif len(stParam.media)>
 	<cfset stFileInfo = createobject("component","farcry.core.packages.farcry.file").getFileProperties("#application.fapi.getFileWebRoot()##stObj[stParam.media]#") />
 
-	<cfoutput><link rel="enclosure" type="#stFileInfo.mimetype#" title="File" href="http://#cgi.http_host##application.fapi.getFileWebRoot()##stObj[stParam.media]#" length="#stFileInfo.size#" /></cfoutput>
+	<cfoutput><link rel="enclosure" type="#stFileInfo.mimetype#" title="File" href="https://#cgi.http_host##application.fapi.getFileWebRoot()##stObj[stParam.media]#" length="#stFileInfo.size#" /></cfoutput>
 </cfif>
 
 <cfoutput>

@@ -207,7 +207,7 @@
 		<cfparam name="this.twitterstatus" default="#structnew()#" />
 		<cfloop from="1" to="#arraylen(aMatches)#" index="i">
 			<cfif not structkeyexists(this.twitterstatus,hash(aMatches[i][4].value))>
-				<cfhttp url="https://api.twitter.com/1/statuses/oembed.json?id=#aMatches[i][4].value#&align=center" result="stResult" />
+				<cfhttp url="https://api.twitter.com/1/statuses/oembed.json?id=#aMatches[i][4].value#&align=center" result="stResult" timeout="30" />
 				<cfset stResult = deserializejson(stResult.filecontent) />
 				<cfif structkeyexists(stResult,"errors")>
 					<cfset this.twitterstatus[aMatches[i][4].value] = "<a href='https://twitter.com/#aMatches[i][3].value#/status/#aMatches[1][4].value#'>https://twitter.com/#aMatches[i][3].value#/status/#aMatches[1][4].value#</a><!-- #stResult.errors[1].message#: https://api.twitter.com/1/statuses/oembed.json?id=#aMatches[i][4].value#&align=center -->" />
@@ -267,7 +267,7 @@
 
 		<!--- POLL: http://polldaddy.com/poll/8096287/ --->
 		<cfset var match1 = "http:\/\/polldaddy\.com\/poll\/(\d+)+\/" />
-		<cfset var replacement1 = '<script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/$2.js"></script><noscript><a href="http://polldaddy.com/poll/$2/">Take poll</a></noscript>' />
+		<cfset var replacement1 = '<script type="text/javascript" charset="utf-8" src="https://static.polldaddy.com/p/$2.js"></script><noscript><a href="https://polldaddy.com/poll/$2/">Take poll</a></noscript>' />
 
 		<!--- SURVEY: http://blairdaemon.polldaddy.com/s/flang --->
 		<!--- QUIZ: http://blairdaemon.polldaddy.com/s/guess --->
