@@ -609,9 +609,9 @@
 			and structkeyexists(application.stCOAPI, url.type)
 			and structkeyexists(application.stCOAPI[url.type], 'stWebskins')
 			and structkeyexists(application.stCOAPI[url.type].stWebskins,url.view)
-			and isdefined("application.stCOAPI.#url.type#.stWebskins.#url.view#.viewStack") 
+			and structKeyExists(application.stCOAPI[url.type].stWebskins[url.view], "viewStack") 
 			and application.stCOAPI[url.type].stWebskins[url.view].viewStack eq "data" 
-			and isdefined("application.stCOAPI.#url.type#.stWebskins.#url.view#.mimeType")>
+			and structKeyExists(application.stCOAPI[url.type].stWebskins[url.view], "mimeType")>
 			
 			<cfswitch expression="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#">
 				<cfcase value="json,application/json,text/json" delimiters=",">

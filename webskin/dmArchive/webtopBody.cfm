@@ -78,7 +78,7 @@
 <cfif structkeyexists(url,"archivetype") AND structKeyExists(application.stCOAPI, url.archivetype)>
 	<cfset sqlWhere = sqlWhere & " and objectTypename='#url.archivetype#'" />
 	
-	<cfif isdefined("application.stCOAPI.#url.archivetype#.displayname")>
+	<cfif structKeyExists(application.stCOAPI[url.archivetype], "displayname")>
 		<cfset title = "Undelete #application.stCOAPI[url.archivetype].displayname#" />
 	<cfelse>
 		<cfset title = "Undelete #encodeForHTML(url.archiveType)#" />

@@ -10,7 +10,7 @@
 <cfset queryaddcolumn(qSections,"seq","integer",arraynew(1)) />
 
 <cfloop query="qSections">
-	<cfif isdefined("application.stCOAPI.farCOAPI.stWebskins.#qSections.methodname#.seq")>
+	<cfif structKeyExists(application.stCOAPI.farCOAPI.stWebskins, qSections.methodname) and structKeyExists(application.stCOAPI.farCOAPI.stWebskins[qSections.methodname], "seq")>
 		<cfset querysetcell(qSections,"seq",application.stCOAPI.farCOAPI.stWebskins[qSections.methodname].seq,qSections.currentrow) />
 	<cfelse>
 		<cfset querysetcell(qSections,"seq",100000,qSections.currentrow) />
