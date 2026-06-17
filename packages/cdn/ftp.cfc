@@ -316,7 +316,7 @@
 		
 		<cfset var cfhttp = structnew() />
 		
-		<cfhttp url="http:#getURLPath(config=arguments.config,file=arguments.file)#" method="HEAD" />
+		<cfhttp url="http:#getURLPath(config=arguments.config,file=arguments.file)#" method="HEAD" timeout="30" />
 		
 		<cfif cfhttp.StatusCode eq "200 OK">
 			<cfreturn true />
