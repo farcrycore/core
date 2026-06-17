@@ -112,7 +112,7 @@ fixed methodology to work... need to refine
 <cfscript>
 // return result
 if (IsDefined("attributes.r_stObjects")) {
-	SetVariable("caller.#attributes.r_stObjects#", stTmp);
+	caller[attributes.r_stObjects] = stTmp;
 }
 </cfscript>
 

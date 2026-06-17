@@ -55,7 +55,7 @@ A wrapper to create a content object instance.
 	o.createData(argumentCollection=args);
 
 // return objectid
-	SetVariable("caller.#attributes.r_ObjectID#", args.objectid);
+	caller[attributes.r_ObjectID] = args.objectid;
 </cfscript>
 
 
