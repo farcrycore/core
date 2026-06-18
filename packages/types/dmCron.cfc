@@ -160,7 +160,10 @@ type properties
 	attr.action = "UPDATE";
 	attr.task = "#application.applicationName#: #stobject.title#";
 	attr.operation = "HTTPRequest";
-	attr.url = "http://#cgi.HTTP_HOST##application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#";
+	// the task URL defaults to the loopback IP to avoid requests being affected by DNS/routing/firewalls/etc
+	// this could be overridden to support shared hosts (cgi.HTTP_HOST) or remote hosts if needed
+	attr.url = "http://127.0.0.1#application.url.conjurer#?objectid=#stobject.objectid#&#stobject.parameters#";
+
 	// Work around a Lucee scheduler bug (5.3 + 6.2): its end-of-schedule guard
 	// (endDate < todayDate && endTime < todayTime) rarely trips, so Lucee keeps running a
 	// task past its end date. Instead of trusting that guard we only hand Lucee a live
