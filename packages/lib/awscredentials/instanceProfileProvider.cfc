@@ -18,7 +18,7 @@
 		<cfset var token = "" />
 
 		<cftry>
-			<cfset token = getToken() />
+			<cfset token = getImdsToken() />
 			<cfcatch><cfreturn false /></cfcatch>
 		</cftry>
 		<cfreturn len(token) gt 0 />
@@ -27,7 +27,7 @@
 	<cffunction name="resolve" returntype="struct" output="false">
 		<cfargument name="definition" type="struct" required="true" />
 
-		<cfset var token = getToken() />
+		<cfset var token = getImdsToken() />
 		<cfset var roleResp = "" />
 		<cfset var roleName = "" />
 		<cfset var credResp = "" />
@@ -72,7 +72,7 @@
 		} />
 	</cffunction>
 
-	<cffunction name="getToken" returntype="string" output="false" access="private" hint="Returns a cached IMDSv2 session token, fetching a new one (PUT) when missing or near expiry.">
+	<cffunction name="getImdsToken" returntype="string" output="false" access="private" hint="Returns a cached IMDSv2 session token, fetching a new one (PUT) when missing or near expiry.">
 		<cfset var tokResp = "" />
 
 		<cfif len(this.imdsToken) and isDate(this.imdsTokenExpires) and dateCompare(now(), this.imdsTokenExpires) lt 0>
