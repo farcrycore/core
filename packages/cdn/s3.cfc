@@ -10,7 +10,7 @@
 		<cfset this.engine = arguments.engine />
 		
 		<cfset this.cacheMap = structnew() />
-		
+
 		<cfif directoryExists(getTempDirectory() & application.applicationname)>
 			<cfdirectory action="list" directory="#getTempDirectory()##application.applicationname#/s3cache" recurse="true" type="file" name="qLeftovers" />
 			
@@ -36,15 +36,12 @@
 		<cfset var stACL = structnew() />
 		<cfset var i = 0 />
 		<cfset var s3host = "" />
+		<cfset var credSource = "" />
+		<cfset var setName = "" />
+		<cfset var setDef = structnew() />
 
-		<cfif not structkeyexists(st,"accessKeyId")>
-			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'accessKeyId' ]) />
-		</cfif>
-		
-		<cfif not structkeyexists(st,"awsSecretKey")>
-			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'awsSecretKey' ]) />
-		</cfif>
-		
+		<!--- Credential validation is deferred to the credential-source block below (after region
+		      normalisation). Static configs still require accessKeyId + awsSecretKey. --->
 		<cfif not structkeyexists(st,"bucket")>
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'bucket' ]) />
 		</cfif>
@@ -57,6 +54,52 @@
 		      canonical value AWS expects in the SigV4 credential scope). Every downstream read of
 		      config.region (signatures, signed URLs, presigned POST) inherits this canonical value. --->
 		<cfset st.region = len(trim(st.region)) ? trim(st.region) : "us-east-1" />
+
+		<!--- Credential source resolution (backward compatible).
+		      - A classic config with explicit accessKeyId + awsSecretKey and no credentialSource is a
+		        'static' inline credential set and behaves exactly as before (sessionToken stays empty).
+		      - A credentialSource (role / auto / container / instanceProfile / environment) resolves
+		        temporary credentials at request time via the provider chain; no static keys required.
+		      - A credentialSet references a set registered elsewhere (e.g. registerLocationsFromEnv).
+		      The location stores only the credential-set NAME; credentials are resolved per request. --->
+		<cfset credSource = structkeyexists(st,"credentialSource") ? lcase(trim(st.credentialSource)) : "" />
+
+		<cfif structkeyexists(st,"credentialSet") and len(trim(st.credentialSet))>
+			<cfset st.credentialSet = lcase(trim(st.credentialSet)) />
+			<cfif not getAwsCredentials().hasCredentialSet(st.credentialSet)>
+				<cfset application.fapi.throw(message="the referenced credential set '{1}' has not been registered",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ st.credentialSet ]) />
+			</cfif>
+
+		<cfelseif len(credSource) and credSource neq "static">
+			<cfif not getAwsCredentials().isKnownSource(credSource)>
+				<cfset application.fapi.throw(message="the credentialSource '{1}' is not a supported credential source in this build",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ credSource ]) />
+			</cfif>
+			<cfset setName = "__inline_" & credSource & "_" & hash(credSource & "|" & (structkeyexists(st,"roleArn") ? lcase(trim(st.roleArn)) : "") & "|" & lcase(st.region)) />
+			<cfset setDef = { "source" = credSource, "region" = st.region } />
+			<cfif structkeyexists(st,"roleArn") and len(trim(st.roleArn))>
+				<cfset setDef.roleArn = trim(st.roleArn) />
+			</cfif>
+			<cfset getAwsCredentials().registerCredentialSet(setName, setDef) />
+			<cfset st.credentialSet = setName />
+
+		<cfelse>
+			<!--- static: require the long-lived keys exactly as the legacy code did --->
+			<cfif not structkeyexists(st,"accessKeyId")>
+				<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'accessKeyId' ]) />
+			</cfif>
+			<cfif not structkeyexists(st,"awsSecretKey")>
+				<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ 'awsSecretKey' ]) />
+			</cfif>
+			<cfset setName = "__inline_static_" & hash(lcase(st.accessKeyId) & "|" & lcase(st.region)) />
+			<cfset getAwsCredentials().registerCredentialSet(setName, {
+				"source" = "static",
+				"region" = st.region,
+				"accessKeyId" = st.accessKeyId,
+				"secretAccessKey" = st.awsSecretKey,
+				"sessionToken" = (structkeyexists(st,"sessionToken") ? st.sessionToken : "")
+			}) />
+			<cfset st.credentialSet = setName />
+		</cfif>
 
 		<cfif structKeyExists(arguments.config, "setACL")>
 			<cfif NOT isBoolean(arguments.config.setACL)>
@@ -295,7 +338,7 @@
 		<cfargument name="file" type="string" required="true" />
 		
 		<cffile action="delete" file="#arguments.file#" />
-		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="deleting #arguments.file# #serializeJSON(appliation.fc.lib.error.getStack(bIgnoreJava=true))#"></cfif>
+		<cfif arguments.config.bDebug><cflog file="#application.applicationname#_s3" text="deleting #arguments.file# #serializeJSON(application.fc.lib.error.getStack(bIgnoreJava=true))#"></cfif>
 	</cffunction>
 	
 	
@@ -503,12 +546,69 @@
 	</cffunction>
 
 	
+	<cffunction name="getAwsCredentials" access="private" output="false" returntype="any" hint="Returns the shared AWS credential resolver (application.fc.lib.awscredentials, auto-registered by lib.cfc) so its refresh cache is shared app-wide. Falls back to a private instance only on early-init/test paths where the shared lib isn't built yet.">
+		<cfif isDefined("application.fc.lib") and structkeyexists(application.fc.lib,"awscredentials")>
+			<cfreturn application.fc.lib.awscredentials />
+		</cfif>
+		<cfif not structkeyexists(this,"awscreds")>
+			<cfset this.awscreds = createobject("component","farcry.core.packages.lib.awscredentials").init() />
+		</cfif>
+		<cfreturn this.awscreds />
+	</cffunction>
+
+	<cffunction name="getActiveCredentials" access="private" output="false" returntype="struct" hint="Resolves the active AWS credentials for a location config. Classic configs (no credentialSet) return their configured keys with an empty sessionToken - identical to legacy behaviour. credentialSet-backed configs resolve (and auto-refresh) credentials via the provider chain.">
+		<cfargument name="config" type="struct" required="true" />
+
+		<cfset var creds = "" />
+
+		<cfif not structkeyexists(arguments.config,"credentialSet") or not len(arguments.config.credentialSet)>
+			<cfreturn {
+				"accessKeyId" = structkeyexists(arguments.config,"accessKeyId") ? arguments.config.accessKeyId : "",
+				"awsSecretKey" = structkeyexists(arguments.config,"awsSecretKey") ? arguments.config.awsSecretKey : "",
+				"sessionToken" = ""
+			} />
+		</cfif>
+
+		<cfset creds = getAwsCredentials().getCredentials(arguments.config.credentialSet) />
+		<cfreturn {
+			"accessKeyId" = creds.accessKeyId,
+			"awsSecretKey" = creds.secretAccessKey,
+			"sessionToken" = creds.sessionToken
+		} />
+	</cffunction>
+
+	<cffunction name="resolveSigningConfig" access="private" output="false" returntype="struct" hint="Returns a shallow copy of the location config with accessKeyId / awsSecretKey / sessionToken set to the active (possibly temporary) credentials. The stored config struct is never mutated.">
+		<cfargument name="config" type="struct" required="true" />
+
+		<cfset var creds = getActiveCredentials(arguments.config) />
+		<cfset var working = structCopy(arguments.config) />
+
+		<cfset working.accessKeyId = creds.accessKeyId />
+		<cfset working.awsSecretKey = creds.awsSecretKey />
+		<cfset working.sessionToken = creds.sessionToken />
+
+		<cfreturn working />
+	</cffunction>
+
+	<cffunction name="isTemporaryCredential" access="private" output="false" returntype="boolean" hint="True when the active credentials for this config carry a session token (i.e. temporary credentials).">
+		<cfargument name="config" type="struct" required="true" />
+		<cfreturn len(getActiveCredentials(arguments.config).sessionToken) gt 0 />
+	</cffunction>
+
 	<cffunction name="getS3Path" output="false" access="public" returntype="string" hint="Returns path to use for all S3 requests">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
 		
 		<cfset var fullpath = arguments.file />
-		
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
+
+		<!--- The native s3:// VFS cannot carry a session token; temporary credentials must use the
+		      REST path. Long-lived keys (static config or environment) build the URI from the
+		      resolved credentials, which also fixes env-supplied keys whose config.accessKeyId is blank. --->
+		<cfif len(stConfig.sessionToken)>
+			<cfset application.fapi.throw(message="The native s3:// filesystem cannot be used with temporary credentials (location [{1}]). This operation is served via the S3 REST API in a later phase; for now use the REST-backed operations (upload, serve, delete, setACL, signed URLs).",type="s3tempcredunsupported",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
+		</cfif>
+
 		<cfif not left(fullpath,1) eq "/">
 			<cfset fullpath = "/" & fullpath />
 		</cfif>
@@ -519,7 +619,7 @@
 		<cfset fullpath = replacelist(urlencodedformat(fullpath),"%2F,%20,%2D,%2E,%5F,%27,%28,%29,%26,%5B,%5D,%21,%25,%40","/, ,-,.,_,',(,),&,[,],!,%,@")>
 		<cfset fullpath = replaceNoCase(fullpath, "%2C", ",", "all")>
 
-		<cfset fullpath = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##fullpath#" />
+		<cfset fullpath = "s3://#stConfig.accessKeyId#:#stConfig.awsSecretKey#@#arguments.config.bucket##fullpath#" />
 		
 		<cfreturn fullpath />
 	</cffunction>
@@ -555,6 +655,7 @@
 		<cfset var signingKey = "" />
 		<cfset var queryParams = "" />
 		<cfset var headers = "" />
+		<cfset var stConfig = "" />
 		
 		<cfif not left(urlpath,1) eq "/">
 			<cfset urlpath = "/" & urlpath />
@@ -565,18 +666,27 @@
 			<cfset urlpath = "#arguments.config.pathPrefix##urlpath#" />
 
 			<cfif (structkeyexists(arguments.config,"security") and arguments.config.security eq "private") or arguments.requireSignedURL>
+				<!--- Resolve active credentials (long-lived or auto-refreshed temporary) for signing. --->
+				<cfset stConfig = resolveSigningConfig(arguments.config) />
+
 				<!--- Current date --->
 				<cfset currentDate = application.fapi.dateToISO8601(now()) />
 
 				<cfset queryParams = {
 					"X-Amz-Algorithm"="AWS4-HMAC-SHA256",
-					"X-Amz-Credential"="#arguments.config.accessKeyId#/#left(currentDate, 8)#/#arguments.config.region#/s3/aws4_request",
+					"X-Amz-Credential"="#stConfig.accessKeyId#/#left(currentDate, 8)#/#stConfig.region#/s3/aws4_request",
 					"X-Amz-Date"=currentDate,
 					"X-Amz-Expires"=numberFormat(arguments.config.urlExpiry*60, "0"),
 					"X-Amz-SignedHeaders"="host"
 				} />
+
+				<!--- Temporary credentials: the security token is a signed query parameter on presigned URLs. --->
+				<cfif len(stConfig.sessionToken)>
+					<cfset queryParams["X-Amz-Security-Token"] = stConfig.sessionToken />
+				</cfif>
+
 				<cfset signature = getAWSSignature(
-					config=arguments.config,
+					config=stConfig,
 					timestamp=currentDate,
 					method=arguments.method,
 					path=urlPath,
@@ -611,11 +721,12 @@
 		<!--- The S3 object key = pathPrefix + the CDN-relative value. All knowledge of
 		      how a value maps to an object key stays inside this component. --->
 		<cfset var key = arguments.config.pathPrefix & arguments.value />
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
 		<cfset var prefix = "" />
 		<cfset var aclPermission = (structKeyExists(arguments.config, "security") and arguments.config.security eq "private") ? "private" : "public-read" />
 		<cfset var isoTime = application.fapi.dateToISO8601(now()) />
 		<cfset var dateStamp = left(isoTime, 8) />
-		<cfset var credential = "#arguments.config.accessKeyId#/#dateStamp#/#arguments.config.region#/s3/aws4_request" />
+		<cfset var credential = "#stConfig.accessKeyId#/#dateStamp#/#stConfig.region#/s3/aws4_request" />
 		<cfset var expiry = structKeyExists(arguments.config, "urlExpiry") ? arguments.config.urlExpiry : 60 />
 		<cfset var expiration = dateConvert("local2utc", dateAdd("s", expiry * 60, now())) />
 		<cfset var policy = "" />
@@ -652,11 +763,16 @@
 			<cfset arrayAppend(policy.conditions, [ "content-length-range", 0, javaCast("long", arguments.maxSize) ]) />
 		</cfif>
 
+		<!--- Temporary credentials: the security token must be both a policy condition and a posted field. --->
+		<cfif len(stConfig.sessionToken)>
+			<cfset arrayAppend(policy.conditions, { "x-amz-security-token" = stConfig.sessionToken }) />
+		</cfif>
+
 		<cfset serializedPolicy = serializeJSON(policy) />
 		<cfset serializedPolicy = reReplace(serializedPolicy, "[\r\n]+", "", "all") />
 		<cfset base64Policy = binaryEncode(charsetDecode(serializedPolicy, "utf-8"), "base64") />
 
-		<cfset signingKey = getSigningKey(arguments.config.awsSecretKey, dateStamp, arguments.config.region, "s3") />
+		<cfset signingKey = getSigningKey(stConfig.awsSecretKey, dateStamp, stConfig.region, "s3") />
 		<cfset signature = lcase(binaryEncode(HMAC_SHA256(base64Policy, signingKey), "hex")) />
 
 		<cfset fields["key"] = key />
@@ -666,6 +782,9 @@
 		</cfif>
 		<cfif arguments.config.setACL>
 			<cfset fields["acl"] = aclPermission />
+		</cfif>
+		<cfif len(stConfig.sessionToken)>
+			<cfset fields["x-amz-security-token"] = stConfig.sessionToken />
 		</cfif>
 		<cfset fields["X-Amz-Algorithm"] = "AWS4-HMAC-SHA256" />
 		<cfset fields["X-Amz-Credential"] = credential />
@@ -728,9 +847,15 @@
 			<cfset urlPath = arguments.config.pathPrefix & arguments.file />
 		</cfif>
 
+		<!--- resolve active credentials; sign and send the security token when temporary --->
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
+		<cfif len(stConfig.sessionToken)>
+			<cfset stHeaders["x-amz-security-token"] = stConfig.sessionToken />
+		</cfif>
+
 		<!--- create signature --->
 		<cfset var authArgs = {
-			config=arguments.config,
+			config=stConfig,
 			timestamp=timestamp,
 			method="HEAD",
 			path=arguments.config.apiEndpointPrefix & urlPath,
@@ -741,7 +866,7 @@
 		<cfset var signature = getAWSAuthorization(argumentCollection=authArgs) />
 
 		<!--- REST call --->
-		<cfhttp method="HEAD" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##urlPath#" charset="utf-8" result="stResponse" timeout="1800">
+		<cfhttp method="HEAD" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##urlPath#" charset="utf-8" result="stResponse" timeout="30">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -770,7 +895,7 @@
 					<cfset stDetail["result"] = results>
 					<cfset substituteValues = arrayNew(1)>
 					<cfset substituteValues[1] = results.error.message.XMLText>
-					<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+					<cfset substituteValues[2] = sanitiseCanonicalRequest(getCanonicalRequest(argumentCollection=authArgs))>
 					<cfset substituteValues[3] = signature>
 					<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request={2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 				</cfif>
@@ -785,7 +910,178 @@
 
 		<cfreturn bExists />
 	</cffunction>
-	
+
+	<cffunction name="getObjectSize" returntype="numeric" access="public" output="false" hint="Returns an object's size in bytes via a signed REST HEAD - the temporary-credential equivalent of getFileInfo() on the s3:// path.">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset var stResponse = structNew() />
+		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
+		<cfset var stHeaders = { "x-amz-content-sha256" = "UNSIGNED-PAYLOAD" } />
+		<cfset var i = "" />
+		<cfset var urlPath = "" />
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
+		<cfset var authArgs = {} />
+		<cfset var signature = "" />
+		<cfset var clen = 0 />
+
+		<cfif left(arguments.file,1) neq "/">
+			<cfset urlPath = arguments.config.pathPrefix & "/" & arguments.file />
+		<cfelse>
+			<cfset urlPath = arguments.config.pathPrefix & arguments.file />
+		</cfif>
+
+		<cfif len(stConfig.sessionToken)>
+			<cfset stHeaders["x-amz-security-token"] = stConfig.sessionToken />
+		</cfif>
+
+		<cfset authArgs = {
+			config=stConfig,
+			timestamp=timestamp,
+			method="HEAD",
+			path=arguments.config.apiEndpointPrefix & urlPath,
+			headers=stHeaders,
+			unsignedPayload=true,
+			s3Path=true
+		} />
+		<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
+
+		<cfhttp method="HEAD" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##urlPath#" charset="utf-8" result="stResponse" timeout="30">
+			<cfhttpparam type="header" name="Date" value="#timestamp#" />
+			<cfhttpparam type="header" name="Authorization" value="#signature#" />
+			<cfloop collection="#stHeaders#" item="i">
+				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+			</cfloop>
+		</cfhttp>
+
+		<cfif NOT listFindNoCase("200,204",listfirst(stResponse.statuscode," "))>
+			<cfset application.fapi.throw(message="Error reading S3 object size: {1} {2}",type="s3error",detail=stResponse.filecontent,substituteValues=[ stResponse.statuscode, urlPath ]) />
+		</cfif>
+
+		<!--- struct keys are case-insensitive, so this matches Content-Length regardless of casing --->
+		<cfif structkeyexists(stResponse,"responseheader") and structkeyexists(stResponse.responseheader,"Content-Length")>
+			<cfset clen = stResponse.responseheader["Content-Length"] />
+		</cfif>
+		<cfreturn val(clen) />
+	</cffunction>
+
+	<cffunction name="listObjects" returntype="query" access="public" output="false" hint="Lists objects under a location/dir via the S3 REST ListObjectsV2 API - the temporary-credential equivalent of cfdirectory on the s3:// path. Returns a query with a location-relative 'file' column (plus size / datelastmodified). Follows continuation tokens.">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="dir" type="string" required="false" default="" />
+
+		<cfset var qDir = queryNew("file,size,datelastmodified") />
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
+		<cfset var keyPrefix = reReplaceNoCase(arguments.config.pathPrefix, "^/", "") />
+		<cfset var dirpart = reReplaceNoCase(reReplaceNoCase(arguments.dir, "^/+", ""), "/+$", "") />
+		<cfset var listPrefix = "" />
+		<cfset var listPath = len(arguments.config.apiEndpointPrefix) ? arguments.config.apiEndpointPrefix : "/" />
+		<cfset var continuationToken = "" />
+		<cfset var bTruncated = true />
+		<cfset var queryParams = "" />
+		<cfset var timestamp = "" />
+		<cfset var stHeaders = "" />
+		<cfset var authArgs = {} />
+		<cfset var signature = "" />
+		<cfset var stResponse = "" />
+		<cfset var xml = "" />
+		<cfset var aContents = "" />
+		<cfset var aKey = "" />
+		<cfset var aSize = "" />
+		<cfset var aModified = "" />
+		<cfset var aFlag = "" />
+		<cfset var i = 0 />
+		<cfset var thisKey = "" />
+		<cfset var rel = "" />
+
+		<!--- Build the S3 key prefix as a directory boundary (trailing slash) from pathPrefix + dir,
+		      so it matches only keys under that path, not sibling keys that merely share the string. --->
+		<cfif len(keyPrefix) and len(dirpart)>
+			<cfset listPrefix = keyPrefix & "/" & dirpart & "/" />
+		<cfelseif len(keyPrefix)>
+			<cfset listPrefix = keyPrefix & "/" />
+		<cfelseif len(dirpart)>
+			<cfset listPrefix = dirpart & "/" />
+		</cfif>
+
+		<cfloop condition="bTruncated">
+			<cfset timestamp = application.fapi.dateToISO8601(Now()) />
+			<cfset stHeaders = { "x-amz-content-sha256" = "UNSIGNED-PAYLOAD" } />
+			<cfif len(stConfig.sessionToken)>
+				<cfset stHeaders["x-amz-security-token"] = stConfig.sessionToken />
+			</cfif>
+
+			<cfset queryParams = { "list-type" = "2", "prefix" = listPrefix } />
+			<cfif len(continuationToken)>
+				<cfset queryParams["continuation-token"] = continuationToken />
+			</cfif>
+
+			<cfset authArgs = {
+				config=stConfig,
+				timestamp=timestamp,
+				method="GET",
+				path=listPath,
+				queryParams=queryParams,
+				headers=stHeaders,
+				unsignedPayload=true,
+				s3Path=true
+			} />
+			<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
+
+			<cfhttp method="GET" url="https://#arguments.config.apiEndpoint##listPath#?#structToQueryParams(queryParams)#" charset="utf-8" result="stResponse" timeout="30">
+				<cfhttpparam type="header" name="Date" value="#timestamp#" />
+				<cfhttpparam type="header" name="Authorization" value="#signature#" />
+				<cfloop collection="#stHeaders#" item="i">
+					<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+				</cfloop>
+			</cfhttp>
+
+			<cfif NOT listFindNoCase("200",listfirst(stResponse.statuscode," ")) OR NOT isXML(stResponse.fileContent)>
+				<cfset application.fapi.throw(message="Error listing S3 objects: {1} {2}",type="s3error",detail=stResponse.filecontent,substituteValues=[ stResponse.statuscode, listPrefix ]) />
+			</cfif>
+
+			<!--- use local-name() XPath so the default S3 namespace doesn't hide the nodes --->
+			<cfset xml = xmlParse(stResponse.fileContent) />
+			<cfset aContents = xmlSearch(xml, "//*[local-name()='Contents']") />
+			<cfloop from="1" to="#arrayLen(aContents)#" index="i">
+				<cfset aKey = xmlSearch(aContents[i], "*[local-name()='Key']") />
+				<cfif not arrayLen(aKey)>
+					<cfcontinue />
+				</cfif>
+				<cfset thisKey = aKey[1].xmlText />
+				<!--- skip folder-marker keys (S3 has no real directories) --->
+				<cfif not len(thisKey) or right(thisKey,1) eq "/">
+					<cfcontinue />
+				</cfif>
+				<cfset rel = thisKey />
+				<cfif len(keyPrefix) and left(rel, len(keyPrefix)+1) eq keyPrefix & "/">
+					<cfset rel = mid(rel, len(keyPrefix)+2, len(rel)) />
+				</cfif>
+				<cfif left(rel,1) neq "/">
+					<cfset rel = "/" & rel />
+				</cfif>
+				<cfset aSize = xmlSearch(aContents[i], "*[local-name()='Size']") />
+				<cfset aModified = xmlSearch(aContents[i], "*[local-name()='LastModified']") />
+				<cfset queryAddRow(qDir) />
+				<cfset querySetCell(qDir, "file", rel) />
+				<cfset querySetCell(qDir, "size", arrayLen(aSize) ? val(aSize[1].xmlText) : 0) />
+				<cfset querySetCell(qDir, "datelastmodified", arrayLen(aModified) ? aModified[1].xmlText : "") />
+			</cfloop>
+
+			<!--- continuation --->
+			<cfset bTruncated = false />
+			<cfset aFlag = xmlSearch(xml, "//*[local-name()='IsTruncated']") />
+			<cfif arrayLen(aFlag) and aFlag[1].xmlText eq "true">
+				<cfset aFlag = xmlSearch(xml, "//*[local-name()='NextContinuationToken']") />
+				<cfif arrayLen(aFlag) and len(aFlag[1].xmlText)>
+					<cfset continuationToken = aFlag[1].xmlText />
+					<cfset bTruncated = true />
+				</cfif>
+			</cfif>
+		</cfloop>
+
+		<cfreturn qDir />
+	</cffunction>
+
 	<cffunction name="ioGetFileSize" returntype="numeric" output="false" hint="Returns the size of the file in bytes">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="file" type="string" required="true" />
@@ -797,6 +1093,10 @@
 		      stale size. Fall back to the s3:// path only when uncached. --->
 		<cfif len(cachePath)>
 			<cfreturn getFileInfo(cachePath).size />
+		</cfif>
+
+		<cfif isTemporaryCredential(arguments.config)>
+			<cfreturn getObjectSize(config=arguments.config, file=arguments.file) />
 		</cfif>
 
 		<cfreturn getFileInfo(getS3Path(config=arguments.config,file=arguments.file)).size />
@@ -818,7 +1118,12 @@
 		<cfset stResult["method"] = "redirect" />
 		<cfset stResult["path"] = getURLPath(argumentCollection=arguments) />
 		<cfset stResult["mimetype"] = getPageContext().getServletContext().getMimeType(arguments.file) />
-		<cfset stResult["s3Path"] = getS3Path(config=arguments.config,file=arguments.file) />
+		<!--- s3Path drives native VFS streaming, which cannot use temporary credentials; omit it then
+		      (serving falls back to the signed redirect path above). --->
+		<cfset stResult["s3Path"] = "" />
+		<cfif not isTemporaryCredential(arguments.config)>
+			<cfset stResult["s3Path"] = getS3Path(config=arguments.config,file=arguments.file) />
+		</cfif>
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -977,16 +1282,23 @@
 				
 			<cfelse>
 			
-				<!--- move from S3 source to local destination --->
-				<cfset sourcefile = getS3Path(config=arguments.source_config,file=arguments.source_file) />
 				<cfset destfile = arguments.dest_localpath />
-				
-				<cfif not directoryExists(getDirectoryFromPath(destfile))>
-					<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
+
+				<cfif isTemporaryCredential(arguments.source_config)>
+					<!--- temporary credentials: native s3:// move unavailable; download via signed REST GET, then delete --->
+					<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=destfile) />
+					<cfset ioDeleteFile(config=arguments.source_config,file=arguments.source_file) />
+				<cfelse>
+					<!--- move from S3 source to local destination (native s3://) --->
+					<cfset sourcefile = getS3Path(config=arguments.source_config,file=arguments.source_file) />
+
+					<cfif not directoryExists(getDirectoryFromPath(destfile))>
+						<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
+					</cfif>
+
+					<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
+					<cffile action="delete" file="#sourcefile#" />
 				</cfif>
-				
-				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
-				<cffile action="delete" file="#sourcefile#" />
 				
 				<cfif bDebug><cflog file="#application.applicationname#_s3" text="Moved [#arguments.source_config.name#] #sanitiseS3URL(arguments.source_file)# from S3 to #sanitiseS3URL(destfile)#" /></cfif>
 				
@@ -1151,8 +1463,15 @@
 		<cfargument name="listinfo" type="string" required="false" default="name" hint="name or all" />
 		
 		<cfset var qDir = "" />
-		<cfset var s3path = getS3Path(config=arguments.config,file=arguments.dir) />
-		
+		<cfset var s3path = "" />
+
+		<!--- temporary credentials cannot use the native s3:// VFS; list via the REST API instead --->
+		<cfif isTemporaryCredential(arguments.config)>
+			<cfreturn listObjects(config=arguments.config, dir=arguments.dir) />
+		</cfif>
+
+		<cfset s3path = getS3Path(config=arguments.config,file=arguments.dir) />
+
 		<cfif not directoryExists(s3Path)>
 			<cfreturn querynew("file") />
 		</cfif>
@@ -1236,9 +1555,15 @@
 
 		<cfset stHeaders["x-amz-content-sha256"] = "UNSIGNED-PAYLOAD" />
 
+		<!--- resolve active credentials; sign and send the security token when temporary --->
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
+		<cfif len(stConfig.sessionToken)>
+			<cfset stHeaders["x-amz-security-token"] = stConfig.sessionToken />
+		</cfif>
+
 		<!--- create signature --->
 		<cfset authArgs = {
-			config=arguments.config,
+			config=stConfig,
 			timestamp=timestamp,
 			method="PUT",
 			path=arguments.config.apiEndpointPrefix & path,
@@ -1275,7 +1600,7 @@
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = results.error.message.XMLText>
-				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+				<cfset substituteValues[2] = sanitiseCanonicalRequest(getCanonicalRequest(argumentCollection=authArgs))>
 				<cfset substituteValues[3] = signature>
 				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request={2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
@@ -1334,9 +1659,15 @@
 
 		<cfset stHeaders["x-amz-content-sha256"] = "UNSIGNED-PAYLOAD" />
 
+		<!--- resolve active credentials; sign and send the security token when temporary --->
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
+		<cfif len(stConfig.sessionToken)>
+			<cfset stHeaders["x-amz-security-token"] = stConfig.sessionToken />
+		</cfif>
+
 		<!--- create signature --->
 		<cfset authArgs = {
-			config=arguments.config,
+			config=stConfig,
 			timestamp=timestamp,
 			method="PUT",
 			path=arguments.config.apiEndpointPrefix & path,
@@ -1350,7 +1681,7 @@
 		<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
 
 		<!--- REST call --->
-		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#?acl" charset="utf-8" result="cfhttp" timeout="1800">
+		<cfhttp method="PUT" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#?acl" charset="utf-8" result="cfhttp" timeout="30">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1373,7 +1704,7 @@
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = results.error.message.XMLText>
-				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+				<cfset substituteValues[2] = sanitiseCanonicalRequest(getCanonicalRequest(argumentCollection=authArgs))>
 				<cfset substituteValues[3] = signature>
 				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request: {2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
@@ -1409,9 +1740,15 @@
 			<cfset path = arguments.config.pathPrefix & arguments.file />
 		</cfif>
 
+		<!--- resolve active credentials; sign and send the security token when temporary --->
+		<cfset var stConfig = resolveSigningConfig(arguments.config) />
+		<cfif len(stConfig.sessionToken)>
+			<cfset stHeaders["x-amz-security-token"] = stConfig.sessionToken />
+		</cfif>
+
 		<!--- create signature --->
 		<cfset authArgs = {
-			config=arguments.config,
+			config=stConfig,
 			timestamp=timestamp,
 			method="DELETE",
 			path=arguments.config.apiEndpointPrefix & path,
@@ -1422,7 +1759,7 @@
 		<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
 
 		<!--- REST call --->
-		<cfhttp method="DELETE" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" result="cfhttp" timeout="1800">
+		<cfhttp method="DELETE" url="https://#arguments.config.apiEndpoint##arguments.config.apiEndpointPrefix##path#" result="cfhttp" timeout="30">
 			<!--- Amazon Global Headers --->
 			<cfhttpparam type="header" name="Date" value="#timestamp#" />
 			<cfhttpparam type="header" name="Authorization" value="#signature#" />
@@ -1445,7 +1782,7 @@
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = results.error.message.XMLText>
-				<cfset substituteValues[2] = getCanonicalRequest(argumentCollection=authArgs)>
+				<cfset substituteValues[2] = sanitiseCanonicalRequest(getCanonicalRequest(argumentCollection=authArgs))>
 				<cfset substituteValues[3] = signature>
 				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [canonical request: {2}, signature={3}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
@@ -1466,6 +1803,11 @@
 		</cfif>
 	</cffunction>
 
+	<cffunction name="sanitiseCanonicalRequest" access="public" output="false" returntype="string" hint="Masks the x-amz-security-token header value in a canonical-request string before it is embedded in error output, so a temporary session token never leaks into logs.">
+		<cfargument name="canonicalRequest" type="string" required="true" />
+		<cfreturn reReplaceNoCase(arguments.canonicalRequest, "(x-amz-security-token:)[^" & chr(10) & "]*", "\1STRIPPEDSESSIONTOKEN", "all") />
+	</cffunction>
+
 	<cffunction name="sanitiseS3URL" access="public" output="false" returntype="string">
 		<cfargument name="s3URL" type="string" required="true" />
 
@@ -1484,6 +1826,9 @@
 		</cfif>
 		<cfif structKeyExists(stResult, "awsSecretKey")>
 			<cfset stResult.awsSecretKey = "STRIPPEDAWSSECRETKEY">
+		</cfif>
+		<cfif structKeyExists(stResult, "sessionToken") and len(stResult.sessionToken)>
+			<cfset stResult.sessionToken = "STRIPPEDSESSIONTOKEN">
 		</cfif>
 
 		<cfreturn stResult />
