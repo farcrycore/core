@@ -39,6 +39,7 @@
 		<cfset var credSource = "" />
 		<cfset var setName = "" />
 		<cfset var setDef = structnew() />
+		<cfset var hasInlineKeys = false />
 
 		<!--- Credential validation is deferred to the credential-source block below (after region
 		      normalisation). Static configs still require accessKeyId + awsSecretKey. --->
@@ -74,11 +75,24 @@
 			<cfif not getAwsCredentials().isKnownSource(credSource)>
 				<cfset application.fapi.throw(message="the credentialSource '{1}' is not a supported credential source in this build",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config)),substituteValues=[ credSource ]) />
 			</cfif>
-			<cfset setName = "__inline_" & credSource & "_" & hash(credSource & "|" & (structkeyexists(st,"roleArn") ? lcase(trim(st.roleArn)) : "") & "|" & lcase(st.region)) />
+			<!--- auto carries any non-empty inline keys onto its set so the chain's first (static)
+			      step uses them: existing apps add credentialSource="auto", keep their keys (which win
+			      locally), and deployed those keys are empty strings so the static step skips and the
+			      chain falls through to the role. role/container/etc never run the static step, so
+			      inline keys passed with those sources are intentionally ignored. --->
 			<cfset setDef = { "source" = credSource, "region" = st.region } />
+			<cfif credSource eq "auto" and structkeyexists(st,"accessKeyId") and len(trim(st.accessKeyId)) and structkeyexists(st,"awsSecretKey") and len(trim(st.awsSecretKey))>
+				<cfset hasInlineKeys = true />
+				<cfset setDef.accessKeyId = trim(st.accessKeyId) />
+				<cfset setDef.secretAccessKey = trim(st.awsSecretKey) />
+				<cfset setDef.sessionToken = (structkeyexists(st,"sessionToken") ? st.sessionToken : "") />
+			</cfif>
 			<cfif structkeyexists(st,"roleArn") and len(trim(st.roleArn))>
 				<cfset setDef.roleArn = trim(st.roleArn) />
 			</cfif>
+			<!--- fold the key id into the set identity (like the static branch) so two locations with
+			      different inline keys don't share one cached entry. --->
+			<cfset setName = "__inline_" & credSource & "_" & hash(credSource & "|" & (hasInlineKeys ? lcase(trim(st.accessKeyId)) : "") & "|" & (structkeyexists(st,"roleArn") ? lcase(trim(st.roleArn)) : "") & "|" & lcase(st.region)) />
 			<cfset getAwsCredentials().registerCredentialSet(setName, setDef) />
 			<cfset st.credentialSet = setName />
 
