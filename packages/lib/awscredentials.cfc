@@ -222,13 +222,15 @@
 			"hasSessionToken" = false,
 			"expiration" = "",
 			"secondsRemaining" = "",
-			"lastError" = ""
+			"lastError" = "",
+			"resolvedSource" = ""
 		} />
 
 		<cfif isStruct(entry)>
 			<cfset out.hasSessionToken = (len(entry.creds.sessionToken) gt 0) />
 			<cfset out.expiration = entry.expiration />
 			<cfset out.lastError = entry.lastError />
+			<cfset out.resolvedSource = structkeyexists(entry.creds,"source") ? entry.creds.source : "" />
 			<cfif isDate(entry.expiration)>
 				<cfset out.secondsRemaining = dateDiff("s", now(), entry.expiration) />
 			</cfif>

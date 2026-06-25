@@ -82,6 +82,7 @@
 				<menuitem id="fixrefObjects" sequence="21" label="Repair RefObjects" typename="fixRefObjects" bodyview="webtopBody" />
 			</menu>
 			<menu id="filetools" sequence="30" label="File Tools">
+				<menuitem id="cdnstatus" sequence="40" label="CDN Status" typename="dmFile" bodyview="webtopCDNStatus" />
 				<menuitem id="cdnmigrationtool" sequence="50" label="CDN Migration Tool" link="/admin/customadmin.cfm?module=utilities/cdnmigrator.cfm" />
 			    <menuitem id="fixfilelocations" sequence="60" label="Fix File Locations" link="/admin/customadmin.cfm?module=utilities/fixfilelocations.cfm" />
 				<menuitem id="listfilelocations" sequence="70" label="List File Locations" link="/admin/customadmin.cfm?module=utilities/listfilelocations.cfm" />
