@@ -20,4 +20,14 @@
 		ftType="boolean"
 		ftHint="When on, emits one diagnostic line per request (method, path, status, duration). Off by default; intended for local development." />
 
+	<cfproperty name="bLogColor" type="boolean" default="false"
+		ftSeq="5" ftFieldset="Diagnostic Logging" ftLabel="Colour-code the console"
+		ftType="boolean"
+		ftHint="When on, colours request status and method (and highlights warning/error lines) with ANSI codes for terminal viewing. Only applies to the standard out / err sink; leave off when logs are written to files or shipped to CloudWatch, where the codes would show as raw characters." />
+
+	<cfproperty name="slowRequestMs" type="numeric" default="5000"
+		ftSeq="6" ftFieldset="Diagnostic Logging" ftLabel="Slow request threshold (ms)"
+		ftType="integer"
+		ftHint="Requests slower than this are shown in seconds and coloured red in the request log. Default 5000 (5 seconds)." />
+
 </cfcomponent>

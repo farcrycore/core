@@ -22,8 +22,7 @@
 		<cfset variables.levelRanks = { "debug"=10, "information"=20, "warning"=30, "error"=40 } />
 		<cfset variables.reservedKeys = "ts,level,category,msg,app" />
 		<cfset variables.maxFieldLen = 8192 />
-		<cfset variables.resolvedCache = {} />
-		<!--- systemOutput() is a Lucee BIF; absent on ACF, where we fall back to cflog --->
+		<!--- systemOutput is a lucee bif, absent on acf where we fall back to cflog --->
 		<cfset variables.hasSystemOutput = structKeyExists(server, "lucee") />
 		<cfreturn this />
 	</cffunction>
@@ -180,9 +179,15 @@
 	<cffunction name="renderText" access="private" returntype="string" output="false" hint="logfmt: free-text message, then envelope + alpha-sorted field key=value pairs.">
 		<cfargument name="event" type="struct" required="true" />
 		<cfscript>
-			var out = arguments.event.message;
-			var keys = structKeyArray(arguments.event.fields);
+			var out = "";
+			var keys = "";
 			var k = "";
+			// request events get a fixed-width pipe-delimited console line instead of logfmt
+			if (arguments.event.category eq "request") {
+				return "[FC] " & renderRequestLine(arguments.event.fields);
+			}
+			out = arguments.event.message;
+			keys = structKeyArray(arguments.event.fields);
 			out &= " " & logfmtPair("ts", arguments.event.timestamp);
 			out &= " " & logfmtPair("level", arguments.event.level);
 			out &= " " & logfmtPair("category", arguments.event.category);
@@ -191,7 +196,45 @@
 			for (k in keys) {
 				out &= " " & logfmtPair(k, arguments.event.fields[k]);
 			}
-			return out;
+			if (colorEnabled()) {
+				out = ansi(out, levelColor(arguments.event.level));
+			}
+			return "[FC] " & out;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="renderRequestLine" access="private" returntype="string" output="false" hint="fixed-width console line for request events - code | time | method | url | other. columns are padded so the url starts at a consistent column.">
+		<cfargument name="fields" type="struct" required="true" />
+		<cfscript>
+			var f = arguments.fields;
+			var st = structKeyExists(f, "status") ? toString(f.status) : "---";
+			var dms = (structKeyExists(f, "durationMs") and isNumeric(f.durationMs)) ? f.durationMs : -1;
+			var isSlow = (dms gte 0) and (dms gt slowRequestThreshold());
+			// fast requests read in ms; slow ones (over the threshold) read in seconds
+			var dur = (dms lt 0) ? "?ms" : (isSlow ? numberFormat(dms / 1000, "0.0") & "s" : dms & "ms");
+			var meth = structKeyExists(f, "method") ? stripNewlines(toString(f.method)) : "";
+			var pth = structKeyExists(f, "path") ? stripNewlines(toString(f.path)) : "";
+			var useColor = colorEnabled();
+			// justify the plain text first, then wrap in colour, so the ansi codes never break the column widths
+			var stCol = useColor ? ansi(rJustify(st, 3), statusColor(st)) : rJustify(st, 3);
+			var durCol = (useColor and isSlow) ? ansi(rJustify(dur, 6), "31") : rJustify(dur, 6);
+			// method left-justified to 6 doubles as the gap before the url - no separating pipe needed
+			var methCol = useColor ? ansi(lJustify(meth, 6), methodColor(meth)) : lJustify(meth, 6);
+			var line = stCol & " | " & durCol & " | " & methCol & pth;
+			var extra = "";
+			var k = "";
+			var keys = structKeyArray(f);
+			// any fields beyond the four known columns become the trailing "other" segment
+			arraySort(keys, "textnocase");
+			for (k in keys) {
+				if (not listFindNoCase("status,durationMs,method,path", k)) {
+					extra = listAppend(extra, logfmtPair(k, f[k]), " ");
+				}
+			}
+			if (len(extra)) {
+				line &= " | " & extra;
+			}
+			return line;
 		</cfscript>
 	</cffunction>
 
@@ -282,14 +325,11 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="resolveSetting" access="private" returntype="string" output="false" hint="env/config-driven setting via getConfig('logger',...), cached once project config is live. Never throws.">
+	<cffunction name="resolveSetting" access="private" returntype="string" output="false" hint="live logger setting via getConfig - read each call so admin and env changes apply without an app reload. never throws; falls back to the default during the bootstrap window before config loads.">
 		<cfargument name="name" type="string" required="true" />
 		<cfargument name="default" type="string" required="true" />
 		<cfscript>
 			var val = arguments.default;
-			if (structKeyExists(variables.resolvedCache, arguments.name)) {
-				return variables.resolvedCache[arguments.name];
-			}
 			try {
 				if (structKeyExists(application, "fapi")) {
 					val = application.fapi.getConfig("logger", arguments.name, arguments.default);
@@ -299,10 +339,6 @@
 			}
 			if (not len(trim(val))) {
 				val = arguments.default;
-			}
-			// freeze only once config is live, so the bootstrap-window default is not pinned forever
-			if (structKeyExists(application, "stCOAPI") and structKeyExists(application.stCOAPI, "farConfig")) {
-				variables.resolvedCache[arguments.name] = val;
 			}
 			return val;
 		</cfscript>
@@ -330,6 +366,57 @@
 
 	<cffunction name="dq" access="private" returntype="string" output="false" hint="A literal double-quote.">
 		<cfreturn chr(34) />
+	</cffunction>
+
+	<!--- ansi colour helpers - opt-in via bLogColor, and only on the stdout sink so escape codes never land in a cflog file --->
+
+	<cffunction name="colorEnabled" access="private" returntype="boolean" output="false" hint="true when bLogColor is on and the sink is stdout.">
+		<cfset var v = resolveSetting("bLogColor", "false") />
+		<cfreturn (isBoolean(v) and v) and (lcase(resolveSetting("logSink", "file")) eq "stdout") />
+	</cffunction>
+
+	<cffunction name="ansi" access="private" returntype="string" output="false" hint="wrap text in an ansi colour code; an empty code returns the text unchanged.">
+		<cfargument name="text" type="string" required="true" />
+		<cfargument name="code" type="string" required="true" />
+		<cfif not len(arguments.code)>
+			<cfreturn arguments.text />
+		</cfif>
+		<cfreturn chr(27) & "[" & arguments.code & "m" & arguments.text & chr(27) & "[0m" />
+	</cffunction>
+
+	<cffunction name="statusColor" access="private" returntype="string" output="false" hint="ansi code by http status class - 2xx green, 3xx cyan, 4xx yellow, 5xx red.">
+		<cfargument name="status" type="string" required="true" />
+		<cfset var c = left(trim(arguments.status), 1) />
+		<cfif c eq "2"><cfreturn "32" /></cfif>
+		<cfif c eq "3"><cfreturn "36" /></cfif>
+		<cfif c eq "4"><cfreturn "33" /></cfif>
+		<cfif c eq "5"><cfreturn "31" /></cfif>
+		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="methodColor" access="private" returntype="string" output="false" hint="ansi code by http method, following gin's scheme.">
+		<cfargument name="method" type="string" required="true" />
+		<cfswitch expression="#ucase(trim(arguments.method))#">
+			<cfcase value="GET"><cfreturn "34" /></cfcase>
+			<cfcase value="POST"><cfreturn "36" /></cfcase>
+			<cfcase value="PUT"><cfreturn "33" /></cfcase>
+			<cfcase value="DELETE"><cfreturn "31" /></cfcase>
+			<cfcase value="PATCH"><cfreturn "32" /></cfcase>
+			<cfcase value="HEAD"><cfreturn "35" /></cfcase>
+			<cfdefaultcase><cfreturn "37" /></cfdefaultcase>
+		</cfswitch>
+	</cffunction>
+
+	<cffunction name="levelColor" access="private" returntype="string" output="false" hint="ansi code by level - error red, warning yellow, otherwise none.">
+		<cfargument name="level" type="string" required="true" />
+		<cfif arguments.level eq "error"><cfreturn "31" /></cfif>
+		<cfif arguments.level eq "warning"><cfreturn "33" /></cfif>
+		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="slowRequestThreshold" access="private" returntype="numeric" output="false" hint="ms above which a request is flagged slow - shown in seconds and coloured red. set via logger.slowRequestMs, default 5000.">
+		<cfset var v = resolveSetting("slowRequestMs", "5000") />
+		<cfreturn (isNumeric(v) and v gt 0) ? v : 5000 />
 	</cffunction>
 
 </cfcomponent>
