@@ -1708,6 +1708,21 @@
 		
 		<cfreturn application.fc.lib.error.throw(argumentCollection=arguments) />
 	</cffunction>
+
+	<cffunction name="logEvent" access="public" returntype="void" output="false" hint="Framework diagnostic logging facade that forwards to lib/logger - the 'what is the framework doing' lane, not exception handling and not the audit trail.">
+		<cfargument name="category" type="string" required="true" hint="log target/area, e.g. cdn, scheduler, app" />
+		<cfargument name="level" type="string" required="true" hint="debug|information|warning|error" />
+		<cfargument name="message" type="string" required="true" />
+		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" hint="structured context" />
+		<!--- single availability guard so callers never need their own - a no-op until the logger lib is wired during bootstrap --->
+		<cfif structKeyExists(application, "fc") and structKeyExists(application.fc, "lib") and structKeyExists(application.fc.lib, "logger")>
+			<cfset application.fc.lib.logger.logEvent(argumentCollection=arguments) />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="logger" access="public" returntype="any" output="false" hint="Returns the framework diagnostic logger (lib/logger), e.g. application.fapi.logger().info(category, message, fields).">
+		<cfreturn application.fc.lib.logger />
+	</cffunction>
 		
 	<!--- @@description:
 		<p>This function calls createUUID directly. It was previously used as an alternative when createUUID performance was slow but this is generally not the case now.</p>

@@ -421,6 +421,11 @@
 		FARCRY CORE INITIALISATION
 		 --------------------------------->
 		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
+
+		<!--- framework diagnostic: startup banner, text mode only, suppressed under json --->
+		<cfif structKeyExists(application.fc.lib, "logger")>
+			<cfset application.fc.lib.logger.banner() />
+		</cfif>
 		
 		<cfset application.fc.lib.objectbroker.init() />
 		<cfloop collection="#application.stcoapi#" item="typename">
@@ -491,6 +496,11 @@
 		<cfset queryaddrow(application.fcstats.updateapp) />
 		<cfset querysetcell(application.fcstats.updateapp,"when",now()) />
 		<cfset querysetcell(application.fcstats.updateapp,"howlong",getTickCount()-tickBegin) />
+
+		<!--- framework diagnostic: boot complete, cold start vs reinit from the uptime history row count --->
+		<cfset var bReinit = (application.fcstats.updateapp.recordcount gt 1) />
+		<cfset var bootMs = (getTickCount() - tickBegin) />
+		<cfset application.fapi.logEvent(category="app", level="information", message="FarCry Core " & (bReinit ? "reinited" : "ready") & " in " & bootMs & " ms", stFields={ durationMs=bootMs, reinit=bReinit, source=(bReinit ? "reinit" : "cold"), coreVersion=((structKeyExists(application,"sysInfo") and structKeyExists(application.sysInfo,"version")) ? application.sysInfo.version.string : ""), engine=((structKeyExists(application,"sysInfo") and structKeyExists(application.sysInfo,"engine")) ? application.sysInfo.engine.string : "") }) />
 		
 		<cfset application.bInit = true />
 		<cfreturn true />
@@ -529,6 +539,7 @@
 
 		<!--- Setup FarCry Namespace in the request scope --->
 		<cfparam name="request.fc" default="#structNew()#" />
+		<cfparam name="request.fc.startTickCount" default="#getTickCount()#" />
 
 		<cfif isdefined("session")>
 			<cfparam name="session.fc" default="#structNew()#" />
@@ -582,12 +593,39 @@
 
 			<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
 
+			<!--- framework diagnostic: optional one line per request, off by default; shared with onAbort --->
+			<cfset logRequest() />
+
 		</cfif>
 
 		<cfreturn />
 	</cffunction>
 
  
+	<cffunction name="logRequest" access="private" returntype="void" output="false" hint="framework diagnostic: emit one request line (method, path, status, duration), shared by onRequestEnd and onAbort. off unless the logger bLogRequests setting is on.">
+		<cfif not (structKeyExists(application, "fapi") and application.fapi.getConfig("logger", "bLogRequests", false))>
+			<cfreturn />
+		</cfif>
+		<cfset var stReqLog = { method = cgi.request_method, path = ((structKeyExists(url, "furl") and len(url.furl)) ? url.furl : cgi.script_name), durationMs = (getTickCount() - ((structKeyExists(request, "fc") and structKeyExists(request.fc, "startTickCount")) ? request.fc.startTickCount : getTickCount())) } />
+		<cftry>
+			<cfif structKeyExists(server, "lucee")>
+				<cfset stReqLog.status = getPageContext().getResponse().getStatus() />
+				<cfif not (isNumeric(stReqLog.status) and stReqLog.status gt 0)><cfset structDelete(stReqLog, "status") /></cfif>
+			</cfif>
+			<cfcatch type="any"><cfset structDelete(stReqLog, "status") /></cfcatch>
+		</cftry>
+		<cfset application.fapi.logEvent("request", "information", "request", stReqLog) />
+	</cffunction>
+
+	<cffunction name="OnAbort" access="public" returntype="void" output="false" hint="Fires when a request ends via cfabort or cflocation, e.g. redirects, 404s and scheduled-task fires. Only logs the request - the default abort behaviour is unchanged.">
+		<cfargument name="targetPage" type="string" required="false" default="" />
+		<!--- framework diagnostic: log aborted and redirected requests too - logging must never disturb the abort --->
+		<cftry>
+			<cfset logRequest() />
+			<cfcatch type="any"></cfcatch>
+		</cftry>
+	</cffunction>
+
 	<cffunction name="OnSessionEnd" access="public" returntype="void" output="false" hint="Fires when the session is terminated.">
 		<cfargument name="SessionScope" type="struct" required="true" />
 		<cfargument name="ApplicationScope" type="struct" required="false" default="#StructNew()#" />
@@ -598,6 +636,14 @@
  
 	<cffunction name="OnApplicationEnd" access="public" returntype="void" output="false" hint="Fires when the application is terminated.">
 		<cfargument name="ApplicationScope" type="struct" required="false" default="#StructNew()#" />
+
+		<!--- framework diagnostic: application shutdown, best effort since the scope is tearing down --->
+		<cftry>
+			<cfif structKeyExists(arguments.ApplicationScope, "fc") and structKeyExists(arguments.ApplicationScope.fc, "lib") and structKeyExists(arguments.ApplicationScope.fc.lib, "logger")>
+				<cfset arguments.ApplicationScope.fc.lib.logger.logEvent("app", "information", "FarCry Core application ended", { applicationName = (structKeyExists(arguments.ApplicationScope, "applicationname") ? arguments.ApplicationScope.applicationname : "") }) />
+			</cfif>
+			<cfcatch type="any"></cfcatch>
+		</cftry>
 
 		<cfreturn />
 	</cffunction>

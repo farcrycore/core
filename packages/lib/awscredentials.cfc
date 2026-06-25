@@ -118,7 +118,7 @@
 					<!--- serve still-present cached creds through a transient refresh failure --->
 					<cfif structkeyexists(this.cache, key)>
 						<cfset this.cache[key].lastError = cfcatch.message />
-						<cflog file="awscredentials" application="true" type="warning" text="AWS credential refresh failed for set [#key#]; serving cached credentials: #cfcatch.message#" />
+						<cfset application.fapi.logEvent("awscredentials", "warning", "credential refresh failed, serving cached credentials", {set=key, error=cfcatch.message}) />
 						<cfreturn this.cache[key].creds />
 					<cfelse>
 						<cfset application.fapi.throw(message="Unable to resolve AWS credentials for set [{1}] (source={2}): {3}",type="awscredentialserror",detail=serializeJSON(sanitiseDefinition(def)),substituteValues=[ arguments.setName, def.source, cfcatch.message ]) />

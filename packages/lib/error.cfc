@@ -243,14 +243,20 @@
 		<cfset var stacktrace = createObject("java","java.lang.StringBuffer").init() />
 		<cfset var i = 0 />
 		<cfset var firstline = "" />
-		
+		<cfset var message = "" />
+
+		<!--- scrub inline credentials before logging (Lucee can leak s3://key:secret@ / ftp://user:pass@ into the exception message and stack) --->
+		<cfif structkeyexists(arguments.log,"message")>
+			<cfset message = scrubCredentials(arguments.log.message) />
+		</cfif>
+
 		<cfif structkeyexists(arguments.log,"stack") and arraylen(arguments.log.stack)>
-			<cfset firstline = "The specific sequence of files included or processed is #arguments.log.stack[1].template#, line: #arguments.log.stack[1].line#" />
+			<cfset firstline = scrubCredentials("The specific sequence of files included or processed is #arguments.log.stack[1].template#, line: #arguments.log.stack[1].line#") />
 		</cfif>
 		
 		<cfif structKeyExists(arguments,"logFile") and len(arguments.logFile) and structkeyexists(arguments.log,"message")>
 			<cfif NOT structkeyexists(arguments.log,"stack")>
-				<cflog file="#arguments.logFile#" application="true" type="information" text="#arguments.log.message#" />
+				<cflog file="#arguments.logFile#" application="true" type="information" text="#message#" />
 			<cfelse>
 				<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
 					<cfset stacktrace.append(arguments.log.stack[i].template) />
@@ -260,11 +266,11 @@
 						<cfset stacktrace.append(variables.newline) />
 					</cfif>
 				</cfloop>
-				<cflog file="#arguments.logFile#" application="true" type="information" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
+				<cflog file="#arguments.logFile#" application="true" type="information" text="#message#. #firstline##newline##scrubCredentials(stacktrace.toString())#" />
 			</cfif>
 		<cfelse>
 			<cfif arguments.bApplication and structkeyexists(arguments.log,"message")>
-				<cflog log="application" application="true" type="error" text="#arguments.log.message#. #firstline#" />
+				<cflog log="application" application="true" type="error" text="#message#. #firstline#" />
 			</cfif>
 			<cfif arguments.bException and structkeyexists(arguments.log,"stack") and structkeyexists(arguments.log,"message")>
 				<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
@@ -275,12 +281,17 @@
 						<cfset stacktrace.append(variables.newline) />
 					</cfif>
 				</cfloop>
-				<cflog file="exception" application="true" type="#arguments.logType#" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
+				<cflog file="exception" application="true" type="#arguments.logType#" text="#message#. #firstline##newline##scrubCredentials(stacktrace.toString())#" />
 			</cfif>	
 		</cfif>
 	</cffunction>
 
 	
+	<cffunction name="scrubCredentials" access="private" output="false" returntype="string" hint="Strips inline s3://key:secret@ / ftp://user:pass@ credentials from text before it is written to a log">
+		<cfargument name="text" type="string" required="true" />
+		<cfreturn reReplaceNoCase(arguments.text, "(s3|ftp)://[^:@/\s]+:[^@/\s]+@", "\1://STRIPPED:STRIPPED@", "all") />
+	</cffunction>
+
 	<cffunction name="encodeErrorText" access="public" output="false" returntype="any" hint="Encodes/escapes text before output">
 		<cfargument name="text" required="true" type="string">
 
