@@ -47,7 +47,12 @@
 		Set after the farcryConstructor include so it overrides the legacy false most projects carry.
 	--->
 	<cfif NOT structKeyExists(server, "farcrySessionCluster")>
-		<cfset server.farcrySessionCluster = luceeVersionAtLeast("5.3.8") />
+		<!--- emergency valve to override sessioncluster behaviour (should not be used generally) --->
+		<cfif isBoolean(server.system.environment["FARCRY_OVERRIDE_SESSIONCLUSTER"] ?: "")>
+			<cfset server.farcrySessionCluster = server.system.environment["FARCRY_OVERRIDE_SESSIONCLUSTER"] />
+		<cfelse>
+			<cfset server.farcrySessionCluster = luceeVersionAtLeast("5.3.8") />
+		</cfif>
 	</cfif>
 	<cfset this.sessioncluster = server.farcrySessionCluster>
 
