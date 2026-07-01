@@ -672,9 +672,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<!--- set to the default if it is not already defined above --->
 					<cfset stProps[propertie] = arrayNew(1)>
 
-				<cfelseif stDefaultProperties[propertie].metadata.type eq "identity"> 
-					<!--- identity properties should not be set with a default value as they are auto generated --->
-					<!--- NOTE: do nothing --->
+				<cfelseif stDefaultProperties[propertie].metadata.type eq "identity">
+					<!--- identity is DB-generated (savable=false), so set empty rather than a default; keeps the key present for readers --->
+					<cfset stProps[propertie] = "" />
 
 				<cfelse>
 					
