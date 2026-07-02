@@ -23,15 +23,28 @@
 <cfset stObj.datetimeLastExecuted = now() />
 <cfset setData(stProperties=stObj, bUpdateTask=false) />
 
+<cfset taskStartTick = getTickCount() />
+<cfset taskFailed = false />
+<cfset application.fapi.logEvent("cron", "debug", "scheduled task started", {objectid=stObj.objectid, title=stObj.title, template=stObj.template}) />
+
 <cfsavecontent variable="html">
 	<cftry>
 		<!--- include scheduled task code and pass in parameters --->
 		<cfinclude template="#stObj.template#">
-		<cfcatch type="any"><cfdump var="#cfcatch#"></cfcatch>
+		<cfoutput>Done</cfoutput>
+		<cfcatch type="any">
+			<cfset taskFailed = true />
+			<!--- surface failures instead of swallowing: exception lane (raygun + credential scrub) plus a cron event, but the fire still completes so a manual run is never blocked --->
+			<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
+			<cfset application.fapi.logEvent("cron", "error", "scheduled task failed", {objectid=stObj.objectid, title=stObj.title, template=stObj.template, durationMs=getTickCount()-taskStartTick, error=cfcatch.message}) />
+			<cfoutput>FAILED: #encodeForHTML(cfcatch.message)#</cfoutput>
+		</cfcatch>
 	</cftry>
-
-	<cfoutput>Done</cfoutput>
 </cfsavecontent>
+
+<cfif not taskFailed>
+	<cfset application.fapi.logEvent("cron", "information", "scheduled task finished", {objectid=stObj.objectid, title=stObj.title, durationMs=getTickCount()-taskStartTick}) />
+</cfif>
 
 <cfset stObj.datetimeLastFinished = now() />
 <cfset stObj.lastExecutionOutput = html />
