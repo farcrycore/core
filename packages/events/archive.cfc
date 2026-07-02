@@ -39,13 +39,13 @@
 		
 		<!--- NOT ARCHIVABLE --->
 		<cfif not application.stCOAPI[arguments.typename].bArchive>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: not archivable"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: not archivable", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- NEW CONTENT --->
 		<cfif structkeyexists(stProps,"bDefaultObject")>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: new object a"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: new object a", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfreturn />
 		</cfif>
 		
@@ -56,32 +56,32 @@
 		
 		<!--- NEW CONTENT --->
 		<cfif structkeyexists(stObj,"bDefaultObject")>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: new object b"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: new object b", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- DRAFT / PENDING --->
 		<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status") and not (stProps.status eq "approved" and stObj.status eq "approved")>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: draft / pending"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: draft / pending", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- NO CHANGES --->
 		<cfif application.fc.lib.diff.getObjectDiff(left=stObj,right=stProps,includeInvisibleProperties=true).countDifferent eq 0>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: no changes"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: no changes", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		
 		<!--- Archivable --->
 		<cfif arguments.auditNote eq "Archive rolled back">
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, rollback"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: archived, rollback", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfset this.oArchive.archiveObject(stObj=stObj,event="rolled back",username=lastupdatedby)>
 		<cfelseif not structkeyexists(stObj,"versionID")>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, save"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: archived, save", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfset this.oArchive.archiveObject(stObj=stObj,event="saved",username=lastupdatedby)>
 		<cfelse>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, publish"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "save: archived, publish", {typename=arguments.typename, objectid=arguments.stProperties.objectid}) />
 			<cfset this.oArchive.archiveObject(stObj=stObj,event="published",username=lastupdatedby)>
 		</cfif>
 	</cffunction>
@@ -107,7 +107,7 @@
 		
 		<!--- IN SOME CASES FARCRY NEEDS TO MANUALLY TRIGGER THIS EVENT EARLIER, CAUSING IT TO HAPPEN TWICE - PREVENT ANY AFTER THE FIRST --->
 		<cfif structkeyexists(request,"deleted") and listfind(request.deleted,arguments.stObject.objectid)>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: already handled"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "delete: already handled", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		<cfparam name="request.deleted" default="" />
@@ -115,13 +115,13 @@
 		
 		<!--- NOT ARCHIVABLE --->
 		<cfif not application.stCOAPI[arguments.typename].bArchive>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: not archivable"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "delete: not archivable", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- OBJECT WITH APPROVED VERSION (drafts aren't archived) --->
 		<cfif structkeyexists(arguments.stObject,"versionid") and len(arguments.stObject.versionID)>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: has approved version"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "delete: has approved version", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
@@ -130,10 +130,10 @@
 		<cfif not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved">
 			<cfif structkeyexists(arguments.stObject,"versionid")>
 				<cfset q = application.fapi.getContentObjects(typename=arguments.typename,versionID_eq=arguments.stObject.objectid) />
-				<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: archived, deleted=#q.recordcount eq 0#"></cfif>
+				<cfset application.fapi.logEvent("events", "debug", "delete: archived", {typename=arguments.typename, objectid=arguments.stObject.objectid, deleted=(q.recordcount eq 0)}) />
 				<cfset this.oArchive.archiveObject(stObj=arguments.stObject,event="deleted",username=arguments.user,bDeleted=q.recordcount eq 0)>
 			<cfelse>
-				<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stObject.objectid#: archived"></cfif>
+				<cfset application.fapi.logEvent("events", "debug", "save: archived", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 				<cfset this.oArchive.archiveObject(stObj=arguments.stObject,event="deleted",username=arguments.user,bDeleted=1)>
 			</cfif>
 				
@@ -143,14 +143,14 @@
 		
 		<!--- NOT VERSIONED --->
 		<cfif not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: not versioned"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "delete: not versioned", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn>
 		</cfif>
 		
 		<!--- Special case: there was a draft and approved version, the approved version was deleted, then the draft version - now the latest archive needs to be flagged bDeleted = true --->
 		<cfset q = application.fapi.getContentObjects(typename=arguments.stObject.typename,objectid_eq=arguments.stObject.versionid) />
 		<cfif q.recordcount eq 0>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: set bDeleted=false"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "delete: set bDeleted=false", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			
 			<cfset q = application.fapi.getContentObjects(typename="dmArchive",versionid_eq=arguments.stObject.versionid,orderby="datetimecreated desc",maxrows=1) />
 			
@@ -178,19 +178,19 @@
 		
 		<!--- NOT ARCHIVABLE --->
 		<cfif not application.stCOAPI[arguments.typename].bArchive>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: not archivable"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "status changed: not archivable", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- NO STATUS --->
 		<cfif not structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: no status"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "status changed: no status", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- NEW OBJECT --->
 		<cfif structkeyexists(arguments.stObject,"bDefaultObject")>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: new object a"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "status changed: new object a", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
@@ -200,25 +200,25 @@
 		
 		<!--- NEW OBJECT --->
 		<cfif structkeyexists(stObj,"bDefaultObject")>
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: new object b"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "status changed: new object b", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- WASN'T SENT BACK TO DRAFT --->
 		<cfif arguments.newStatus neq "draft">
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: not sent back to draft"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "status changed: not sent back to draft", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		<!--- THIS IS A DRAFT COPY OF AN APPROVED OBJECT --->
 		<cfif structkeyexists(stObj,"versionID") and arguments.stObject.versionID neq "">
-			<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: draft version"></cfif>
+			<cfset application.fapi.logEvent("events", "debug", "status changed: draft version", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 			<cfreturn />
 		</cfif>
 		
 		
 		<!--- Archivable --->
-		<cfif isDefined("request.mode.debug") and request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: archived"></cfif>
+		<cfset application.fapi.logEvent("events", "debug", "status changed: archived", {typename=arguments.typename, objectid=arguments.stObject.objectid}) />
 		<cfset this.oArchive.archiveObject(stObj=stObj,event="unpublished",username=arguments.stObject.lastupdatedby) />
 	</cffunction>
 	

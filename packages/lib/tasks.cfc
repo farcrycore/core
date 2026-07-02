@@ -84,7 +84,7 @@
 		<cflock name="task-queue-update" timeout="5" throwontimeout="true">
 			<cfset stResult=application.fc.lib.db.createData(typename=application.stCOAPI.farQueueTask.packagepath,dsn=application.dsn,stProperties=stTask) />
 			
-			<cflog file="#application.applicationname#_tasks" text="added task #arguments.action# [#arguments.taskID#] owned by #arguments.ownedBy#" />
+			<cfset application.fapi.logEvent("tasks", "debug", "added task", {action=arguments.action, objectid=arguments.taskID, ownedBy=arguments.ownedBy}) />
 		</cflock>
 		
 		<cfif not isdefined("thread")>
@@ -106,7 +106,7 @@
 				<cfset stTask.taskTimestamp = now() />
 				<cfset stTask.threadID = "" />
 				<cfset application.fc.lib.db.setData(typename=application.stCOAPI.farQueueTask.packagepath,dsn=application.dsn,stProperties=stTask) />
-				<cflog file="#application.applicationname#_tasks" text="requeued task #stTask.action# [#stTask.objectid#] owned by #stTask.taskOwnedBy#" />
+				<cfset application.fapi.logEvent("tasks", "debug", "requeued task", {action=stTask.action, objectid=stTask.objectid, ownedBy=stTask.taskOwnedBy}) />
 			</cfif>
 		</cflock>
 		
@@ -119,7 +119,7 @@
 		
 		<cflock name="task-queue-update" timeout="5" throwontimeout="true">
 			<cfset application.fc.lib.db.deleteData(typename=application.stCOAPI.farQueueTask.packagepath,dsn=application.dsn,objectid=arguments.taskID) />
-			<cflog file="#application.applicationname#_tasks" text="removed task [#arguments.taskID#]" />
+			<cfset application.fapi.logEvent("tasks", "debug", "removed task", {objectid=arguments.taskID}) />
 		</cflock>
 		
 		<cfset clearProcessingThreads() />
@@ -203,7 +203,7 @@
 		
 		<cflock name="result-queue-update" timeout="5" throwontimeout="true">
 			<cfset application.fc.lib.db.createData(typename=application.stCOAPI.farQueueResult.packagepath,dsn=application.dsn,stProperties=stResult) />
-			<cflog file="#application.applicationname#_tasks" text="added result for task [#arguments.taskID#] owned by #arguments.ownedBy#" />
+			<cfset application.fapi.logEvent("tasks", "debug", "added result", {objectid=arguments.taskID, ownedBy=arguments.ownedBy}) />
 		</cflock>
 	</cffunction>
 	
@@ -259,7 +259,7 @@
 				
 				<cfif arguments.clearResults>
 					<cfset application.fc.lib.db.deleteData(typename=application.stCOAPI.farQueueResult.packagepath,dsn=application.dsn,objectid=q.objectid) />
-					<cflog file="#application.applicationname#_tasks" text="removed reported result [#q.objectid#] owned by #q.ownedBy#" />
+					<cfset application.fapi.logEvent("tasks", "debug", "removed reported result", {objectid=q.objectid, ownedBy=q.ownedBy}) />
 				</cfif>
 			</cfloop>
 		</cflock>
@@ -399,7 +399,7 @@
 				<cfset stTask.datetimeLastUpdated = now() />
 				<cfset application.fc.lib.db.setData(typename=application.stCOAPI.farQueueTask.packagepath,dsn=application.dsn,stProperties=stTask) />
 				
-				<cflog file="#application.applicationname#_tasks" text="claimed task #stTask.action# [#stTask.objectid#] owned by #stTask.taskOwnedBy# for #arguments.threadID#" />
+				<cfset application.fapi.logEvent("tasks", "debug", "claimed task", {action=stTask.action, objectid=stTask.objectid, ownedBy=stTask.taskOwnedBy, threadID=arguments.threadID}) />
 				
 			</cfif>
 		</cflock>
@@ -421,7 +421,7 @@
 		<cfwddx action="wddx2cfml" input="#arguments.stTask.wddxDetails#" output="task.details">
 		<cfwddx action="wddx2cfml" input="#arguments.stTask.wddxStackTrace#" output="task.stacktrace">
 		
-		<cflog file="#application.applicationname#_tasks" text="processing task #arguments.stTask.action# [#arguments.stTask.objectid#] owned by #arguments.stTask.taskOwnedBy# in #arguments.stTask.threadID# [#getTickCount()-starttime#ms]" />
+		<cfset application.fapi.logEvent("tasks", "debug", "processing task", {action=arguments.stTask.action, objectid=arguments.stTask.objectid, ownedBy=arguments.stTask.taskOwnedBy, threadID=arguments.stTask.threadID, durationMs=getTickCount()-starttime}) />
 		
 		<cfset application.fc.lib.events.announce(component=listfirst(arguments.stTask.action,"."),eventName=listlast(arguments.stTask.action,"."),stParams=task) />
 	</cffunction>
@@ -452,7 +452,7 @@
 				<cfset requeueTask(taskID=stTask.objectid) />
 			</cfif>
 			
-			<cflog file="#application.applicationname#_tasks" text="killed thread #arguments.threadID#" />
+			<cfset application.fapi.logEvent("tasks", "information", "killed thread", {threadID=arguments.threadID}) />
 		</cfif>
 	</cffunction>
 	
@@ -492,7 +492,7 @@
 				<cfsetting requesttimeout="10000">
 
 				<cftry>
-					<cflog file="#application.applicationname#_tasks" text="started thread #attributes.threadID#" />
+					<cfset application.fapi.logEvent("tasks", "information", "started thread", {threadID=attributes.threadID}) />
 					
 					<cfset request.inthread = true />
 					<cfif application.sysinfo.engine.engine eq "coldfusion">
@@ -504,15 +504,15 @@
 						<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
 						<cfif structkeyexists(server,"lucee")>
 							<cfif getPageContext().getRequestTimeout() neq 10000>
-								<cflog file="#application.applicationname#_tasks" text="timeout has been changed from 10000 to #getPageContext().getRequestTimeout()#" />
+								<cfset application.fapi.logEvent("tasks", "debug", "request timeout changed", {threadID=attributes.threadID, from=10000, to=getPageContext().getRequestTimeout()}) />
 							</cfif>
 						<cfelseif structkeyexists(server,"railo")>
 							<cfif getPageContext().getRequestTimeout() neq 10000>
-								<cflog file="#application.applicationname#_tasks" text="timeout has been changed from 10000 to #getPageContext().getRequestTimeout()#" />
+								<cfset application.fapi.logEvent("tasks", "debug", "request timeout changed", {threadID=attributes.threadID, from=10000, to=getPageContext().getRequestTimeout()}) />
 							</cfif>
 						<cfelseif structkeyexists(server,"coldfusion")>
 							<cfif getPageContext().getRequestTimeout() neq 10000>
-								<cflog file="#application.applicationname#_tasks" text="timeout has been changed from 10000 to #CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout()#" />
+								<cfset application.fapi.logEvent("tasks", "debug", "request timeout changed", {threadID=attributes.threadID, from=10000, to=CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout()}) />
 							</cfif>
 						</cfif>
 
@@ -554,7 +554,7 @@
 									<!--- log error normally --->
 									<cfset application.fc.lib.error.logData(stResult["error"]) />
 									
-									<cflog file="#application.applicationname#_tasks" text="processing task #stResult.task.action# [#stResult.task.objectid#] failed in thread #attributes.threadID#: #cfcatch.message#" type="error" />
+									<cfset application.fapi.logEvent("tasks", "error", "processing task failed", {action=stResult.task.action, objectid=stResult.task.objectid, threadID=attributes.threadID, error=cfcatch.message}) />
 									
 								</cfcatch>
 							</cftry>
@@ -573,7 +573,7 @@
 					<!--- remove thread tracker --->
 					<cfset structdelete(application.fc.lib.tasks.threads,attributes.threadID) />
 					
-					<cflog file="#application.applicationname#_tasks" text="stopped thread #attributes.threadID# without errors" />
+					<cfset application.fapi.logEvent("tasks", "information", "stopped thread without errors", {threadID=attributes.threadID}) />
 					
 					<cfcatch>
 						
@@ -583,7 +583,7 @@
 						<!--- remove thread tracker --->
 						<cfset structdelete(application.fc.lib.tasks.threads,attributes.threadID) />
 						
-						<cflog file="#application.applicationname#_tasks" text="stopped thread #attributes.threadID# with error: #cfcatch.message#" type="error" />
+						<cfset application.fapi.logEvent("tasks", "error", "stopped thread with error", {threadID=attributes.threadID, error=cfcatch.message}) />
 						
 					</cfcatch>
 				</cftry>

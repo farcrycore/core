@@ -101,7 +101,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 				
 				<!--- log deprecated approach --->
 				<cftrace type="warning" category="farcry.webtop" text="../customadmin/customadmin.xml is using an old format.  This was updated to a more modern format with the release of FarCry 2.4." />
-				<cflog application="true" file="deprecated" type="warning" text="../customadmin/customadmin.xml initialised using an old xml format.  This was updated to a more modern format with the release of FarCry 2.4." />
+				<cfset application.fapi.logEvent("deprecated", "warning", "customadmin.xml initialised using an old xml format, modernised since FarCry 2.4") />
 			</cfif>
 			
 			<cfcatch>

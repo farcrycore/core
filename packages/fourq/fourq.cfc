@@ -758,7 +758,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 		<cfif NOT stReturn.bSuccess>
-			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes">
+			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {error=stReturn.message, detail=stReturn.results[arraylen(stReturn.results)].detail, sql=stReturn.results[arraylen(stReturn.results)].sql}) />
 		</cfif>
 		
 		<cfparam name="arguments.stProperties.typename" default="#thisTypename#" />

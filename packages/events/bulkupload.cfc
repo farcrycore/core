@@ -56,7 +56,7 @@
 				bArchive = false
 			) />
 			<cfif not stResult.bSuccess>
-				<cflog file="bulkupload" text="Could not handle #arguments.details.tempfile#: #stResult.stError.message#" />
+				<cfset application.fapi.logEvent("bulkupload", "warning", "could not handle upload", {file=arguments.details.tempfile, error=stResult.stError.message}) />
 				<cfreturn />
 			</cfif>
 			<cfset stObject[arguments.details.targetfield] = stResult.value />

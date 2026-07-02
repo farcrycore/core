@@ -575,7 +575,7 @@
 				<cfset stResult.message = cfcatch>
 				<cfset stResult.bExportComplete = 0>
 
-				<cflog file="farcry-export" text="Error exporting #stTable.name#, #serializeJSON(stResult)#">
+				<cfset application.fapi.logEvent("export", "error", "error exporting table", {table=stTable.name, detail=serializeJSON(stResult)}) />
 				
 			</cfcatch>
 		</cftry>

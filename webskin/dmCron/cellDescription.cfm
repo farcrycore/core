@@ -11,7 +11,7 @@
 			<cfoutput>#metadata.description#</cfoutput>
 		</cfif>
 		<cfcatch>
-			<cflog log="exception" type="error"	text="Error retrieving description for template [#stObj.template#].">
+			<cfset application.fapi.logEvent("coapi", "warning", "error retrieving template description", {template=stObj.template, error=cfcatch.message}) />
 		</cfcatch>
 	</cftry>
 </cfif>

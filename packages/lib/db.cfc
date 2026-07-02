@@ -87,7 +87,7 @@
 		<cfset var oGateway = "" />
 		
 		<cfif not structkeyexists(variables.paths,arguments.dbtype)>
-			<cflog file="coapi" type="warning" text="Creating #variables.paths['default']# gateway for #arguments.dsn# because no recognized connection type was specified in argument 'dbtype' to method getGateway(). Connection type passed was <strong>#arguments.dbtype#</strong>" />
+			<cfset application.fapi.logEvent("coapi", "warning", "creating default gateway: unrecognized connection type", {gateway=variables.paths['default'], dsn=arguments.dsn, dbtype=arguments.dbtype}) />
 			<cfset arguments.dbtype = "default" />
 		</cfif>
 		
@@ -601,7 +601,7 @@
 		<cfset stReturn = getGateway(dsn=arguments.dsn, mode="write").createData(schema=schema,stProperties=stProperties,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
-			<cflog text="#serializeJSON(stReturn)#" file="coapi" type="error" application="yes" />
+			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {detail=serializeJSON(stReturn)}) />
 		</cfif>
 		
     	<cfreturn stReturn />
@@ -670,7 +670,7 @@
 		<cfset stReturn = getGateway(dsn=arguments.dsn, mode="write").deleteData(argumentCollection=arguments,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
-			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes" />
+			<cfset application.fapi.logEvent("coapi", "error", "deleteData failed", {error=stReturn.message, detail=stReturn.results[arraylen(stReturn.results)].detail, sql=stReturn.results[arraylen(stReturn.results)].sql}) />
 		</cfif>
 		
     	<cfreturn stReturn />

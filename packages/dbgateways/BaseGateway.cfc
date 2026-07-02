@@ -406,7 +406,7 @@
 					<cfif structKeyExists(arguments.stProperties,"typename")>
 						<cfset errorTypename = arguments.stProperties.typename>
 					</cfif>
-					<cflog file="fourq" text="Error running setData() for #errorObjectID# (#errorTypename#): #stResult.message#"  />
+					<cfset application.fapi.logEvent("fourq", "error", "setData failed", {objectid=errorObjectID, typename=errorTypename, error=stResult.message}) />
 					<cfset arrayappend(stResult.results,cfcatch) />
 				</cfcatch>
 			</cftry>
@@ -494,7 +494,7 @@
 					<cfset errordetail = "unknown database error">
 				</cfif>
 				<!--- Looks like a property has not yet been deployed. If so, simply try a select * --->
-				<cflog file="fourq" text="Error running getdata() for #arguments.objectID# (#arguments.schema.tablename#): #errordetail#"  />
+				<cfset application.fapi.logEvent("fourq", "error", "getData failed", {objectid=arguments.objectID, table=arguments.schema.tablename, error=errordetail}) />
 				<cfquery datasource="#this.dsn#" name="qGetData">
 					SELECT 	*
 					FROM 	#this.dbowner##arguments.schema.tablename#

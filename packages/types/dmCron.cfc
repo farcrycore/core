@@ -284,7 +284,7 @@ type properties
 	</cfloop>
 
 	<cfif failed>
-		<cflog file="cron" type="error" text="reassertJobs: #failed# of #qTasks.recordcount# autostart tasks failed to (re)assert (see preceding cron-log entries)" />
+		<cfset application.fapi.logEvent("cron", "error", "reassertJobs: autostart tasks failed to (re)assert (details in the error log)", {failed=failed, count=qTasks.recordcount}) />
 	</cfif>
 
 	<cfreturn true>
