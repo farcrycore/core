@@ -34,7 +34,7 @@
 		<cfoutput>Done</cfoutput>
 		<cfcatch type="any">
 			<cfset taskFailed = true />
-			<!--- surface failures instead of swallowing: exception lane (raygun + credential scrub) plus a cron event, but the fire still completes so a manual run is never blocked --->
+			<!--- surface failures instead of swallowing: exception lane (error logging + credential scrub) plus a cron event, but the fire still completes so a manual run is never blocked --->
 			<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
 			<cfset application.fapi.logEvent("cron", "error", "scheduled task failed", {objectid=stObj.objectid, title=stObj.title, template=stObj.template, durationMs=getTickCount()-taskStartTick, error=cfcatch.message}) />
 			<cfoutput>FAILED: #encodeForHTML(cfcatch.message)#</cfoutput>
@@ -43,7 +43,15 @@
 </cfsavecontent>
 
 <cfif not taskFailed>
-	<cfset application.fapi.logEvent("cron", "information", "scheduled task finished", {objectid=stObj.objectid, title=stObj.title, durationMs=getTickCount()-taskStartTick}) />
+	<cfif structKeyExists(request, "cronOutcome")>
+		<!--- task declared its own outcome: success->information, partial->warning, failed->error; identity fields protected from the task's stats --->
+		<cfset stCronFields = {objectid=stObj.objectid, title=stObj.title, template=stObj.template, durationMs=getTickCount()-taskStartTick, status=request.cronOutcome.status} />
+		<cfset structAppend(stCronFields, request.cronOutcome.fields, false) />
+		<cfset application.fapi.logEvent("cron", request.cronOutcome.level, "scheduled task finished", stCronFields) />
+	<cfelse>
+		<!--- task said nothing: honest neutral 'completed without an uncaught error', not a success claim --->
+		<cfset application.fapi.logEvent("cron", "information", "scheduled task finished", {objectid=stObj.objectid, title=stObj.title, template=stObj.template, durationMs=getTickCount()-taskStartTick}) />
+	</cfif>
 </cfif>
 
 <cfset stObj.datetimeLastFinished = now() />

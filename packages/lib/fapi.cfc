@@ -1720,6 +1720,20 @@
 		</cfif>
 	</cffunction>
 
+	<cffunction name="cronOutcome" access="public" returntype="void" output="false" hint="Optional: a scheduled task declares its business outcome so the cron harness logs success/partial/failure instead of a neutral 'finished'. Call when the task knows its result; last call wins.">
+		<cfargument name="status" type="string" required="true" hint="canonical: success (->information), partial (->warning), failed (->error). Any other value is accepted and logged at information level - use only for benign informational outcomes like skipped/noop; do NOT invent your own failure word, a value that is not exactly 'failed'/'partial' silently drops to information and would miss a level-based alarm." />
+		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" hint="task-specific stats, e.g. {processed=100, failed=3}" />
+		<cfset var s = lcase(trim(arguments.status)) />
+		<!--- unknown status defaults to information; this never throws, so a bad status can't turn a successful run into a failed one --->
+		<cfset var level = "information" />
+		<cfif s eq "partial">
+			<cfset level = "warning" />
+		<cfelseif s eq "failed">
+			<cfset level = "error" />
+		</cfif>
+		<cfset request.cronOutcome = { status=s, level=level, fields=arguments.stFields } />
+	</cffunction>
+
 	<cffunction name="logger" access="public" returntype="any" output="false" hint="Returns the framework diagnostic logger (lib/logger), e.g. application.fapi.logger().info(category, message, fields).">
 		<cfreturn application.fc.lib.logger />
 	</cffunction>
