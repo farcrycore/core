@@ -611,7 +611,22 @@
 		<cfif not (structKeyExists(application, "fapi") and application.fapi.getConfig("logger", "bLogRequests", false))>
 			<cfreturn />
 		</cfif>
-		<cfset var stReqLog = { method = cgi.request_method, path = ((structKeyExists(url, "furl") and len(url.furl)) ? url.furl : cgi.script_name), durationMs = (getTickCount() - ((structKeyExists(request, "fc") and structKeyExists(request.fc, "startTickCount")) ? request.fc.startTickCount : getTickCount())) } />
+		<!--- realm-evident, path-like identifier: any request under a /webtop/ path leads with /webtop/ (nav id when present, else the script path from /webtop/ on); site requests show the friendly slug or the script name --->
+		<cfset var wtPos = findNoCase("/webtop/", cgi.script_name) />
+		<cfset var reqPath = "" />
+		<cfset var stReqLog = "" />
+		<cfif wtPos gt 0>
+			<cfif structKeyExists(url, "id") and len(url.id)>
+				<cfset reqPath = "/webtop/" & url.id />
+			<cfelse>
+				<cfset reqPath = mid(cgi.script_name, wtPos, len(cgi.script_name)) />
+			</cfif>
+		<cfelseif structKeyExists(url, "furl") and len(url.furl)>
+			<cfset reqPath = ((left(url.furl, 1) eq "/") ? url.furl : ("/" & url.furl)) />
+		<cfelse>
+			<cfset reqPath = cgi.script_name />
+		</cfif>
+		<cfset stReqLog = { method = cgi.request_method, path = reqPath, durationMs = (getTickCount() - ((structKeyExists(request, "fc") and structKeyExists(request.fc, "startTickCount")) ? request.fc.startTickCount : getTickCount())) } />
 		<cftry>
 			<cfif structKeyExists(server, "lucee")>
 				<cfset stReqLog.status = getPageContext().getResponse().getStatus() />
@@ -619,6 +634,15 @@
 			</cfif>
 			<cfcatch type="any"><cfset structDelete(stReqLog, "status") /></cfcatch>
 		</cftry>
+		<!--- resolved farcry routing coordinates, when present - named safe params only, no raw query string (so no executionKey/token/PII exposure) --->
+		<cfif structKeyExists(url, "typename") and len(url.typename)>
+			<cfset stReqLog.typename = url.typename />
+		<cfelseif structKeyExists(url, "type") and len(url.type)>
+			<cfset stReqLog.typename = url.type />
+		</cfif>
+		<cfif structKeyExists(url, "objectid") and len(url.objectid)><cfset stReqLog.objectid = url.objectid /></cfif>
+		<cfif structKeyExists(url, "view") and len(url.view)><cfset stReqLog.view = url.view /></cfif>
+		<cfif structKeyExists(url, "bodyView") and len(url.bodyView)><cfset stReqLog.bodyview = url.bodyView /></cfif>
 		<cfset application.fapi.logEvent("request", "information", "request", stReqLog) />
 	</cffunction>
 
