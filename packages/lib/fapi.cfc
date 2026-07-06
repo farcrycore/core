@@ -1714,10 +1714,37 @@
 		<cfargument name="level" type="string" required="true" hint="debug|information|warning|error" />
 		<cfargument name="message" type="string" required="true" />
 		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" hint="structured context" />
-		<!--- single availability guard so callers never need their own - a no-op until the logger lib is wired during bootstrap --->
+		<!--- single availability guard so callers never need their own --->
 		<cfif structKeyExists(application, "fc") and structKeyExists(application.fc, "lib") and structKeyExists(application.fc.lib, "logger")>
 			<cfset application.fc.lib.logger.logEvent(argumentCollection=arguments) />
+		<cfelse>
+			<!--- logger lib not wired (bootstrap window, or a lib errored during wiring) - never go silent, emit a minimal line straight to the console --->
+			<cfset logEventFallback(argumentCollection=arguments) />
 		</cfif>
+	</cffunction>
+
+	<cffunction name="logEventFallback" access="private" returntype="void" output="false" hint="Minimal always-available console emit for when lib/logger is unavailable. Writes straight to java System.out/System.err (no config, no lib dependency) so a broken startup still surfaces; last-ditch cflog if the console handle is unavailable.">
+		<cfargument name="category" type="string" required="true" />
+		<cfargument name="level" type="string" required="true" />
+		<cfargument name="message" type="string" required="true" />
+		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" />
+		<cfset var line = "[FC] " & lcase(arguments.level) & " " & arguments.category & ": " & arguments.message />
+		<cfset var bError = (lcase(arguments.level) eq "error") />
+		<cftry>
+			<!--- strip inline s3/ftp credentials on the fallback path too --->
+			<cfset line = reReplaceNoCase(line, "(s3|ftp)://[^:@/\s]+:[^@/\s]+@", "\1://STRIPPED:STRIPPED@", "all") />
+			<cfif structKeyExists(server, "lucee")>
+				<!--- lucee: systemOutput reaches the real console stream even before the lib is wired --->
+				<cfset systemOutput(line, true, bError) />
+			<cfelseif bError>
+				<cfset createObject("java", "java.lang.System").err.println(line) />
+			<cfelse>
+				<cfset createObject("java", "java.lang.System").out.println(line) />
+			</cfif>
+			<cfcatch type="any">
+				<cftry><cflog file="#arguments.category#" application="true" type="warning" text="#arguments.message#" /><cfcatch type="any"></cfcatch></cftry>
+			</cfcatch>
+		</cftry>
 	</cffunction>
 
 	<cffunction name="cronOutcome" access="public" returntype="void" output="false" hint="Optional: a scheduled task declares its business outcome so the cron harness logs success/partial/failure instead of a neutral 'finished'. Call when the task knows its result; last call wins.">

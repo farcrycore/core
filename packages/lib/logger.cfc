@@ -22,8 +22,17 @@
 		<cfset variables.levelRanks = { "debug"=10, "information"=20, "warning"=30, "error"=40 } />
 		<cfset variables.reservedKeys = "ts,level,category,msg,app" />
 		<cfset variables.maxFieldLen = 8192 />
-		<!--- systemOutput is a lucee bif, absent on acf where we fall back to cflog --->
+		<!--- console writer per engine: lucee has systemOutput (writes the real console stream, bypassing any wrapped System.out); acf has no systemOutput, so use java System.out/System.err there --->
 		<cfset variables.hasSystemOutput = structKeyExists(server, "lucee") />
+		<cfset variables.javaSystem = "" />
+		<cfset variables.hasJavaConsole = false />
+		<cfif not variables.hasSystemOutput>
+			<cftry>
+				<cfset variables.javaSystem = createObject("java", "java.lang.System") />
+				<cfset variables.hasJavaConsole = true />
+				<cfcatch type="any"></cfcatch>
+			</cftry>
+		</cfif>
 		<cfreturn this />
 	</cffunction>
 
@@ -56,7 +65,7 @@
 
 			// logging must never break a request
 			try {
-				if (sink eq "stdout" and variables.hasSystemOutput) {
+				if (sink eq "stdout") {
 					writeStream(event, rendered);
 				} else {
 					writeCflog(event, rendered);
@@ -109,7 +118,7 @@
 			if (lcase(resolveSetting("logFormat", "text")) eq "json") {
 				return;
 			}
-			if (not variables.hasSystemOutput) {
+			if (not variables.hasSystemOutput and not variables.hasJavaConsole) {
 				return;
 			}
 
@@ -134,8 +143,12 @@
 			oneliner &= sep & "starting up...";
 
 			try {
-				// systemOutput(obj, addNewLine, doErrorStream): banner to stdout with a trailing newline
-				systemOutput(nl & art & nl & oneliner, true, false);
+				// banner to the console with a trailing newline; lucee via systemOutput, acf via java System.out
+				if (variables.hasSystemOutput) {
+					systemOutput(nl & art & nl & oneliner, true, false);
+				} else {
+					variables.javaSystem.out.println(nl & art & nl & oneliner);
+				}
 			} catch (any e) {}
 		</cfscript>
 	</cffunction>
@@ -295,11 +308,27 @@
 		<cflog file="#arguments.event.category#" application="true" type="#cflogType#" text="#arguments.line#" />
 	</cffunction>
 
-	<cffunction name="writeStream" access="private" returntype="void" output="false" hint="stdout/stderr sink (Lucee): one line per event; errors to stderr.">
+	<cffunction name="writeStream" access="private" returntype="void" output="false" hint="stdout/stderr sink: lucee via systemOutput (writes the real console stream, errors to stderr); acf has no systemOutput, so java System.out/System.err. Falls back to a cflog file if neither is available.">
 		<cfargument name="event" type="struct" required="true" />
 		<cfargument name="line" type="string" required="true" />
-		<!--- systemOutput(obj, addNewLine, doErrorStream): newline per event, errors to stderr --->
-		<cfset systemOutput(arguments.line, true, (arguments.event.level eq "error")) />
+		<cftry>
+			<cfif variables.hasSystemOutput>
+				<!--- lucee: systemOutput(obj, addNewLine, doErrorStream) - newline per event, errors to stderr --->
+				<cfset systemOutput(arguments.line, true, (arguments.event.level eq "error")) />
+			<cfelseif variables.hasJavaConsole>
+				<!--- acf: no systemOutput; java System.out/System.err keeps the stdout/stderr split --->
+				<cfif arguments.event.level eq "error">
+					<cfset variables.javaSystem.err.println(arguments.line) />
+				<cfelse>
+					<cfset variables.javaSystem.out.println(arguments.line) />
+				</cfif>
+			<cfelse>
+				<cfset writeCflog(arguments.event, arguments.line) />
+			</cfif>
+			<cfcatch type="any">
+				<cfset writeCflog(arguments.event, arguments.line) />
+			</cfcatch>
+		</cftry>
 	</cffunction>
 
 	<cffunction name="effectiveLevel" access="private" returntype="string" output="false" hint="The current global minimum level.">
