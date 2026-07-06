@@ -393,7 +393,7 @@
 						<cfset newObjectID = candidateID />
 					<cfelse>
 						<!--- a saved record must never be re-bound to a "create new" form; mint a fresh id below --->
-						<cfset systemOutput("getNewContentObject: keyed temp object #candidateID# (#arguments.typename#/#arguments.key#) already persisted; minting new id", true) />
+						<cfset application.fapi.logEvent("coapi", "warning", "getNewContentObject: keyed temp object already persisted, minting new id", {objectid=candidateID, typename=arguments.typename, key=arguments.key}) />
 					</cfif>
 				</cfif>
 			</cfif>
