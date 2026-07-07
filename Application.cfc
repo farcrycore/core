@@ -502,10 +502,10 @@
 		<cfset querysetcell(application.fcstats.updateapp,"when",now()) />
 		<cfset querysetcell(application.fcstats.updateapp,"howlong",getTickCount()-tickBegin) />
 
-		<!--- framework diagnostic: boot complete, cold start vs reinit from the uptime history row count --->
-		<cfset var bReinit = (application.fcstats.updateapp.recordcount gt 1) />
+		<!--- framework diagnostic: boot complete, cold start vs updateapp reload from the uptime history row count --->
+		<cfset var bUpdateApp = (application.fcstats.updateapp.recordcount gt 1) />
 		<cfset var bootMs = (getTickCount() - tickBegin) />
-		<cfset application.fapi.logEvent(category="app", level="information", message="FarCry Core " & (bReinit ? "reinited" : "ready") & " in " & bootMs & " ms", stFields={ durationMs=bootMs, reinit=bReinit, source=(bReinit ? "reinit" : "cold"), coreVersion=((structKeyExists(application,"sysInfo") and structKeyExists(application.sysInfo,"version")) ? application.sysInfo.version.string : ""), engine=((structKeyExists(application,"sysInfo") and structKeyExists(application.sysInfo,"engine")) ? application.sysInfo.engine.string : "") }) />
+		<cfset application.fapi.logEvent(category="app", level="information", message="FarCry Core " & (bUpdateApp ? "reloaded" : "ready") & " in " & bootMs & " ms", stFields={ durationMs=bootMs, updateapp=bUpdateApp, coreVersion=((structKeyExists(application,"sysInfo") and structKeyExists(application.sysInfo,"version")) ? application.sysInfo.version.string : ""), engine=((structKeyExists(application,"sysInfo") and structKeyExists(application.sysInfo,"engine")) ? application.sysInfo.engine.string : ""), logLevel=application.fapi.getConfig("logger", "logLevel", "information"), logSink=application.fapi.getConfig("logger", "logSink", "file"), logFormat=application.fapi.getConfig("logger", "logFormat", "text"), bLogRequests=application.fapi.getConfig("logger", "bLogRequests", false) }) />
 		
 		<cfset application.bInit = true />
 		<cfreturn true />
@@ -611,20 +611,20 @@
 		<cfif not (structKeyExists(application, "fapi") and application.fapi.getConfig("logger", "bLogRequests", false))>
 			<cfreturn />
 		</cfif>
-		<!--- realm-evident, path-like identifier: any request under a /webtop/ path leads with /webtop/ (nav id when present, else the script path from /webtop/ on); site requests show the friendly slug or the script name --->
+		<!--- realm-evident path: webtop requests read "/webtop <nav id>" (a space - the dotted id is an id param, not a url path) or the real /webtop/... script path (conjuror/ftajax); site requests read the friendly slug, or "/" for the root front controller (index.cfm is never a friendly url) --->
 		<cfset var wtPos = findNoCase("/webtop/", cgi.script_name) />
 		<cfset var reqPath = "" />
 		<cfset var stReqLog = "" />
 		<cfif wtPos gt 0>
 			<cfif structKeyExists(url, "id") and len(url.id)>
-				<cfset reqPath = "/webtop/" & url.id />
+				<cfset reqPath = "/webtop " & url.id />
 			<cfelse>
 				<cfset reqPath = mid(cgi.script_name, wtPos, len(cgi.script_name)) />
 			</cfif>
 		<cfelseif structKeyExists(url, "furl") and len(url.furl)>
 			<cfset reqPath = ((left(url.furl, 1) eq "/") ? url.furl : ("/" & url.furl)) />
 		<cfelse>
-			<cfset reqPath = cgi.script_name />
+			<cfset reqPath = reReplaceNoCase(cgi.script_name, "/index\.cfm$", "/", "one") />
 		</cfif>
 		<cfset stReqLog = { method = cgi.request_method, path = reqPath, durationMs = (getTickCount() - ((structKeyExists(request, "fc") and structKeyExists(request.fc, "startTickCount")) ? request.fc.startTickCount : getTickCount())) } />
 		<cftry>

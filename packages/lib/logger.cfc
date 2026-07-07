@@ -102,7 +102,7 @@
 		<cfset logEvent(arguments.category, "error", arguments.message, arguments.stFields) />
 	</cffunction>
 
-	<cffunction name="banner" access="public" returntype="void" output="false" hint="Prints the FarCry Core startup splash to stdout. Human-only: text mode (and Lucee) only; suppressed under json (the 'app' started event carries the version instead).">
+	<cffunction name="banner" access="public" returntype="void" output="false" hint="Prints the FarCry Core startup splash + a logging-config line to stdout. Human-only: text mode only (both Lucee and ACF); suppressed under json (the 'app' ready event carries the version + config instead).">
 		<cfscript>
 			var coreVer = "";
 			var engineStr = "";
@@ -113,6 +113,7 @@
 			var sep = "  -  ";
 			var art = "";
 			var oneliner = "";
+			var logCfg = "";
 
 			// human courtesy only - json and container logging get the started event instead
 			if (lcase(resolveSetting("logFormat", "text")) eq "json") {
@@ -142,12 +143,15 @@
 			if (len(host)) { oneliner &= " @ " & host; }
 			oneliner &= sep & "starting up...";
 
+			// second line: the effective logging config at boot, so level/sink/format/requests are visible up front rather than inferred from the stream
+			logCfg = " logging: level=" & lcase(resolveSetting("logLevel", "information")) & "  sink=" & lcase(resolveSetting("logSink", "file")) & "  format=" & lcase(resolveSetting("logFormat", "text")) & "  requests=" & ((isBoolean(resolveSetting("bLogRequests", "false")) and resolveSetting("bLogRequests", "false")) ? "on" : "off");
+
 			try {
 				// banner to the console with a trailing newline; lucee via systemOutput, acf via java System.out
 				if (variables.hasSystemOutput) {
-					systemOutput(nl & art & nl & oneliner, true, false);
+					systemOutput(nl & art & nl & oneliner & nl & logCfg, true, false);
 				} else {
-					variables.javaSystem.out.println(nl & art & nl & oneliner);
+					variables.javaSystem.out.println(nl & art & nl & oneliner & nl & logCfg);
 				}
 			} catch (any e) {}
 		</cfscript>
