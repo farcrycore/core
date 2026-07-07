@@ -498,7 +498,7 @@
 			<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 				<cfset webskinPath = "/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm" />
 			<cfelse>
-				<cfset application.fapi.logEvent("coapi", "warning", "unable to locate webskin", {template=arguments.template, typename=arguments.typename}) />
+				<cfset application.fapi.logEvent("coapi", "debug", "unable to locate webskin", {template=arguments.template, typename=arguments.typename}) />
 			</cfif>
 		</cfif>
 		
