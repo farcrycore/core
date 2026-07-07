@@ -8,7 +8,7 @@
 	<cfproperty name="logSink" type="string" default="file"
 		ftSeq="2" ftFieldset="Diagnostic Logging" ftLabel="Output sink"
 		ftType="list" ftList="file:Log file (one per category),stdout:Standard out / err (containers)" ftDefault="file"
-		ftHint="'file' writes a cflog file named by category. 'stdout' emits to the console / stderr so docker logs and CloudWatch can see it (Lucee only; falls back to file elsewhere)." />
+		ftHint="'file' writes a cflog file named by category. 'stdout' emits to the console / stderr so docker logs and CloudWatch can see it (works on both Lucee and ACF; falls back to a file only if the console handle is unavailable)." />
 
 	<cfproperty name="logFormat" type="string" default="text"
 		ftSeq="3" ftFieldset="Diagnostic Logging" ftLabel="Output format"
@@ -18,7 +18,7 @@
 	<cfproperty name="bLogRequests" type="boolean" default="false"
 		ftSeq="4" ftFieldset="Diagnostic Logging" ftLabel="Log each request"
 		ftType="boolean"
-		ftHint="When on, emits one diagnostic line per request (method, path, status, duration). Off by default; intended for local development." />
+		ftHint="When on, emits one diagnostic line per request (method, path, status, duration). Off by default (the highest-volume seam) - useful in local dev and as a lightweight container access log." />
 
 	<cfproperty name="bLogColor" type="boolean" default="false"
 		ftSeq="5" ftFieldset="Diagnostic Logging" ftLabel="Colour-code the console"
