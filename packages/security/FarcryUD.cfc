@@ -181,10 +181,12 @@
 				<cfset stResult.authenticated = false />
 				<cfset stResult.message = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.fapi.getConfig("general","loginAttemptsTimeOut")# minutes." />
 				<cfset application.fapi.getContentType("farUser").addLoginFailure(objectid=stUserAccountStatus.objectid,reason="Locked account due to failed logins") />
+					<cfset stResult.reason = "accountLocked" />
 			<cfelseif stUserAccountStatus.userstatus neq "active">
 				<!--- User's account is disabled --->
 				<cfset stResult.authenticated = false />
 				<cfset stResult.message = "Your account is disabled" />
+					<cfset stResult.reason = "accountDisabled" />
 			<cfelseif qUser.recordcount and qUser.userstatus eq "active">
 				<!--- User successfully logged in --->
 				<cfset stResult.authenticated = true />
@@ -197,6 +199,7 @@
 				<cfset stResult.authenticated = false />
 				<cfset stResult.message = "The username or password was incorrect">
 				<cfset application.fapi.getContentType("farUser").addLoginFailure(userid=stResult.userid,reason="Incorrect password") />
+					<cfset stResult.reason = "badCredentials" />
 			</cfif>
 		
 		</cfif>

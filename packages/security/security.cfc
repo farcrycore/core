@@ -390,6 +390,8 @@
 				
 				<cfif not stResult.authenticated>
 					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#stResult.UD#" notes="#stResult.message#" />
+					<!--- mirror to the diagnostic stream for ops visibility + alarms --->
+					<cfset application.fapi.logEvent(category="security", level="warning", message="login failed", stFields={ event="loginfailed", userid="#stResult.userid#_#stResult.UD#", ip=cgi.REMOTE_ADDR, reason=(structKeyExists(stResult, "reason") ? stResult.reason : "unknown") }) />
 					<cfbreak />
 				</cfif>
 				
@@ -483,6 +485,13 @@
 
 		<cfset sessionRotate()>
 
+		<!--- security breadcrumb to the diagnostic stream (visibility + alarms), independent of the isAuditTurnedOn db gate --->
+		<cfif structKeyExists(session, "impersonator")>
+			<cfset application.fapi.logEvent(category="security", level="information", message="impersonation", stFields={ event="impersonatedby", userid=session.security.userid, impersonator=session.impersonator, ip=cgi.REMOTE_ADDR }) />
+		<cfelse>
+			<cfset application.fapi.logEvent(category="security", level="information", message="login", stFields={ event="login", userid=session.security.userid, first=session.security.firstlogin, ip=cgi.REMOTE_ADDR }) />
+		</cfif>
+
 
 		<cfif application.fapi.getConfig('general','isAuditTurnedOn',1)>
 
@@ -529,6 +538,11 @@
 		<cfset stSessionLog.ipAddress = '#cgi.REMOTE_ADDR#' />
 		<cfset application.fapi.setData(stProperties="#stSessionLog#") />
 
+
+		<!--- security breadcrumb before session teardown --->
+		<cfif structKeyExists(session, "security") and structKeyExists(session.security, "userid")>
+			<cfset application.fapi.logEvent(category="security", level="information", message="logout", stFields={ event="logout", userid=session.security.userid, ip=cgi.REMOTE_ADDR }) />
+		</cfif>
 
 		<!--- REMOVE SESSION STRUCTURES --->
 		<cfset structdelete(session,"security") />
