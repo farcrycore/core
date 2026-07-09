@@ -312,7 +312,8 @@
 	</cffunction>
 
 	<cffunction name="resetLoginFailures" access="public" output="false" returntype="void" hint="Resets the login failures recorded">
-		<cfargument name="objectID" type="uuid" required="true" />
+		<cfargument name="objectID" type="uuid" required="false" />
+		<cfargument name="userID" type="string" required="false" />
 
 		<cfset var stObject = "" />
 
@@ -323,7 +324,7 @@
 		</cfif>
 
 		<cfif not structisempty(stObject)>
-			<cfset stObject.loginFailures = "[]" />
+			<cfset stObject.failedLogins = "[]" />
 
 			<cfset setData(stProperties=stObject) />
 		</cfif>
