@@ -65,7 +65,7 @@
 	<cfproperty name="mfaIssuer" type="string" default=""
 		ftSeq="42" ftFieldset="Multi-factor Authentication" ftLabel="Issuer label"
 		ftType="string"
-		ftHint="The site name shown in authenticator apps. Defaults to the application name.">
+		ftHint="The label shown in users' authenticator apps. Leave blank to use the site title, qualified with the environment label outside production (e.g. 'buy NSW Development').">
 
 	<cfproperty name="mfaChallengeTimeout" type="integer" ftType="integer" default="10"
 		ftSeq="43" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"

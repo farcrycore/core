@@ -683,11 +683,29 @@
 		<cfreturn application.fapi.getConfig("security", "mfaMode", "off") />
 	</cffunction>
 
-	<cffunction name="getIssuer" access="private" output="false" returntype="string" hint="The otpauth issuer label">
+	<cffunction name="getIssuer" access="private" output="false" returntype="string" hint="The otpauth issuer shown in the authenticator app: the site title, qualified with the environment label outside production so entries from different environments stay distinguishable">
 		<cfset var issuer = application.fapi.getConfig("security", "mfaIssuer", "") />
+		<cfset var oEnv = "" />
+		<cfset var env = "" />
 
+		<!--- explicit override wins --->
+		<cfif len(issuer)>
+			<cfreturn issuer />
+		</cfif>
+
+		<!--- default: the site title (not the project folder name), e.g. "buy NSW" --->
+		<cfset issuer = application.fapi.getConfig("general", "sitetitle", "") />
 		<cfif not len(issuer)>
 			<cfset issuer = application.applicationname />
+		</cfif>
+
+		<!--- append the environment label for non-production envs: "buy NSW Development", "buy NSW UAT" --->
+		<cfif structKeyExists(application, "stCOAPI") and structKeyExists(application.stCOAPI, "configEnvironment")>
+			<cfset oEnv = application.fapi.getContentType("configEnvironment") />
+			<cfset env = oEnv.getEnvironment() />
+			<cfif not listFindNoCase("production,unknown", env) and len(oEnv.getLabel(env))>
+				<cfset issuer = issuer & " " & oEnv.getLabel(env) />
+			</cfif>
 		</cfif>
 
 		<cfreturn issuer />
