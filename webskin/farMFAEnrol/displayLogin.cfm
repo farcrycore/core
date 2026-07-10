@@ -27,7 +27,7 @@
 
 	<skin:view typename="farMFAFactor" template="displayRecoveryCodes" />
 
-	<ft:form bAddFormCSS="false" class="clearfix">
+	<ft:form bAddFormCSS="false" class="clearfix" action="#application.fapi.fixURL(removeValues='mfacancel')#">
 		<cfoutput>
 			<div class="pull-right">
 				<ft:button rendertype="button" class="btn btn-primary btn-large" rbkey="security.mfa.buttons.recoveryack" value="mfaRecoveryAck" text="I have saved these codes - continue" />
@@ -52,7 +52,7 @@
 
 	<cfelse>
 
-		<ft:form bAddFormCSS="false" class="clearfix">
+		<ft:form bAddFormCSS="false" class="clearfix" action="#application.fapi.fixURL(removeValues='mfacancel')#">
 
 			<cfif isdefined("stParam.message") and len(stParam.message)>
 				<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(stParam.message,'[^\w]','','ALL')#">#encodeForHTML(stParam.message)#</admin:resource></div></cfoutput>
