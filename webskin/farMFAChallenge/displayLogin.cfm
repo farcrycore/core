@@ -15,8 +15,7 @@
 	</cfif>
 
 	<cfoutput>
-		<h2><admin:resource key="security.mfa.challenge.title">Multi-factor verification</admin:resource></h2>
-		<p><admin:resource key="security.mfa.challenge.help">Enter the 6 digit code from your authenticator app, or one of your recovery codes.</admin:resource></p>
+		<p><strong><admin:resource key="security.mfa.challenge.title">Multi-factor verification</admin:resource></strong> <admin:resource key="security.mfa.challenge.help">Enter the 6 digit code from your authenticator app, or one of your recovery codes.</admin:resource></p>
 	</cfoutput>
 
 	<ft:object typename="farMFAChallenge" lFields="code" prefix="mfa" legend="" focusField="code" r_stFields="stFields" />

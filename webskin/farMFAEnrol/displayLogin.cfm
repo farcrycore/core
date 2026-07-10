@@ -21,7 +21,7 @@
 	<cfset request.fc.aMFARecoveryCodes = stParam.aRecoveryCodes />
 
 	<cfoutput>
-		<h2><admin:resource key="security.mfa.enrol.recoverytitle">Save your recovery codes</admin:resource></h2>
+		<p><strong><admin:resource key="security.mfa.enrol.recoverytitle">Save your recovery codes</admin:resource></strong></p>
 		<p><admin:resource key="security.mfa.enrol.recoveryhelp">Your authenticator app is now active. If you lose access to it, a recovery code is the only way back into your account.</admin:resource></p>
 	</cfoutput>
 
@@ -59,7 +59,7 @@
 			</cfif>
 
 			<cfoutput>
-				<h2><admin:resource key="security.mfa.enrol.title">Set up multi-factor authentication</admin:resource></h2>
+				<p><strong><admin:resource key="security.mfa.enrol.title">Set up multi-factor authentication</admin:resource></strong></p>
 				<p><admin:resource key="security.mfa.enrol.help">This site requires a second factor for your account. Scan the QR code with an authenticator app (such as Google Authenticator, 1Password or Authy), then enter the 6 digit code it shows to finish.</admin:resource></p>
 			</cfoutput>
 
