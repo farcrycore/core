@@ -1,9 +1,9 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Reset multi-factor --->
-<!--- @@description: Webtop admin control to reset (remove) a user's second factor. Admins can reset factors, never view secrets. Permission-gated on SecurityManagement (see docs/0014). --->
+<!--- @@description: Modal confirmation (opened via objectAdminAction from the Multi-factor Enrolment list) to reset a user's second factor. Shows the user and their enrolled factors so an admin can verify before resetting. Permission-gated on SecurityManagement (see docs/0014). --->
 
-<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfif not application.security.checkPermission(permission="SecurityManagement")>
@@ -11,59 +11,86 @@
 	<cfexit method="exittemplate">
 </cfif>
 
-<cfparam name="url.objectid" default="" />
-
-<cfif not len(url.objectid)>
-	<skin:view typename="farCOAPI" webskin="webtopBodyNotFound" />
-	<cfexit method="exittemplate">
-</cfif>
-
 <cfset oUD = application.security.userdirectories["CLIENTUD"] />
+<cfset oFactor = application.fapi.getContentType("farMFAFactor") />
 
 <!-----------------------------
 ACTION
 ------------------------------>
-<ft:processform action="Reset multi-factor">
-	<cfset count = oUD.resetMFA(userKey=url.objectid, by="admin") />
-	<cfif count gt 0>
-		<skin:bubble title="Multi-factor authentication has been reset for this user" tags="security,info" />
-	<cfelse>
-		<skin:bubble title="This user had no second factor enrolled" tags="security,info" />
-	</cfif>
+<ft:processform action="Reset multi-factor" exit="true">
+	<cfset oUD.resetMFA(userKey=stObj.objectid, by="admin") />
+	<skin:bubble title="Multi-factor authentication reset" message="Reset for #stObj.userid#" tags="security,info" />
 </ft:processform>
 
-<cfset stUser = application.fapi.getContentType("farUser").getData(objectid=url.objectid) />
-
-<cfif structIsEmpty(stUser) or not structKeyExists(stUser, "userid") or not len(stUser.userid)>
-	<skin:view typename="farCOAPI" webskin="webtopBodyNotFound" />
-	<cfexit method="exittemplate">
-</cfif>
-
-<cfset stStatus = oUD.getMFAStatus(userid=stUser.userid) />
+<ft:processform action="Cancel" exit="true" />
 
 <!-----------------------------
 VIEW
 ------------------------------>
-<admin:header>
+<cfset qFactors = oFactor.getFactors(userKey=stObj.objectid, userDirectory="CLIENTUD", status="active") />
+<cfset recoveryRemaining = oFactor.getRecoveryCodesRemaining(userKey=stObj.objectid, userDirectory="CLIENTUD") />
 
-<cfoutput><h1><i class="fa fa-lock"></i> <admin:resource key="security.mfa.admin.title">Multi-factor authentication</admin:resource></h1></cfoutput>
+<admin:header />
 
-<cfif not stStatus.bEnabled>
-	<cfoutput><div class="alert alert-info"><admin:resource key="security.mfa.manage.disabled">Multi-factor authentication is not enabled on this site.</admin:resource></div></cfoutput>
-<cfelseif stStatus.bEnrolled>
+<cfoutput>
+	<h1><i class="fa fa-lock"></i> <admin:resource key="security.mfa.admin.title">Multi-factor authentication</admin:resource></h1>
+</cfoutput>
+
+<cfif qFactors.recordcount>
+
 	<cfoutput>
-		<div class="alert alert-success"><admin:resource key="security.mfa.admin.enrolled">This user has an active second factor.</admin:resource></div>
-		<p><admin:resource key="security.mfa.admin.resethelp">Resetting removes the user's authenticator and recovery codes. They will be asked to enrol again at next login if your policy requires it. Verify the person's identity out of band before resetting.</admin:resource></p>
+		<p><admin:resource key="security.mfa.admin.resetintro">You are about to reset multi-factor authentication for this user. Verify their identity out of band before continuing.</admin:resource></p>
+
+		<dl class="dl-horizontal">
+			<dt><admin:resource key="security.mfa.admin.col.user">User</admin:resource></dt>
+			<dd>#encodeForHTML(stObj.userid)#</dd>
+			<dt><admin:resource key="security.mfa.admin.col.directory">Directory</admin:resource></dt>
+			<dd>CLIENTUD</dd>
+		</dl>
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><admin:resource key="security.mfa.admin.col.factor">Factor</admin:resource></th>
+					<th><admin:resource key="security.mfa.admin.col.enrolled">Enrolled</admin:resource></th>
+					<th><admin:resource key="security.mfa.admin.col.lastused">Last used</admin:resource></th>
+				</tr>
+			</thead>
+			<tbody>
+				<cfloop query="qFactors">
+					<tr>
+						<td>
+							#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.admin.remaining">remaining</admin:resource>)</cfif>
+						</td>
+						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
+						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.admin.never">never</admin:resource></cfif></td>
+					</tr>
+				</cfloop>
+			</tbody>
+		</table>
+
+		<div class="alert alert-warning"><admin:resource key="security.mfa.admin.resethelp">Resetting removes the user's authenticator and recovery codes. They will be asked to enrol again at next login if your policy requires it.</admin:resource></div>
 	</cfoutput>
+
 	<ft:form>
 		<ft:buttonPanel>
-			<ft:button value="Reset multi-factor" text="Reset multi-factor" color="red" validate="false" />
+			<ft:button value="Reset multi-factor" color="red" validate="false" />
+			<ft:button value="Cancel" validate="false" />
 		</ft:buttonPanel>
 	</ft:form>
+
 <cfelse>
-	<cfoutput><div class="alert alert-info"><admin:resource key="security.mfa.admin.notenrolled">This user has no second factor enrolled.</admin:resource></div></cfoutput>
+
+	<cfoutput><div class="alert alert-info"><admin:resource key="security.mfa.admin.notenrolled">This user has no active second factor.</admin:resource></div></cfoutput>
+
+	<ft:form>
+		<ft:buttonPanel>
+			<ft:button value="Cancel" validate="false" text="Close" />
+		</ft:buttonPanel>
+	</ft:form>
+
 </cfif>
 
-<admin:footer>
+<admin:footer />
 
 <cfsetting enablecfoutputonly="false" />

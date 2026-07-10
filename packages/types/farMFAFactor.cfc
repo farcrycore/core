@@ -203,6 +203,27 @@
 		<cfreturn stResult />
 	</cffunction>
 
+	<cffunction name="getRecoveryCodesRemaining" access="public" output="false" returntype="numeric" hint="Number of unused recovery codes for a user (0 when none issued)">
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+
+		<cfset var stFactor = getActiveFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCodes") />
+		<cfset var remaining = 0 />
+		<cfset var stCode = "" />
+
+		<cfif structIsEmpty(stFactor) or not structKeyExists(stFactor.stPayload, "codes")>
+			<cfreturn 0 />
+		</cfif>
+
+		<cfloop array="#stFactor.stPayload.codes#" index="stCode">
+			<cfif not stCode.used>
+				<cfset remaining = remaining + 1 />
+			</cfif>
+		</cfloop>
+
+		<cfreturn remaining />
+	</cffunction>
+
 	<cffunction name="removeFactors" access="public" output="false" returntype="numeric" hint="Deletes factor rows for a user (all statuses); returns the number removed">
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="true" />

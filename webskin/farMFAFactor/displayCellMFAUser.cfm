@@ -22,7 +22,7 @@
 
 <cfoutput>
 	<cfif structKeyExists(stObj, "userDirectory") and stObj.userDirectory eq "CLIENTUD">
-		<a href="#application.url.webtop#/?id=dashboard&typename=farUser&objectid=#stObj.userKey#&bodyView=editMFAReset">#encodeForHTML(displayName)#</a>
+		<a href="##" class="mfa-reset-link" data-userkey="#encodeForHTMLAttribute(stObj.userKey)#">#encodeForHTML(displayName)#</a>
 	<cfelse>
 		#encodeForHTML(displayName)#
 	</cfif>

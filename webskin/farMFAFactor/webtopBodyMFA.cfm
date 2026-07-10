@@ -10,6 +10,18 @@
 	<cfexit method="exittemplate">
 </cfif>
 
+<cfparam name="url.id" default="" />
+
+<!--- clicking a user opens the reset confirmation in a modal and refreshes the list on close --->
+<skin:onReady id="mfa-reset-modal">
+	<cfoutput>
+	$j(document).on("click", ".mfa-reset-link", function(e){
+		e.preventDefault();
+		$fc.objectAdminAction("Reset multi-factor", "#application.url.webtop#/index.cfm?id=#url.id#&typename=farUser&objectid=" + encodeURIComponent($j(this).data("userkey")) + "&view=webtopPageModal&bodyView=editMFAReset");
+	});
+	</cfoutput>
+</skin:onReady>
+
 <!--- User column resolves the name and links to the per-user reset; recovery-code rows are excluded so the list reads one row per enrolled user --->
 <cfset aCustomColumns = arraynew(1) />
 <cfset aCustomColumns[1] = structnew() />
