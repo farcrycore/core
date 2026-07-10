@@ -308,7 +308,7 @@
 		</cfif>
 
 		<cfif len(lRequiredRoles)>
-			<cfset lUserRoles = getUserRoles(arguments.userid) />
+			<cfset lUserRoles = getUserRoleIDs(arguments.userid) />
 			<cfloop list="#lRequiredRoles#" index="roleID">
 				<cfif listFindNoCase(lUserRoles, roleID)>
 					<cfreturn true />
@@ -661,7 +661,7 @@
 		<cfreturn "" />
 	</cffunction>
 
-	<cffunction name="getUserRoles" access="private" output="false" returntype="string" hint="The user's role objectids, resolved from their group membership (mirrors login())">
+	<cffunction name="getUserRoleIDs" access="private" output="false" returntype="string" hint="The user's role objectids, resolved from their group membership (mirrors login())">
 		<cfargument name="userid" type="string" required="true" />
 
 		<cfset var aGroups = getUserGroups(arguments.userid) />
