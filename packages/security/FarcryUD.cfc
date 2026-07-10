@@ -693,13 +693,13 @@
 			<cfreturn issuer />
 		</cfif>
 
-		<!--- default: the site title (not the project folder name), e.g. "buy NSW" --->
+		<!--- default: the site title (not the project folder name) --->
 		<cfset issuer = application.fapi.getConfig("general", "sitetitle", "") />
 		<cfif not len(issuer)>
 			<cfset issuer = application.applicationname />
 		</cfif>
 
-		<!--- append the environment label for non-production envs: "buy NSW Development", "buy NSW UAT" --->
+		<!--- append the environment label for non-production envs, e.g. the site title followed by "Development" or "Staging" --->
 		<cfif structKeyExists(application, "stCOAPI") and structKeyExists(application.stCOAPI, "configEnvironment")>
 			<cfset oEnv = application.fapi.getContentType("configEnvironment") />
 			<cfset env = oEnv.getEnvironment() />
