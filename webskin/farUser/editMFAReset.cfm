@@ -46,7 +46,7 @@ VIEW
 ------------------------------>
 <admin:header>
 
-<cfoutput><h1><admin:resource key="security.mfa.admin.title">Multi-factor authentication</admin:resource></h1></cfoutput>
+<cfoutput><h1><i class="fa fa-lock"></i> <admin:resource key="security.mfa.admin.title">Multi-factor authentication</admin:resource></h1></cfoutput>
 
 <cfif not stStatus.bEnabled>
 	<cfoutput><div class="alert alert-info"><admin:resource key="security.mfa.manage.disabled">Multi-factor authentication is not enabled on this site.</admin:resource></div></cfoutput>

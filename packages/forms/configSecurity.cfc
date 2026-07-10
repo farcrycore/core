@@ -60,7 +60,7 @@
 	<cfproperty name="mfaMode" type="string" default="off"
 		ftSeq="40" ftFieldset="Multi-factor Authentication" ftLabel="MFA mode"
 		ftType="list" ftList="off:Off,optional:Optional (users may enrol),required:Required for all users"
-		ftHint="Applies to the built-in user directory (CLIENTUD). Off disables multi-factor authentication entirely. Optional lets users enrol an authenticator app themselves; Required forces enrolment at next login. The encryption key (above) must be set before enabling.">
+		ftHint="Governs multi-factor authentication for any user directory that supports it (the built-in username/password directory does; IdP-backed directories delegate MFA to their provider and ignore this). Off disables it entirely; Optional lets users enrol a second factor themselves; Required forces enrolment at next login. The encryption key (above) must be set before enabling.">
 
 	<cfproperty name="mfaRequiredRoles" type="string" default=""
 		ftSeq="41" ftFieldset="Multi-factor Authentication" ftLabel="Roles requiring MFA"

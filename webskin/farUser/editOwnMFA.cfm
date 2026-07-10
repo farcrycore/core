@@ -59,7 +59,7 @@ VIEW
 ------------------------------>
 <admin:header>
 
-<cfoutput><h1><admin:resource key="security.mfa.manage.title">Multi-factor authentication</admin:resource></h1></cfoutput>
+<cfoutput><h1><i class="fa fa-lock"></i> <admin:resource key="security.mfa.manage.title">Multi-factor authentication</admin:resource></h1></cfoutput>
 
 <cfif structKeyExists(request, "mfaError")>
 	<cfoutput><div class="alert alert-error">#encodeForHTML(request.mfaError)#</div></cfoutput>

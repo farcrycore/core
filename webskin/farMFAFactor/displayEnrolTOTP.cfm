@@ -9,7 +9,8 @@
 <cfif structKeyExists(request.fc.stMFAEnrol, "otpauthURI")>
 	<cfoutput>
 		<div class="mfa-enrol">
-			<div class="mfa-enrol-qr" id="mfaEnrolQR"></div>
+			<!--- QR container is a paragraph so its natural bottom margin spaces it from the key below - no CSS needed --->
+			<p class="mfa-enrol-qr" id="mfaEnrolQR"></p>
 			<!--- ordered synchronous includes: the library is defined before the init runs, independent of head/inHead timing or render context --->
 			<script type="text/javascript" src="#application.url.webtop#/thirdparty/qrcode/qrcode.min.js"></script>
 			<script type="text/javascript">
