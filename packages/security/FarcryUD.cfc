@@ -479,7 +479,7 @@
 
 		<!--- idempotent: a re-enrolment replaces the existing authenticator rather than stacking a second (dead) totp row --->
 		<cfset getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="totp") />
-		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="totp", stPayload={ secret = sealed, lastStep = stVerify.step }, label="Authenticator app") />
+		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="totp", stPayload={ secret = sealed, lastStep = stVerify.step }, label="Authenticator app", userLabel=arguments.userid) />
 		<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
 		<cfset structDelete(stContext, "enrolSecret") />
 

@@ -15,6 +15,11 @@
 		ftType="string"
 		hint="Key of the owning user directory (e.g. CLIENTUD)">
 
+	<cfproperty name="userLabel" type="string" default=""
+		ftSeq="3" ftFieldset="" ftLabel="User"
+		ftType="string" dbIndex="IDX_userLabel"
+		hint="Denormalised display name of the owning user, for admin listing/search only. The stable key is userKey; this is cosmetic and may lag a username change.">
+
 	<cfproperty name="factorType" type="string" default=""
 		ftSeq="3" ftFieldset="" ftLabel="Factor type"
 		ftType="string"
@@ -84,12 +89,14 @@
 		<cfargument name="factorType" type="string" required="true" />
 		<cfargument name="stPayload" type="struct" required="true" />
 		<cfargument name="label" type="string" required="false" default="" />
+		<cfargument name="userLabel" type="string" required="false" default="" hint="Display name of the owning user (admin listing/search only)" />
 
 		<cfset var stObj = structnew() />
 
 		<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stObj.userKey = arguments.userKey />
 		<cfset stObj.userDirectory = arguments.userDirectory />
+		<cfset stObj.userLabel = arguments.userLabel />
 		<cfset stObj.factorType = arguments.factorType />
 		<cfset stObj.status = "active" />
 		<cfset stObj.payload = serializeJSON(arguments.stPayload) />
@@ -209,19 +216,6 @@
 		</cfloop>
 
 		<cfreturn qFactors.recordcount />
-	</cffunction>
-
-	<cffunction name="getEnrolmentReport" access="public" output="false" returntype="query" hint="Returns all active factor rows (without payloads) for the webtop MFA admin view">
-		<cfset var qReport = "" />
-
-		<cfquery datasource="#application.dsn#" name="qReport">
-			SELECT objectid, userKey, userDirectory, factorType, label, status, lastUsed, datetimecreated
-			FROM #application.dbowner#farMFAFactor
-			WHERE status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
-			ORDER BY userDirectory, userKey, factorType
-		</cfquery>
-
-		<cfreturn qReport />
 	</cffunction>
 
 </cfcomponent>
