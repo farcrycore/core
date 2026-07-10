@@ -101,8 +101,46 @@
 	</cffunction>
 	
 	<cffunction name="isEnabled" access="public" output="false" returntype="boolean" hint="Returns true if this user directory is active. This function can be overridden to check for the existence of config settings.">
-		
+
 		<cfreturn true />
 	</cffunction>
-	
+
+	<!--- optional MFA contract (see docs/0014); credential-owning directories implement these, delegating (IdP-backed) ones inherit the no-op defaults --->
+
+	<cffunction name="providesMFA" access="public" output="false" returntype="boolean" hint="Returns true if this directory can perform second factor verification. Capability flag only - drives UI visibility, never the login flow.">
+
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="requiresMFA" access="public" output="false" returntype="boolean" hint="Called after this directory authenticates a user. Returns true when a second factor step (challenge or enrolment) must be interposed before login completes.">
+		<cfargument name="userid" type="string" required="true" hint="The user directory specific user id" />
+
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="getMFAForm" access="public" output="false" returntype="string" hint="Returns the form typename to render while a second factor is pending (mirrors getLoginForm).">
+		<cfargument name="userid" type="string" required="true" hint="The user directory specific user id" />
+
+		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="issueMFAChallenge" access="public" output="false" returntype="struct" hint="Called when the pending second factor state is created. Returns context to stash with it (e.g. a sent code reference). Factors with nothing to push return an empty struct.">
+		<cfargument name="userid" type="string" required="true" hint="The user directory specific user id" />
+
+		<cfreturn structnew() />
+	</cffunction>
+
+	<cffunction name="verifyMFA" access="public" output="false" returntype="struct" hint="Processes a second factor form post (the directory inspects its own form fields, as authenticate does).">
+		<cfargument name="userid" type="string" required="true" hint="The user directory specific user id" />
+
+		<!--- This function should return a struct in the form:
+				.VERIFIED = true/false
+				.REASON = machine code: noSubmission (nothing posted), badCode, replayedCode, badRecoveryCode, ...
+				.MESSAGE = user facing message, if any
+				OTHER VALUES (e.g. METHOD, BLOCKED, ARECOVERYCODES) MAY BE ADDED FOR THE LOGIN FLOW AND WEBSKINS
+		--->
+
+		<cfreturn { verified = false, reason = "noSubmission", message = "" } />
+	</cffunction>
+
 </cfcomponent>

@@ -96,6 +96,11 @@
 							baseHREF="#application.url.webtop#/thirdparty/uppy"
 							lFiles="uppy.min.js" />
 
+		<!--- QR renderer for MFA enrolment (loaded on demand by the enrolment fragment) --->
+		<skin:registerJS	id="fc-qrcode" core="false" bCombine="false"
+							baseHREF="#application.url.webtop#/thirdparty/qrcode"
+							lFiles="qrcode.min.js" />
+
 		<skin:registerJS	id="fc-uploader" core="true"
 							baseHREF="#application.url.webtop#/js/uploader"
 							lFiles="fc-uploader.js" />

@@ -1,0 +1,43 @@
+<cfsetting enablecfoutputonly="true">
+<!--- @@displayname: MFA challenge --->
+<!--- @@description: Second factor challenge rendered by the login flow while a login is pending verification (see docs/0014) --->
+
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+
+<skin:view typename="farLogin" template="displayHeaderLogin" />
+
+<ft:form bAddFormCSS="false" class="clearfix">
+
+	<cfif isdefined("stParam.message") and len(stParam.message)>
+		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(stParam.message,'[^\w]','','ALL')#">#encodeForHTML(stParam.message)#</admin:resource></div></cfoutput>
+	</cfif>
+
+	<cfoutput>
+		<h2><admin:resource key="security.mfa.challenge.title">Multi-factor verification</admin:resource></h2>
+		<p><admin:resource key="security.mfa.challenge.help">Enter the 6 digit code from your authenticator app, or one of your recovery codes.</admin:resource></p>
+	</cfoutput>
+
+	<ft:object typename="farMFAChallenge" lFields="code" prefix="mfa" legend="" focusField="code" r_stFields="stFields" />
+
+	<cfoutput>
+		<fieldset>
+			<label for="#stFields.code.formfieldname#">#stFields.code.ftLabel#</label>
+			#stFields.code.html#
+		</fieldset>
+
+		<div class="pull-right">
+			<ft:button rendertype="button" class="btn btn-primary btn-large" rbkey="security.mfa.buttons.verify" value="Verify" />
+		</div>
+
+		<p class="help-inline">
+			<a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a>
+		</p>
+	</cfoutput>
+
+</ft:form>
+
+<skin:view typename="farLogin" template="displayFooterLogin" />
+
+<cfsetting enablecfoutputonly="false">

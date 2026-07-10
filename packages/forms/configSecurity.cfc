@@ -46,9 +46,30 @@
 		ftSeq="14" ftFieldset="Password Policy" ftLabel="Must include Punctuation or Symbol characters"
 		ftHint="">
 
-	<cfproperty name="passwordPolicyHint" type="string" ftType="longchar" default="Minimum password length of 6 characters." 
+	<cfproperty name="passwordPolicyHint" type="string" ftType="longchar" default="Minimum password length of 6 characters."
 		ftSeq="30" ftFieldset="Password Policy" ftLabel="Password Policy Help Text" ftLimit="250"
 		ftHint="Provide a short description of the password policy defined above.">
+
+	<!--- Multi-factor authentication (see docs/0014) --->
+
+	<cfproperty name="mfaMode" type="string" default="off"
+		ftSeq="40" ftFieldset="Multi-factor Authentication" ftLabel="MFA mode"
+		ftType="list" ftList="off:Off,optional:Optional (users may enrol),required:Required for all users"
+		ftHint="Applies to the built-in user directory (CLIENTUD). Off disables multi-factor authentication entirely. Optional lets users enrol an authenticator app themselves; Required forces enrolment at next login. The FARCRY_MFA_ENCRYPTKEY environment variable must be set before enabling.">
+
+	<cfproperty name="mfaRequiredRoles" type="string" default=""
+		ftSeq="41" ftFieldset="Multi-factor Authentication" ftLabel="Roles requiring MFA"
+		ftType="list" ftListData="listMFARoles" ftSelectMultiple="true"
+		ftHint="Users holding any of these roles must use MFA even when the mode is Optional. Roles are directory-agnostic, so this applies to every credential-owning user directory. Ignored when the mode is Off or Required.">
+
+	<cfproperty name="mfaIssuer" type="string" default=""
+		ftSeq="42" ftFieldset="Multi-factor Authentication" ftLabel="Issuer label"
+		ftType="string"
+		ftHint="The site name shown in authenticator apps. Defaults to the application name.">
+
+	<cfproperty name="mfaChallengeTimeout" type="integer" ftType="integer" default="10"
+		ftSeq="43" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
+		ftHint="How long a pending second factor challenge remains valid before the user must log in again.">
 
 
 	<!--- Directories and storage methods --->
@@ -85,6 +106,27 @@
 		</cfloop>
 		
 		<cfreturn qPwdHash />
+	</cffunction>
+
+	<!--- Multi-factor authentication methods --->
+
+	<cffunction name="listMFARoles" access="public" returntype="query" description="Returns the roles that can be required to use MFA (directory-agnostic; stored by objectid)" output="false">
+		<cfset var qRoles = querynew("name,value") />
+		<cfset var qFarRole = "" />
+
+		<cfquery datasource="#application.dsn#" name="qFarRole">
+			SELECT objectid, title
+			FROM #application.dbowner#farRole
+			ORDER BY title
+		</cfquery>
+
+		<cfloop query="qFarRole">
+			<cfset queryaddrow(qRoles) />
+			<cfset querysetcell(qRoles, "value", qFarRole.objectid) />
+			<cfset querysetcell(qRoles, "name", qFarRole.title) />
+		</cfloop>
+
+		<cfreturn qRoles />
 	</cffunction>
 
 	<!--- Password policy methods --->

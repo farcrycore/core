@@ -7,6 +7,9 @@
 
 <cfoutput>
 	<li><a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnPassword"><admin:resource key="coapi.farUser.general.changepassword">Change password</admin:resource></a></li>
+	<cfif application.fapi.getConfig("security","mfaMode","off") neq "off">
+		<li><a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.manage.title">Multi-factor authentication</admin:resource></a></li>
+	</cfif>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false" />

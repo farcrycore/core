@@ -2,13 +2,15 @@
 			key="CLIENTUD" bEncrypted="true" standardHash="none">
 	
 	<cffunction name="init" access="public" output="true" returntype="any" hint="Does initialisation of user directory">
-		
+
 		<cfset super.init() />
-		
+
 		<cfif not structKeyExists(this,"standardHash")>
 			<cfset this.standardHash = application.security.cryptlib.getDefaultHashName() />
 		</cfif>
-		
+
+		<cfset variables.oMFACrypto = createObject("component", application.factory.oUtils.getPath("security", "mfaCrypto")).init() />
+
 		<cfreturn this />
 	</cffunction>
 
@@ -274,6 +276,435 @@
 		<cfreturn listtoarray(valuelist(qUsers.userid)) />
 	</cffunction>
 	
+	<!--- =============================
+	  MFA contract + engine (see docs/0014)
+	============================== --->
+
+	<cffunction name="providesMFA" access="public" output="false" returntype="boolean" hint="CLIENTUD can perform second factor verification">
+
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="requiresMFA" access="public" output="false" returntype="boolean" hint="True when this user must complete a second factor step before login">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var mode = getMFAMode() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var lRequiredRoles = application.fapi.getConfig("security", "mfaRequiredRoles", "") />
+		<cfset var lUserRoles = "" />
+		<cfset var roleID = "" />
+
+		<cfif mode eq "off" or not len(userKey)>
+			<cfreturn false />
+		</cfif>
+
+		<cfif mode eq "required">
+			<cfreturn true />
+		</cfif>
+
+		<!--- optional mode: challenge the already-enrolled, and anyone holding a required role --->
+		<cfif getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key)>
+			<cfreturn true />
+		</cfif>
+
+		<cfif len(lRequiredRoles)>
+			<cfset lUserRoles = getUserRoles(arguments.userid) />
+			<cfloop list="#lRequiredRoles#" index="roleID">
+				<cfif listFindNoCase(lUserRoles, roleID)>
+					<cfreturn true />
+				</cfif>
+			</cfloop>
+		</cfif>
+
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="getMFAForm" access="public" output="false" returntype="string" hint="Challenge form when enrolled, enrolment wizard when not (or while the post-enrolment recovery codes are still being shown)">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stContext = getEnrolContext() />
+
+		<!--- keep the enrolment view up while the just-issued recovery codes are displayed --->
+		<cfif structKeyExists(stContext, "bRecoveryShown") and stContext.bRecoveryShown>
+			<cfreturn "farMFAEnrol" />
+		</cfif>
+
+		<cfif getFactorType().hasActiveAuthFactor(userKey=getUserKey(arguments.userid), userDirectory=this.key)>
+			<cfreturn "farMFAChallenge" />
+		</cfif>
+
+		<cfreturn "farMFAEnrol" />
+	</cffunction>
+
+	<cffunction name="issueMFAChallenge" access="public" output="false" returntype="struct" hint="TOTP has nothing to push; returns an empty context">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfreturn structnew() />
+	</cffunction>
+
+	<cffunction name="verifyMFA" access="public" output="false" returntype="struct" hint="Processes the interstitial post: challenge code, recovery code, enrolment confirmation or the post-enrolment acknowledgment">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stResult = { verified = false, reason = "noSubmission", message = "", method = "" } />
+		<cfset var stProperties = structnew() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var stEnrol = structnew() />
+
+		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+
+		<cfif not len(userKey)>
+			<cfset stResult.reason = "userNotFound" />
+			<cfset stResult.message = "Unable to verify your login. Please log in again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<!--- display sub-step: the factor is active and we are showing the one-time recovery codes.
+		      Driven by persisted context (not transient POST data) so a refresh re-shows the codes
+		      with the ack button rather than stranding the user. Only the ack advances; a re-POST of
+		      the confirm form is ignored here (no duplicate enrolment, no burnt attempt). --->
+		<cfif structKeyExists(stContext, "bRecoveryShown") and stContext.bRecoveryShown>
+			<ft:processform action="mfaRecoveryAck">
+				<cfset structDelete(stContext, "bRecoveryShown") />
+				<cfset structDelete(stContext, "aRecoveryCodes") />
+				<cfset stResult.verified = true />
+				<cfset stResult.reason = "" />
+				<cfset stResult.method = "totp" />
+			</ft:processform>
+
+			<cfif not stResult.verified>
+				<!--- still on the display step: re-surface the codes from persisted state --->
+				<cfset stResult.reason = "recoveryCodes" />
+				<cfset stResult.bShowRecovery = true />
+				<cfset stResult.aRecoveryCodes = stContext.aRecoveryCodes />
+			</cfif>
+
+			<cfreturn stResult />
+		</cfif>
+
+		<!--- challenge: an authenticator code or a recovery code --->
+		<ft:processform>
+			<ft:processformObjects typename="farMFAChallenge" r_stProperties="stProperties">
+				<cfset stResult = verifyChallengeCode(userid=arguments.userid, userKey=userKey, code=trim(stProperties.code)) />
+				<ft:break>
+			</ft:processformObjects>
+		</ft:processform>
+
+		<!--- enrolment confirmation: prove one valid code before the factor activates --->
+		<ft:processform>
+			<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
+				<cfset stEnrol = confirmTOTPEnrolment(userid=arguments.userid, code=trim(stProperties.code)) />
+				<cfif stEnrol.bSuccess>
+					<!--- persist the codes so the display step survives a refresh; cleared on ack or login --->
+					<cfset stContext.bRecoveryShown = true />
+					<cfset stContext.aRecoveryCodes = stEnrol.aRecoveryCodes />
+					<cfset stResult.reason = "recoveryCodes" />
+					<cfset stResult.bShowRecovery = true />
+					<cfset stResult.aRecoveryCodes = stEnrol.aRecoveryCodes />
+				<cfelse>
+					<cfset stResult.reason = stEnrol.reason />
+					<cfset stResult.message = stEnrol.message />
+					<cfset stResult.method = "totp" />
+				</cfif>
+				<ft:break>
+			</ft:processformObjects>
+		</ft:processform>
+
+		<cfreturn stResult />
+	</cffunction>
+
+
+	<!--- MFA engine: called by the contract methods above and by self-service / admin webskins --->
+
+	<cffunction name="startTOTPEnrolment" access="public" output="false" returntype="struct" hint="Creates (or returns the in-progress) enrolment candidate and its provisioning URI">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stResult = { bSuccess = true, message = "" } />
+		<cfset var stContext = getEnrolContext() />
+
+		<cfif not variables.oMFACrypto.isKeyConfigured()>
+			<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="mfa enrolment attempted without FARCRY_MFA_ENCRYPTKEY", userid="#arguments.userid#_#this.key#") />
+			<cfset stResult.bSuccess = false />
+			<cfset stResult.message = "Multi-factor authentication is not fully configured on this site (missing encryption key). Please contact your administrator." />
+			<cfreturn stResult />
+		</cfif>
+
+		<!--- keep the same candidate across re-renders so a refresh does not change the QR mid-scan --->
+		<cfif not structKeyExists(stContext, "enrolSecret")>
+			<cfset stContext.enrolSecret = variables.oMFACrypto.generateTOTPSecret() />
+		</cfif>
+
+		<cfset stResult.secret = stContext.enrolSecret />
+		<cfset stResult.otpauthURI = variables.oMFACrypto.otpauthURI(issuer=getIssuer(), account=arguments.userid, secretB32=stContext.enrolSecret) />
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="confirmTOTPEnrolment" access="public" output="false" returntype="struct" hint="Verifies the confirmation code, activates the factor and issues recovery codes">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="code" type="string" required="true" />
+
+		<cfset var stResult = { bSuccess = false, reason = "", message = "", aRecoveryCodes = arraynew(1) } />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var stVerify = structnew() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var sealed = "" />
+
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
+		<cfif not len(userKey) or not structKeyExists(stContext, "enrolSecret")>
+			<cfset stResult.reason = "noCandidate" />
+			<cfset stResult.message = "Your enrolment session has expired. Please start again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfset stVerify = variables.oMFACrypto.verifyTOTP(secretB32=stContext.enrolSecret, code=arguments.code) />
+
+		<cfif not stVerify.verified>
+			<!--- an enrolment typo does not feed the shared password lockout (the code derives from a secret we just showed the user; there is no credential to brute force here). The session-level attempts cap in security.cfc still applies. --->
+			<cfset stResult.reason = "badCode" />
+			<cfset stResult.message = "That code didn't match. Check the code in your authenticator app and try again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<cftry>
+			<cfset sealed = variables.oMFACrypto.encryptSecret(stContext.enrolSecret) />
+			<cfcatch>
+				<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="mfa secret encryption failed", userid="#arguments.userid#_#this.key#") />
+				<cfset stResult.reason = "mfaUnavailable" />
+				<cfset stResult.message = "Multi-factor authentication is not fully configured on this site. Please contact your administrator." />
+				<cfreturn stResult />
+			</cfcatch>
+		</cftry>
+
+		<!--- idempotent: a re-enrolment replaces the existing authenticator rather than stacking a second (dead) totp row --->
+		<cfset getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="totp") />
+		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="totp", stPayload={ secret = sealed, lastStep = stVerify.step }, label="Authenticator app") />
+		<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
+		<cfset structDelete(stContext, "enrolSecret") />
+
+		<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=userKey) />
+
+		<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="second factor enrolled", userid="#arguments.userid#_#this.key#", stFields={ method = "totp" }) />
+		<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="totp" />
+
+		<cfset stResult.bSuccess = true />
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="regenerateRecoveryCodes" access="public" output="false" returntype="struct" hint="Replaces the user's recovery codes; returns the new set for one-time display">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stResult = { bSuccess = false, aRecoveryCodes = arraynew(1) } />
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
+		<cfif len(userKey)>
+			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
+			<cfset stResult.bSuccess = true />
+
+			<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="recovery codes regenerated", userid="#arguments.userid#_#this.key#", stFields={ method = "recoveryCodes" }) />
+			<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="recoveryCodes" />
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="resetMFA" access="public" output="false" returntype="numeric" hint="Removes all of a user's factors (admin reset or self-service disable); returns the number removed">
+		<cfargument name="userKey" type="string" required="true" hint="The farUser objectid" />
+		<cfargument name="by" type="string" required="false" default="admin" hint="self / admin" />
+
+		<cfset var count = 0 />
+		<cfset var stUser = application.fapi.getContentType("farUser").getData(objectid=arguments.userKey) />
+		<cfset var eventUserid = structKeyExists(stUser, "userid") ? "#stUser.userid#_#this.key#" : arguments.userKey />
+
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
+		<cfset count = getFactorType().removeFactors(userKey=arguments.userKey, userDirectory=this.key) />
+
+		<cfif count gt 0>
+			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="second factor disabled", userid=eventUserid, stFields={ by = arguments.by }) />
+			<farcry:logevent type="security" event="mfaDisabled" userid="#eventUserid#" notes="by #arguments.by#" />
+		</cfif>
+
+		<cfreturn count />
+	</cffunction>
+
+	<cffunction name="getMFAStatus" access="public" output="false" returntype="struct" hint="Enrolment status for self-service and admin views">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stResult = structnew() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfset stResult.mode = getMFAMode() />
+		<cfset stResult.bEnabled = stResult.mode neq "off" />
+		<cfset stResult.bKeyConfigured = variables.oMFACrypto.isKeyConfigured() />
+		<cfset stResult.userKey = userKey />
+		<cfset stResult.bEnrolled = len(userKey) and getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
+		<cfset stResult.bRequired = requiresMFA(userid=arguments.userid) />
+		<cfif len(userKey)>
+			<cfset stResult.qFactors = getFactorType().getFactors(userKey=userKey, userDirectory=this.key) />
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
+
+	<!--- MFA private helpers --->
+
+	<cffunction name="verifyChallengeCode" access="private" output="false" returntype="struct" hint="Verifies a challenge submission: 6 digit codes against TOTP, anything else against recovery codes">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="code" type="string" required="true" />
+
+		<cfset var stResult = { verified = false, reason = "badCode", message = "", method = "" } />
+		<cfset var stFactor = structnew() />
+		<cfset var stVerify = structnew() />
+		<cfset var stRedeem = structnew() />
+		<cfset var secret = "" />
+
+		<cfif not len(arguments.code)>
+			<cfset stResult.reason = "noSubmission" />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfif len(arguments.code) eq 6 and isNumeric(arguments.code)>
+			<!--- authenticator code --->
+			<cfset stResult.method = "totp" />
+			<cfset stFactor = getFactorType().getActiveFactor(userKey=arguments.userKey, userDirectory=this.key, factorType="totp") />
+
+			<cfif structIsEmpty(stFactor)>
+				<cfset stResult.message = "The code was not recognised." />
+				<cfset stResult.bLocked = recordMFAFailure(userKey=arguments.userKey) />
+				<cfreturn stResult />
+			</cfif>
+
+			<cftry>
+				<cfset secret = variables.oMFACrypto.decryptSecret(stFactor.stPayload.secret) />
+				<cfcatch>
+					<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="mfa secret decryption failed", userid="#arguments.userid#_#this.key#") />
+					<cfset stResult.reason = "mfaUnavailable" />
+					<cfset stResult.message = "Your authenticator code cannot be checked right now. Use a recovery code, or contact your administrator." />
+					<cfreturn stResult />
+				</cfcatch>
+			</cftry>
+
+			<cfset stVerify = variables.oMFACrypto.verifyTOTP(secretB32=secret, code=arguments.code, lastAcceptedStep=(structKeyExists(stFactor.stPayload, "lastStep") ? stFactor.stPayload.lastStep : 0)) />
+
+			<cfif stVerify.verified>
+				<cfset stFactor.stPayload.lastStep = stVerify.step />
+				<cfset getFactorType().updateFactorPayload(objectid=stFactor.objectid, stPayload=stFactor.stPayload) />
+				<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=arguments.userKey) />
+				<cfset stResult.verified = true />
+				<cfset stResult.reason = "" />
+			<cfelse>
+				<cfset stResult.reason = stVerify.reason />
+				<cfset stResult.message = (stVerify.reason eq "replayedCode") ? "That code has already been used. Wait for your app to show a new code." : "The code was not recognised." />
+				<cfset stResult.bLocked = recordMFAFailure(userKey=arguments.userKey) />
+			</cfif>
+		<cfelse>
+			<!--- recovery code --->
+			<cfset stResult.method = "recoveryCode" />
+			<cfset stRedeem = getFactorType().redeemRecoveryCode(userKey=arguments.userKey, userDirectory=this.key, code=arguments.code) />
+
+			<cfif stRedeem.redeemed>
+				<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=arguments.userKey) />
+				<cfset stResult.verified = true />
+				<cfset stResult.reason = "" />
+				<cfset stResult.recoveryRemaining = stRedeem.remaining />
+			<cfelse>
+				<cfset stResult.reason = "badRecoveryCode" />
+				<cfset stResult.message = "The code was not recognised." />
+				<cfset stResult.bLocked = recordMFAFailure(userKey=arguments.userKey) />
+			</cfif>
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="recordMFAFailure" access="private" output="false" returntype="boolean" hint="Feeds a failed second factor into the shared login lockout; returns true when the account is now locked">
+		<cfargument name="userKey" type="string" required="true" />
+
+		<cfset var failureCount = application.fapi.getContentType("farUser").addLoginFailure(objectid=arguments.userKey, reason="Incorrect second factor") />
+
+		<cfreturn failureCount gte int(application.fapi.getConfig("general", "loginAttemptsAllowed", 5)) />
+	</cffunction>
+
+	<cffunction name="issueRecoveryCodes" access="private" output="false" returntype="array" hint="Generates a fresh recovery code set, stores the hashes and returns the plain codes for one-time display">
+		<cfargument name="userKey" type="string" required="true" />
+
+		<cfset var aCodes = variables.oMFACrypto.generateRecoveryCodes(10) />
+		<cfset var aHashes = arraynew(1) />
+		<cfset var code = "" />
+
+		<cfloop array="#aCodes#" index="code">
+			<!--- hash the normalised form (no dash/case) so redemption matches regardless of how the user types it --->
+			<cfset arrayAppend(aHashes, application.security.cryptlib.encodePassword(password=reReplace(ucase(code), "[^A-Z0-9]", "", "all"), hashname=getOutputHashName())) />
+		</cfloop>
+
+		<cfset getFactorType().saveRecoveryCodes(userKey=arguments.userKey, userDirectory=this.key, aHashes=aHashes) />
+
+		<cfreturn aCodes />
+	</cffunction>
+
+	<cffunction name="getUserKey" access="private" output="false" returntype="string" hint="Resolves a userid to the stable user key (the farUser objectid); empty string when not found">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stUser = application.fapi.getContentType("farUser").getByUserID(userid=arguments.userid) />
+
+		<cfif structKeyExists(stUser, "objectid")>
+			<cfreturn stUser.objectid />
+		</cfif>
+
+		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="getUserRoles" access="private" output="false" returntype="string" hint="The user's role objectids, resolved from their group membership (mirrors login())">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var aGroups = getUserGroups(arguments.userid) />
+		<cfset var lGroups = "" />
+		<cfset var group = "" />
+
+		<cfloop array="#aGroups#" index="group">
+			<cfset lGroups = listAppend(lGroups, "#group#_#this.key#") />
+		</cfloop>
+
+		<cfreturn application.security.factory.role.groupsToRoles(lGroups) />
+	</cffunction>
+
+	<cffunction name="getFactorType" access="private" output="false" returntype="any" hint="Returns the farMFAFactor type component">
+		<cfreturn application.fapi.getContentType("farMFAFactor") />
+	</cffunction>
+
+	<cffunction name="getMFAMode" access="private" output="false" returntype="string" hint="The effective mfa mode: off / optional / required">
+		<cfreturn application.fapi.getConfig("security", "mfaMode", "off") />
+	</cffunction>
+
+	<cffunction name="getIssuer" access="private" output="false" returntype="string" hint="The otpauth issuer label">
+		<cfset var issuer = application.fapi.getConfig("security", "mfaIssuer", "") />
+
+		<cfif not len(issuer)>
+			<cfset issuer = application.applicationname />
+		</cfif>
+
+		<cfreturn issuer />
+	</cffunction>
+
+	<cffunction name="getEnrolContext" access="private" output="false" returntype="struct" hint="Returns the session stash for an in-progress enrolment: the pending interstitial context when one exists, otherwise a self-service stash">
+		<cfif structKeyExists(session, "fc") and structKeyExists(session.fc, "mfaPending")>
+			<cfparam name="session.fc.mfaPending.context" default="#structnew()#" />
+			<cfreturn session.fc.mfaPending.context />
+		</cfif>
+
+		<cfparam name="session.fc" default="#structnew()#" />
+		<cfparam name="session.fc.stMFAEnrol" default="#structnew()#" />
+		<cfreturn session.fc.stMFAEnrol />
+	</cffunction>
+
+
 	<!--- =============================
 	  Pre 4.1 data migration functions
 	============================== --->

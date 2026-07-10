@@ -62,6 +62,7 @@
 			<menu id="securitylogs" sequence="130" label="Audit Reporting" permission="SecurityPolicyManagementTab">
 				<menuitem id="securitylogs" sequence="10" label="Security Logs" typename="farLog" bodyview="webtopBodyLogin" />
 				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" typename="farUser" bodyview="webtopBodyActivity" />
+				<menuitem id="mfaenrolment" sequence="40" label="Two-factor Enrolment" typename="farMFAFactor" bodyview="webtopBodyMFA" />
 			</menu>
 			<menu id="securitytools" sequence="150" label="Security Tools">
 				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />

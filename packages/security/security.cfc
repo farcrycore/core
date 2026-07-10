@@ -308,6 +308,7 @@
 		
 		<!--- Setup Default return structure --->
 		<cfparam name="stResult.authenticated" default="false" /><!--- Did the user successfully login --->
+		<cfparam name="stResult.mfaPending" default="false" /><!--- True while a second factor challenge is pending --->
 		<cfparam name="stResult.message" default="" /><!--- Any message that the user directory may have returned --->
 		<cfparam name="stResult.loginReturnURL" default="#session.loginReturnURL#" /><!--- The return url after a successful login --->
 		
@@ -325,7 +326,13 @@
 		</cfif>
 		
 		<!--- DETERMINE THE FORM TYPENAME FOR THE CURRENT USER DIRECTORY SELECTED ABOVE --->
-		<cfset stResult.loginTypename = application.security.getLoginForm(stResult.ud) />
+		<cfif structKeyExists(session, "fc") and structKeyExists(session.fc, "mfaPending")>
+			<!--- mfa interstitial: render the owning directory's challenge / enrolment form instead of the login form --->
+			<cfset stResult.ud = session.fc.mfaPending.ud />
+			<cfset stResult.loginTypename = this.userdirectories[session.fc.mfaPending.ud].getMFAForm(userid=session.fc.mfaPending.userid) />
+		<cfelse>
+			<cfset stResult.loginTypename = application.security.getLoginForm(stResult.ud) />
+		</cfif>
 		<cfset stResult.loginWebskin = "displayLogin" /><!--- Default login webskin to displayLogin --->
 		
 		<cfif findNoCase(application.url.webtop, stResult.loginReturnURL)>
@@ -373,13 +380,65 @@
 		<cfset var ud = "" />
 		<cfset var stResult = structnew() />
 		<cfset var udlist = structsort(this.userdirectories,"numeric","asc","seq") />
-		
+		<cfset var stMFA = structnew() />
+
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
-		
+
 		<cfif isArray(udlist)>
 			<cfset udlist = arrayToList(udlist) />
 		</cfif>
-		
+
+		<!--- mfa interstitial: a pending second factor owns the login flow until verified, cancelled or expired (see docs/0014) --->
+		<cfif structKeyExists(session, "fc") and structKeyExists(session.fc, "mfaPending")>
+			<cfif structKeyExists(url, "mfacancel")>
+				<!--- user chose to start over with fresh credentials --->
+				<cfset structDelete(session.fc, "mfaPending") />
+			<cfelseif dateCompare(now(), session.fc.mfaPending.expires) gte 0>
+				<cfset structDelete(session.fc, "mfaPending") />
+				<cfset stResult.authenticated = false />
+				<cfset stResult.message = "Your login expired. Please log in again." />
+				<cfreturn stResult />
+			<cfelse>
+				<cfset stMFA = this.userdirectories[session.fc.mfaPending.ud].verifyMFA(userid=session.fc.mfaPending.userid) />
+				<cfparam name="stMFA.verified" default="false" />
+				<cfparam name="stMFA.reason" default="noSubmission" />
+				<cfparam name="stMFA.message" default="" />
+
+				<cfif stMFA.verified>
+					<cfset stResult.userid = session.fc.mfaPending.userid />
+					<cfset stResult.UD = session.fc.mfaPending.ud />
+					<cfset structDelete(session.fc, "mfaPending") />
+					<cfset login(userid=stResult.userid, ud=stResult.UD, bMFAVerified=true) />
+					<cfset stResult.authenticated = true />
+					<cfset stResult.message = "" />
+				<cfelse>
+					<!--- pass the factor context (reason, message, recovery codes to display) through to the webskin --->
+					<cfset stResult = duplicate(stMFA) />
+					<cfset structDelete(stResult, "verified") />
+					<cfset stResult.authenticated = false />
+					<cfset stResult.mfaPending = true />
+
+					<!--- these are not failed attempts: noSubmission (just rendering the form), recoveryCodes
+					      (post-enrolment display step), mfaUnavailable (infrastructure fault) and noCandidate
+					      (the enrolment session expired) - none should count toward lockout --->
+					<cfif not listFindNoCase("noSubmission,recoveryCodes,mfaUnavailable,noCandidate", stMFA.reason)>
+						<cfset session.fc.mfaPending.attempts = session.fc.mfaPending.attempts + 1 />
+						<cfset logSecurityEvent(event="mfaFailed", level="warning", message="second factor failed", userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#", stFields={ reason=stMFA.reason, method=(structKeyExists(stMFA, "method") ? stMFA.method : "unknown") }) />
+						<farcry:logevent type="security" event="mfaFailed" userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#" notes="#stMFA.reason#" />
+
+						<cfif (structKeyExists(stMFA, "bLocked") and stMFA.bLocked) or session.fc.mfaPending.attempts gte int(application.fapi.getConfig("general", "loginAttemptsAllowed", 5))>
+							<cfset logSecurityEvent(event="mfaLocked", level="warning", message="second factor locked", userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#") />
+							<farcry:logevent type="security" event="mfaLocked" userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#" notes="too many second factor failures" />
+							<cfset structDelete(session.fc, "mfaPending") />
+							<cfset structDelete(stResult, "mfaPending") />
+							<cfset stResult.message = "Your account has been locked due to a high number of failed logins. It will be unlocked automatically in #application.fapi.getConfig("general", "loginAttemptsTimeOut")# minutes." />
+						</cfif>
+					</cfif>
+				</cfif>
+				<cfreturn stResult />
+			</cfif>
+		</cfif>
+
 		<cfloop list="#udlist#" index="ud">
 			<!--- Authenticate user --->
 			<cfset stResult = this.userdirectories[ud].authenticate(argumentCollection="#arguments#") />
@@ -391,13 +450,30 @@
 				<cfif not stResult.authenticated>
 					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#stResult.UD#" notes="#stResult.message#" />
 					<!--- mirror to the diagnostic stream for ops visibility + alarms --->
-					<cfset application.fapi.logEvent(category="security", level="warning", message="login failed", stFields={ event="loginfailed", userid="#stResult.userid#_#stResult.UD#", ip=cgi.REMOTE_ADDR, reason=(structKeyExists(stResult, "reason") ? stResult.reason : "unknown") }) />
+					<cfset logSecurityEvent(event="loginfailed", level="warning", message="login failed", userid="#stResult.userid#_#stResult.UD#", stFields={ reason=(structKeyExists(stResult, "reason") ? stResult.reason : "unknown") }) />
 					<cfbreak />
 				</cfif>
 				
+				<!--- SUCCESS - before any session is established, the directory may require a second factor (see docs/0014) --->
+				<cfif this.userdirectories[stResult.UD].requiresMFA(userid=stResult.userid)>
+					<cfparam name="session.fc" default="#structnew()#" />
+					<cfset session.fc.mfaPending = {
+						userid = stResult.userid,
+						ud = stResult.UD,
+						expires = dateAdd("n", int(application.fapi.getConfig("security", "mfaChallengeTimeout", 10)), now()),
+						attempts = 0,
+						context = this.userdirectories[stResult.UD].issueMFAChallenge(userid=stResult.userid)
+					} />
+					<cfset logSecurityEvent(event="mfaChallenged", message="second factor challenged", userid="#stResult.userid#_#stResult.UD#") />
+					<cfset stResult.authenticated = false />
+					<cfset stResult.mfaPending = true />
+					<cfset stResult.message = "" />
+					<cfbreak />
+				</cfif>
+
 				<!--- SUCCESS - log in user --->
 				<cfset login(userid=stResult.userid,ud=stResult.UD) />
-				
+
 				<!--- Return 'success' --->
 				<cfbreak />
 			</cfif>
@@ -410,6 +486,7 @@
 	<cffunction name="login" access="public" returntype="void" description="Logs in the specified user" output="false">
 		<cfargument name="userid" type="string" required="true" hint="The UD specific user id" />
 		<cfargument name="ud" type="string" required="true" hint="The user directory" />
+		<cfargument name="bMFAVerified" type="boolean" required="false" default="false" hint="True when this login completed a verified second factor" />
 		
 		<cfset var groups = "" />
 		<cfset var aUserGroups = arraynew(1) />
@@ -487,9 +564,9 @@
 
 		<!--- security breadcrumb to the diagnostic stream (visibility + alarms), independent of the isAuditTurnedOn db gate --->
 		<cfif structKeyExists(session, "impersonator")>
-			<cfset application.fapi.logEvent(category="security", level="information", message="impersonation", stFields={ event="impersonatedby", userid=session.security.userid, impersonator=session.impersonator, ip=cgi.REMOTE_ADDR }) />
+			<cfset logSecurityEvent(event="impersonatedby", message="impersonation", userid=session.security.userid, stFields={ impersonator=session.impersonator }) />
 		<cfelse>
-			<cfset application.fapi.logEvent(category="security", level="information", message="login", stFields={ event="login", userid=session.security.userid, first=session.security.firstlogin, ip=cgi.REMOTE_ADDR }) />
+			<cfset logSecurityEvent(event="login", userid=session.security.userid, stFields={ first=session.security.firstlogin, mfa=arguments.bMFAVerified }) />
 		</cfif>
 
 
@@ -541,13 +618,14 @@
 
 		<!--- security breadcrumb before session teardown --->
 		<cfif structKeyExists(session, "security") and structKeyExists(session.security, "userid")>
-			<cfset application.fapi.logEvent(category="security", level="information", message="logout", stFields={ event="logout", userid=session.security.userid, ip=cgi.REMOTE_ADDR }) />
+			<cfset logSecurityEvent(event="logout", userid=session.security.userid) />
 		</cfif>
 
 		<!--- REMOVE SESSION STRUCTURES --->
 		<cfset structdelete(session,"security") />
 		<cfset structdelete(session,"dmProfile") />
 		<cfset structdelete(session.fc,"mode") />
+		<cfset structdelete(session.fc,"mfaPending") />
 		
 		<!--- DEPRECIATED VARIABLE --->
 		<cfset structdelete(session,"dmSec") />
@@ -557,8 +635,30 @@
 		<!--- Security has changed so we need to re-initialise our request.mode struct --->
 		<cfset initRequestMode() />
 	</cffunction>
-	
-	
+
+	<cffunction name="logSecurityEvent" access="public" output="false" returntype="void" hint="Emits a security event to the diagnostic stream with the standard field shape (event, userid, ip). The farLog audit lane is separate (farcry:logevent tag).">
+		<cfargument name="event" type="string" required="true" hint="Event code, lowerCamelCase, e.g. loginfailed / mfaFailed" />
+		<cfargument name="level" type="string" required="false" default="information" hint="Log level: information / warning / error" />
+		<cfargument name="userid" type="string" required="false" default="" hint="Framework qualified userid (userid_UD)" />
+		<cfargument name="message" type="string" required="false" default="" hint="Human readable message; defaults to the event code" />
+		<cfargument name="stFields" type="struct" required="false" default="#structnew()#" hint="Additional structured fields" />
+
+		<cfset var stEventFields = duplicate(arguments.stFields) />
+
+		<cfset stEventFields["event"] = arguments.event />
+		<cfif len(arguments.userid)>
+			<cfset stEventFields["userid"] = arguments.userid />
+		</cfif>
+		<cfset stEventFields["ip"] = cgi.REMOTE_ADDR />
+
+		<cfif not len(arguments.message)>
+			<cfset arguments.message = arguments.event />
+		</cfif>
+
+		<cfset application.fapi.logEvent(category="security", level=arguments.level, message=arguments.message, stFields=stEventFields) />
+	</cffunction>
+
+
 
 
 	<!--- CACHE FUNCTIONS - SHOULD ONLY BE ACCESSED BY CORE CODE --->
