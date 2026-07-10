@@ -423,7 +423,7 @@
 		<cfset var stContext = getEnrolContext() />
 
 		<cfif not variables.oMFACrypto.isKeyConfigured()>
-			<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="mfa enrolment attempted without FARCRY_MFA_ENCRYPTKEY", userid="#arguments.userid#_#this.key#") />
+			<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="mfa enrolment attempted without an encryption key configured", userid="#arguments.userid#_#this.key#") />
 			<cfset stResult.bSuccess = false />
 			<cfset stResult.message = "Multi-factor authentication is not fully configured on this site (missing encryption key). Please contact your administrator." />
 			<cfreturn stResult />

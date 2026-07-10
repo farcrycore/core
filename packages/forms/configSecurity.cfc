@@ -52,10 +52,15 @@
 
 	<!--- Multi-factor authentication (see docs/0014) --->
 
+	<cfproperty name="mfaEncryptKey" type="string" default="" required="false"
+		ftSeq="39" ftFieldset="Multi-factor Authentication" ftLabel="Encryption key"
+		ftType="string"
+		ftHint="The AES key that protects stored MFA secrets. Set only via the FARCRY_CONFIG_SECURITY_MFAENCRYPTKEY environment variable; it is shown here as status only and cannot be entered or stored through the webtop.">
+
 	<cfproperty name="mfaMode" type="string" default="off"
 		ftSeq="40" ftFieldset="Multi-factor Authentication" ftLabel="MFA mode"
 		ftType="list" ftList="off:Off,optional:Optional (users may enrol),required:Required for all users"
-		ftHint="Applies to the built-in user directory (CLIENTUD). Off disables multi-factor authentication entirely. Optional lets users enrol an authenticator app themselves; Required forces enrolment at next login. The FARCRY_MFA_ENCRYPTKEY environment variable must be set before enabling.">
+		ftHint="Applies to the built-in user directory (CLIENTUD). Off disables multi-factor authentication entirely. Optional lets users enrol an authenticator app themselves; Required forces enrolment at next login. The encryption key (above) must be set before enabling.">
 
 	<cfproperty name="mfaRequiredRoles" type="string" default=""
 		ftSeq="41" ftFieldset="Multi-factor Authentication" ftLabel="Roles requiring MFA"
@@ -109,6 +114,44 @@
 	</cffunction>
 
 	<!--- Multi-factor authentication methods --->
+
+	<!--- render the encryption key as read-only status only - never an input, never the value - so it stays env-only and out of the DB --->
+	<cffunction name="ftEditMfaEncryptKey" access="public" returntype="string" output="false" hint="Render the encryption key field (edit context) as a read-only status">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="stMetadata" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="fieldname" type="string" required="false" default="" />
+
+		<cfreturn mfaEncryptKeyStatusHTML() />
+	</cffunction>
+
+	<cffunction name="ftDisplayMfaEncryptKey" access="public" returntype="string" output="false" hint="Render the encryption key field (display context, e.g. when provided read-only via the environment) as a read-only status">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="stMetadata" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="fieldname" type="string" required="false" default="" />
+
+		<cfreturn mfaEncryptKeyStatusHTML() />
+	</cffunction>
+
+	<cffunction name="mfaEncryptKeyStatusHTML" access="private" returntype="string" output="false" hint="Configured / Not set indicator for the MFA encryption key; never renders the value">
+		<cfset var html = "" />
+		<cfset var bConfigured = createObject("component", application.factory.oUtils.getPath("security", "mfaCrypto")).init().isKeyConfigured() />
+
+		<cfsavecontent variable="html">
+			<cfoutput>
+				<cfif bConfigured>
+					<span class="label label-success">Configured</span>
+					<span class="help-inline">The MFA encryption key is present in the environment.</span>
+				<cfelse>
+					<span class="label label-important">Not set</span>
+					<span class="help-inline">Set <code>FARCRY_CONFIG_SECURITY_MFAENCRYPTKEY</code> to a base64-encoded 128, 192 or 256-bit key. Multi-factor authentication cannot be enabled until this is present.</span>
+				</cfif>
+			</cfoutput>
+		</cfsavecontent>
+
+		<cfreturn html />
+	</cffunction>
 
 	<cffunction name="listMFARoles" access="public" returntype="query" description="Returns the roles that can be required to use MFA (directory-agnostic; stored by objectid)" output="false">
 		<cfset var qRoles = querynew("name,value") />

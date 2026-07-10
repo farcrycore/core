@@ -3,7 +3,6 @@
 	<cfset variables.BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567" />
 	<!--- recovery code alphabet omits easily confused characters (I, L, O, 0, 1) --->
 	<cfset variables.RECOVERY_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789" />
-	<cfset variables.ENCRYPT_KEY_ENV = "FARCRY_MFA_ENCRYPTKEY" />
 
 	<cffunction name="init" access="public" output="false" returntype="any" hint="Constructor">
 		<cfreturn this />
@@ -22,24 +21,24 @@
 		</cftry>
 	</cffunction>
 
-	<cffunction name="getKey" access="private" output="false" returntype="any" hint="Returns an AES SecretKeySpec built from the environment; throws when missing or malformed">
-		<cfset var envMap = createObject("java", "java.lang.System").getenv() />
+	<cffunction name="getKey" access="private" output="false" returntype="any" hint="Returns an AES SecretKeySpec built from the configured key (security.mfaEncryptKey, set read-only via FARCRY_CONFIG_SECURITY_MFAENCRYPTKEY); throws when missing or malformed">
+		<cfset var b64Key = application.fapi.getConfig("security", "mfaEncryptKey", "") />
 		<cfset var binKey = "" />
 
-		<cfif not envMap.containsKey(variables.ENCRYPT_KEY_ENV) or not len(trim(envMap.get(variables.ENCRYPT_KEY_ENV)))>
-			<cfthrow message="The #variables.ENCRYPT_KEY_ENV# environment variable is not set" detail="Multi-factor authentication stores shared secrets encrypted at rest. Set #variables.ENCRYPT_KEY_ENV# to a base64 encoded 128, 192 or 256 bit key." />
+		<cfif not len(trim(b64Key))>
+			<cfthrow message="The MFA encryption key is not configured" detail="Multi-factor authentication stores shared secrets encrypted at rest. Set the FARCRY_CONFIG_SECURITY_MFAENCRYPTKEY environment variable to a base64 encoded 128, 192 or 256 bit key." />
 		</cfif>
 
 		<cftry>
-			<cfset binKey = binaryDecode(trim(envMap.get(variables.ENCRYPT_KEY_ENV)), "base64") />
+			<cfset binKey = binaryDecode(trim(b64Key), "base64") />
 			<cfcatch>
-				<cfthrow message="The #variables.ENCRYPT_KEY_ENV# environment variable is not valid base64" />
+				<cfthrow message="The MFA encryption key is not valid base64" />
 			</cfcatch>
 		</cftry>
 
 		<!--- byte length via hex render: arrayLen on a Java byte[] is not reliable across engines --->
 		<cfif not listFind("16,24,32", len(binaryEncode(binKey, "hex")) / 2)>
-			<cfthrow message="The #variables.ENCRYPT_KEY_ENV# environment variable must decode to a 128, 192 or 256 bit key" />
+			<cfthrow message="The MFA encryption key must decode to a 128, 192 or 256 bit key" />
 		</cfif>
 
 		<cfreturn createObject("java", "javax.crypto.spec.SecretKeySpec").init(binKey, "AES") />
