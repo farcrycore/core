@@ -285,16 +285,32 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="requiresMFA" access="public" output="false" returntype="boolean" hint="True when this user must complete a second factor step before login">
+	<cffunction name="requiresMFA" access="public" output="false" returntype="boolean" hint="True when this user must complete a second factor step at login: an enrolled user is always challenged, and policy can force a not-yet-enrolled user to enrol">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfif getMFAMode() eq "off" or not len(userKey)>
+			<cfreturn false />
+		</cfif>
+
+		<!--- an enrolled user is always challenged; a not-yet-enrolled user is only forced when policy makes MFA mandatory --->
+		<cfif getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key)>
+			<cfreturn true />
+		</cfif>
+
+		<cfreturn isMFAMandatory(arguments.userid) />
+	</cffunction>
+
+	<cffunction name="isMFAMandatory" access="public" output="false" returntype="boolean" hint="True when policy compels MFA for this user (required mode, or they hold a role in mfaRequiredRoles). Distinct from requiresMFA: a mandatory user may not remove their own factor, whereas a merely-enrolled user in optional mode may">
 		<cfargument name="userid" type="string" required="true" />
 
 		<cfset var mode = getMFAMode() />
-		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var lRequiredRoles = application.fapi.getConfig("security", "mfaRequiredRoles", "") />
 		<cfset var lUserRoles = "" />
 		<cfset var roleID = "" />
 
-		<cfif mode eq "off" or not len(userKey)>
+		<cfif mode eq "off">
 			<cfreturn false />
 		</cfif>
 
@@ -302,11 +318,7 @@
 			<cfreturn true />
 		</cfif>
 
-		<!--- optional mode: challenge the already-enrolled, and anyone holding a required role --->
-		<cfif getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key)>
-			<cfreturn true />
-		</cfif>
-
+		<!--- optional mode: mandatory only for holders of a configured required role --->
 		<cfif len(lRequiredRoles)>
 			<cfset lUserRoles = getUserRoleIDs(arguments.userid) />
 			<cfloop list="#lRequiredRoles#" index="roleID">
@@ -544,6 +556,7 @@
 		<cfset stResult.userKey = userKey />
 		<cfset stResult.bEnrolled = len(userKey) and getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
 		<cfset stResult.bRequired = requiresMFA(userid=arguments.userid) />
+		<cfset stResult.bMandatory = isMFAMandatory(userid=arguments.userid) />
 		<cfif len(userKey)>
 			<cfset stResult.qFactors = getFactorType().getFactors(userKey=userKey, userDirectory=this.key) />
 		</cfif>
