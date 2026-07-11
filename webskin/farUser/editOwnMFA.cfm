@@ -143,20 +143,22 @@ VIEW
 
 	<cfoutput><div class="alert alert-success"><admin:resource key="security.mfa.manage.active">Multi-factor authentication is active on your account.</admin:resource></div></cfoutput>
 
-	<!--- one row per factor, each owning its action. Every action is styled as a button (class="btn"): the safe navigations are links, the one state-changing action (Regenerate) is a form button so it never mutates on a GET - they render identically. --->
+	<!--- one row per factor, each owning its action. Every action is styled as a button (class="btn"): the safe navigations are links, the one state-changing action (Regenerate) is a form button so it never mutates on a GET - they render identically. Table markup is wrapped in cfoutput because enablecfoutputonly is on (bare tags outside cfoutput are suppressed). --->
 	<ft:form>
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th><admin:resource key="security.mfa.manage.col.factor">Factor</admin:resource></th>
-					<th><admin:resource key="security.mfa.manage.col.enrolled">Enrolled</admin:resource></th>
-					<th><admin:resource key="security.mfa.manage.col.lastused">Last used</admin:resource></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<cfloop query="qFactors">
-					<cfoutput>
+		<cfoutput>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th><admin:resource key="security.mfa.manage.col.factor">Factor</admin:resource></th>
+						<th><admin:resource key="security.mfa.manage.col.enrolled">Enrolled</admin:resource></th>
+						<th><admin:resource key="security.mfa.manage.col.lastused">Last used</admin:resource></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+		</cfoutput>
+		<cfloop query="qFactors">
+			<cfoutput>
 					<tr>
 						<td>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource>)</cfif></td>
 						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
@@ -169,14 +171,16 @@ VIEW
 							</cfif>
 						</td>
 					</tr>
-					</cfoutput>
-				</cfloop>
-			</tbody>
-		</table>
+			</cfoutput>
+		</cfloop>
+		<cfoutput>
+				</tbody>
+			</table>
 
-		<cfif not stStatus.bMandatory>
-			<cfoutput><p><a class="btn btn-danger" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&removeconfirm=1"><admin:resource key="security.mfa.manage.remove">Turn off multi-factor authentication</admin:resource></a></p></cfoutput>
-		</cfif>
+			<cfif not stStatus.bMandatory>
+				<p><a class="btn btn-danger" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&removeconfirm=1"><admin:resource key="security.mfa.manage.remove">Turn off multi-factor authentication</admin:resource></a></p>
+			</cfif>
+		</cfoutput>
 	</ft:form>
 
 <cfelse>
