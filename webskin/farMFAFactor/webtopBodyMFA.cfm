@@ -22,21 +22,13 @@
 	</cfoutput>
 </skin:onReady>
 
-<!--- User column resolves the name and links to the per-user reset; recovery-code rows are excluded so the list reads one row per enrolled user --->
-<cfset aCustomColumns = arraynew(1) />
-<cfset aCustomColumns[1] = structnew() />
-<cfset aCustomColumns[1].title = "User" />
-<cfset aCustomColumns[1].property = "userLabel" />
-<cfset aCustomColumns[1].sortable = true />
-<cfset aCustomColumns[1].webskin = "displayCellMFAUser" />
-
+<!--- the User column (userLabel) links to the per-user reset via the ftDisplayUserLabel override on farMFAFactor; keeping it a real column means it sorts. recovery-code rows are excluded so the list reads one row per enrolled user --->
 <ft:objectadmin typename="farMFAFactor"
 	title="Multi-factor enrolment"
-	columnList="userDirectory,factorType,lastUsed"
-	aCustomColumns="#aCustomColumns#"
+	columnList="userLabel,userDirectory,factorType,lastUsed"
 	sqlWhere="status = 'active' AND factorType <> 'recoveryCodes'"
 	sqlorderby="userLabel asc"
-	sortableColumns="factorType,lastUsed"
+	sortableColumns="userLabel,factorType,lastUsed"
 	lFilterFields="userLabel"
 	bSelectCol="false"
 	bCheckAll="false"
