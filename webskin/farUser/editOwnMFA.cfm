@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Security (multi-factor) --->
-<!--- @@description: Self-service management of the current user's second factor: enrol, view status, regenerate recovery codes, remove. CLIENTUD self-service surface (see docs/0014). --->
+<!--- @@description: Self-service management of the current user's second factor: view status, set up a method, regenerate recovery codes, turn off. CLIENTUD self-service surface (see docs/0014). --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
@@ -13,7 +13,13 @@
 
 <cfset oUD = application.security.userdirectories["CLIENTUD"] />
 <cfset userid = application.factory.oUtils.listSlice(session.security.userid, 1, -2, "_") />
-<cfset bReenrol = structKeyExists(url, "reenrol") and url.reenrol eq "1" /><!--- enrolled user chose to replace their authenticator: drop into the setup flow, which replaces the existing factor on confirm --->
+<cfset setupFactor = structKeyExists(url, "setup") ? url.setup : "" /><!--- factor type the user chose to set up (currently only "totp"); drives the setup flow for both first enrolment and replacement, since confirmTOTPEnrolment is idempotent --->
+<cfset bRemoveConfirm = structKeyExists(url, "removeconfirm") and url.removeconfirm eq "1" /><!--- two-step confirm before turning MFA off (the only destructive action that warrants one) --->
+
+<!--- second-factor methods a user can set up: one today, the seam for passkey / email OTP in later phases (see docs/0014). Add a row here plus a setup branch below to offer a new method. --->
+<cfset aFactorMethods = [
+	{ type = "totp", name = "Authenticator app", description = "Use an app such as Google Authenticator, 1Password or Authy to generate a 6 digit code at each login." }
+] />
 
 
 <!-----------------------------
@@ -34,7 +40,7 @@ ACTION
 	</ft:processformObjects>
 </ft:processform>
 
-<!--- regenerate recovery codes --->
+<!--- regenerate recovery codes (one click; the resulting screen shows the new set and notes the old ones no longer work) --->
 <ft:processform action="Regenerate recovery codes">
 	<cfset stRegen = oUD.regenerateRecoveryCodes(userid=userid) />
 	<cfif stRegen.bSuccess>
@@ -43,14 +49,14 @@ ACTION
 	</cfif>
 </ft:processform>
 
-<!--- remove second factor (self-service); server-side check blocks removal when MFA is mandatory for the user (the hidden button is not the enforcement) --->
+<!--- turn off the second factor (self-service); server-side check blocks it when MFA is mandatory for the user (the hidden control is not the enforcement) --->
 <ft:processform action="Remove multi-factor">
 	<cfset stRemoveStatus = oUD.getMFAStatus(userid=userid) />
 	<cfif stRemoveStatus.bMandatory>
-		<cfset request.mfaError = "Multi-factor authentication is required for your account and cannot be removed." />
+		<cfset request.mfaError = "Multi-factor authentication is required for your account and cannot be turned off." />
 	<cfelse>
 		<cfset oUD.resetMFA(userKey=stRemoveStatus.userKey, by="self") />
-		<skin:bubble title="Multi-factor authentication removed" tags="security,info" />
+		<skin:bubble title="Multi-factor authentication turned off" tags="security,info" />
 	</cfif>
 </ft:processform>
 
@@ -79,55 +85,11 @@ VIEW
 
 	<!--- just enrolled or regenerated: show codes once --->
 	<skin:view typename="farMFAFactor" template="displayRecoveryCodes" />
-	<cfoutput><p><a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.manage.done">Done</admin:resource></a></p></cfoutput>
+	<cfoutput><p><a class="btn btn-primary" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.buttons.recoveryack">I've saved my recovery codes</admin:resource></a></p></cfoutput>
 
-<cfelseif stStatus.bEnrolled and not bReenrol>
+<cfelseif setupFactor eq "totp">
 
-	<cfset oFactor = application.fapi.getContentType("farMFAFactor") />
-	<cfset qFactors = oFactor.getFactors(userKey=stStatus.userKey, userDirectory="CLIENTUD", status="active") />
-	<cfset recoveryRemaining = oFactor.getRecoveryCodesRemaining(userKey=stStatus.userKey, userDirectory="CLIENTUD") />
-
-	<cfoutput>
-		<div class="alert alert-success"><admin:resource key="security.mfa.manage.active">Multi-factor authentication is active on your account.</admin:resource></div>
-
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th><admin:resource key="security.mfa.manage.col.factor">Factor</admin:resource></th>
-					<th><admin:resource key="security.mfa.manage.col.enrolled">Enrolled</admin:resource></th>
-					<th><admin:resource key="security.mfa.manage.col.lastused">Last used</admin:resource></th>
-				</tr>
-			</thead>
-			<tbody>
-				<cfloop query="qFactors">
-					<tr>
-						<td>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource>)</cfif></td>
-						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
-						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.manage.never">never</admin:resource></cfif></td>
-					</tr>
-				</cfloop>
-			</tbody>
-		</table>
-	</cfoutput>
-
-	<cfoutput>
-		<p><a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&reenrol=1"><admin:resource key="security.mfa.manage.replace">Set up a new authenticator</admin:resource></a></p>
-	</cfoutput>
-
-	<ft:form>
-		<cfoutput>
-			<ft:buttonPanel>
-				<ft:button value="Regenerate recovery codes" text="Regenerate recovery codes" validate="false" />
-				<cfif not stStatus.bMandatory>
-					<ft:button value="Remove multi-factor" text="Remove multi-factor" color="red" validate="false" />
-				</cfif>
-			</ft:buttonPanel>
-		</cfoutput>
-	</ft:form>
-
-<cfelse>
-
-	<!--- setup flow: first enrolment, or replacing the current authenticator (reenrol). confirmTOTPEnrolment is idempotent - the existing factor keeps working until the new code is confirmed, then it is replaced and fresh recovery codes are issued --->
+	<!--- authenticator (TOTP) setup: first enrolment or replacement. confirmTOTPEnrolment is idempotent - an existing factor keeps working until the new code is confirmed, then it is replaced and fresh recovery codes are issued --->
 	<cfset stEnrol = oUD.startTOTPEnrolment(userid=userid) />
 
 	<cfif not stEnrol.bSuccess>
@@ -137,7 +99,7 @@ VIEW
 			<cfif stStatus.bEnrolled>
 				<p><admin:resource key="security.mfa.manage.replacehelp">Set up a new authenticator app to replace your current one. Your existing authenticator keeps working until you confirm the new one, and a fresh set of recovery codes is issued.</admin:resource></p>
 			<cfelse>
-				<p><admin:resource key="security.mfa.manage.setuphelp">Protect your account with an authenticator app. Scan the QR code, then enter the 6 digit code to confirm.</admin:resource></p>
+				<p><admin:resource key="security.mfa.manage.setuphelp">Scan the QR code with an authenticator app, then enter the 6 digit code it shows to finish.</admin:resource></p>
 			</cfif>
 		</cfoutput>
 
@@ -149,15 +111,95 @@ VIEW
 			<cfset stMetadata.code.ftLabel = "Confirmation code" />
 			<ft:object typename="farMFAEnrol" lfields="code" stPropMetadata="#stMetadata#" IncludeFieldSet="true" />
 
-			<ft:buttonPanel>
-				<ft:button value="Confirm" text="Confirm and activate" color="orange" />
-			</ft:buttonPanel>
+			<cfoutput>
+				<div class="pull-right">
+					<ft:button rendertype="button" value="Confirm" text="Confirm and activate" color="orange" />
+					<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
+				</div>
+			</cfoutput>
 		</ft:form>
-
-		<cfif stStatus.bEnrolled>
-			<cfoutput><p class="help-inline"><a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.manage.cancelreplace">Cancel</admin:resource></a></p></cfoutput>
-		</cfif>
 	</cfif>
+
+<cfelseif stStatus.bEnrolled and bRemoveConfirm>
+
+	<cfoutput>
+		<div class="alert alert-warning"><admin:resource key="security.mfa.manage.removeconfirmwarn"><strong>Turn off multi-factor authentication?</strong> This removes your authenticator app and your recovery codes. You will sign in with just your password until you set it up again.</admin:resource></div>
+	</cfoutput>
+
+	<ft:form>
+		<cfoutput>
+			<div class="pull-right">
+				<ft:button rendertype="button" value="Remove multi-factor" text="Turn off multi-factor authentication" color="red" validate="false" />
+				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
+			</div>
+		</cfoutput>
+	</ft:form>
+
+<cfelseif stStatus.bEnrolled>
+
+	<cfset oFactor = application.fapi.getContentType("farMFAFactor") />
+	<cfset qFactors = oFactor.getFactors(userKey=stStatus.userKey, userDirectory="CLIENTUD", status="active") />
+	<cfset recoveryRemaining = oFactor.getRecoveryCodesRemaining(userKey=stStatus.userKey, userDirectory="CLIENTUD") />
+
+	<cfoutput><div class="alert alert-success"><admin:resource key="security.mfa.manage.active">Multi-factor authentication is active on your account.</admin:resource></div></cfoutput>
+
+	<!--- one row per factor, each owning its action. Every action is styled as a button (class="btn"): the safe navigations are links, the one state-changing action (Regenerate) is a form button so it never mutates on a GET - they render identically. --->
+	<ft:form>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><admin:resource key="security.mfa.manage.col.factor">Factor</admin:resource></th>
+					<th><admin:resource key="security.mfa.manage.col.enrolled">Enrolled</admin:resource></th>
+					<th><admin:resource key="security.mfa.manage.col.lastused">Last used</admin:resource></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<cfloop query="qFactors">
+					<cfoutput>
+					<tr>
+						<td>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource>)</cfif></td>
+						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
+						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.manage.never">never</admin:resource></cfif></td>
+						<td>
+							<cfif qFactors.factorType eq "totp">
+								<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><admin:resource key="security.mfa.manage.replace">Set up a new one</admin:resource></a>
+							<cfelseif qFactors.factorType eq "recoveryCodes">
+								<ft:button rendertype="button" class="btn" value="Regenerate recovery codes" text="Regenerate" validate="false" />
+							</cfif>
+						</td>
+					</tr>
+					</cfoutput>
+				</cfloop>
+			</tbody>
+		</table>
+
+		<cfif not stStatus.bMandatory>
+			<cfoutput><p><a class="btn btn-danger" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&removeconfirm=1"><admin:resource key="security.mfa.manage.remove">Turn off multi-factor authentication</admin:resource></a></p></cfoutput>
+		</cfif>
+	</ft:form>
+
+<cfelse>
+
+	<!--- not enrolled: offer the available second-factor methods (framing depends on whether policy requires it). one method today; passkey / email OTP become extra rows in aFactorMethods plus their own setup branch above --->
+	<cfoutput>
+		<cfif stStatus.bMandatory>
+			<div class="alert alert-warning"><admin:resource key="security.mfa.manage.offerrequired"><strong>Your account requires multi-factor authentication.</strong> Add a second step to your login by setting up one of the methods below.</admin:resource></div>
+		<cfelse>
+			<div class="alert alert-info"><admin:resource key="security.mfa.manage.offeroptional"><strong>Multi-factor authentication is optional for your account.</strong> It adds a second step at login to help protect your account. Set up a method below, or leave it for now; you can come back any time.</admin:resource></div>
+		</cfif>
+
+		<table class="table">
+			<tbody>
+				<cfloop array="#aFactorMethods#" index="stMethod">
+					<tr>
+						<td><strong>#encodeForHTML(stMethod.name)#</strong><br />#encodeForHTML(stMethod.description)#</td>
+						<td><a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=#encodeForHTMLAttribute(stMethod.type)#" class="btn btn-primary"><admin:resource key="security.mfa.manage.setup">Set up</admin:resource></a></td>
+					</tr>
+				</cfloop>
+			</tbody>
+		</table>
+	</cfoutput>
 
 </cfif>
 
