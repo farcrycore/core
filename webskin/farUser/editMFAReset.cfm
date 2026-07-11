@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
-<!--- @@displayname: Reset multi-factor --->
-<!--- @@description: Modal confirmation (opened via objectAdminAction from the Multi-factor Enrolment list) to reset a user's second factor. Shows the user and their enrolled factors so an admin can verify before resetting. Permission-gated on SecurityManagement (see docs/0014). --->
+<!--- @@displayname: Manage multi-factor --->
+<!--- @@description: Modal (opened from the "Manage multi-factor" action on the User Administration list) to review and reset a user's second factor. Shows the user and their enrolled factors so an admin can verify before resetting. Permission-gated on SecurityManagement (see docs/0014). --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -39,7 +39,7 @@ VIEW
 <cfif qFactors.recordcount>
 
 	<cfoutput>
-		<p><admin:resource key="security.mfa.admin.resetintro">You are about to reset multi-factor authentication for this user. Verify their identity out of band before continuing.</admin:resource></p>
+		<p><admin:resource key="security.mfa.admin.resetintro">Review this user's multi-factor authentication below. Resetting removes their authenticator and recovery codes; verify their identity out of band first.</admin:resource></p>
 
 		<dl class="dl-horizontal">
 			<dt><admin:resource key="security.mfa.admin.col.user">User</admin:resource></dt>

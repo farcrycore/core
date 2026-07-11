@@ -33,6 +33,37 @@
 </ft:processform>
 
 
+<ft:processform action="Manage multi-factor">
+	<cfset stProfile = application.fapi.getContentObject(typename="dmProfile", objectid="#form.selectedobjectid#") />
+	<cfset oUD = structKeyExists(application.security.userdirectories, stProfile.userdirectory) ? application.security.userdirectories[stProfile.userdirectory] : "" />
+
+	<cfif not isObject(oUD) or not oUD.providesMFA()>
+		<!--- directory-agnostic gate: the owning UD must implement the optional MFA contract --->
+		<skin:bubble title="Error" message="This user's directory does not support multi-factor authentication." tags="security,error" />
+	<cfelseif application.fapi.hasWebskin("dmProfile", "editMFAReset#stProfile.userdirectory#")>
+		<!--- the directory ships its own admin reset surface; hand it the profile (same per-UD dispatch as Impersonate below) --->
+		<skin:onReady><cfoutput>
+			$fc.openDialog('Manage multi-factor','?id=#url.id#&type=dmProfile&objectid=#stProfile.objectid#&view=webtopPageModal&bodyView=editMFAReset#stProfile.userdirectory#');
+		</cfoutput></skin:onReady>
+	<cfelseif stProfile.userdirectory eq "CLIENTUD">
+		<!--- CLIENTUD default: the built-in farUser-based reset modal --->
+		<cfset userID = application.factory.oUtils.listSlice(stProfile.username,1,-2,"_") />
+		<cfset stUser = createobject("component",application.stCOAPI.farUser.packagepath).getByUserID(userID) />
+
+		<cfif structIsEmpty(stUser)>
+			<skin:bubble title="Error" message="This profile does not have a valid user attached." tags="security,error" />
+		<cfelse>
+			<skin:onReady><cfoutput>
+				$fc.openDialog('Manage multi-factor','?id=#url.id#&type=farUser&objectid=#stUser.objectid#&view=webtopPageModal&bodyView=editMFAReset');
+			</cfoutput></skin:onReady>
+		</cfif>
+	<cfelse>
+		<!--- a UD that reports providesMFA() but has not shipped an admin reset surface here - it manages MFA on its own admin pages --->
+		<skin:bubble title="Error" message="This directory manages multi-factor authentication on its own admin surface." tags="security,info" />
+	</cfif>
+</ft:processform>
+
+
 <ft:processform action="Preview Webtop Security">	
 	<cfset stProfile = application.fapi.getContentObject(typename="dmProfile", objectid="#form.selectedobjectid#") />
 
@@ -97,6 +128,11 @@
 	<cfset lCustomActions = "Change password,Preview Webtop Security,Impersonate User" />
 <cfelse>
 	<cfset lCustomActions = "Change password,Preview Webtop Security" />
+</cfif>
+
+<!--- offer the MFA reset action only when multi-factor is switched on for the site --->
+<cfif application.fapi.getConfig("security","mfaMode","off") neq "off">
+	<cfset lCustomActions = listAppend(lCustomActions, "Manage multi-factor") />
 </cfif>
 
 <ft:objectadmin

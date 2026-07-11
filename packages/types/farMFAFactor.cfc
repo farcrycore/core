@@ -15,11 +15,6 @@
 		ftType="string"
 		hint="Key of the owning user directory (e.g. CLIENTUD)">
 
-	<cfproperty name="userLabel" type="string" default=""
-		ftSeq="3" ftFieldset="" ftLabel="User"
-		ftType="string" dbIndex="IDX_userLabel"
-		hint="Denormalised display name of the owning user, for admin listing/search only. The stable key is userKey; this is cosmetic and may lag a username change.">
-
 	<cfproperty name="factorType" type="string" default=""
 		ftSeq="3" ftFieldset="" ftLabel="Factor type"
 		ftType="string"
@@ -89,14 +84,12 @@
 		<cfargument name="factorType" type="string" required="true" />
 		<cfargument name="stPayload" type="struct" required="true" />
 		<cfargument name="label" type="string" required="false" default="" />
-		<cfargument name="userLabel" type="string" required="false" default="" hint="Display name of the owning user (admin listing/search only)" />
 
 		<cfset var stObj = structnew() />
 
 		<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stObj.userKey = arguments.userKey />
 		<cfset stObj.userDirectory = arguments.userDirectory />
-		<cfset stObj.userLabel = arguments.userLabel />
 		<cfset stObj.factorType = arguments.factorType />
 		<cfset stObj.status = "active" />
 		<cfset stObj.payload = serializeJSON(arguments.stPayload) />
@@ -237,35 +230,6 @@
 		</cfloop>
 
 		<cfreturn qFactors.recordcount />
-	</cffunction>
-
-	<!--- admin listing: render the User column as a link to the per-user reset modal (webtopBodyMFA binds .mfa-reset-link). Prefers the stored userLabel and falls back to a live lookup for CLIENTUD rows created before userLabel existed. Wired as the display override for the userLabel property via the ftDisplay<Name> hook, so the column stays a real, sortable field. --->
-	<cffunction name="ftDisplayUserLabel" access="public" output="false" returntype="string" hint="Display override for the userLabel property: the owning user's name, linked to the per-user reset for CLIENTUD rows">
-		<cfargument name="typename" type="string" required="false" default="" />
-		<cfargument name="stObject" type="struct" required="false" default="#structNew()#" />
-		<cfargument name="stMetadata" type="struct" required="false" default="#structNew()#" />
-		<cfargument name="fieldname" type="string" required="false" default="" />
-
-		<cfset var displayName = "" />
-		<cfset var stMFAUser = structnew() />
-		<cfset var html = "" />
-
-		<cfif structKeyExists(arguments.stObject, "userLabel") and len(arguments.stObject.userLabel)>
-			<cfset displayName = arguments.stObject.userLabel />
-		<cfelseif structKeyExists(arguments.stObject, "userDirectory") and arguments.stObject.userDirectory eq "CLIENTUD">
-			<cfset stMFAUser = application.fapi.getContentType("farUser").getData(objectid=arguments.stObject.userKey) />
-			<cfif not structIsEmpty(stMFAUser) and structKeyExists(stMFAUser, "userid")>
-				<cfset displayName = stMFAUser.userid />
-			</cfif>
-		</cfif>
-
-		<cfif not len(displayName)>
-			<cfset displayName = arguments.stObject.userKey />
-		</cfif>
-
-		<cfsavecontent variable="html"><cfoutput><cfif structKeyExists(arguments.stObject, "userDirectory") and arguments.stObject.userDirectory eq "CLIENTUD"><a href="##" class="mfa-reset-link" data-userkey="#encodeForHTMLAttribute(arguments.stObject.userKey)#">#encodeForHTML(displayName)#</a><cfelse>#encodeForHTML(displayName)#</cfif></cfoutput></cfsavecontent>
-
-		<cfreturn html />
 	</cffunction>
 
 </cfcomponent>
