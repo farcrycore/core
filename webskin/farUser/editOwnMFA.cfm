@@ -129,7 +129,7 @@ VIEW
 	<ft:form>
 		<cfoutput>
 			<div class="pull-right">
-				<ft:button rendertype="button" class="btn btn-danger" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
+				<ft:button rendertype="button" class="btn" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
 				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
 			</div>
 		</cfoutput>
@@ -178,7 +178,7 @@ VIEW
 			</table>
 
 			<cfif not stStatus.bMandatory>
-				<p><a class="btn btn-danger" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&removeconfirm=1"><admin:resource key="security.mfa.manage.remove">Turn off multi-factor authentication</admin:resource></a></p>
+				<p><a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&removeconfirm=1"><admin:resource key="security.mfa.manage.remove">Turn off multi-factor authentication</admin:resource></a></p>
 			</cfif>
 		</cfoutput>
 	</ft:form>
