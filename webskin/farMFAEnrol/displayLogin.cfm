@@ -30,7 +30,7 @@
 	<ft:form bAddFormCSS="false" class="clearfix" action="#application.fapi.fixURL(removeValues='mfacancel')#">
 		<cfoutput>
 			<div class="pull-right">
-				<ft:button rendertype="button" class="btn btn-primary btn-large" rbkey="security.mfa.buttons.recoveryack" value="mfaRecoveryAck" text="I have saved these codes - continue" />
+				<ft:button rendertype="button" class="btn btn-primary btn-large" rbkey="security.mfa.buttons.recoveryack" value="mfaRecoveryAck" text="I've saved my recovery codes" />
 			</div>
 		</cfoutput>
 	</ft:form>
