@@ -113,7 +113,7 @@ VIEW
 
 			<cfoutput>
 				<div class="pull-right">
-					<ft:button rendertype="button" value="Confirm" text="Confirm and activate" color="orange" />
+					<ft:button rendertype="button" class="btn btn-primary" value="Confirm" text="Confirm and activate" />
 					<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
 				</div>
 			</cfoutput>
@@ -129,7 +129,7 @@ VIEW
 	<ft:form>
 		<cfoutput>
 			<div class="pull-right">
-				<ft:button rendertype="button" value="Remove multi-factor" text="Turn off multi-factor authentication" color="red" validate="false" />
+				<ft:button rendertype="button" class="btn btn-danger" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
 				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
 			</div>
 		</cfoutput>
