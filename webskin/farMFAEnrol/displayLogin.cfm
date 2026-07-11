@@ -52,7 +52,7 @@
 
 	<cfelse>
 
-		<ft:form bAddFormCSS="false" class="clearfix" action="#application.fapi.fixURL(removeValues='mfacancel')#">
+		<ft:form bAddFormCSS="false" class="clearfix" bFocusFirstField="true" action="#application.fapi.fixURL(removeValues='mfacancel')#">
 
 			<cfif isdefined("stParam.message") and len(stParam.message)>
 				<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(stParam.message,'[^\w]','','ALL')#">#encodeForHTML(stParam.message)#</admin:resource></div></cfoutput>

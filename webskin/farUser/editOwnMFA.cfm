@@ -103,7 +103,7 @@ VIEW
 			</cfif>
 		</cfoutput>
 
-		<ft:form>
+		<ft:form bFocusFirstField="true">
 			<cfset request.fc.stMFAEnrol = stEnrol />
 			<skin:view typename="farMFAFactor" template="displayEnrolTOTP" />
 
