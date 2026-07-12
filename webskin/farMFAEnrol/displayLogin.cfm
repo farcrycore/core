@@ -46,9 +46,7 @@
 
 		<cfoutput>
 			<div class="alert alert-error">#encodeForHTML(stTOTP.message)#</div>
-			<p class="help-inline">
-				<a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a>
-			</p>
+			<p><a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a></p>
 		</cfoutput>
 
 	<cfelse>
@@ -65,16 +63,14 @@
 			</cfoutput>
 
 			<cfif stPasskey.bSuccess>
-				<cfoutput>
-					<p><strong><admin:resource key="security.mfa.passkey.heading">Passkey</admin:resource></strong> <span class="help-inline"><admin:resource key="security.mfa.passkey.recommended">recommended - use your device fingerprint or face, or a security key</admin:resource></span></p>
-				</cfoutput>
 				<cfset request.fc.stPasskeyEnrol = { stOptions = stPasskey.stOptions } />
 				<skin:view typename="farMFAFactor" template="displayEnrolPasskey" />
+				<cfoutput><p class="help-block"><admin:resource key="security.mfa.enrol.passkeyhint">Recommended. Use your device's fingerprint, face or screen lock, or a security key.</admin:resource></p></cfoutput>
 			</cfif>
 
 			<cfif stTOTP.bSuccess>
 				<cfif stPasskey.bSuccess>
-					<cfoutput><p class="mfa-or"><admin:resource key="security.mfa.enrol.oralt">or use an authenticator app</admin:resource></p></cfoutput>
+					<cfoutput><hr /><p><strong><admin:resource key="security.mfa.enrol.oralt">Or use an authenticator app</admin:resource></strong></p></cfoutput>
 				</cfif>
 
 				<cfoutput>
@@ -88,7 +84,7 @@
 
 				<cfoutput>
 					<fieldset>
-						<label for="#stFields.code.formfieldname#">#stFields.code.ftLabel#</label>
+						<label for="#stFields.code.formfieldname#"><admin:resource key="security.mfa.enrol.authcode">Authenticator code</admin:resource></label>
 						#stFields.code.html#
 					</fieldset>
 

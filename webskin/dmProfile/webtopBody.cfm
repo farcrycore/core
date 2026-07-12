@@ -132,7 +132,7 @@
 
 <!--- offer the MFA reset action only when multi-factor is switched on for the site --->
 <cfif application.fapi.getConfig("security","mfaMode","off") neq "off">
-	<cfset lCustomActions = listAppend(lCustomActions, "Manage multi-factor") />
+	<cfset lCustomActions = listInsertAt(lCustomActions, 2, "Manage multi-factor") /><!--- slot directly after "Change password" -->
 </cfif>
 
 <ft:objectadmin

@@ -210,6 +210,14 @@ input, button, select, textarea {
   font-weight: normal;
 }
 
+/* multi-factor: match the webtop's neutral code colour (bootstrap defaults to red) and space the recovery codes off the button below */
+.content-main code {
+  color: #555;
+}
+.content-main .mfa-recovery {
+  margin-bottom: 20px;
+}
+
 
 li a.active { background-color:#3E84B5; color:#FFF; }
 
