@@ -87,8 +87,13 @@
 		ftType="string"
 		ftHint="The https origin(s) passkey ceremonies are accepted from, comma separated (e.g. https://www.example.gov.au). Leave blank to derive https://[request host]. Set this only when the request host is not the browser-facing address (some reverse-proxy setups).">
 
+	<cfproperty name="mfaPasskeyUserVerification" type="string" default="preferred"
+		ftSeq="46" ftFieldset="Multi-factor Authentication" ftLabel="Passkey user verification (second factor)"
+		ftType="list" ftList="discouraged:Touch only (no PIN or biometric),preferred:Verify when the device offers it (default),required:Always require a PIN or biometric"
+		ftHint="How hard a passkey verifies the user when it is a second factor (behind a password). 'Touch only' matches the typical security-key experience: a roaming key like a YubiKey needs only a tap, no PIN, because the password is the other factor. 'Verify when offered' uses the device PIN or biometric if it has one. 'Always require' insists on it. Platform authenticators (Windows Hello, Touch ID, Android) always verify regardless of this setting. This does NOT apply when a passkey is the primary sign-in method (passwordless): user verification is always required there.">
+
 	<cfproperty name="mfaChallengeTimeout" type="integer" ftType="integer" default="10"
-		ftSeq="46" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
+		ftSeq="47" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
 		ftHint="How long a pending second factor challenge remains valid before the user must log in again.">
 
 

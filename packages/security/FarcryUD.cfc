@@ -643,7 +643,7 @@
 			userName = arguments.userid,
 			challenge = stContext.passkeyChallenge,
 			aExcludeCredentials = aExclude,
-			userVerification = getUserVerificationPolicy()
+			userVerification = getPasskeyUVPolicy().userVerification
 		) />
 
 		<cfreturn stResult />
@@ -678,7 +678,7 @@
 			expectedChallenge = stContext.passkeyChallenge,
 			aExpectedOrigins = getExpectedOrigins(),
 			rpId = getRpId(),
-			bRequireUserVerification = false
+			bRequireUserVerification = getPasskeyUVPolicy().bRequireUV
 		) />
 
 		<cfif not stReg.verified>
@@ -743,7 +743,7 @@
 			rpId = getRpId(),
 			challenge = stContext.passkeyChallenge,
 			aAllowCredentials = aAllow,
-			userVerification = getUserVerificationPolicy()
+			userVerification = getPasskeyUVPolicy().userVerification
 		) />
 		<cfset stResult.bSuccess = true />
 
@@ -964,7 +964,7 @@
 			rpId = getRpId(),
 			stStoredKey = stPasskey.stPayload,
 			storedSignCount = (structKeyExists(stPasskey.stPayload, "signCount") ? stPasskey.stPayload.signCount : 0),
-			bRequireUserVerification = false
+			bRequireUserVerification = getPasskeyUVPolicy().bRequireUV
 		) />
 
 		<!--- one-shot: consume the challenge whatever the outcome, so a captured assertion cannot be replayed within the pending window; a fresh challenge is minted on the next render --->
@@ -1011,8 +1011,22 @@
 		<cfreturn aResult />
 	</cffunction>
 
-	<cffunction name="getUserVerificationPolicy" access="private" output="false" returntype="string" hint="userVerification requirement for passkey ceremonies. 'preferred' by default: use the authenticator's PIN / biometric when it offers one, but do not force a second PIN on top of the password for a second factor.">
-		<cfreturn "preferred" />
+	<cffunction name="getPasskeyUVPolicy" access="private" output="false" returntype="struct" hint="User-verification policy for a passkey ceremony, bundling the client-side request (userVerification) and the server-side enforcement (bRequireUV) so the two cannot drift. bPrimaryFactor=true (passwordless - a passkey used instead of the password) ALWAYS requires user verification and ignores config: a passwordless passkey without UV is a single factor. The mfaPasskeyUserVerification config governs only the second-factor case.">
+		<cfargument name="bPrimaryFactor" type="boolean" required="false" default="false" />
+
+		<cfset var uv = "" />
+
+		<!--- passwordless: UV is an invariant, not a setting - the config is deliberately not read here, so it cannot be left relaxed for primary-factor sign-in --->
+		<cfif arguments.bPrimaryFactor>
+			<cfreturn { userVerification = "required", bRequireUV = true } />
+		</cfif>
+
+		<!--- second factor: the password already supplies "something you know", so the admin chooses. Enforce server-side only when they require it - a client request alone cannot be trusted to have been honoured --->
+		<cfset uv = lcase(trim(application.fapi.getConfig("security", "mfaPasskeyUserVerification", "preferred"))) />
+		<cfif not listFindNoCase("discouraged,preferred,required", uv)>
+			<cfset uv = "preferred" />
+		</cfif>
+		<cfreturn { userVerification = uv, bRequireUV = (uv eq "required") } />
 	</cffunction>
 
 	<cffunction name="getIssuer" access="private" output="false" returntype="string" hint="The otpauth issuer shown in the authenticator app: the site title, qualified with the environment label outside production so entries from different environments stay distinguishable">
