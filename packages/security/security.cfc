@@ -408,7 +408,7 @@
 					<cfset stResult.userid = session.fc.mfaPending.userid />
 					<cfset stResult.UD = session.fc.mfaPending.ud />
 					<cfset structDelete(session.fc, "mfaPending") />
-					<cfset login(userid=stResult.userid, ud=stResult.UD, bMFAVerified=true) />
+					<cfset login(userid=stResult.userid, ud=stResult.UD, bMFAVerified=true, mfaMethod=(structKeyExists(stMFA, "method") ? stMFA.method : "")) />
 					<cfset stResult.authenticated = true />
 					<cfset stResult.message = "" />
 				<cfelse>
@@ -487,6 +487,7 @@
 		<cfargument name="userid" type="string" required="true" hint="The UD specific user id" />
 		<cfargument name="ud" type="string" required="true" hint="The user directory" />
 		<cfargument name="bMFAVerified" type="boolean" required="false" default="false" hint="True when this login completed a verified second factor" />
+		<cfargument name="mfaMethod" type="string" required="false" default="" hint="The verified second factor (passkey, totp, recoveryCode) when bMFAVerified is true; empty otherwise" />
 		
 		<cfset var groups = "" />
 		<cfset var aUserGroups = arraynew(1) />
@@ -566,7 +567,11 @@
 		<cfif structKeyExists(session, "impersonator")>
 			<cfset logSecurityEvent(event="impersonatedby", message="impersonation", userid=session.security.userid, stFields={ impersonator=session.impersonator }) />
 		<cfelse>
-			<cfset logSecurityEvent(event="login", userid=session.security.userid, stFields={ first=session.security.firstlogin, mfa=arguments.bMFAVerified }) />
+			<cfset logSecurityEvent(event="login", userid=session.security.userid, stFields={ first=session.security.firstlogin, mfa=arguments.bMFAVerified, mfaMethod=arguments.mfaMethod }) />
+			<cfif arguments.mfaMethod eq "recoveryCode">
+				<!--- signing in with a backup code is a notable signal (the primary factor was unavailable); surface it distinctly above the routine login event so alarms can key on it --->
+				<cfset logSecurityEvent(event="mfaRecoveryUsed", level="warning", message="signed in with a recovery code", userid=session.security.userid) />
+			</cfif>
 		</cfif>
 
 

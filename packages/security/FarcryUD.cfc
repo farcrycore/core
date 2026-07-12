@@ -563,8 +563,8 @@
 			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
 			<cfset stResult.bSuccess = true />
 
-			<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="recovery codes regenerated", userid="#arguments.userid#_#this.key#", stFields={ method = "recoveryCodes" }) />
-			<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="recoveryCodes" />
+			<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="recovery codes regenerated", userid="#arguments.userid#_#this.key#", stFields={ method = "recoveryCode" }) />
+			<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="recoveryCode" />
 		</cfif>
 
 		<cfreturn stResult />
