@@ -165,15 +165,19 @@ VIEW
 			<cfset request.fc.stMFAEnrol = stEnrol />
 			<skin:view typename="farMFAFactor" template="displayEnrolTOTP" />
 
-			<cfset stMetadata = structnew() />
-			<cfset stMetadata.code.ftLabel = "Authenticator code" />
-			<ft:object typename="farMFAEnrol" lfields="code" stPropMetadata="#stMetadata#" IncludeFieldSet="true" />
+			<ft:object typename="farMFAEnrol" lFields="code" legend="" focusField="code" r_stFields="stFields" />
+			<cfoutput>
+				<fieldset>
+					<label for="#stFields.code.formfieldname#"><admin:resource key="security.mfa.enrol.authcode">Authenticator code</admin:resource></label>
+					#stFields.code.html#
+				</fieldset>
+			</cfoutput>
 
 			<cfoutput>
-				<div class="pull-right">
+				<p>
 					<ft:button class="btn-primary" icon="fa-check" value="Confirm" text="Confirm and activate" />
-					<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
-				</div>
+					<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
+				</p>
 			</cfoutput>
 		</ft:form>
 	</cfif>
@@ -187,8 +191,8 @@ VIEW
 	<ft:form>
 		<cfoutput>
 			<div class="pull-right">
+				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
 				<ft:button class="btn-danger" icon="fa-power-off" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
-				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
 			</div>
 		</cfoutput>
 	</ft:form>
@@ -220,7 +224,7 @@ VIEW
 			<cfif qFactors.factorType eq "totp"><cfset bHasTOTP = true /></cfif>
 			<cfoutput>
 					<tr>
-						<td><i class="fa fa-fw #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> <cfif qFactors.factorType eq "recoveryCodes"><strong><admin:resource key="security.mfa.manage.recoverycodes">Recovery codes</admin:resource></strong><br /><i class="fa fa-fw"></i> <small class="muted">#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource></small><cfelseif qFactors.factorType eq "passkey"><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : "Passkey")#</strong><br /><i class="fa fa-fw"></i> <small class="muted"><admin:resource key="security.mfa.manage.kind.passkey">Passkey</admin:resource></small><cfelse><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#</strong></cfif></td>
+						<td><i class="fa fa-fw #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> <cfif qFactors.factorType eq "recoveryCodes"><strong><admin:resource key="security.mfa.manage.recoverycodes">Recovery codes</admin:resource></strong><br /><i class="fa fa-fw"></i> <small class="muted">#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource></small><cfelseif qFactors.factorType eq "passkey"><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : "Passkey")#</strong><br /><i class="fa fa-fw"></i> <small class="muted"><admin:resource key="security.mfa.manage.kind.passkey">Passkey</admin:resource></small><cfelseif qFactors.factorType eq "totp"><strong><admin:resource key="security.mfa.manage.authapp">Authenticator app</admin:resource></strong><cfelse><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#</strong></cfif></td>
 						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
 						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.manage.never">never</admin:resource></cfif></td>
 						<td>

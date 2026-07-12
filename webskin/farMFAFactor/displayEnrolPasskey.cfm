@@ -11,6 +11,8 @@
 	<cfparam name="stPkParam.submitId" default="" />
 	<cfparam name="stPkParam.bAllowLabel" default="false" />
 	<cfparam name="stPkParam.cancelHref" default="" />
+	<cfparam name="stPkParam.buttonClass" default="btn btn-primary" /><!--- login passes btn-large for the hero; the webtop uses the normal size --->
+
 
 	<cfoutput>
 		<!--- ordered synchronous include: the helper is defined before the button is used, independent of head timing or render context (matches the QR fragment) --->
@@ -25,7 +27,7 @@
 			</cfif>
 
 			<p>
-				<button type="button" class="btn btn-primary btn-large" data-mfa-webauthn="register"<cfif len(stPkParam.submitId)> data-mfa-submit="#encodeForHTMLAttribute(stPkParam.submitId)#"</cfif> data-mfa-error="mfaPasskeyError" data-mfa-options="#encodeForHTMLAttribute(serializeJSON(stPkParam.stOptions))#"><i class="fa fa-key"></i> <admin:resource key="security.mfa.passkey.setup">Set up a passkey</admin:resource></button><cfif len(stPkParam.cancelHref)> <a href="#encodeForHTMLAttribute(stPkParam.cancelHref)#" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a></cfif>
+				<button type="button" class="#stPkParam.buttonClass#" data-mfa-webauthn="register"<cfif len(stPkParam.submitId)> data-mfa-submit="#encodeForHTMLAttribute(stPkParam.submitId)#"</cfif> data-mfa-error="mfaPasskeyError" data-mfa-options="#encodeForHTMLAttribute(serializeJSON(stPkParam.stOptions))#"><i class="fa fa-key"></i> <admin:resource key="security.mfa.passkey.setup">Set up a passkey</admin:resource></button><cfif len(stPkParam.cancelHref)> <a href="#encodeForHTMLAttribute(stPkParam.cancelHref)#"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a></cfif>
 			</p>
 
 			<p class="help-block mfa-error" id="mfaPasskeyError"></p>

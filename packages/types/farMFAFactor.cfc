@@ -56,7 +56,7 @@
 				<cfif len(arguments.status)>
 				AND status = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.status#">
 				</cfif>
-			ORDER BY datetimecreated
+			ORDER BY CASE WHEN factorType = 'recoveryCodes' THEN 1 ELSE 0 END, datetimecreated
 		</cfquery>
 
 		<cfreturn qFactors />

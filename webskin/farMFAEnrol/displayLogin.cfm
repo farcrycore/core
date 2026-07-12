@@ -30,7 +30,7 @@
 	<ft:form bAddFormCSS="false" class="clearfix" action="#application.fapi.fixURL(removeValues='mfacancel')#">
 		<cfoutput>
 			<div class="pull-right">
-				<ft:button rendertype="button" class="btn btn-primary btn-large" rbkey="security.mfa.buttons.recoveryack" value="mfaRecoveryAck" text="I've saved my recovery codes" />
+				<ft:button rendertype="button" class="btn btn-primary" rbkey="security.mfa.buttons.recoveryack" value="mfaRecoveryAck" text="I've saved my recovery codes" />
 			</div>
 		</cfoutput>
 	</ft:form>
@@ -63,7 +63,7 @@
 			</cfoutput>
 
 			<cfif stPasskey.bSuccess>
-				<cfset request.fc.stPasskeyEnrol = { stOptions = stPasskey.stOptions } />
+				<cfset request.fc.stPasskeyEnrol = { stOptions = stPasskey.stOptions, buttonClass = "btn btn-primary btn-large" } />
 				<skin:view typename="farMFAFactor" template="displayEnrolPasskey" />
 				<cfoutput><p class="help-block"><admin:resource key="security.mfa.enrol.passkeyhint">Recommended. Use your device's fingerprint, face or screen lock, or a security key.</admin:resource></p></cfoutput>
 			</cfif>
@@ -89,7 +89,7 @@
 					</fieldset>
 
 					<div class="pull-right">
-						<ft:button rendertype="button" id="mfaActivateBtn" class="btn btn-primary btn-large" rbkey="security.mfa.buttons.activate" value="Activate" />
+						<ft:button rendertype="button" id="mfaActivateBtn" class="btn#stPasskey.bSuccess ? '' : ' btn-primary'#" rbkey="security.mfa.buttons.activate" value="Activate" />
 					</div>
 				</cfoutput>
 			</cfif>
