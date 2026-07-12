@@ -63,7 +63,7 @@
 			</cfoutput>
 
 			<cfif stPasskey.bSuccess>
-				<cfset request.fc.stPasskeyEnrol = { stOptions = stPasskey.stOptions, buttonClass = "btn btn-primary btn-large" } />
+				<cfset request.fc.stPasskeyEnrol = { stOptions = stPasskey.stOptions, buttonClass = "btn btn-primary btn-large btn-block" } />
 				<skin:view typename="farMFAFactor" template="displayEnrolPasskey" />
 				<cfoutput><p class="help-block"><admin:resource key="security.mfa.enrol.passkeyhint">Recommended. Use your device's fingerprint, face or screen lock, or a security key.</admin:resource></p></cfoutput>
 			</cfif>

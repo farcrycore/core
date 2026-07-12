@@ -14,7 +14,7 @@
 		<script type="text/javascript" src="#application.url.webtop#/js/mfa/webauthn.js"></script>
 
 		<div class="mfa-passkey">
-			<button type="button" class="btn btn-primary btn-large" data-mfa-webauthn="authenticate"<cfif len(stPkParam.submitId)> data-mfa-submit="#encodeForHTMLAttribute(stPkParam.submitId)#"</cfif> data-mfa-error="mfaPasskeyError" data-mfa-options="#encodeForHTMLAttribute(serializeJSON(stPkParam.stOptions))#"><i class="fa fa-key"></i> <admin:resource key="security.mfa.passkey.use">Use a passkey</admin:resource></button>
+			<button type="button" class="btn btn-primary btn-large btn-block" data-mfa-webauthn="authenticate"<cfif len(stPkParam.submitId)> data-mfa-submit="#encodeForHTMLAttribute(stPkParam.submitId)#"</cfif> data-mfa-error="mfaPasskeyError" data-mfa-options="#encodeForHTMLAttribute(serializeJSON(stPkParam.stOptions))#"><i class="fa fa-key"></i> <admin:resource key="security.mfa.passkey.use">Use a passkey</admin:resource></button>
 
 			<p class="help-block mfa-error" id="mfaPasskeyError"></p>
 		</div>

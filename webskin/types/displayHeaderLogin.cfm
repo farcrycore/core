@@ -27,6 +27,7 @@
 
 <skin:loadCSS id="fc-bootstrap" />
 <skin:loadCSS id="fc-login" />
+<skin:loadCSS id="fc-fontawesome" />
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-bootstrap" />
 

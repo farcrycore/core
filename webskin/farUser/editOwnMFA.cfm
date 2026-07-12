@@ -176,7 +176,7 @@ VIEW
 			<cfoutput>
 				<p>
 					<ft:button class="btn-primary" icon="fa-check" value="Confirm" text="Confirm and activate" />
-					<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
+					<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
 				</p>
 			</cfoutput>
 		</ft:form>
@@ -191,7 +191,7 @@ VIEW
 	<ft:form>
 		<cfoutput>
 			<div class="pull-right">
-				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
+				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
 				<ft:button class="btn-danger" icon="fa-power-off" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
 			</div>
 		</cfoutput>

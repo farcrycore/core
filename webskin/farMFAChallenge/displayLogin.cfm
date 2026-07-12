@@ -28,7 +28,7 @@
 		<cfoutput><p><admin:resource key="security.mfa.challenge.confirm">Confirm it's you to finish signing in.</admin:resource></p></cfoutput>
 		<cfset request.fc.stPasskeyChallenge = { stOptions = stPasskey.stOptions, submitId = "mfaVerifyBtn" } />
 		<skin:view typename="farMFAFactor" template="displayChallengePasskey" />
-		<cfoutput><p class="help-block"><admin:resource key="security.mfa.challenge.passkeyhint">Use your device's fingerprint, face or screen lock, or a security key.</admin:resource></p><hr /><p class="mfa-or"><admin:resource key="security.mfa.challenge.or">or use a code</admin:resource></p></cfoutput>
+		<cfoutput><p class="help-block"><admin:resource key="security.mfa.challenge.passkeyhint">Use your device's fingerprint, face or screen lock, or a security key.</admin:resource></p><hr /><p class="mfa-or"><cfif bHasTOTP><admin:resource key="security.mfa.challenge.or">or use a code</admin:resource><cfelse><admin:resource key="security.mfa.challenge.oralt">or</admin:resource></cfif></p></cfoutput>
 	<cfelseif bHasTOTP>
 		<cfoutput><p><admin:resource key="security.mfa.challenge.entercode">Enter the code from your authenticator app to finish signing in.</admin:resource></p></cfoutput>
 	<cfelse>
