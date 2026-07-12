@@ -101,6 +101,11 @@
 							baseHREF="#application.url.webtop#/thirdparty/qrcode"
 							lFiles="qrcode.min.js" />
 
+		<!--- WebAuthn (passkey) ceremony helper for MFA (loaded on demand by the passkey fragments) --->
+		<skin:registerJS	id="fc-webauthn" core="false" bCombine="false"
+							baseHREF="#application.url.webtop#/js/mfa"
+							lFiles="webauthn.js" />
+
 		<skin:registerJS	id="fc-uploader" core="true"
 							baseHREF="#application.url.webtop#/js/uploader"
 							lFiles="fc-uploader.js" />

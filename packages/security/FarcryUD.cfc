@@ -10,6 +10,7 @@
 		</cfif>
 
 		<cfset variables.oMFACrypto = createObject("component", application.factory.oUtils.getPath("security", "mfaCrypto")).init() />
+		<cfset variables.oWebAuthn = createObject("component", application.factory.oUtils.getPath("security", "webauthn")).init() />
 
 		<cfreturn this />
 	</cffunction>
@@ -362,6 +363,7 @@
 		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var stContext = getEnrolContext() />
 		<cfset var stEnrol = structnew() />
+		<cfset var bEnrolled = false />
 
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
@@ -381,7 +383,8 @@
 				<cfset structDelete(stContext, "aRecoveryCodes") />
 				<cfset stResult.verified = true />
 				<cfset stResult.reason = "" />
-				<cfset stResult.method = "totp" />
+				<cfset stResult.method = structKeyExists(stContext, "enrolMethod") ? stContext.enrolMethod : "totp" />
+				<cfset structDelete(stContext, "enrolMethod") />
 			</ft:processform>
 
 			<cfif not stResult.verified>
@@ -394,33 +397,76 @@
 			<cfreturn stResult />
 		</cfif>
 
-		<!--- challenge: an authenticator code or a recovery code --->
-		<ft:processform>
-			<ft:processformObjects typename="farMFAChallenge" r_stProperties="stProperties">
-				<cfset stResult = verifyChallengeCode(userid=arguments.userid, userKey=userKey, code=trim(stProperties.code)) />
-				<ft:break>
-			</ft:processformObjects>
-		</ft:processform>
+		<!--- SERVER-SIDE INVARIANT (security-critical gate): an ENROLLED user may only PROVE an existing factor
+		      here; a NOT-yet-enrolled user may only ENROL. getMFAForm renders the matching form, but the client
+		      controls what it posts, so this must be enforced server-side. Without it an attacker who holds the
+		      password could POST a passkey REGISTRATION at the challenge screen - attestation is "none", so it is
+		      unsigned and can be fabricated - reusing the rendered challenge, and a successful registration would
+		      satisfy the second factor: a full MFA bypass. Adding a factor to an already-enrolled account happens
+		      only in the post-login self-service page, never in this pre-auth interstitial. --->
+		<cfset bEnrolled = getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
 
-		<!--- enrolment confirmation: prove one valid code before the factor activates --->
-		<ft:processform>
-			<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
-				<cfset stEnrol = confirmTOTPEnrolment(userid=arguments.userid, code=trim(stProperties.code)) />
+		<cfif bEnrolled>
+
+			<!--- prove an existing factor: a passkey assertion (opaque blobs read straight from the form post), an authenticator code, or a recovery code --->
+			<cfif structKeyExists(form, "authenticatorData") and len(trim(form.authenticatorData))>
+				<cfreturn verifyPasskeyAssertion(userid=arguments.userid, userKey=userKey) />
+			</cfif>
+
+			<ft:processform>
+				<ft:processformObjects typename="farMFAChallenge" r_stProperties="stProperties">
+					<cfset stResult = verifyChallengeCode(userid=arguments.userid, userKey=userKey, code=trim(stProperties.code)) />
+					<ft:break>
+				</ft:processformObjects>
+			</ft:processform>
+
+		<cfelse>
+
+			<!--- enrol a first factor: a passkey registration (the challenge is inherent to the create() ceremony), or a proven authenticator code --->
+			<cfif structKeyExists(form, "attestationObject") and len(trim(form.attestationObject))>
+				<cfset stResult.method = "passkey" />
+				<cfset stEnrol = confirmPasskeyEnrolment(userid=arguments.userid, clientDataJSON=(structKeyExists(form, "clientDataJSON") ? form.clientDataJSON : ""), attestationObject=form.attestationObject, transports=(structKeyExists(form, "transports") ? form.transports : ""), label=(structKeyExists(form, "passkeyLabel") and len(trim(form.passkeyLabel)) ? form.passkeyLabel : "Passkey")) />
 				<cfif stEnrol.bSuccess>
-					<!--- persist the codes so the display step survives a refresh; cleared on ack or login --->
-					<cfset stContext.bRecoveryShown = true />
-					<cfset stContext.aRecoveryCodes = stEnrol.aRecoveryCodes />
-					<cfset stResult.reason = "recoveryCodes" />
-					<cfset stResult.bShowRecovery = true />
-					<cfset stResult.aRecoveryCodes = stEnrol.aRecoveryCodes />
+					<cfif arrayLen(stEnrol.aRecoveryCodes)>
+						<!--- first factor: persist the codes so the display step survives a refresh; cleared on ack or login --->
+						<cfset stContext.bRecoveryShown = true />
+						<cfset stContext.aRecoveryCodes = stEnrol.aRecoveryCodes />
+						<cfset stContext.enrolMethod = "passkey" />
+						<cfset stResult.reason = "recoveryCodes" />
+						<cfset stResult.bShowRecovery = true />
+						<cfset stResult.aRecoveryCodes = stEnrol.aRecoveryCodes />
+					<cfelse>
+						<cfset stResult.verified = true />
+						<cfset stResult.reason = "" />
+					</cfif>
 				<cfelse>
 					<cfset stResult.reason = stEnrol.reason />
 					<cfset stResult.message = stEnrol.message />
-					<cfset stResult.method = "totp" />
 				</cfif>
-				<ft:break>
-			</ft:processformObjects>
-		</ft:processform>
+				<cfreturn stResult />
+			</cfif>
+
+			<ft:processform>
+				<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
+					<cfset stEnrol = confirmTOTPEnrolment(userid=arguments.userid, code=trim(stProperties.code)) />
+					<cfif stEnrol.bSuccess>
+						<!--- persist the codes so the display step survives a refresh; cleared on ack or login --->
+						<cfset stContext.bRecoveryShown = true />
+						<cfset stContext.aRecoveryCodes = stEnrol.aRecoveryCodes />
+						<cfset stContext.enrolMethod = "totp" />
+						<cfset stResult.reason = "recoveryCodes" />
+						<cfset stResult.bShowRecovery = true />
+						<cfset stResult.aRecoveryCodes = stEnrol.aRecoveryCodes />
+					<cfelse>
+						<cfset stResult.reason = stEnrol.reason />
+						<cfset stResult.message = stEnrol.message />
+						<cfset stResult.method = "totp" />
+					</cfif>
+					<ft:break>
+				</ft:processformObjects>
+			</ft:processform>
+
+		</cfif>
 
 		<cfreturn stResult />
 	</cffunction>
@@ -565,6 +611,183 @@
 	</cffunction>
 
 
+	<!--- passkey (WebAuthn) engine: called by the contract methods above and by self-service / login webskins. Public key material only, so unlike TOTP these never touch the encryption key. --->
+
+	<cffunction name="startPasskeyEnrolment" access="public" output="false" returntype="struct" hint="Builds the registration options for a create() ceremony and stashes a fresh challenge for confirmPasskeyEnrolment. Does not require the encryption key.">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stResult = { bSuccess = true, message = "", stOptions = structnew() } />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var aExclude = arraynew(1) />
+		<cfset var stPk = "" />
+
+		<cfif not len(userKey)>
+			<cfset stResult.bSuccess = false />
+			<cfset stResult.message = "Unable to start setup. Please log in again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<!--- exclude already-registered credentials so the same authenticator is not enrolled twice --->
+		<cfloop array="#getFactorType().getPasskeys(userKey=userKey, userDirectory=this.key)#" index="stPk">
+			<cfif structKeyExists(stPk.stPayload, "credentialId")>
+				<cfset arrayAppend(aExclude, { id = stPk.stPayload.credentialId, transports = (structKeyExists(stPk.stPayload, "transports") and isArray(stPk.stPayload.transports) ? stPk.stPayload.transports : arraynew(1)) }) />
+			</cfif>
+		</cfloop>
+
+		<cfset stContext.passkeyChallenge = variables.oWebAuthn.newChallenge() />
+		<cfset stResult.stOptions = variables.oWebAuthn.buildRegistrationOptions(
+			rpId = getRpId(),
+			rpName = getRpName(),
+			userKey = userKey,
+			userName = arguments.userid,
+			challenge = stContext.passkeyChallenge,
+			aExcludeCredentials = aExclude,
+			userVerification = getUserVerificationPolicy()
+		) />
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="confirmPasskeyEnrolment" access="public" output="false" returntype="struct" hint="Verifies a create() response, stores the passkey and (only when this is the user's first factor) issues recovery codes.">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="clientDataJSON" type="string" required="true" hint="base64url" />
+		<cfargument name="attestationObject" type="string" required="true" hint="base64url" />
+		<cfargument name="transports" type="string" required="false" default="" hint="comma list of transport hints from the client" />
+		<cfargument name="label" type="string" required="false" default="Passkey" />
+
+		<cfset var stResult = { bSuccess = false, reason = "", message = "", aRecoveryCodes = arraynew(1) } />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var stReg = structnew() />
+		<cfset var stPayload = structnew() />
+		<cfset var aTransports = arraynew(1) />
+		<cfset var t = "" />
+
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
+		<cfif not len(userKey) or not structKeyExists(stContext, "passkeyChallenge")>
+			<cfset stResult.reason = "noCandidate" />
+			<cfset stResult.message = "Your setup session has expired. Please start again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfset stReg = variables.oWebAuthn.verifyRegistration(
+			clientDataJSON = arguments.clientDataJSON,
+			attestationObject = arguments.attestationObject,
+			expectedChallenge = stContext.passkeyChallenge,
+			aExpectedOrigins = getExpectedOrigins(),
+			rpId = getRpId(),
+			bRequireUserVerification = false
+		) />
+
+		<cfif not stReg.verified>
+			<cfset stResult.reason = stReg.reason />
+			<cfset stResult.message = len(stReg.message) ? stReg.message : "Your passkey could not be set up. Please try again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfif len(trim(arguments.transports))>
+			<cfloop list="#arguments.transports#" index="t">
+				<cfset arrayAppend(aTransports, trim(t)) />
+			</cfloop>
+		</cfif>
+
+		<cfset stPayload = duplicate(stReg.stCredential) />
+		<cfset stPayload.transports = aTransports />
+
+		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="passkey", stPayload=stPayload, label=left(trim(arguments.label), 255)) />
+
+		<!--- first factor for this user? issue recovery codes as the account recovery fallback. A passkey added
+		      alongside an existing factor keeps the codes already in place (no array returned = no display step). --->
+		<cfif structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="recoveryCodes"))>
+			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
+		</cfif>
+
+		<cfset structDelete(stContext, "passkeyChallenge") />
+		<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=userKey) />
+
+		<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="second factor enrolled", userid="#arguments.userid#_#this.key#", stFields={ method = "passkey" }) />
+		<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="passkey" />
+
+		<cfset stResult.bSuccess = true />
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getPasskeyAssertionOptions" access="public" output="false" returntype="struct" hint="Builds the assertion options for a get() ceremony and stashes a fresh challenge for verify. bSuccess is false when the user has no passkey to offer.">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stResult = { bSuccess = false, stOptions = structnew() } />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var aAllow = arraynew(1) />
+		<cfset var stPk = "" />
+
+		<cfif not len(userKey)>
+			<cfreturn stResult />
+		</cfif>
+
+		<cfloop array="#getFactorType().getPasskeys(userKey=userKey, userDirectory=this.key)#" index="stPk">
+			<cfif structKeyExists(stPk.stPayload, "credentialId")>
+				<cfset arrayAppend(aAllow, { id = stPk.stPayload.credentialId, transports = (structKeyExists(stPk.stPayload, "transports") and isArray(stPk.stPayload.transports) ? stPk.stPayload.transports : arraynew(1)) }) />
+			</cfif>
+		</cfloop>
+
+		<cfif not arrayLen(aAllow)>
+			<cfreturn stResult />
+		</cfif>
+
+		<cfset stContext.passkeyChallenge = variables.oWebAuthn.newChallenge() />
+		<cfset stResult.stOptions = variables.oWebAuthn.buildAssertionOptions(
+			rpId = getRpId(),
+			challenge = stContext.passkeyChallenge,
+			aAllowCredentials = aAllow,
+			userVerification = getUserVerificationPolicy()
+		) />
+		<cfset stResult.bSuccess = true />
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="removePasskey" access="public" output="false" returntype="boolean" hint="Removes one of the user's passkeys (self-service); leaves other factors and recovery codes in place. Ownership is checked in storage.">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="objectid" type="uuid" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var bRemoved = false />
+
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
+		<cfif not len(userKey)>
+			<cfreturn false />
+		</cfif>
+
+		<cfset bRemoved = getFactorType().removeFactorForUser(objectid=arguments.objectid, userKey=userKey, userDirectory=this.key) />
+
+		<cfif bRemoved>
+			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="passkey removed", userid="#arguments.userid#_#this.key#", stFields={ method = "passkey", by = "self" }) />
+			<farcry:logevent type="security" event="mfaDisabled" userid="#arguments.userid#_#this.key#" notes="passkey removed by self" />
+		</cfif>
+
+		<cfreturn bRemoved />
+	</cffunction>
+
+	<cffunction name="renamePasskey" access="public" output="false" returntype="boolean" hint="Renames one of the user's passkeys (self-service). Ownership is checked in storage.">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="objectid" type="uuid" required="true" />
+		<cfargument name="label" type="string" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfif not len(userKey)>
+			<cfreturn false />
+		</cfif>
+
+		<cfreturn getFactorType().setFactorLabel(objectid=arguments.objectid, userKey=userKey, userDirectory=this.key, label=arguments.label) />
+	</cffunction>
+
+
 	<!--- MFA private helpers --->
 
 	<cffunction name="verifyChallengeCode" access="private" output="false" returntype="struct" hint="Verifies a challenge submission: 6 digit codes against TOTP, anything else against recovery codes">
@@ -694,6 +917,90 @@
 
 	<cffunction name="getMFAMode" access="private" output="false" returntype="string" hint="The effective mfa mode: off / optional / required">
 		<cfreturn application.fapi.getConfig("security", "mfaMode", "off") />
+	</cffunction>
+
+	<cffunction name="verifyPasskeyAssertion" access="private" output="false" returntype="struct" hint="Verifies a passkey get() response against a stored credential; feeds failures to the shared lockout like a bad code does">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="userKey" type="string" required="true" />
+
+		<cfset var stResult = { verified = false, reason = "badPasskey", message = "", method = "passkey" } />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var stPasskey = structnew() />
+		<cfset var stVerify = structnew() />
+
+		<cfif not structKeyExists(stContext, "passkeyChallenge")>
+			<cfset stResult.reason = "noCandidate" />
+			<cfset stResult.message = "Your sign in attempt has expired. Please try again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<!--- the WebAuthn blobs are opaque, read straight from the form post --->
+		<cfset stPasskey = getFactorType().getPasskeyByCredentialId(userKey=arguments.userKey, userDirectory=this.key, credentialId=(structKeyExists(form, "credentialId") ? form.credentialId : "")) />
+
+		<cfif structIsEmpty(stPasskey)>
+			<cfset stResult.message = "That security key is not registered to your account." />
+			<cfset stResult.bLocked = recordMFAFailure(userKey=arguments.userKey) />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfset stVerify = variables.oWebAuthn.verifyAssertion(
+			clientDataJSON = (structKeyExists(form, "clientDataJSON") ? form.clientDataJSON : ""),
+			authenticatorData = (structKeyExists(form, "authenticatorData") ? form.authenticatorData : ""),
+			signature = (structKeyExists(form, "signature") ? form.signature : ""),
+			expectedChallenge = stContext.passkeyChallenge,
+			aExpectedOrigins = getExpectedOrigins(),
+			rpId = getRpId(),
+			stStoredKey = stPasskey.stPayload,
+			storedSignCount = (structKeyExists(stPasskey.stPayload, "signCount") ? stPasskey.stPayload.signCount : 0),
+			bRequireUserVerification = false
+		) />
+
+		<!--- one-shot: consume the challenge whatever the outcome, so a captured assertion cannot be replayed within the pending window; a fresh challenge is minted on the next render --->
+		<cfset structDelete(stContext, "passkeyChallenge") />
+
+		<cfif stVerify.verified>
+			<cfset stPasskey.stPayload.signCount = stVerify.signCount />
+			<cfset getFactorType().updateFactorPayload(objectid=stPasskey.objectid, stPayload=stPasskey.stPayload) />
+			<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=arguments.userKey) />
+			<cfset stResult.verified = true />
+			<cfset stResult.reason = "" />
+		<cfelse>
+			<cfset stResult.reason = stVerify.reason />
+			<cfset stResult.message = stVerify.message />
+			<cfset stResult.bLocked = recordMFAFailure(userKey=arguments.userKey) />
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getRpId" access="private" output="false" returntype="string" hint="The WebAuthn relying party id (an effective domain). Config mfaRpId, else the request host. Passkeys are cryptographically bound to this - a credential registered under one rp id will not verify under another.">
+		<cfset var rpId = trim(application.fapi.getConfig("security", "mfaRpId", "")) />
+		<cfreturn len(rpId) ? rpId : cgi.server_name />
+	</cffunction>
+
+	<cffunction name="getRpName" access="private" output="false" returntype="string" hint="The relying party display name shown in the authenticator prompt. Config mfaRpName, else the site title.">
+		<cfset var rpName = trim(application.fapi.getConfig("security", "mfaRpName", "")) />
+		<cfreturn len(rpName) ? rpName : getIssuer() />
+	</cffunction>
+
+	<cffunction name="getExpectedOrigins" access="private" output="false" returntype="array" hint="Origins the browser-signed clientData.origin is checked against. Config mfaOrigin (comma list), else https://<host>. WebAuthn requires a secure context, so the scheme is always https - derived from the request host and never from the (possibly proxy-rewritten) backend scheme, so TLS termination does not break the check.">
+		<cfset var lOrigins = trim(application.fapi.getConfig("security", "mfaOrigin", "")) />
+		<cfset var aResult = arraynew(1) />
+		<cfset var o = "" />
+
+		<cfif len(lOrigins)>
+			<cfloop list="#lOrigins#" index="o">
+				<cfset arrayAppend(aResult, trim(o)) />
+			</cfloop>
+		<cfelse>
+			<cfset arrayAppend(aResult, "https://" & cgi.server_name) />
+		</cfif>
+
+		<cfreturn aResult />
+	</cffunction>
+
+	<cffunction name="getUserVerificationPolicy" access="private" output="false" returntype="string" hint="userVerification requirement for passkey ceremonies. 'preferred' by default: use the authenticator's PIN / biometric when it offers one, but do not force a second PIN on top of the password for a second factor.">
+		<cfreturn "preferred" />
 	</cffunction>
 
 	<cffunction name="getIssuer" access="private" output="false" returntype="string" hint="The otpauth issuer shown in the authenticator app: the site title, qualified with the environment label outside production so entries from different environments stay distinguishable">

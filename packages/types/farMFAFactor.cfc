@@ -146,6 +146,85 @@
 		</cfif>
 	</cffunction>
 
+	<cffunction name="getPasskeys" access="public" output="false" returntype="array" hint="Active passkey factors for a user, each with its deserialized payload (credentialId, public key params, signCount, transports). Passkeys are N-per-user, so unlike getActiveFactor this returns all of them.">
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+
+		<cfset var qPasskeys = "" />
+		<cfset var aResult = arraynew(1) />
+		<cfset var stItem = "" />
+
+		<cfquery datasource="#application.dsn#" name="qPasskeys">
+			SELECT objectid, label, payload, lastUsed, datetimecreated
+			FROM #application.dbowner#farMFAFactor
+			WHERE
+				userKey = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userKey#">
+				AND userDirectory = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userDirectory#">
+				AND factorType = <cfqueryparam cfsqltype="cf_sql_varchar" value="passkey">
+				AND status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
+			ORDER BY datetimecreated
+		</cfquery>
+
+		<cfloop query="qPasskeys">
+			<cfset stItem = { objectid = qPasskeys.objectid, label = qPasskeys.label, lastUsed = qPasskeys.lastUsed, datetimecreated = qPasskeys.datetimecreated, stPayload = structnew() } />
+			<cfif isJSON(qPasskeys.payload)>
+				<cfset stItem.stPayload = deserializeJSON(qPasskeys.payload) />
+			</cfif>
+			<cfset arrayAppend(aResult, stItem) />
+		</cfloop>
+
+		<cfreturn aResult />
+	</cffunction>
+
+	<cffunction name="getPasskeyByCredentialId" access="public" output="false" returntype="struct" hint="Finds a user's passkey by the credentialId returned in an assertion; empty struct when none match. Scoped to the user (second factor: the subject is already known), so no global credential index is needed.">
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+		<cfargument name="credentialId" type="string" required="true" hint="base64url" />
+
+		<cfset var aPasskeys = getPasskeys(userKey=arguments.userKey, userDirectory=arguments.userDirectory) />
+		<cfset var stPasskey = "" />
+
+		<cfloop array="#aPasskeys#" index="stPasskey">
+			<cfif structKeyExists(stPasskey.stPayload, "credentialId") and stPasskey.stPayload.credentialId eq arguments.credentialId>
+				<cfreturn stPasskey />
+			</cfif>
+		</cfloop>
+
+		<cfreturn structnew() />
+	</cffunction>
+
+	<cffunction name="removeFactorForUser" access="public" output="false" returntype="boolean" hint="Deletes one factor row, but only when it belongs to the given user (guards a forged objectid from removing another user's factor). Returns true when a row was removed.">
+		<cfargument name="objectid" type="uuid" required="true" />
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+
+		<cfif not structIsEmpty(stObj) and structKeyExists(stObj, "userKey") and stObj.userKey eq arguments.userKey and stObj.userDirectory eq arguments.userDirectory>
+			<cfset delete(objectid=arguments.objectid) />
+			<cfreturn true />
+		</cfif>
+
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="setFactorLabel" access="public" output="false" returntype="boolean" hint="Renames one factor, but only when it belongs to the given user. Returns true when the label was changed.">
+		<cfargument name="objectid" type="uuid" required="true" />
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+		<cfargument name="label" type="string" required="true" />
+
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+
+		<cfif not structIsEmpty(stObj) and structKeyExists(stObj, "userKey") and stObj.userKey eq arguments.userKey and stObj.userDirectory eq arguments.userDirectory>
+			<cfset stObj.label = left(trim(arguments.label), 255) />
+			<cfset setData(stProperties=stObj, bAudit=false) />
+			<cfreturn true />
+		</cfif>
+
+		<cfreturn false />
+	</cffunction>
+
 	<cffunction name="saveRecoveryCodes" access="public" output="false" returntype="void" hint="Replaces the user's recovery code set. Pass hashes, never plain codes.">
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="true" />

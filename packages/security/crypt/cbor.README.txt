@@ -1,0 +1,37 @@
+CBOR (Concise Binary Object Representation) for Java
+====================================================
+
+Used by FarCry Core's WebAuthn / FIDO2 second-factor support (see
+docs/0014-clientud-multi-factor-authentication.md) to decode attestation
+objects and COSE public keys during passkey registration. All protocol
+verification (signatures, challenge, origin, rpId, sign counter) is done with
+the JVM's own crypto (java.security); this library is used only for the CBOR
+decoding step.
+
+Author: Peter Occil. Public-domain dedications, both compatible with FarCry
+Core's GPL v3 (or later) licence:
+  - cbor 4.5.6 is released under the Unlicense (see cbor.LICENSE.txt).
+  - numbers 1.8.2 and datautilities 1.1.0 are released under CC0 1.0 Universal
+    (see cbor.deps.LICENSE.txt).
+Both are public-domain-equivalent and place no conditions on use.
+
+Three jars, retrieved 2026-07-12 from Maven Central. cbor depends on numbers and
+datautilities (both by the same author); all three are required at runtime.
+
+  com.upokecenter : cbor : 4.5.6
+    cbor-4.5.6.jar             sha1 9a2a67135f89822362838683a70b7fa8248dc984
+    https://repo1.maven.org/maven2/com/upokecenter/cbor/4.5.6/
+
+  com.github.peteroupc : numbers : 1.8.2            (dependency of cbor)
+    numbers-1.8.2.jar          sha1 f52a1cffea8e8c1926dba8377bd6fa8b6e9c12cd
+    https://repo1.maven.org/maven2/com/github/peteroupc/numbers/1.8.2/
+
+  com.github.peteroupc : datautilities : 1.1.0      (dependency of cbor)
+    datautilities-1.1.0.jar    sha1 3acf8c733aa2c38fe6bc8a639552ee70c915846d
+    https://repo1.maven.org/maven2/com/github/peteroupc/datautilities/1.1.0/
+
+The jars load from packages/security/crypt via Application.cfc's
+this.javaSettings.loadPaths (the same mechanism as jbcrypt / scrypt), on both
+Lucee and Adobe ColdFusion, with graceful degradation when absent.
+
+Project home: https://github.com/peteroupc/CBOR-Java

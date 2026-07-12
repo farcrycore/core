@@ -72,8 +72,23 @@
 		ftType="string"
 		ftHint="The label shown in users' authenticator apps. Leave blank to use the site title, with the environment label appended outside production so staging and development entries stay distinct from production.">
 
+	<cfproperty name="mfaRpId" type="string" default=""
+		ftSeq="43" ftFieldset="Multi-factor Authentication" ftLabel="Passkey relying party ID"
+		ftType="string"
+		ftHint="The domain passkeys are bound to (an effective domain, e.g. example.gov.au). Leave blank to use the request host. Set a shared parent domain to let one passkey work across sub-domains (dev., staging., www.). A passkey enrolled under one value will not verify under another, so changing this invalidates existing passkeys.">
+
+	<cfproperty name="mfaRpName" type="string" default=""
+		ftSeq="44" ftFieldset="Multi-factor Authentication" ftLabel="Passkey display name"
+		ftType="string"
+		ftHint="The site name shown in the browser and operating system passkey prompt. Leave blank to use the issuer label above (the site title).">
+
+	<cfproperty name="mfaOrigin" type="string" default=""
+		ftSeq="45" ftFieldset="Multi-factor Authentication" ftLabel="Passkey allowed origin(s)"
+		ftType="string"
+		ftHint="The https origin(s) passkey ceremonies are accepted from, comma separated (e.g. https://www.example.gov.au). Leave blank to derive https://[request host]. Set this only when the request host is not the browser-facing address (some reverse-proxy setups).">
+
 	<cfproperty name="mfaChallengeTimeout" type="integer" ftType="integer" default="10"
-		ftSeq="43" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
+		ftSeq="46" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
 		ftHint="How long a pending second factor challenge remains valid before the user must log in again.">
 
 
