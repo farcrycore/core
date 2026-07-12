@@ -18,9 +18,12 @@
 
 <!--- second-factor methods a user can set up: passkey first (recommended), then authenticator app. The seam for email OTP etc. later - add a row here plus a setup branch below to offer a new method. --->
 <cfset aFactorMethods = [
-	{ type = "passkey", name = "Passkey", description = "Use your device's fingerprint, face or screen lock, or a security key. The most phishing resistant option, and nothing to type at login." },
-	{ type = "totp", name = "Authenticator app", description = "Use an app such as Google Authenticator, 1Password or Authy to generate a 6 digit code at each login." }
+	{ type = "passkey", icon = "fa-key", name = "Passkey", description = "Use your device's fingerprint, face or screen lock, or a security key. The most phishing resistant option, and nothing to type at login." },
+	{ type = "totp", icon = "fa-mobile", name = "Authenticator app", description = "Use an app such as Google Authenticator, 1Password or Authy to generate a 6 digit code at each login." }
 ] />
+
+<!--- icon for each factor type shown in the status / admin tables --->
+<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", recoveryCodes = "fa-life-ring" } />
 
 
 <!-----------------------------
@@ -70,11 +73,15 @@ ACTION
 	</cfif>
 </ft:processform>
 
-<!--- remove a single passkey (self-service); the button carries the row objectid via selectedObjectID --->
+<!--- remove a single passkey (self-service); the button carries the row objectid via selectedObjectID. Read the label first (only used if the ownership-checked removal succeeds) so the toast names which one went. --->
 <ft:processform action="Remove passkey">
-	<cfif structKeyExists(form, "selectedObjectID") and len(form.selectedObjectID)>
-		<cfset oUD.removePasskey(userid=userid, objectid=form.selectedObjectID) />
-		<skin:bubble title="Passkey removed" tags="security,info" />
+	<cfif structKeyExists(form, "selectedObjectID") and isValid("uuid", form.selectedObjectID)>
+		<cfset stRemovePk = application.fapi.getContentType("farMFAFactor").getData(objectid=form.selectedObjectID) />
+		<cfset removedLabel = (isStruct(stRemovePk) and structKeyExists(stRemovePk, "label")) ? stRemovePk.label : "" />
+		<cfif oUD.removePasskey(userid=userid, objectid=form.selectedObjectID)>
+			<cfset bubbleTitle = len(trim(removedLabel)) ? ("Passkey '" & removedLabel & "' removed") : "Passkey removed" />
+			<skin:bubble title="#bubbleTitle#" tags="security,info" />
+		</cfif>
 	</cfif>
 </ft:processform>
 
@@ -114,7 +121,7 @@ VIEW
 
 	<!--- just enrolled or regenerated: show codes once --->
 	<skin:view typename="farMFAFactor" template="displayRecoveryCodes" />
-	<cfoutput><p><a class="btn btn-primary" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><admin:resource key="security.mfa.buttons.recoveryack">I've saved my recovery codes</admin:resource></a></p></cfoutput>
+	<cfoutput><p><a class="btn btn-primary" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA"><i class="fa fa-check"></i> <admin:resource key="security.mfa.buttons.recoveryack">I've saved my recovery codes</admin:resource></a></p></cfoutput>
 
 <cfelseif setupFactor eq "passkey">
 
@@ -167,7 +174,7 @@ VIEW
 
 			<cfoutput>
 				<div class="pull-right">
-					<ft:button rendertype="button" class="btn btn-primary" value="Confirm" text="Confirm and activate" />
+					<ft:button class="btn-primary" icon="fa-check" value="Confirm" text="Confirm and activate" />
 					<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
 				</div>
 			</cfoutput>
@@ -183,7 +190,7 @@ VIEW
 	<ft:form>
 		<cfoutput>
 			<div class="pull-right">
-				<ft:button rendertype="button" class="btn" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
+				<ft:button class="btn-danger" icon="fa-power-off" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
 				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
 			</div>
 		</cfoutput>
@@ -198,7 +205,7 @@ VIEW
 
 	<cfoutput><div class="alert alert-success"><admin:resource key="security.mfa.manage.active">Multi-factor authentication is active on your account.</admin:resource></div></cfoutput>
 
-	<!--- one row per factor, each owning its action. Actions are all styled as buttons (class="btn"): safe navigations are links, state-changing actions (Regenerate, Remove passkey) are form buttons so they never mutate on a GET - they render alike. Table markup is wrapped in cfoutput because enablecfoutputonly is on (bare tags outside cfoutput are suppressed). --->
+	<!--- one row per factor, each owning its action. Actions are all buttons (class="btn"): safe navigations are links, state-changing actions (Regenerate, Remove passkey) are form buttons so they never mutate on a GET. Table markup is wrapped in cfoutput because enablecfoutputonly is on. --->
 	<ft:form>
 		<cfoutput>
 			<table class="table table-striped">
@@ -216,16 +223,16 @@ VIEW
 			<cfif qFactors.factorType eq "totp"><cfset bHasTOTP = true /></cfif>
 			<cfoutput>
 					<tr>
-						<td>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource>)</cfif></td>
+						<td><i class="fa #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> #encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource>)</cfif></td>
 						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
 						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.manage.never">never</admin:resource></cfif></td>
 						<td>
 							<cfif qFactors.factorType eq "totp">
-								<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><admin:resource key="security.mfa.manage.replace">Set up a new one</admin:resource></a>
+								<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><i class="fa fa-refresh"></i> <admin:resource key="security.mfa.manage.replace">Set up a new one</admin:resource></a>
 							<cfelseif qFactors.factorType eq "passkey">
-								<ft:button rendertype="button" class="btn" value="Remove passkey" text="Remove" selectedObjectID="#qFactors.objectid#" validate="false" />
+								<ft:button value="Remove passkey" text="Remove" icon="fa-trash-o" selectedObjectID="#qFactors.objectid#" validate="false" />
 							<cfelseif qFactors.factorType eq "recoveryCodes">
-								<ft:button rendertype="button" class="btn" value="Regenerate recovery codes" text="Regenerate" validate="false" />
+								<ft:button value="Regenerate recovery codes" text="Regenerate" icon="fa-refresh" validate="false" />
 							</cfif>
 						</td>
 					</tr>
@@ -236,14 +243,18 @@ VIEW
 			</table>
 
 			<p>
-				<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=passkey"><admin:resource key="security.mfa.manage.addpasskey">Add a passkey</admin:resource></a>
+				<a class="btn btn-primary" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=passkey"><i class="fa fa-plus"></i> <admin:resource key="security.mfa.manage.addpasskey">Add a passkey</admin:resource></a>
 				<cfif not bHasTOTP>
-					<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><admin:resource key="security.mfa.manage.addtotp">Set up an authenticator app</admin:resource></a>
+					<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><i class="fa fa-mobile"></i> <admin:resource key="security.mfa.manage.addtotp">Set up an authenticator app</admin:resource></a>
 				</cfif>
 			</p>
 
 			<cfif not stStatus.bMandatory>
-				<p><a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&removeconfirm=1"><admin:resource key="security.mfa.manage.remove">Turn off multi-factor authentication</admin:resource></a></p>
+				<hr />
+				<div class="pull-right">
+					<a class="btn btn-danger" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&removeconfirm=1"><i class="fa fa-power-off"></i> <admin:resource key="security.mfa.manage.remove">Turn off multi-factor authentication</admin:resource></a>
+				</div>
+				<div class="clearfix"></div>
 			</cfif>
 		</cfoutput>
 	</ft:form>
@@ -262,7 +273,7 @@ VIEW
 			<tbody>
 				<cfloop array="#aFactorMethods#" index="stMethod">
 					<tr>
-						<td><strong>#encodeForHTML(stMethod.name)#</strong><br />#encodeForHTML(stMethod.description)#</td>
+						<td><i class="fa #encodeForHTMLAttribute(stMethod.icon)#"></i> <strong>#encodeForHTML(stMethod.name)#</strong><br />#encodeForHTML(stMethod.description)#</td>
 						<td><a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=#encodeForHTMLAttribute(stMethod.type)#" class="btn btn-primary"><admin:resource key="security.mfa.manage.setup">Set up</admin:resource></a></td>
 					</tr>
 				</cfloop>

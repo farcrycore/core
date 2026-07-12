@@ -787,6 +787,18 @@
 		<cfreturn getFactorType().setFactorLabel(objectid=arguments.objectid, userKey=userKey, userDirectory=this.key, label=arguments.label) />
 	</cffunction>
 
+	<cffunction name="hasTOTPFactor" access="public" output="false" returntype="boolean" hint="True when the user has an active authenticator (TOTP) factor. Lets the challenge screen label the code field 'Authenticator code' rather than 'Recovery code' only when it applies.">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfif not len(userKey)>
+			<cfreturn false />
+		</cfif>
+
+		<cfreturn not structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="totp")) />
+	</cffunction>
+
 
 	<!--- MFA private helpers --->
 

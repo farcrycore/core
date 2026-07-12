@@ -8,10 +8,12 @@
 
 <skin:view typename="farLogin" template="displayHeaderLogin" />
 
-<!--- offer a passkey only when the pending user has one; this also mints a fresh assertion challenge for verify --->
+<!--- offer a passkey only when the pending user has one (this also mints a fresh assertion challenge); label the code field for what they actually have --->
 <cfset stPasskey = { bSuccess = false } />
+<cfset bHasTOTP = false />
 <cfif structKeyExists(session, "fc") and structKeyExists(session.fc, "mfaPending")>
 	<cfset stPasskey = application.security.userdirectories[session.fc.mfaPending.ud].getPasskeyAssertionOptions(userid=session.fc.mfaPending.userid) />
+	<cfset bHasTOTP = application.security.userdirectories[session.fc.mfaPending.ud].hasTOTPFactor(userid=session.fc.mfaPending.userid) />
 </cfif>
 
 <ft:form bAddFormCSS="false" class="clearfix" bFocusFirstField="true" action="#application.fapi.fixURL(removeValues='mfacancel')#">
@@ -23,29 +25,32 @@
 	<cfoutput><p><strong><admin:resource key="security.mfa.challenge.title">Multi-factor verification</admin:resource></strong></p></cfoutput>
 
 	<cfif stPasskey.bSuccess>
-		<cfoutput><p><admin:resource key="security.mfa.challenge.passkeyhelp">Use your passkey, or enter a code from your authenticator app or a recovery code.</admin:resource></p></cfoutput>
+		<cfoutput><p><admin:resource key="security.mfa.challenge.confirm">Confirm it's you to finish signing in.</admin:resource></p></cfoutput>
 		<cfset request.fc.stPasskeyChallenge = { stOptions = stPasskey.stOptions, submitId = "mfaVerifyBtn" } />
 		<skin:view typename="farMFAFactor" template="displayChallengePasskey" />
-		<cfoutput><p class="mfa-or"><admin:resource key="security.mfa.challenge.or">or enter a code</admin:resource></p></cfoutput>
+		<cfoutput><p class="mfa-or"><admin:resource key="security.mfa.challenge.or">or use a code</admin:resource></p></cfoutput>
+	<cfelseif bHasTOTP>
+		<cfoutput><p><admin:resource key="security.mfa.challenge.entercode">Enter the code from your authenticator app to finish signing in.</admin:resource></p></cfoutput>
 	<cfelse>
-		<cfoutput><p><admin:resource key="security.mfa.challenge.help">Enter the 6 digit code from your authenticator app, or one of your recovery codes.</admin:resource></p></cfoutput>
+		<cfoutput><p><admin:resource key="security.mfa.challenge.enterrecovery">Enter one of your recovery codes to finish signing in.</admin:resource></p></cfoutput>
 	</cfif>
 
 	<ft:object typename="farMFAChallenge" lFields="code" prefix="mfa" legend="" focusField="code" r_stFields="stFields" />
 
 	<cfoutput>
 		<fieldset>
-			<label for="#stFields.code.formfieldname#">#stFields.code.ftLabel#</label>
+			<label for="#stFields.code.formfieldname#"><cfif bHasTOTP><admin:resource key="security.mfa.challenge.authcode">Authenticator code</admin:resource><cfelse><admin:resource key="security.mfa.challenge.recoverycode">Recovery code</admin:resource></cfif></label>
 			#stFields.code.html#
+			<cfif bHasTOTP><p class="help-block"><admin:resource key="security.mfa.challenge.recoveryhint">Lost your device? One of your recovery codes works here too.</admin:resource></p></cfif>
 		</fieldset>
 
 		<div class="pull-right">
-			<ft:button rendertype="button" id="mfaVerifyBtn" class="btn btn-primary btn-large" rbkey="security.mfa.buttons.verify" value="Verify" />
+			<ft:button rendertype="button" id="mfaVerifyBtn" class="btn#stPasskey.bSuccess ? '' : ' btn-primary btn-large'#" rbkey="security.mfa.buttons.verify" value="Verify" />
 		</div>
+		<div class="clearfix"></div>
 
-		<p class="help-inline">
-			<a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a>
-		</p>
+		<hr />
+		<p><a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a></p>
 	</cfoutput>
 
 </ft:form>

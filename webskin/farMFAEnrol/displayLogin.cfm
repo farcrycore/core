@@ -99,9 +99,9 @@
 			</cfif>
 
 			<cfoutput>
-				<p class="help-inline">
-					<a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a>
-				</p>
+				<div class="clearfix"></div>
+				<hr />
+				<p><a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a></p>
 			</cfoutput>
 
 		</ft:form>

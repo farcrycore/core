@@ -626,6 +626,25 @@ table.table-hover-all tbody tr:hover {
 	text-shadow: none;
 	color: #fff;
 }
+/* danger button: the red sibling of btn-primary (same build, red palette) for destructive actions like reset / turn off */
+.btn-danger {
+	background: #b54744;
+	text-shadow: none;
+	color: #fff;
+	box-shadow: 0 0 1px rgba(0,0,0,0.5) inset;
+}
+.btn-danger:hover,
+.btn-danger:focus {
+	background: #a3231e;
+	box-shadow: 0 0 1px rgba(0,0,0,0.7) inset;
+	text-shadow: none;
+	color: #fff;
+}
+.btn-danger:active {
+	background: #831c17;
+	text-shadow: none;
+	color: #fff;
+}
 
 /* tweak icon position in buttons */
 .btn .fa {
@@ -788,6 +807,26 @@ th.objectadmin-sortable span:hover {
 }
 .uniForm .btn.btn-primary:active {
 	background: #0c5582;
+	text-shadow: none;
+	color: #fff;
+}
+
+.uniForm .btn.btn-danger {
+	background: #b54744;
+	text-shadow: none;
+	color: #fff;
+	border: none;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+}
+.uniForm .btn.btn-danger:hover,
+.uniForm .btn.btn-danger:focus {
+	background: #a3231e;
+	box-shadow: 0 0 1px rgba(0,0,0,0.6) inset;
+	text-shadow: none;
+	color: #fff;
+}
+.uniForm .btn.btn-danger:active {
+	background: #831c17;
 	text-shadow: none;
 	color: #fff;
 }

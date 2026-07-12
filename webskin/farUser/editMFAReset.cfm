@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Manage multi-factor --->
-<!--- @@description: Modal (opened from the "Manage multi-factor" action on the User Administration list) to review and reset a user's second factor. Shows the user and their enrolled factors so an admin can verify before resetting. Permission-gated on SecurityManagement (see docs/0014). --->
+<!--- @@description: Modal (opened from the "Manage multi-factor" action on the User Administration list) to review and reset a user's second factors. Shows the user and their enrolled factors so an admin can verify before resetting. Permission-gated on SecurityManagement (see docs/0014). --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -13,6 +13,7 @@
 
 <cfset oUD = application.security.userdirectories["CLIENTUD"] />
 <cfset oFactor = application.fapi.getContentType("farMFAFactor") />
+<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", recoveryCodes = "fa-life-ring" } />
 
 <!-----------------------------
 ACTION
@@ -39,7 +40,7 @@ VIEW
 <cfif qFactors.recordcount>
 
 	<cfoutput>
-		<p><admin:resource key="security.mfa.admin.resetintro">Review this user's multi-factor authentication below. Resetting removes their authenticator and recovery codes; verify their identity out of band first.</admin:resource></p>
+		<p><admin:resource key="security.mfa.admin.resetintro">Review this user's multi-factor authentication below. Resetting removes their passkeys, authenticator and recovery codes; verify their identity out of band first.</admin:resource></p>
 
 		<dl class="dl-horizontal">
 			<dt><admin:resource key="security.mfa.admin.col.user">User</admin:resource></dt>
@@ -59,9 +60,7 @@ VIEW
 			<tbody>
 				<cfloop query="qFactors">
 					<tr>
-						<td>
-							#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.admin.remaining">remaining</admin:resource>)</cfif>
-						</td>
+						<td><i class="fa #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> #encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#<cfif qFactors.factorType eq "recoveryCodes"> (#recoveryRemaining# <admin:resource key="security.mfa.admin.remaining">remaining</admin:resource>)</cfif></td>
 						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
 						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.admin.never">never</admin:resource></cfif></td>
 					</tr>
@@ -69,14 +68,17 @@ VIEW
 			</tbody>
 		</table>
 
-		<div class="alert alert-warning"><admin:resource key="security.mfa.admin.resethelp">Resetting removes the user's authenticator and recovery codes. They will be asked to enrol again at next login if your policy requires it.</admin:resource></div>
+		<div class="alert alert-warning"><admin:resource key="security.mfa.admin.resethelp">Resetting removes every factor. They will be asked to enrol again at next login if your policy requires it.</admin:resource></div>
 	</cfoutput>
 
 	<ft:form>
-		<ft:buttonPanel>
-			<ft:button value="Reset multi-factor" color="red" validate="false" />
-			<ft:button value="Cancel" validate="false" />
-		</ft:buttonPanel>
+		<cfoutput>
+			<div class="pull-right">
+				<ft:button value="Cancel" validate="false" />
+				<ft:button class="btn-danger" icon="fa-power-off" value="Reset multi-factor" validate="false" />
+			</div>
+			<div class="clearfix"></div>
+		</cfoutput>
 	</ft:form>
 
 <cfelse>
@@ -84,9 +86,12 @@ VIEW
 	<cfoutput><div class="alert alert-info"><admin:resource key="security.mfa.admin.notenrolled">This user has no active second factor.</admin:resource></div></cfoutput>
 
 	<ft:form>
-		<ft:buttonPanel>
-			<ft:button value="Cancel" validate="false" text="Close" />
-		</ft:buttonPanel>
+		<cfoutput>
+			<div class="pull-right">
+				<ft:button value="Cancel" text="Close" validate="false" />
+			</div>
+			<div class="clearfix"></div>
+		</cfoutput>
 	</ft:form>
 
 </cfif>
