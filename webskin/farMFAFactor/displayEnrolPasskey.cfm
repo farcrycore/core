@@ -3,6 +3,7 @@
 <!--- @@description: Composable fragment: a button that runs a WebAuthn create() ceremony client side and posts the result into the surrounding ft:form. Expects request.fc.stPasskeyEnrol = { stOptions, submitId (optional - id of a submit control to click), bAllowLabel (optional), cancelHref (optional - renders a Cancel beside the button) }. The secret never applies (a passkey is public key), so this needs no encryption key. See docs/0014. --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfparam name="request.fc.stPasskeyEnrol" default="#structnew()#" />
 
@@ -13,11 +14,10 @@
 	<cfparam name="stPkParam.cancelHref" default="" />
 	<cfparam name="stPkParam.buttonClass" default="btn btn-primary" /><!--- login passes btn-large for the hero; the webtop uses the normal size --->
 
+	<!--- registered JS through the resource pipeline (cached / versioned); the helper self-defers to DOMContentLoaded, so head loading is fine --->
+	<skin:loadJS id="fc-webauthn" />
 
 	<cfoutput>
-		<!--- ordered synchronous include: the helper is defined before the button is used, independent of head timing or render context (matches the QR fragment) --->
-		<script type="text/javascript" src="#application.url.webtop#/js/mfa/webauthn.js"></script>
-
 		<div class="mfa-passkey">
 			<cfif stPkParam.bAllowLabel>
 				<fieldset class="mfa-passkey-name">

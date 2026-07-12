@@ -106,6 +106,11 @@
 							baseHREF="#application.url.webtop#/js/mfa"
 							lFiles="webauthn.js" />
 
+		<!--- QR renderer init for MFA enrolment (draws the code from the container's data attribute; loaded on demand alongside fc-qrcode) --->
+		<skin:registerJS	id="fc-qrcode-init" core="false" bCombine="false"
+							baseHREF="#application.url.webtop#/js/mfa"
+							lFiles="qrcode-init.js" />
+
 		<skin:registerJS	id="fc-uploader" core="true"
 							baseHREF="#application.url.webtop#/js/uploader"
 							lFiles="fc-uploader.js" />

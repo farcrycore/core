@@ -79,7 +79,7 @@ ACTION
 		<cfset stRemovePk = application.fapi.getContentType("farMFAFactor").getData(objectid=form.selectedObjectID) />
 		<cfset removedLabel = (isStruct(stRemovePk) and structKeyExists(stRemovePk, "label")) ? stRemovePk.label : "" />
 		<cfif oUD.removePasskey(userid=userid, objectid=form.selectedObjectID)>
-			<cfset bubbleTitle = len(trim(removedLabel)) ? ("Passkey '" & removedLabel & "' removed") : "Passkey removed" />
+			<cfset bubbleTitle = len(trim(removedLabel)) ? ("Passkey '" & encodeForHTML(removedLabel) & "' removed") : "Passkey removed" />
 			<skin:bubble title="#bubbleTitle#" tags="security,info" />
 		</cfif>
 	</cfif>

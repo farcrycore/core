@@ -43,7 +43,7 @@
 	<cfelseif application.fapi.hasWebskin("dmProfile", "editMFAReset#stProfile.userdirectory#")>
 		<!--- the directory ships its own admin reset surface; hand it the profile (same per-UD dispatch as Impersonate below) --->
 		<skin:onReady><cfoutput>
-			$fc.openDialog('Manage multi-factor','?id=#url.id#&type=dmProfile&objectid=#stProfile.objectid#&view=webtopPageModal&bodyView=editMFAReset#stProfile.userdirectory#');
+			$fc.openDialog('Manage multi-factor','?id=#encodeForJavaScript(url.id)#&type=dmProfile&objectid=#stProfile.objectid#&view=webtopPageModal&bodyView=editMFAReset#stProfile.userdirectory#');
 		</cfoutput></skin:onReady>
 	<cfelseif stProfile.userdirectory eq "CLIENTUD">
 		<!--- CLIENTUD default: the built-in farUser-based reset modal --->
@@ -54,7 +54,7 @@
 			<skin:bubble title="Error" message="This profile does not have a valid user attached." tags="security,error" />
 		<cfelse>
 			<skin:onReady><cfoutput>
-				$fc.openDialog('Manage multi-factor','?id=#url.id#&type=farUser&objectid=#stUser.objectid#&view=webtopPageModal&bodyView=editMFAReset');
+				$fc.openDialog('Manage multi-factor','?id=#encodeForJavaScript(url.id)#&type=farUser&objectid=#stUser.objectid#&view=webtopPageModal&bodyView=editMFAReset');
 			</cfoutput></skin:onReady>
 		</cfif>
 	<cfelse>

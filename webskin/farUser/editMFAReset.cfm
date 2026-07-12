@@ -20,7 +20,7 @@ ACTION
 ------------------------------>
 <ft:processform action="Reset multi-factor" exit="true">
 	<cfset oUD.resetMFA(userKey=stObj.objectid, by="admin") />
-	<skin:bubble title="Multi-factor authentication reset" message="Reset for #stObj.userid#" tags="security,info" />
+	<skin:bubble title="Multi-factor authentication reset" message="Reset for #encodeForHTML(stObj.userid)#" tags="security,info" />
 </ft:processform>
 
 <ft:processform action="Cancel" exit="true" />
