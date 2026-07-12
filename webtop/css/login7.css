@@ -217,6 +217,24 @@ input, button, select, textarea {
 .content-main .mfa-recovery {
   margin-bottom: 20px;
 }
+/* "or use a code" separator: centred label with a rule on each side (flex + pseudo-elements) */
+.content-main .mfa-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: #999;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.content-main .mfa-divider::before,
+.content-main .mfa-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
 
 
 li a.active { background-color:#3E84B5; color:#FFF; }
