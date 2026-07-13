@@ -23,7 +23,7 @@
 ] />
 
 <!--- icon for each factor type shown in the status / admin tables --->
-<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", recoveryCodes = "fa-life-ring" } />
+<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", recoveryCode = "fa-life-ring" } />
 
 
 <!-----------------------------
@@ -224,7 +224,7 @@ VIEW
 			<cfif qFactors.factorType eq "totp"><cfset bHasTOTP = true /></cfif>
 			<cfoutput>
 					<tr>
-						<td><i class="fa fa-fw #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> <cfif qFactors.factorType eq "recoveryCodes"><strong><admin:resource key="security.mfa.manage.recoverycodes">Recovery codes</admin:resource></strong><br /><i class="fa fa-fw"></i> <small class="muted">#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource></small><cfelseif qFactors.factorType eq "passkey"><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : "Passkey")#</strong><br /><i class="fa fa-fw"></i> <small class="muted"><admin:resource key="security.mfa.manage.kind.passkey">Passkey</admin:resource></small><cfelseif qFactors.factorType eq "totp"><strong><admin:resource key="security.mfa.manage.authapp">Authenticator app</admin:resource></strong><cfelse><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#</strong></cfif></td>
+						<td><i class="fa fa-fw #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> <cfif qFactors.factorType eq "recoveryCode"><strong><admin:resource key="security.mfa.manage.recoverycodes">Recovery codes</admin:resource></strong><br /><i class="fa fa-fw"></i> <small class="muted">#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource></small><cfelseif qFactors.factorType eq "passkey"><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : "Passkey")#</strong><br /><i class="fa fa-fw"></i> <small class="muted"><admin:resource key="security.mfa.manage.kind.passkey">Passkey</admin:resource></small><cfelseif qFactors.factorType eq "totp"><strong><admin:resource key="security.mfa.manage.authapp">Authenticator app</admin:resource></strong><cfelse><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#</strong></cfif></td>
 						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
 						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.manage.never">never</admin:resource></cfif></td>
 						<td>
@@ -232,7 +232,7 @@ VIEW
 								<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><i class="fa fa-refresh"></i> <admin:resource key="security.mfa.manage.replace">Set up a new one</admin:resource></a>
 							<cfelseif qFactors.factorType eq "passkey">
 								<ft:button value="Remove passkey" text="Remove" icon="fa-trash-o" selectedObjectID="#qFactors.objectid#" validate="false" />
-							<cfelseif qFactors.factorType eq "recoveryCodes">
+							<cfelseif qFactors.factorType eq "recoveryCode">
 								<ft:button value="Regenerate recovery codes" text="Regenerate" icon="fa-refresh" validate="false" />
 							</cfif>
 						</td>

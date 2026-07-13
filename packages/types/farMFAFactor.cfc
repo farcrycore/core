@@ -18,7 +18,7 @@
 	<cfproperty name="factorType" type="string" default=""
 		ftSeq="3" ftFieldset="" ftLabel="Factor type"
 		ftType="string"
-		hint="totp / recoveryCodes (passkey and emailOTP in later phases)">
+		hint="totp / recoveryCode (passkey and emailOTP in later phases)">
 
 	<cfproperty name="status" type="string" default="active"
 		ftSeq="4" ftFieldset="" ftLabel="Status"
@@ -56,7 +56,7 @@
 				<cfif len(arguments.status)>
 				AND status = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.status#">
 				</cfif>
-			ORDER BY CASE WHEN factorType = 'recoveryCodes' THEN 1 ELSE 0 END, datetimecreated
+			ORDER BY CASE WHEN factorType = 'recoveryCode' THEN 1 ELSE 0 END, datetimecreated
 		</cfquery>
 
 		<cfreturn qFactors />
@@ -70,7 +70,7 @@
 		<cfset var i = 0 />
 
 		<cfloop from="1" to="#qFactors.recordcount#" index="i">
-			<cfif qFactors.factorType[i] neq "recoveryCodes">
+			<cfif qFactors.factorType[i] neq "recoveryCode">
 				<cfreturn true />
 			</cfif>
 		</cfloop>
@@ -237,8 +237,8 @@
 			<cfset arrayAppend(aCodes, { hash = hash, used = false }) />
 		</cfloop>
 
-		<cfset removeFactors(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCodes") />
-		<cfset createFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCodes", stPayload={ codes = aCodes }, label="Recovery codes") />
+		<cfset removeFactors(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCode") />
+		<cfset createFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCode", stPayload={ codes = aCodes }, label="Recovery codes") />
 	</cffunction>
 
 	<cffunction name="redeemRecoveryCode" access="public" output="false" returntype="struct" hint="Attempts to redeem a single-use recovery code; marks it used on success">
@@ -247,7 +247,7 @@
 		<cfargument name="code" type="string" required="true" />
 
 		<cfset var stResult = { redeemed = false, remaining = 0 } />
-		<cfset var stFactor = getActiveFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCodes") />
+		<cfset var stFactor = getActiveFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCode") />
 		<!--- normalise: codes are compared without formatting so dashes, spaces and case do not matter --->
 		<cfset var submitted = reReplace(ucase(trim(arguments.code)), "[^A-Z0-9]", "", "all") />
 		<cfset var i = 0 />
@@ -279,7 +279,7 @@
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="true" />
 
-		<cfset var stFactor = getActiveFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCodes") />
+		<cfset var stFactor = getActiveFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCode") />
 		<cfset var remaining = 0 />
 		<cfset var stCode = "" />
 

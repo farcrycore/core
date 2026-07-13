@@ -700,7 +700,7 @@
 
 		<!--- first factor for this user? issue recovery codes as the account recovery fallback. A passkey added
 		      alongside an existing factor keeps the codes already in place (no array returned = no display step). --->
-		<cfif structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="recoveryCodes"))>
+		<cfif structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="recoveryCode"))>
 			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
 		</cfif>
 

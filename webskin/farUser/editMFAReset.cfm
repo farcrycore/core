@@ -13,7 +13,7 @@
 
 <cfset oUD = application.security.userdirectories["CLIENTUD"] />
 <cfset oFactor = application.fapi.getContentType("farMFAFactor") />
-<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", recoveryCodes = "fa-life-ring" } />
+<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", recoveryCode = "fa-life-ring" } />
 
 <!-----------------------------
 ACTION
@@ -60,7 +60,7 @@ VIEW
 			<tbody>
 				<cfloop query="qFactors">
 					<tr>
-						<td><i class="fa fa-fw #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> <cfif qFactors.factorType eq "recoveryCodes"><strong><admin:resource key="security.mfa.admin.recoverycodes">Recovery codes</admin:resource></strong><br /><i class="fa fa-fw"></i> <small class="muted">#recoveryRemaining# <admin:resource key="security.mfa.admin.remaining">remaining</admin:resource></small><cfelseif qFactors.factorType eq "passkey"><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : "Passkey")#</strong><br /><i class="fa fa-fw"></i> <small class="muted"><admin:resource key="security.mfa.admin.kind.passkey">Passkey</admin:resource></small><cfelseif qFactors.factorType eq "totp"><strong><admin:resource key="security.mfa.admin.authapp">Authenticator app</admin:resource></strong><cfelse><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#</strong></cfif></td>
+						<td><i class="fa fa-fw #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> <cfif qFactors.factorType eq "recoveryCode"><strong><admin:resource key="security.mfa.admin.recoverycodes">Recovery codes</admin:resource></strong><br /><i class="fa fa-fw"></i> <small class="muted">#recoveryRemaining# <admin:resource key="security.mfa.admin.remaining">remaining</admin:resource></small><cfelseif qFactors.factorType eq "passkey"><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : "Passkey")#</strong><br /><i class="fa fa-fw"></i> <small class="muted"><admin:resource key="security.mfa.admin.kind.passkey">Passkey</admin:resource></small><cfelseif qFactors.factorType eq "totp"><strong><admin:resource key="security.mfa.admin.authapp">Authenticator app</admin:resource></strong><cfelse><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#</strong></cfif></td>
 						<td>#dateformat(qFactors.datetimecreated, "d mmm yyyy")#</td>
 						<td><cfif isDate(qFactors.lastUsed)>#dateformat(qFactors.lastUsed, "d mmm yyyy")#, #timeformat(qFactors.lastUsed, "h:mm tt")#<cfelse><admin:resource key="security.mfa.admin.never">never</admin:resource></cfif></td>
 					</tr>
