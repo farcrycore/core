@@ -843,6 +843,13 @@
 
 			<cfif stVerify.verified>
 				<cfset stFactor.stPayload.lastStep = stVerify.step />
+				<!--- key rotation: if this secret is sealed under an old or unversioned key, re-wrap it with the current key now that the plaintext is in hand (lazy migration). Best-effort - a re-wrap failure must not block a valid login. --->
+				<cfif variables.oMFACrypto.needsRewrap(stFactor.stPayload.secret)>
+					<cftry>
+						<cfset stFactor.stPayload.secret = variables.oMFACrypto.encryptSecret(secret) />
+						<cfcatch><!--- keep the existing, still-valid envelope; re-wrap will be retried on the next successful verification ---></cfcatch>
+					</cftry>
+				</cfif>
 				<cfset getFactorType().updateFactorPayload(objectid=stFactor.objectid, stPayload=stFactor.stPayload) />
 				<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=arguments.userKey) />
 				<cfset stResult.verified = true />

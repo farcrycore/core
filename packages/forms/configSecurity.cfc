@@ -96,6 +96,16 @@
 		ftSeq="47" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
 		ftHint="How long a pending second factor challenge remains valid before the user must log in again.">
 
+	<cfproperty name="mfaEncryptKeyId" type="string" default="1" required="false"
+		ftSeq="48" ftFieldset="Multi-factor Authentication" ftLabel="Encryption key id"
+		ftType="string"
+		ftHint="Identifier stamped into newly sealed MFA secrets so the right key can be found again later. Set via FARCRY_CONFIG_SECURITY_MFAENCRYPTKEYID alongside the key, and bump it (e.g. 1 to 2) each time you rotate the encryption key. Alphanumeric; defaults to 1.">
+
+	<cfproperty name="mfaEncryptKeysOld" type="string" default="" required="false"
+		ftSeq="49" ftFieldset="Multi-factor Authentication" ftLabel="Retired encryption keys"
+		ftType="string"
+		ftHint="Previous encryption keys kept only so secrets sealed under them can still be decrypted during a rotation, given as id:base64key pairs (comma separated). Set only via the FARCRY_CONFIG_SECURITY_MFAENCRYPTKEYSOLD environment variable; it is shown here as a count only and cannot be entered or stored through the webtop. Remove a key here once no stored secret still uses it.">
+
 
 	<!--- Directories and storage methods --->
 	
@@ -166,6 +176,56 @@
 				<cfelse>
 					<span class="label label-important">Not set</span>
 					<span class="help-inline">Set <code>FARCRY_CONFIG_SECURITY_MFAENCRYPTKEY</code> to a base64-encoded 128, 192 or 256-bit key. Multi-factor authentication cannot be enabled until this is present.</span>
+				</cfif>
+			</cfoutput>
+		</cfsavecontent>
+
+		<cfreturn html />
+	</cffunction>
+
+	<!--- retired keys are secret material too: render count-only status, never an input, never the values --->
+	<cffunction name="ftEditMfaEncryptKeysOld" access="public" returntype="string" output="false" hint="Render the retired-keys field (edit context) as a read-only count">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="stMetadata" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="fieldname" type="string" required="false" default="" />
+
+		<cfreturn mfaEncryptKeysOldStatusHTML() />
+	</cffunction>
+
+	<cffunction name="ftDisplayMfaEncryptKeysOld" access="public" returntype="string" output="false" hint="Render the retired-keys field (display context) as a read-only count">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="stMetadata" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="fieldname" type="string" required="false" default="" />
+
+		<cfreturn mfaEncryptKeysOldStatusHTML() />
+	</cffunction>
+
+	<cffunction name="mfaEncryptKeysOldStatusHTML" access="private" returntype="string" output="false" hint="Count-only indicator for retired (old) MFA keys held for a rotation; never renders the values">
+		<cfset var html = "" />
+		<cfset var raw = application.fapi.getConfig("security", "mfaEncryptKeysOld", "") />
+		<cfset var pair = "" />
+		<cfset var n = 0 />
+		<cfset var label = "" />
+
+		<cfloop list="#raw#" index="pair" delimiters=",">
+			<!--- count only structurally valid pairs (non-empty alphanumeric id + non-empty value), matching how getKeySet parses them --->
+			<cfif find(":", pair) and len(reReplace(trim(listFirst(pair, ":")), "[^A-Za-z0-9]", "", "all")) and len(trim(listRest(pair, ":")))>
+				<cfset n = n + 1 />
+			</cfif>
+		</cfloop>
+
+		<cfset label = n & " retained " & (n eq 1 ? "key" : "keys") />
+
+		<cfsavecontent variable="html">
+			<cfoutput>
+				<cfif n gt 0>
+					<span class="label label-info">#label#</span>
+					<span class="help-inline">Old keys retained so secrets sealed under them can still be decrypted. Stored secrets re-wrap to the current key as users sign in; remove a key here once none still use it.</span>
+				<cfelse>
+					<span class="label">None</span>
+					<span class="help-inline">No retired keys. To rotate, set the new key as <code>FARCRY_CONFIG_SECURITY_MFAENCRYPTKEY</code>, bump <code>FARCRY_CONFIG_SECURITY_MFAENCRYPTKEYID</code>, and list the previous key here as <code>oldid:base64key</code> via <code>FARCRY_CONFIG_SECURITY_MFAENCRYPTKEYSOLD</code>.</span>
 				</cfif>
 			</cfoutput>
 		</cfsavecontent>
