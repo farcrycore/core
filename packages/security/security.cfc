@@ -16,6 +16,8 @@
 	<cffunction name="initCache" access="public" output="false" returntype="void" hint="Initialises the security cache">
 		<cfset var comp = "" />
 		<cfset var ud = "" />
+		<cfset var oUD = "" />
+		<cfset var udMeta = "" />
 		
 		<!--- Cache --->
 		<cfset this.stPermissions = structNew() />
@@ -36,8 +38,11 @@
 		<cfset this.userdirectoryorder = "" />
 		
 		<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
-			<cfif comp neq "UserDirectory" and application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
-				<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)).init() />
+			<cfset oUD = createobject("component",application.factory.oUtils.getPath("security",comp)) />
+			<cfset udMeta = getMetadata(oUD) />
+			<!--- register concrete user directories only: skip the abstract bases (UserDirectory, MFAUserDirectory), which declare bAbstract. Skipping on the bAbstract attribute rather than a hardcoded base name means an abstract intermediate (MFAUserDirectory) is skipped too; the extends check is transitive, so FarcryUD still registers through it. --->
+			<cfif not (structKeyExists(udMeta,"bAbstract") and udMeta.bAbstract) and application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
+				<cfset ud = oUD.init() />
 				<cfset this.userdirectories[ud.key] = ud />
 				<cfset this.userdirectoryorder = listappend(this.userdirectoryorder,ud.key) />
 			</cfif>
