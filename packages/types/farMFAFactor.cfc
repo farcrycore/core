@@ -17,12 +17,12 @@
 
 	<cfproperty name="factorType" type="string" default=""
 		ftSeq="3" ftFieldset="" ftLabel="Factor type"
-		ftType="string"
+		ftType="string" dbIndex="IDX_mfaFactorKey:1"
 		hint="totp / recoveryCode (passkey and emailOTP in later phases)">
 
 	<cfproperty name="status" type="string" default="active"
 		ftSeq="4" ftFieldset="" ftLabel="Status"
-		ftType="string"
+		ftType="string" dbIndex="IDX_mfaFactorKey:2"
 		hint="active / revoked">
 
 	<cfproperty name="payload" type="longchar" default=""
@@ -34,6 +34,11 @@
 		ftSeq="6" ftFieldset="" ftLabel="Last used"
 		ftType="datetime"
 		hint="When this factor last verified successfully">
+
+	<cfproperty name="keyId" type="string" default=""
+		ftSeq="7" ftFieldset="" ftLabel="Key id"
+		ftType="string" dbIndex="IDX_mfaFactorKey:3"
+		hint="For a totp factor, the encryption key id its secret is sealed under (the gcm envelope's key-id segment), denormalised so a post-rotation 'needs migration' count is an indexed equality query rather than a payload scan. Empty for factor types not sealed with the rotating key (passkey, recoveryCode). Shares the composite index IDX_mfaFactorKey (factorType, status, keyId) declared via dbIndex across those three properties, so it is created by the framework's schema sync - no manual DDL.">
 
 
 	<cffunction name="getFactors" access="public" output="false" returntype="query" hint="Returns factor rows (without payload) for a user">
@@ -78,12 +83,13 @@
 		<cfreturn false />
 	</cffunction>
 
-	<cffunction name="createFactor" access="public" output="false" returntype="string" hint="Creates a factor row and returns its objectid. The payload must already have secret material encrypted.">
+	<cffunction name="createFactor" access="public" output="false" returntype="string" hint="Creates a factor row and returns its objectid. The payload must already have secret material encrypted. Pass keyId for a totp factor (the id its secret is sealed under) so the denormalised column stays in step; leave empty for factor types not sealed with the rotating key.">
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="true" />
 		<cfargument name="factorType" type="string" required="true" />
 		<cfargument name="stPayload" type="struct" required="true" />
 		<cfargument name="label" type="string" required="false" default="" />
+		<cfargument name="keyId" type="string" required="false" default="" />
 
 		<cfset var stObj = structnew() />
 
@@ -94,6 +100,7 @@
 		<cfset stObj.status = "active" />
 		<cfset stObj.payload = serializeJSON(arguments.stPayload) />
 		<cfset stObj.label = arguments.label />
+		<cfset stObj.keyId = arguments.keyId />
 
 		<cfset createData(stProperties=stObj, bAudit=false) />
 
@@ -133,17 +140,46 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="updateFactorPayload" access="public" output="false" returntype="void" hint="Replaces a factor payload and stamps lastUsed">
+	<cffunction name="updateFactorPayload" access="public" output="false" returntype="void" hint="Replaces a factor payload and stamps lastUsed. Pass keyId for a totp factor so the denormalised column tracks the secret's current key id (unchanged on a normal verify, updated on a lazy re-wrap); empty for other factor types.">
 		<cfargument name="objectid" type="uuid" required="true" />
 		<cfargument name="stPayload" type="struct" required="true" />
+		<cfargument name="keyId" type="string" required="false" default="" />
 
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 
 		<cfif not structIsEmpty(stObj)>
 			<cfset stObj.payload = serializeJSON(arguments.stPayload) />
 			<cfset stObj.lastUsed = now() />
+			<cfset stObj.keyId = arguments.keyId />
 			<cfset setData(stProperties=stObj, bAudit=false) />
 		</cfif>
+	</cffunction>
+
+	<cffunction name="writeFactorSecret" access="public" output="false" returntype="numeric" hint="Re-writes a factor's sealed secret (and its denormalised keyId) in place for a key-rotation migration, rebuilding the payload from a fresh read so lastUsed and lastStep carry through and only the secret changes. Skips a row already at the target key id (a concurrent lazy re-wrap on login got there first). The read/write pair is not transactionally locked, so in the rare event a login commits a new lastStep in that window it is last-writer-wins - benign here (worst case a one-step replay window that a live code would already defeat). Returns 1 when written, 0 when the row is gone or already migrated.">
+		<cfargument name="objectid" type="uuid" required="true" />
+		<cfargument name="newSecret" type="string" required="true" hint="The re-sealed secret to store" />
+		<cfargument name="keyId" type="string" required="false" default="" />
+
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+		<cfset var stPayload = "" />
+
+		<cfif structIsEmpty(stObj) or not structKeyExists(stObj, "payload") or not isJSON(stObj.payload)>
+			<cfreturn 0 />
+		</cfif>
+
+		<!--- already at the target key (e.g. a concurrent lazy re-wrap on login got here first): leave it untouched --->
+		<cfif structKeyExists(stObj, "keyId") and len(stObj.keyId) and stObj.keyId eq arguments.keyId>
+			<cfreturn 0 />
+		</cfif>
+
+		<cfset stPayload = deserializeJSON(stObj.payload) />
+		<cfset stPayload.secret = arguments.newSecret />
+		<cfset stObj.payload = serializeJSON(stPayload) />
+		<cfset stObj.keyId = arguments.keyId />
+		<!--- deliberately does NOT touch lastUsed - a maintenance re-wrap is not a use of the factor --->
+		<cfset setData(stProperties=stObj, bAudit=false) />
+
+		<cfreturn 1 />
 	</cffunction>
 
 	<cffunction name="getPasskeys" access="public" output="false" returntype="array" hint="Active passkey factors for a user, each with its deserialized payload (credentialId, public key params, signCount, transports). Passkeys are N-per-user, so unlike getActiveFactor this returns all of them.">
@@ -309,6 +345,101 @@
 		</cfloop>
 
 		<cfreturn qFactors.recordcount />
+	</cffunction>
+
+
+	<!--- status + migration (see docs/0014 Phase 4) --->
+
+	<cffunction name="getFactorStats" access="public" output="false" returntype="struct" hint="Aggregate active-factor counts for the status page: one figure per factor type, plus the number of distinct users holding an active authentication factor (recovery codes alone are not enrolment). Scoped to a userDirectory when given. Two indexed aggregate queries - no row loading.">
+		<cfargument name="userDirectory" type="string" required="false" default="" />
+
+		<cfset var qTypes = "" />
+		<cfset var qUsers = "" />
+		<cfset var stResult = { totp = 0, passkey = 0, recoveryCode = 0, other = 0, enrolledUsers = 0 } />
+
+		<cfquery datasource="#application.dsn#" name="qTypes">
+			SELECT factorType, COUNT(*) AS n
+			FROM #application.dbowner#farMFAFactor
+			WHERE status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
+				<cfif len(arguments.userDirectory)>
+				AND userDirectory = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userDirectory#">
+				</cfif>
+			GROUP BY factorType
+		</cfquery>
+
+		<cfloop query="qTypes">
+			<cfif qTypes.factorType eq "totp">
+				<cfset stResult.totp = qTypes.n />
+			<cfelseif qTypes.factorType eq "passkey">
+				<cfset stResult.passkey = qTypes.n />
+			<cfelseif qTypes.factorType eq "recoveryCode">
+				<cfset stResult.recoveryCode = qTypes.n />
+			<cfelse>
+				<cfset stResult.other = stResult.other + qTypes.n />
+			</cfif>
+		</cfloop>
+
+		<cfquery datasource="#application.dsn#" name="qUsers">
+			SELECT COUNT(DISTINCT userKey) AS n
+			FROM #application.dbowner#farMFAFactor
+			WHERE status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
+				AND factorType <> <cfqueryparam cfsqltype="cf_sql_varchar" value="recoveryCode">
+				<cfif len(arguments.userDirectory)>
+				AND userDirectory = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userDirectory#">
+				</cfif>
+		</cfquery>
+
+		<cfset stResult.enrolledUsers = qUsers.n />
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getTOTPMigrationStats" access="public" output="false" returntype="struct" hint="How many active totp secrets are on the current key vs still need migrating after a rotation, from the indexed keyId column (equality counts; needsMigration is total minus on-current so an unexpected value can never be double-counted).">
+		<cfargument name="currentKeyId" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="false" default="" />
+
+		<cfset var qCounts = "" />
+		<cfset var stResult = { total = 0, current = 0, needsMigration = 0 } />
+
+		<cfquery datasource="#application.dsn#" name="qCounts">
+			SELECT
+				COUNT(*) AS total,
+				SUM(CASE WHEN keyId = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.currentKeyId#"> THEN 1 ELSE 0 END) AS oncurrent
+			FROM #application.dbowner#farMFAFactor
+			WHERE status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
+				AND factorType = <cfqueryparam cfsqltype="cf_sql_varchar" value="totp">
+				<cfif len(arguments.userDirectory)>
+				AND userDirectory = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userDirectory#">
+				</cfif>
+		</cfquery>
+
+		<cfset stResult.total = val(qCounts.total) />
+		<cfset stResult.current = val(qCounts.oncurrent) />
+		<cfset stResult.needsMigration = stResult.total - stResult.current />
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getActiveTOTPMigrationPage" access="public" output="false" returntype="query" hint="A forward page of active totp factors still needing migration (keyId not the current id), after lastObjectId, ordered by objectid. Keyset pagination: a migrated row's keyId becomes the current id so it drops out, and the cursor advances past any row that errors, so the worker makes forward progress without re-looping.">
+		<cfargument name="currentKeyId" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+		<cfargument name="lastObjectId" type="string" required="false" default="" />
+		<cfargument name="maxRows" type="numeric" required="false" default="200" />
+
+		<cfset var qPage = "" />
+
+		<cfquery datasource="#application.dsn#" name="qPage" maxrows="#arguments.maxRows#">
+			SELECT objectid, payload
+			FROM #application.dbowner#farMFAFactor
+			WHERE status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
+				AND factorType = <cfqueryparam cfsqltype="cf_sql_varchar" value="totp">
+				AND userDirectory = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userDirectory#">
+				AND (keyId IS NULL OR keyId <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.currentKeyId#">)
+				<cfif len(arguments.lastObjectId)>
+				AND objectid > <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.lastObjectId#">
+				</cfif>
+			ORDER BY objectid
+		</cfquery>
+
+		<cfreturn qPage />
 	</cffunction>
 
 </cfcomponent>

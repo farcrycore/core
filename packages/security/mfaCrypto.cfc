@@ -48,9 +48,32 @@
 		<cfreturn keyFromB64(application.fapi.getConfig("security", "mfaEncryptKey", "")) />
 	</cffunction>
 
-	<cffunction name="getCurrentKeyId" access="private" output="false" returntype="string" hint="Identifier for the current key, stamped into new envelopes (security.mfaEncryptKeyId). Alphanumeric; defaults to 1">
+	<cffunction name="getCurrentKeyId" access="public" output="false" returntype="string" hint="Identifier for the current key, stamped into new envelopes (security.mfaEncryptKeyId). Alphanumeric; defaults to 1">
 		<cfset var id = reReplace(trim(application.fapi.getConfig("security", "mfaEncryptKeyId", "1")), "[^A-Za-z0-9]", "", "all") />
 		<cfreturn len(id) ? id : "1" />
+	</cffunction>
+
+	<cffunction name="envelopeKeyId" access="public" output="false" returntype="string" hint="The key id a sealed secret is stamped with (the gcm envelope's second segment), or empty for anything that is not a recognised gcm envelope">
+		<cfargument name="sealed" type="string" required="true" />
+
+		<cfif listFirst(arguments.sealed, ".") neq "gcm" or listLen(arguments.sealed, ".") neq 4>
+			<cfreturn "" />
+		</cfif>
+		<cfreturn listGetAt(arguments.sealed, 2, ".") />
+	</cffunction>
+
+	<cffunction name="retainedKeyCount" access="public" output="false" returntype="numeric" hint="How many old keys are currently retained for decryption during a rotation (security.mfaEncryptKeysOld); structurally valid pairs only">
+		<cfset var raw = trim(application.fapi.getConfig("security", "mfaEncryptKeysOld", "")) />
+		<cfset var pair = "" />
+		<cfset var n = 0 />
+
+		<cfloop list="#raw#" index="pair" delimiters=",">
+			<cfif find(":", pair) and len(reReplace(trim(listFirst(pair, ":")), "[^A-Za-z0-9]", "", "all")) and len(trim(listRest(pair, ":")))>
+				<cfset n = n + 1 />
+			</cfif>
+		</cfloop>
+
+		<cfreturn n />
 	</cffunction>
 
 	<cffunction name="getKeySet" access="private" output="false" returntype="struct" hint="Every key available for decryption, keyed by id: the current key plus any old keys retained for a rotation (security.mfaEncryptKeysOld, 'id:base64,id:base64'). All key material is read from the environment, never the DB. The current key always holds its own id; a retained key that happens to share that id is kept under a distinct synthetic id so it is never dropped from the decrypt set (a decrypt-with-any safety net - keyRotationSelfTest flags the id collision so the operator bumps mfaEncryptKeyId and secrets can migrate).">

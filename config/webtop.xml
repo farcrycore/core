@@ -65,6 +65,7 @@
 			</menu>
 			<menu id="securitytools" sequence="150" label="Security Tools">
 				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />
+				<menuitem id="mfastatus" sequence="20" label="Multi-factor Authentication" typename="farCOAPI" bodyview="webtopBodyMFAStatus" />
 			</menu>
 		</subsection>
 		<subsection id="coapi" sequence="100" permission="AdminCOAPITab" label="Developer Utilities" >

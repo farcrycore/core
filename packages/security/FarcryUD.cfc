@@ -537,7 +537,7 @@
 
 		<!--- idempotent: a re-enrolment replaces the existing authenticator rather than stacking a second (dead) totp row --->
 		<cfset getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="totp") />
-		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="totp", stPayload={ secret = sealed, lastStep = stVerify.step }, label="Authenticator app") />
+		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="totp", stPayload={ secret = sealed, lastStep = stVerify.step }, label="Authenticator app", keyId=variables.oMFACrypto.envelopeKeyId(sealed)) />
 		<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
 		<cfset structDelete(stContext, "enrolSecret") />
 
@@ -850,7 +850,7 @@
 						<cfcatch><!--- keep the existing, still-valid envelope; re-wrap will be retried on the next successful verification ---></cfcatch>
 					</cftry>
 				</cfif>
-				<cfset getFactorType().updateFactorPayload(objectid=stFactor.objectid, stPayload=stFactor.stPayload) />
+				<cfset getFactorType().updateFactorPayload(objectid=stFactor.objectid, stPayload=stFactor.stPayload, keyId=variables.oMFACrypto.envelopeKeyId(stFactor.stPayload.secret)) />
 				<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=arguments.userKey) />
 				<cfset stResult.verified = true />
 				<cfset stResult.reason = "" />
@@ -877,6 +877,140 @@
 		</cfif>
 
 		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="migrateStoredSecrets" access="public" output="false" returntype="struct" hint="Starts a background re-wrap of this directory's stored totp secrets onto the current encryption key - the bulk counterpart to the lazy re-wrap on verify. Returns immediately: seeds a server-scope progress record (server.farcryMFAMigration['<applicationname>|<directory>']) and spawns a thread that pages through only the factors still needing migration. Guarded so at most one migration runs per application+directory; a wedged flag from a killed thread ages out after 30 minutes. Idempotent, so a re-run after an interruption simply resumes.">
+		<cfargument name="startedBy" type="string" required="false" default="" />
+		<cfargument name="batchSize" type="numeric" required="false" default="200" />
+
+		<cfset var appName = application.applicationname />
+		<cfset var flagKey = appName & "|" & this.key />
+		<cfset var currentId = variables.oMFACrypto.getCurrentKeyId() />
+		<cfset var stStats = "" />
+		<cfset var stResult = { started = false, reason = "" } />
+
+		<cflock name="mfaMigration_#flagKey#" type="exclusive" timeout="10">
+			<cfif not structKeyExists(server, "farcryMFAMigration")>
+				<cfset server.farcryMFAMigration = structnew() />
+			</cfif>
+			<!--- refuse a second run only while one is genuinely live (running + active within the last 30 minutes); a wedged flag ages out --->
+			<cfif structKeyExists(server.farcryMFAMigration, flagKey) and server.farcryMFAMigration[flagKey].running and migrationIsLive(server.farcryMFAMigration[flagKey])>
+				<cfset stResult.reason = "alreadyRunning" />
+				<cfreturn stResult />
+			</cfif>
+
+			<cfset stStats = getFactorType().getTOTPMigrationStats(currentKeyId=currentId, userDirectory=this.key) />
+			<cfset server.farcryMFAMigration[flagKey] = {
+				running = true, directory = this.key, keyId = currentId,
+				startedBy = arguments.startedBy, startedAt = now(), finishedAt = "",
+				total = stStats.needsMigration, done = 0, failed = 0,
+				lastObjectId = "", lastRecordAt = "", lastError = ""
+			} />
+			<cfset stResult.started = true />
+		</cflock>
+
+		<cfthread action="run" name="mfaMigrate_#flagKey#_#createUUID()#" tdKey="#this.key#" tdCurrentId="#currentId#" tdBatch="#arguments.batchSize#" tdFlag="#flagKey#">
+			<cfset stF = server.farcryMFAMigration[attributes.tdFlag] />
+			<cfset lastId = "" />
+			<cfset bMore = true />
+			<cfset qPage = "" />
+			<cfset stRow = "" />
+			<cfset secret = "" />
+			<cfset envId = "" />
+			<cfset newSecret = "" />
+			<cfset oFactor = "" />
+			<cfset oCrypto = "" />
+			<cfset batches = 0 />
+			<cfset maxBatches = 0 />
+
+			<cftry>
+				<!--- acquire dependencies inside the try so a setup failure still clears the running flag (below) --->
+				<cfset oFactor = application.fapi.getContentType("farMFAFactor") />
+				<cfset oCrypto = createObject("component", application.factory.oUtils.getPath("security", "mfaCrypto")).init() />
+
+				<!--- runaway backstop: the working set only shrinks (migrated rows drop out; new enrolments already seal with the current key), so in normal operation the loop ends on a short page well before this - it just bounds an unforeseen stuck cursor. Stopping early is safe: the migration is idempotent, so a re-run resumes. --->
+				<cfset maxBatches = int(stF.total / attributes.tdBatch) + 50 />
+
+				<cfloop condition="bMore">
+					<cfset batches = batches + 1 />
+					<cfif batches gt maxBatches>
+						<cfset stF.lastError = "stopped at the safety cap (" & maxBatches & " batches) - re-run to finish" />
+						<cfset application.fapi.logEvent("mfa", "warning", "mfa migration hit its safety cap; re-run to continue", { directory = attributes.tdKey, batches = batches }) />
+						<cfbreak />
+					</cfif>
+					<cfset qPage = oFactor.getActiveTOTPMigrationPage(currentKeyId=attributes.tdCurrentId, userDirectory=attributes.tdKey, lastObjectId=lastId, maxRows=attributes.tdBatch) />
+
+					<cfif qPage.recordcount eq 0>
+						<cfset bMore = false />
+					<cfelse>
+						<cfloop query="qPage">
+							<cfset lastId = qPage.objectid />
+							<cftry>
+								<cfif isJSON(qPage.payload)>
+									<cfset stRow = deserializeJSON(qPage.payload) />
+									<cfset secret = structKeyExists(stRow, "secret") ? stRow.secret : "" />
+									<cfset envId = oCrypto.envelopeKeyId(secret) />
+									<cfif len(secret) and oCrypto.needsRewrap(secret)>
+										<!--- stale key: re-seal the plaintext onto the current key --->
+										<cfset newSecret = oCrypto.encryptSecret(oCrypto.decryptSecret(secret)) />
+										<cfif oFactor.writeFactorSecret(objectid=qPage.objectid, newSecret=newSecret, keyId=oCrypto.envelopeKeyId(newSecret)) gt 0>
+											<cfset stF.done = stF.done + 1 />
+										</cfif>
+									<cfelseif len(envId)>
+										<!--- envelope already on the current key; only the denormalised keyId column had drifted - reconcile it --->
+										<cfif oFactor.writeFactorSecret(objectid=qPage.objectid, newSecret=secret, keyId=envId) gt 0>
+											<cfset stF.done = stF.done + 1 />
+										</cfif>
+									<cfelse>
+										<cfset stF.failed = stF.failed + 1 />
+										<cfset application.fapi.logEvent("mfa", "warning", "mfa migration skipped a factor with no readable secret", { objectid = qPage.objectid, directory = attributes.tdKey }) />
+									</cfif>
+								<cfelse>
+									<cfset stF.failed = stF.failed + 1 />
+								</cfif>
+								<cfcatch>
+									<cfset stF.failed = stF.failed + 1 />
+									<cfset application.fapi.logEvent("mfa", "warning", "mfa secret migration failed for a factor", { objectid = qPage.objectid, directory = attributes.tdKey, error = cfcatch.message }) />
+								</cfcatch>
+							</cftry>
+							<cfset stF.lastObjectId = lastId />
+							<cfset stF.lastRecordAt = now() />
+						</cfloop>
+
+						<cfif qPage.recordcount lt attributes.tdBatch>
+							<cfset bMore = false />
+						</cfif>
+					</cfif>
+				</cfloop>
+				<cfset stF.finishedAt = now() />
+				<cfcatch>
+					<cfset stF.lastError = cfcatch.message />
+					<cfset stF.finishedAt = now() />
+				</cfcatch>
+			</cftry>
+
+			<cfset stF.running = false />
+		</cfthread>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="migrationIsLive" access="private" output="false" returntype="boolean" hint="True when a running migration flag has shown activity in the last 30 minutes; a wedged flag left by a killed thread ages out so a fresh run can start.">
+		<cfargument name="stFlag" type="struct" required="true" />
+
+		<cfset var lastActivity = "" />
+
+		<cfif structKeyExists(arguments.stFlag, "lastRecordAt") and isDate(arguments.stFlag.lastRecordAt)>
+			<cfset lastActivity = arguments.stFlag.lastRecordAt />
+		<cfelseif structKeyExists(arguments.stFlag, "startedAt") and isDate(arguments.stFlag.startedAt)>
+			<cfset lastActivity = arguments.stFlag.startedAt />
+		</cfif>
+
+		<cfif not isDate(lastActivity)>
+			<cfreturn false />
+		</cfif>
+
+		<cfreturn dateDiff("n", lastActivity, now()) lt 30 />
 	</cffunction>
 
 	<cffunction name="recordMFAFailure" access="private" output="false" returntype="boolean" hint="Feeds a failed second factor into the shared login lockout; returns true when the account is now locked">
