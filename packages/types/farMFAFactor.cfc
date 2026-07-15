@@ -1,6 +1,6 @@
 <cfcomponent
 	displayname="MFA Factor"
-	hint="Enrolled multi-factor authentication factors, keyed by a stable directory-scoped user key plus the owning user directory. Directory-agnostic storage for credential-owning user directories; secrets in the payload are encrypted by the caller before they reach this type. See docs/0014."
+	hint="Enrolled multi-factor authentication factors, keyed by a stable directory-scoped user key plus the owning user directory. Directory-agnostic storage for credential-owning user directories; secrets in the payload are encrypted by the caller before they reach this type."
 	extends="types" output="false"
 	bRefObjects="false" bObjectBroker="0" bSystem="true"
 	icon="fa-lock">
@@ -348,7 +348,7 @@
 	</cffunction>
 
 
-	<!--- status + migration (see docs/0014 Phase 4) --->
+	<!--- status + migration --->
 
 	<cffunction name="getFactorStats" access="public" output="false" returntype="struct" hint="Aggregate active-factor counts for the status page: one figure per factor type, plus the number of distinct users holding an active authentication factor (recovery codes alone are not enrolment). Scoped to a userDirectory when given. Two indexed aggregate queries - no row loading.">
 		<cfargument name="userDirectory" type="string" required="false" default="" />

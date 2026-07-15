@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Security (multi-factor) --->
-<!--- @@description: Self-service management of the current user's second factors: view status, set up a passkey or authenticator app, regenerate recovery codes, remove a passkey, turn off. CLIENTUD self-service surface (see docs/0014). --->
+<!--- @@description: Self-service management of the current user's second factors: view status, set up a passkey or authenticator app, regenerate recovery codes, remove a passkey, turn off. CLIENTUD self-service surface. --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />

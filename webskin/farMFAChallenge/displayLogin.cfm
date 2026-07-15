@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: MFA challenge --->
-<!--- @@description: Second factor challenge rendered by the login flow while a login is pending verification. Offers a passkey (when the user has one) alongside the authenticator / recovery code field. See docs/0014. --->
+<!--- @@description: Second factor challenge rendered by the login flow while a login is pending verification. Offers a passkey (when the user has one) alongside the authenticator / recovery code field. --->
 
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />

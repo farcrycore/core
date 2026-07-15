@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Passkey challenge block --->
-<!--- @@description: Composable fragment: a button that runs a WebAuthn get() ceremony client side and posts the result into the surrounding ft:form. Expects request.fc.stPasskeyChallenge = { stOptions, submitId (optional - id of a submit control to click) }. See docs/0014. --->
+<!--- @@description: Composable fragment: a button that runs a WebAuthn get() ceremony client side and posts the result into the surrounding ft:form. Expects request.fc.stPasskeyChallenge = { stOptions, submitId (optional - id of a submit control to click) }. --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />

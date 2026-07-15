@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: MFA enrolment --->
-<!--- @@description: Interstitial enrolment wizard rendered by the login flow when policy requires a second factor the user has not yet set up. Offers a passkey and / or an authenticator app. See docs/0014. --->
+<!--- @@description: Interstitial enrolment wizard rendered by the login flow when policy requires a second factor the user has not yet set up. Offers a passkey and / or an authenticator app. --->
 
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />

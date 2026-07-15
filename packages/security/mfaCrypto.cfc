@@ -1,4 +1,4 @@
-<cfcomponent displayname="MFA Crypto" hint="Stateless helpers for multi-factor authentication: Base32 (RFC 4648), TOTP (RFC 6238), AES-GCM secret storage keyed from the environment, constant time comparison and recovery code generation. JVM built-ins only; runs on Lucee and Adobe ColdFusion. See docs/0014." output="false">
+<cfcomponent displayname="MFA Crypto" hint="Stateless helpers for multi-factor authentication: Base32 (RFC 4648), TOTP (RFC 6238), AES-GCM secret storage keyed from the environment, constant time comparison and recovery code generation. JVM built-ins only; runs on Lucee and Adobe ColdFusion." output="false">
 
 	<cfset variables.BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567" />
 	<!--- recovery code alphabet omits easily confused characters (I, L, O, 0, 1) --->
@@ -298,7 +298,7 @@
 	</cffunction>
 
 
-	<!--- secret storage (AES-GCM, versioned envelope for key rotation - see docs/0014 Phase 4) --->
+	<!--- secret storage (AES-GCM, versioned envelope for key rotation) --->
 
 	<cffunction name="gcmSeal" access="private" output="false" returntype="string" hint="AES-GCM encrypt with a given key; returns base64(iv).base64(ciphertext) using a fresh 96 bit IV and a 128 bit tag">
 		<cfargument name="oKey" type="any" required="true" />

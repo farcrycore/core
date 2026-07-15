@@ -1,4 +1,4 @@
-<cfcomponent displayname="WebAuthn" hint="Server side WebAuthn / FIDO2 second factor verification: registration and assertion, CBOR / COSE parsing (com.upokecenter.cbor) and ES256 / RS256 signature checks via JCA. Public key material only, so nothing here needs the at-rest encryption key. Second factor use: attestation is requested 'none' and is not chain validated. JVM built-ins plus the bundled CBOR jar; runs on Lucee and Adobe ColdFusion. See docs/0014." output="false">
+<cfcomponent displayname="WebAuthn" hint="Server side WebAuthn / FIDO2 second factor verification: registration and assertion, CBOR / COSE parsing (com.upokecenter.cbor) and ES256 / RS256 signature checks via JCA. Public key material only, so nothing here needs the at-rest encryption key. Second factor use: attestation is requested 'none' and is not chain validated. JVM built-ins plus the bundled CBOR jar; runs on Lucee and Adobe ColdFusion." output="false">
 
 	<!--- COSE identifiers (RFC 8152) --->
 	<cfset variables.COSE_KTY = 1 />

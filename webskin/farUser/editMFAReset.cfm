@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Manage multi-factor --->
-<!--- @@description: Modal (opened from the "Manage multi-factor" action on the User Administration list) to review and reset a user's second factors. Shows the user and their enrolled factors so an admin can verify before resetting. Permission-gated on SecurityManagement (see docs/0014). --->
+<!--- @@description: Modal (opened from the "Manage multi-factor" action on the User Administration list) to review and reset a user's second factors. Shows the user and their enrolled factors so an admin can verify before resetting. Permission-gated on SecurityManagement. --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />

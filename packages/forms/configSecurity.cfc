@@ -50,7 +50,7 @@
 		ftSeq="30" ftFieldset="Password Policy" ftLabel="Password Policy Help Text" ftLimit="250"
 		ftHint="Provide a short description of the password policy defined above.">
 
-	<!--- Multi-factor authentication (see docs/0014) --->
+	<!--- Multi-factor authentication --->
 
 	<cfproperty name="mfaEncryptKey" type="string" default="" required="false"
 		ftSeq="39" ftFieldset="Multi-factor Authentication" ftLabel="Encryption key"

@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Passkey enrolment block --->
-<!--- @@description: Composable fragment: a button that runs a WebAuthn create() ceremony client side and posts the result into the surrounding ft:form. Expects request.fc.stPasskeyEnrol = { stOptions, submitId (optional - id of a submit control to click), bAllowLabel (optional), cancelHref (optional - renders a Cancel beside the button) }. The secret never applies (a passkey is public key), so this needs no encryption key. See docs/0014. --->
+<!--- @@description: Composable fragment: a button that runs a WebAuthn create() ceremony client side and posts the result into the surrounding ft:form. Expects request.fc.stPasskeyEnrol = { stOptions, submitId (optional - id of a submit control to click), bAllowLabel (optional), cancelHref (optional - renders a Cancel beside the button) }. The secret never applies (a passkey is public key), so this needs no encryption key. --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />

@@ -105,7 +105,7 @@
 		<cfreturn true />
 	</cffunction>
 
-	<!--- optional MFA contract (see docs/0014); credential-owning directories implement these, delegating (IdP-backed) ones inherit the no-op defaults --->
+	<!--- optional MFA contract; credential-owning directories implement these, delegating (IdP-backed) ones inherit the no-op defaults --->
 
 	<cffunction name="providesMFA" access="public" output="false" returntype="boolean" hint="Returns true if this directory can perform second factor verification. Capability flag only - drives UI visibility, never the login flow.">
 

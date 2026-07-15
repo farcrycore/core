@@ -10,7 +10,7 @@
 	secrets need migrating onto the current encryption key after a rotation. When migration is
 	needed, an admin can start a background re-wrap (the bulk counterpart to the lazy re-wrap on
 	login); progress is read from a server-scope flag. All figures come from indexed aggregate
-	queries. SecurityManagement-gated. See docs/0014.
+	queries. SecurityManagement-gated.
 --->
 
 <cfif not application.security.checkPermission(permission="SecurityManagement")>

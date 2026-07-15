@@ -388,7 +388,7 @@
 			<cfset udlist = arrayToList(udlist) />
 		</cfif>
 
-		<!--- mfa interstitial: a pending second factor owns the login flow until verified, cancelled or expired (see docs/0014) --->
+		<!--- mfa interstitial: a pending second factor owns the login flow until verified, cancelled or expired --->
 		<cfif structKeyExists(session, "fc") and structKeyExists(session.fc, "mfaPending")>
 			<cfif structKeyExists(url, "mfacancel")>
 				<!--- user chose to start over with fresh credentials --->
@@ -454,7 +454,7 @@
 					<cfbreak />
 				</cfif>
 				
-				<!--- SUCCESS - before any session is established, the directory may require a second factor (see docs/0014) --->
+				<!--- SUCCESS - before any session is established, the directory may require a second factor --->
 				<cfif this.userdirectories[stResult.UD].requiresMFA(userid=stResult.userid)>
 					<cfparam name="session.fc" default="#structnew()#" />
 					<cfset session.fc.mfaPending = {
