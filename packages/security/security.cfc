@@ -416,6 +416,16 @@
 					<cfset login(userid=stResult.userid, ud=stResult.UD, bMFAVerified=true, mfaMethod=(structKeyExists(stMFA, "method") ? stMFA.method : "")) />
 					<cfset stResult.authenticated = true />
 					<cfset stResult.message = "" />
+				<cfelseif structKeyExists(stMFA, "skipped") and stMFA.skipped>
+					<!--- grace-period skip: a mandatory but not-yet-enrolled user defers enrolment until the deadline; log in without a second factor --->
+					<cfset stResult.userid = session.fc.mfaPending.userid />
+					<cfset stResult.UD = session.fc.mfaPending.ud />
+					<cfset structDelete(session.fc, "mfaPending") />
+					<cfset login(userid=stResult.userid, ud=stResult.UD) />
+					<cfset logSecurityEvent(event="mfaGraceSkipped", message="second factor enrolment skipped during grace period", userid="#stResult.userid#_#stResult.UD#") />
+					<farcry:logevent type="security" event="mfaGraceSkipped" userid="#stResult.userid#_#stResult.UD#" notes="grace skip" />
+					<cfset stResult.authenticated = true />
+					<cfset stResult.message = "" />
 				<cfelse>
 					<!--- pass the factor context (reason, message, recovery codes to display) through to the webskin --->
 					<cfset stResult = duplicate(stMFA) />
@@ -426,7 +436,7 @@
 					<!--- these are not failed attempts: noSubmission (just rendering the form), recoveryCodes
 					      (post-enrolment display step), mfaUnavailable (infrastructure fault) and noCandidate
 					      (the enrolment session expired) - none should count toward lockout --->
-					<cfif not listFindNoCase("noSubmission,recoveryCodes,mfaUnavailable,noCandidate", stMFA.reason)>
+					<cfif not listFindNoCase("noSubmission,recoveryCodes,mfaUnavailable,noCandidate,emailCodeSent,codeExpired", stMFA.reason)>
 						<cfset session.fc.mfaPending.attempts = session.fc.mfaPending.attempts + 1 />
 						<cfset logSecurityEvent(event="mfaFailed", level="warning", message="second factor failed", userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#", stFields={ reason=stMFA.reason, method=(structKeyExists(stMFA, "method") ? stMFA.method : "unknown") }) />
 						<farcry:logevent type="security" event="mfaFailed" userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#" notes="#stMFA.reason#" />

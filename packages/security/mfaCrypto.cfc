@@ -494,4 +494,18 @@
 		<cfreturn aCodes />
 	</cffunction>
 
+	<cffunction name="generateNumericCode" access="public" output="false" returntype="string" hint="Returns a cryptographically random numeric code of the given length (default 6), for an emailed one-time code; leading zeros are preserved">
+		<cfargument name="digits" type="numeric" required="false" default="6" />
+
+		<cfset var oRandom = createObject("java", "java.security.SecureRandom").init() />
+		<cfset var code = "" />
+		<cfset var i = 0 />
+
+		<cfloop from="1" to="#int(arguments.digits)#" index="i">
+			<cfset code = code & oRandom.nextInt(javacast("int", 10)) />
+		</cfloop>
+
+		<cfreturn code />
+	</cffunction>
+
 </cfcomponent>

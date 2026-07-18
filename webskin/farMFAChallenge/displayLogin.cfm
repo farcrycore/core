@@ -11,9 +11,13 @@
 <!--- offer a passkey only when the pending user has one (this also mints a fresh assertion challenge); label the code field for what they actually have --->
 <cfset stPasskey = { bSuccess = false } />
 <cfset bHasTOTP = false />
+<cfset bHasEmail = false />
+<cfset bEmailSent = false />
 <cfif structKeyExists(session, "fc") and structKeyExists(session.fc, "mfaPending")>
 	<cfset stPasskey = application.security.userdirectories[session.fc.mfaPending.ud].getPasskeyAssertionOptions(userid=session.fc.mfaPending.userid) />
 	<cfset bHasTOTP = application.security.userdirectories[session.fc.mfaPending.ud].hasTOTPFactor(userid=session.fc.mfaPending.userid) />
+	<cfset bHasEmail = application.security.userdirectories[session.fc.mfaPending.ud].emailFactorAvailable(userid=session.fc.mfaPending.userid) />
+	<cfset bEmailSent = structKeyExists(session.fc.mfaPending, "context") and structKeyExists(session.fc.mfaPending.context, "emailOTP") />
 </cfif>
 
 <ft:form bAddFormCSS="false" class="clearfix" bFocusFirstField="true" action="#application.fapi.fixURL(removeValues='mfacancel')#">
@@ -31,6 +35,8 @@
 		<cfoutput><p class="help-block text-center"><admin:resource key="security.mfa.challenge.passkeyhint">Use your device's fingerprint, face or screen lock, or a security key.</admin:resource></p><p class="mfa-divider"><cfif bHasTOTP><admin:resource key="security.mfa.challenge.or">or use a code</admin:resource><cfelse><admin:resource key="security.mfa.challenge.oralt">or</admin:resource></cfif></p></cfoutput>
 	<cfelseif bHasTOTP>
 		<cfoutput><p><admin:resource key="security.mfa.challenge.entercode">Enter the code from your authenticator app to finish signing in.</admin:resource></p></cfoutput>
+	<cfelseif bHasEmail>
+		<cfoutput><p><admin:resource key="security.mfa.challenge.enteremail">Enter the code we emailed you to finish signing in.</admin:resource></p></cfoutput>
 	<cfelse>
 		<cfoutput><p><admin:resource key="security.mfa.challenge.enterrecovery">Enter one of your recovery codes to finish signing in.</admin:resource></p></cfoutput>
 	</cfif>
@@ -39,9 +45,10 @@
 
 	<cfoutput>
 		<fieldset>
-			<label for="#stFields.code.formfieldname#"><cfif bHasTOTP><admin:resource key="security.mfa.challenge.authcode">Authenticator code</admin:resource><cfelse><admin:resource key="security.mfa.challenge.recoverycode">Recovery code</admin:resource></cfif></label>
+			<label for="#stFields.code.formfieldname#"><cfif bHasTOTP><admin:resource key="security.mfa.challenge.authcode">Authenticator code</admin:resource><cfelseif bHasEmail><admin:resource key="security.mfa.challenge.emailcode">Email code</admin:resource><cfelse><admin:resource key="security.mfa.challenge.recoverycode">Recovery code</admin:resource></cfif></label>
 			#stFields.code.html#
-			<cfif bHasTOTP><p class="help-block"><admin:resource key="security.mfa.challenge.recoveryhint">Lost your device? One of your recovery codes works here too.</admin:resource></p></cfif>
+			<cfif bHasEmail><p class="help-block"><cfif bEmailSent><admin:resource key="security.mfa.challenge.emailsent">We've emailed you a code.</admin:resource> </cfif><ft:button rendertype="button" class="btn btn-link" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailsend" text="#bEmailSent ? 'Resend code' : 'Email me a code'#" /></p></cfif>
+			<cfif bHasTOTP or bHasEmail><p class="help-block"><admin:resource key="security.mfa.challenge.recoveryhint">Lost your device? One of your recovery codes works here too.</admin:resource></p></cfif>
 		</fieldset>
 
 		<div class="pull-right">

@@ -327,6 +327,12 @@
 		<cfreturn structKeyExists(stUser, "userid") ? stUser.userid : "" />
 	</cffunction>
 
+	<cffunction name="getUserEmail" access="private" output="false" returntype="string" hint="HOOK impl: the user's email address (from their profile) for an emailed one-time code; empty string when none">
+		<cfargument name="userid" type="string" required="true" />
+		<cfset var stProfile = createObject("component", application.stcoapi["dmProfile"].packagePath).getProfile(userName=arguments.userid, ud=this.key) />
+		<cfreturn (structKeyExists(stProfile, "emailAddress") and len(trim(stProfile.emailAddress))) ? trim(stProfile.emailAddress) : "" />
+	</cffunction>
+
 	<!--- =============================
 	  Pre 4.1 data migration functions
 	============================== --->

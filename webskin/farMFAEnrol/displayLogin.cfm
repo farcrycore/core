@@ -41,8 +41,11 @@
 	<cfset oUD = application.security.userdirectories[session.fc.mfaPending.ud] />
 	<cfset stTOTP = oUD.startTOTPEnrolment(userid=session.fc.mfaPending.userid) />
 	<cfset stPasskey = oUD.startPasskeyEnrolment(userid=session.fc.mfaPending.userid) />
+	<cfset bEmailEnrol = oUD.emailEnrolOffered() />
+	<cfset bGraceSkip = oUD.graceSkipAvailable(userid=session.fc.mfaPending.userid) />
+	<cfset bEmailEnrolSent = structKeyExists(session.fc.mfaPending, "context") and structKeyExists(session.fc.mfaPending.context, "enrolEmailOTP") />
 
-	<cfif not stTOTP.bSuccess and not stPasskey.bSuccess>
+	<cfif not stTOTP.bSuccess and not stPasskey.bSuccess and not bEmailEnrol>
 
 		<cfoutput>
 			<div class="alert alert-error">#encodeForHTML(stTOTP.message)#</div>
@@ -94,9 +97,43 @@
 				</cfoutput>
 			</cfif>
 
+			<cfif bEmailEnrol>
+				<cfif stPasskey.bSuccess or stTOTP.bSuccess>
+					<cfoutput><p class="mfa-divider"><admin:resource key="security.mfa.enrol.oremail">or use your email</admin:resource></p></cfoutput>
+				</cfif>
+
+				<cfif not bEmailEnrolSent>
+					<cfoutput>
+						<p><admin:resource key="security.mfa.enrol.emailintro">Get a one-time code sent to your email address, then enter it to finish.</admin:resource></p>
+						<div class="pull-right">
+							<ft:button rendertype="button" class="btn#(stPasskey.bSuccess or stTOTP.bSuccess) ? '' : ' btn-primary'#" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailsendenrol" text="Email me a code" />
+						</div>
+						<div class="clearfix"></div>
+					</cfoutput>
+				<cfelse>
+					<cfoutput><p><admin:resource key="security.mfa.enrol.emailenter">Enter the code we emailed you to finish setting up email verification.</admin:resource></p></cfoutput>
+					<ft:object typename="farMFAEnrol" lFields="emailcode" prefix="mfa" legend="" focusField="emailcode" r_stFields="stEmailFields" />
+					<cfoutput>
+						<fieldset>
+							<label for="#stEmailFields.emailcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
+							#stEmailFields.emailcode.html#
+						</fieldset>
+						<div class="pull-right">
+							<ft:button rendertype="button" id="mfaActivateEmailBtn" class="btn btn-primary" value="mfaActivateEmail" rbkey="security.mfa.buttons.activateemail" text="Activate" />
+						</div>
+						<div class="clearfix"></div>
+						<p><ft:button rendertype="button" class="btn btn-link" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailresend" text="Resend code" /></p>
+					</cfoutput>
+				</cfif>
+			</cfif>
+
 			<cfoutput>
 				<div class="clearfix"></div>
 				<hr />
+				<cfif bGraceSkip>
+					<p class="text-center"><ft:button rendertype="button" class="btn btn-default" value="mfaSkip" validate="false" rbkey="security.mfa.buttons.skip" text="Skip for now" /></p>
+					<p class="help-block text-center"><admin:resource key="security.mfa.enrol.skiphint">You can set this up later, but it will be required soon.</admin:resource></p>
+				</cfif>
 				<p class="text-center"><a href="#application.url.webtoplogin#?mfacancel=1"><admin:resource key="security.mfa.challenge.cancel">Sign in as a different user</admin:resource></a></p>
 			</cfoutput>
 

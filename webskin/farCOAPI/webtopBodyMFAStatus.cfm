@@ -124,6 +124,7 @@
 			<div class="mfa-tile"><div class="n">#stStats.enrolledUsers#</div><div class="l">Enrolled users</div></div>
 			<div class="mfa-tile"><div class="n">#stStats.totp#</div><div class="l">Authenticator apps</div></div>
 			<div class="mfa-tile"><div class="n">#stStats.passkey#</div><div class="l">Passkeys</div></div>
+			<div class="mfa-tile"><div class="n">#stStats.emailOTP#</div><div class="l">Email codes</div></div>
 			<div class="mfa-tile"><div class="n">#stStats.recoveryCode#</div><div class="l">Recovery-code sets</div></div>
 		</div>
 	</div>

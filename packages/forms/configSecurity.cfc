@@ -106,6 +106,20 @@
 		ftType="string"
 		ftHint="Previous encryption keys kept only so secrets sealed under them can still be decrypted during a rotation, given as id:base64key pairs (comma separated). Set only via the FARCRY_CONFIG_SECURITY_MFAENCRYPTKEYSOLD environment variable; it is shown here as a count only and cannot be entered or stored through the webtop. Remove a key here once no stored secret still uses it.">
 
+	<cfproperty name="mfaEmailOTP" type="string" default="off"
+		ftSeq="50" ftFieldset="Multi-factor Authentication" ftLabel="Email one-time-code factor"
+		ftType="list" ftList="off:Off,soleFactor:On - only as a sole factor,anyFactor:On - allowed with a stronger factor"
+		ftHint="Whether users may use a one-time code emailed to them as a second factor. Email is the weakest factor - its security is only as strong as the user's mailbox - so it is off by default and best reserved for users who cannot use an authenticator app or passkey. 'Only as a sole factor' offers email only to a user who has no stronger factor, keeping a strong factor strong. 'Allowed with a stronger factor' is a deliberate downgrade: an attacker who has the password and the mailbox can then bypass a stronger factor by choosing email, so enable it only where that trade-off is acceptable.">
+
+	<cfproperty name="mfaEmailResendSeconds" type="integer" ftType="integer" default="60"
+		ftSeq="51" ftFieldset="Multi-factor Authentication" ftLabel="Email code resend interval (seconds)"
+		ftHint="Minimum seconds between emailed one-time codes for a single login, to throttle resends. Default 60.">
+
+	<cfproperty name="mfaGraceUntil" type="string" default=""
+		ftSeq="52" ftFieldset="Multi-factor Authentication" ftLabel="Enrolment grace period until"
+		ftType="string"
+		ftHint="Optional date (yyyy-mm-dd). While it is set to a future date, a user who is required to use MFA but has not yet enrolled is prompted to set it up but may skip and continue; on and after the date, enrolment is enforced. Blank enforces enrolment immediately. Applies wherever MFA is mandatory (Required mode, or a role in the list above); already-enrolled users are always challenged regardless.">
+
 
 	<!--- Directories and storage methods --->
 	

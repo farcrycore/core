@@ -83,6 +83,22 @@
 		<cfreturn false />
 	</cffunction>
 
+	<cffunction name="hasStrongAuthFactor" access="public" output="false" returntype="boolean" hint="True when the user has an active strong factor (totp or passkey). Email OTP and recovery codes do not count; used to decide whether email OTP may be offered under the soleFactor policy.">
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+
+		<cfset var qFactors = getFactors(userKey=arguments.userKey, userDirectory=arguments.userDirectory) />
+		<cfset var i = 0 />
+
+		<cfloop from="1" to="#qFactors.recordcount#" index="i">
+			<cfif qFactors.factorType[i] eq "totp" or qFactors.factorType[i] eq "passkey">
+				<cfreturn true />
+			</cfif>
+		</cfloop>
+
+		<cfreturn false />
+	</cffunction>
+
 	<cffunction name="createFactor" access="public" output="false" returntype="string" hint="Creates a factor row and returns its objectid. The payload must already have secret material encrypted. Pass keyId for a totp factor (the id its secret is sealed under) so the denormalised column stays in step; leave empty for factor types not sealed with the rotating key.">
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="true" />
@@ -355,7 +371,7 @@
 
 		<cfset var qTypes = "" />
 		<cfset var qUsers = "" />
-		<cfset var stResult = { totp = 0, passkey = 0, recoveryCode = 0, other = 0, enrolledUsers = 0 } />
+		<cfset var stResult = { totp = 0, passkey = 0, emailOTP = 0, recoveryCode = 0, other = 0, enrolledUsers = 0 } />
 
 		<cfquery datasource="#application.dsn#" name="qTypes">
 			SELECT factorType, COUNT(*) AS n
@@ -374,6 +390,8 @@
 				<cfset stResult.passkey = qTypes.n />
 			<cfelseif qTypes.factorType eq "recoveryCode">
 				<cfset stResult.recoveryCode = qTypes.n />
+			<cfelseif qTypes.factorType eq "emailOTP">
+				<cfset stResult.emailOTP = qTypes.n />
 			<cfelse>
 				<cfset stResult.other = stResult.other + qTypes.n />
 			</cfif>

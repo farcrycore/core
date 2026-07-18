@@ -87,10 +87,21 @@
 		<cfreturn "farMFAEnrol" />
 	</cffunction>
 
-	<cffunction name="issueMFAChallenge" access="public" output="false" returntype="struct" hint="TOTP has nothing to push; returns an empty context">
+	<cffunction name="issueMFAChallenge" access="public" output="false" returntype="struct" hint="Returns the pending-state context. TOTP and passkeys have nothing to push; when email is the user's only factor, a code is emailed now so it is waiting at the challenge screen.">
 		<cfargument name="userid" type="string" required="true" />
 
-		<cfreturn structnew() />
+		<cfset var stContext = structnew() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<!--- auto-send an email code only when email is the user's sole factor (no totp/passkey to prefer) - avoids emailing a code on every login for a user who also has a strong factor. The code is stashed into the returned context (the pending mfa context). --->
+		<cfif len(userKey)
+				and getEmailOTPMode() neq "off"
+				and not structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="emailOTP"))
+				and not getFactorType().hasStrongAuthFactor(userKey=userKey, userDirectory=this.key)>
+			<cfset sendEmailOTPCode(userid=arguments.userid, stContext=stContext) />
+		</cfif>
+
+		<cfreturn stContext />
 	</cffunction>
 
 	<cffunction name="verifyMFA" access="public" output="false" returntype="struct" hint="Processes the interstitial post: challenge code, recovery code, enrolment confirmation or the post-enrolment acknowledgment">
@@ -101,7 +112,10 @@
 		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var stContext = getEnrolContext() />
 		<cfset var stEnrol = structnew() />
+		<cfset var stSend = structnew() />
 		<cfset var bEnrolled = false />
+		<cfset var bGraceSkippable = false />
+		<cfset var sAction = "" />
 
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
@@ -144,6 +158,37 @@
 		      only in the post-login self-service page, never in this pre-auth interstitial. --->
 		<cfset bEnrolled = getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
 
+		<!--- detect the action buttons. form.FarcryFormSubmitButton is only populated inside an ft:processform, so read each action through its own processform (the same mechanism the recovery-ack and the self-service actions use). --->
+		<ft:processform action="mfaEmailSend"><cfset sAction = "mfaEmailSend" /></ft:processform>
+		<ft:processform action="mfaSkip"><cfset sAction = "mfaSkip" /></ft:processform>
+		<ft:processform action="mfaActivateEmail"><cfset sAction = "mfaActivateEmail" /></ft:processform>
+
+		<!--- email code send/resend: a non-verifying action (throttled in the engine), so it never counts as a failed attempt. Sends into the pending context when proving, or the enrol context when enrolling. --->
+		<cfif sAction eq "mfaEmailSend">
+			<cfset stResult.method = "emailOTP" />
+			<cfset stResult.reason = "emailCodeSent" />
+			<cfif bEnrolled>
+				<cfif isEmailFactorUsable(userKey) and not structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="emailOTP"))>
+					<cfset stSend = sendEmailOTPCode(userid=arguments.userid, stContext=stContext, contextKey="emailOTP") />
+					<cfif stSend.sent>
+						<cfset stResult.message = "We have emailed you a code." />
+					<cfelseif stSend.reason eq "throttled">
+						<cfset stResult.message = "A code was sent recently. Please check your email." />
+					<cfelseif stSend.reason eq "noEmail">
+						<cfset stResult.message = "There is no email address on file for your account. Contact your administrator." />
+					<cfelse>
+						<cfset stResult.message = "We could not send a code right now. Please try again in a moment." />
+					</cfif>
+				<cfelse>
+					<cfset stResult.message = "Email verification is not available." />
+				</cfif>
+			<cfelse>
+				<cfset stEnrol = startEmailOTPEnrolment(userid=arguments.userid) />
+				<cfset stResult.message = len(stEnrol.message) ? stEnrol.message : "We have emailed you a code." />
+			</cfif>
+			<cfreturn stResult />
+		</cfif>
+
 		<cfif bEnrolled>
 
 			<!--- prove an existing factor: a passkey assertion (opaque blobs read straight from the form post), an authenticator code, or a recovery code --->
@@ -159,6 +204,15 @@
 			</ft:processform>
 
 		<cfelse>
+
+			<!--- grace period: a mandatory but not-yet-enrolled user may skip enrolment until the deadline. Re-checked server-side here (never trust a client-supplied skip). --->
+			<cfset bGraceSkippable = graceSkipAvailable(arguments.userid) />
+			<cfset stResult.bGraceSkippable = bGraceSkippable />
+			<cfif bGraceSkippable and sAction eq "mfaSkip">
+				<cfset stResult.skipped = true />
+				<cfset stResult.reason = "" />
+				<cfreturn stResult />
+			</cfif>
 
 			<!--- enrol a first factor: a passkey registration (the challenge is inherent to the create() ceremony), or a proven authenticator code --->
 			<cfif structKeyExists(form, "attestationObject") and len(trim(form.attestationObject))>
@@ -181,6 +235,35 @@
 					<cfset stResult.reason = stEnrol.reason />
 					<cfset stResult.message = stEnrol.message />
 				</cfif>
+				<cfreturn stResult />
+			</cfif>
+
+			<!--- email OTP enrolment (the mfaActivateEmail button marks the chosen method); recovery codes issue here as the first factor --->
+			<cfif sAction eq "mfaActivateEmail">
+				<ft:processform>
+					<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
+						<cfset stEnrol = confirmEmailOTPEnrolment(userid=arguments.userid, code=trim(structKeyExists(stProperties, "emailcode") ? stProperties.emailcode : "")) />
+						<cfif stEnrol.bSuccess>
+							<cfif arrayLen(stEnrol.aRecoveryCodes)>
+								<cfset stContext.bRecoveryShown = true />
+								<cfset stContext.aRecoveryCodes = stEnrol.aRecoveryCodes />
+								<cfset stContext.enrolMethod = "emailOTP" />
+								<cfset stResult.reason = "recoveryCodes" />
+								<cfset stResult.bShowRecovery = true />
+								<cfset stResult.aRecoveryCodes = stEnrol.aRecoveryCodes />
+							<cfelse>
+								<cfset stResult.verified = true />
+								<cfset stResult.reason = "" />
+								<cfset stResult.method = "emailOTP" />
+							</cfif>
+						<cfelse>
+							<cfset stResult.reason = stEnrol.reason />
+							<cfset stResult.message = stEnrol.message />
+							<cfset stResult.method = "emailOTP" />
+						</cfif>
+						<ft:break>
+					</ft:processformObjects>
+				</ft:processform>
 				<cfreturn stResult />
 			</cfif>
 
@@ -283,6 +366,98 @@
 
 		<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="second factor enrolled", userid="#arguments.userid#_#this.key#", stFields={ method = "totp" }) />
 		<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="totp" />
+
+		<cfset stResult.bSuccess = true />
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="startEmailOTPEnrolment" access="public" output="false" returntype="struct" hint="Sends a one-time code to the user's email to begin (or resend during) email OTP enrolment. Returns { bSuccess, reason, message }.">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var stResult = { bSuccess = true, reason = "", message = "" } />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var stSend = structnew() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<!--- server-side gate: email must be permitted for this user by the lever (off never; soleFactor only when no strong factor exists) - not merely hidden in the UI --->
+		<cfif not len(userKey) or not isEmailFactorUsable(userKey)>
+			<cfset stResult.bSuccess = false />
+			<cfset stResult.reason = "emailNotAllowed" />
+			<cfset stResult.message = "Email verification is not available." />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfset stSend = sendEmailOTPCode(userid=arguments.userid, stContext=stContext, contextKey="enrolEmailOTP") />
+
+		<cfif not stSend.sent>
+			<cfif stSend.reason eq "throttled">
+				<!--- a code was sent very recently and is still valid; let the user enter it --->
+				<cfset stResult.message = "A code was just sent. Please wait a moment before requesting another." />
+			<cfelseif stSend.reason eq "noEmail">
+				<cfset stResult.bSuccess = false />
+				<cfset stResult.reason = "noEmail" />
+				<cfset stResult.message = "We do not have an email address on file for your account. Contact your administrator." />
+			<cfelse>
+				<cfset stResult.bSuccess = false />
+				<cfset stResult.reason = "mailError" />
+				<cfset stResult.message = "We could not send a code right now. Please try again in a moment." />
+			</cfif>
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="confirmEmailOTPEnrolment" access="public" output="false" returntype="struct" hint="Verifies the emailed enrolment code, activates the email OTP factor, and issues recovery codes only when this is the user's first factor.">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="code" type="string" required="true" />
+
+		<cfset var stResult = { bSuccess = false, reason = "", message = "", aRecoveryCodes = arraynew(1) } />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var stCheck = structnew() />
+		<cfset var bFirstFactor = false />
+
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
+		<cfif not len(userKey) or not structKeyExists(stContext, "enrolEmailOTP")>
+			<cfset stResult.reason = "noCandidate" />
+			<cfset stResult.message = "Your enrolment session has expired. Please request a new code." />
+			<cfreturn stResult />
+		</cfif>
+
+		<!--- server-side gate (defence in depth with startEmailOTPEnrolment): the lever must still permit email for this user --->
+		<cfif not isEmailFactorUsable(userKey)>
+			<cfset stResult.reason = "emailNotAllowed" />
+			<cfset stResult.message = "Email verification is not available." />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfset stCheck = checkEmailCode(stCodeState=stContext.enrolEmailOTP, code=arguments.code) />
+
+		<cfif not stCheck.matched or stCheck.expired>
+			<!--- an enrolment typo does not feed the shared password lockout (the session-level attempts cap still applies) --->
+			<cfset stResult.reason = stCheck.expired ? "codeExpired" : "badCode" />
+			<cfset stResult.message = stCheck.expired ? "That code has expired. Request a new one." : "That code didn't match. Check the code we emailed you and try again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<cfset bFirstFactor = not getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
+
+		<!--- idempotent: replace any existing email factor rather than stacking a second --->
+		<cfset getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="emailOTP") />
+		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="emailOTP", stPayload={ enrolledAt = now() }, label="Email") />
+		<cfset structDelete(stContext, "enrolEmailOTP") />
+
+		<!--- only issue recovery codes when this is the first factor, so adding email alongside an existing factor does not replace the user's current codes --->
+		<cfif bFirstFactor>
+			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
+		</cfif>
+
+		<cfset resetLoginFailures(userKey) />
+
+		<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="second factor enrolled", userid="#arguments.userid#_#this.key#", stFields={ method = "emailOTP" }) />
+		<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="emailOTP" />
 
 		<cfset stResult.bSuccess = true />
 
@@ -537,10 +712,105 @@
 		<cfreturn not structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="totp")) />
 	</cffunction>
 
+	<!--- ============= Email OTP: availability and self-service ============= --->
+
+	<cffunction name="emailFactorAvailable" access="public" output="false" returntype="boolean" hint="True when an emailed one-time code is offered to this user at the challenge screen: they have an active email factor and the mfaEmailOTP lever allows it now (soleFactor hides it once a strong factor exists).">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfif not len(userKey)>
+			<cfreturn false />
+		</cfif>
+
+		<cfreturn isEmailFactorUsable(userKey) and not structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="emailOTP")) />
+	</cffunction>
+
+	<cffunction name="emailEnrolOffered" access="public" output="false" returntype="boolean" hint="True when email OTP may be offered as an enrolment option (the mfaEmailOTP lever is on). At first enrolment the user has no stronger factor, so both soleFactor and anyFactor allow it.">
+		<cfreturn getEmailOTPMode() neq "off" />
+	</cffunction>
+
+	<cffunction name="emailEnrolAvailable" access="public" output="false" returntype="boolean" hint="True when this user may enrol email OTP now via self-service: the lever is on, they have not already enrolled email, and the soleFactor rule permits it (no strong factor present).">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfif not len(userKey)>
+			<cfreturn false />
+		</cfif>
+		<cfif getEmailOTPMode() eq "off">
+			<cfreturn false />
+		</cfif>
+		<cfif not structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="emailOTP"))>
+			<cfreturn false />
+		</cfif>
+
+		<cfreturn isEmailFactorUsable(userKey) />
+	</cffunction>
+
+	<cffunction name="removeEmailFactor" access="public" output="false" returntype="boolean" hint="Removes the user's email OTP factor (self-service); returns true when one was removed. Other factors and recovery codes are left in place.">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+		<cfset var n = 0 />
+
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+
+		<cfif not len(userKey)>
+			<cfreturn false />
+		</cfif>
+
+		<cfset n = getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="emailOTP") />
+
+		<cfif n gt 0>
+			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="email factor removed", userid="#arguments.userid#_#this.key#", stFields={ method = "emailOTP", by = "self" }) />
+			<farcry:logevent type="security" event="mfaDisabled" userid="#arguments.userid#_#this.key#" notes="emailOTP removed by self" />
+		</cfif>
+
+		<cfreturn n gt 0 />
+	</cffunction>
+
+	<!--- ============= Grace period (staged rollout) ============= --->
+
+	<cffunction name="graceSkipAvailable" access="public" output="false" returntype="boolean" hint="True when a mandatory but not-yet-enrolled user may skip enrolment during the grace period (drives the 'skip for now' option; the skip is always re-checked server-side on submit).">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var userKey = getUserKey(arguments.userid) />
+
+		<cfif not len(userKey)>
+			<cfreturn false />
+		</cfif>
+		<cfif getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key)>
+			<cfreturn false />
+		</cfif>
+
+		<cfreturn isMFAMandatory(arguments.userid) and inMFAGrace(arguments.userid) />
+	</cffunction>
+
 
 	<!--- MFA private helpers --->
 
-	<cffunction name="verifyChallengeCode" access="private" output="false" returntype="struct" hint="Verifies a challenge submission: 6 digit codes against TOTP, anything else against recovery codes">
+	<cffunction name="checkEmailCode" access="private" output="false" returntype="struct" hint="Checks a submitted code against a stashed email-code state { hash, expiresAt }; returns { matched, expired }. Match is via the hash comparison; expiry is by epoch seconds.">
+		<cfargument name="stCodeState" type="struct" required="true" />
+		<cfargument name="code" type="string" required="true" />
+
+		<cfset var stResult = { matched = false, expired = false } />
+
+		<cfif not structKeyExists(arguments.stCodeState, "hash")>
+			<cfreturn stResult />
+		</cfif>
+
+		<cfif application.security.cryptlib.passwordMatchesHash(password=trim(arguments.code), hashedPassword=arguments.stCodeState.hash)>
+			<cfset stResult.matched = true />
+			<cfif not structKeyExists(arguments.stCodeState, "expiresAt") or variables.oMFACrypto.epochSeconds() gte arguments.stCodeState.expiresAt>
+				<cfset stResult.expired = true />
+			</cfif>
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="verifyChallengeCode" access="private" output="false" returntype="struct" hint="Verifies a challenge submission: a 6 digit code against an emailed one-time code (when the lever allows it) then TOTP; anything else against recovery codes">
 		<cfargument name="userid" type="string" required="true" />
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="code" type="string" required="true" />
@@ -550,6 +820,12 @@
 		<cfset var stVerify = structnew() />
 		<cfset var stRedeem = structnew() />
 		<cfset var secret = "" />
+		<cfset var stContext = getEnrolContext() />
+		<cfset var stTOTPFactor = structnew() />
+		<cfset var hasTOTP = false />
+		<cfset var stEmailFactor = structnew() />
+		<cfset var stEmailCheck = structnew() />
+		<cfset var bEmailChallenge = false />
 
 		<cfif not len(arguments.code)>
 			<cfset stResult.reason = "noSubmission" />
@@ -557,15 +833,52 @@
 		</cfif>
 
 		<cfif len(arguments.code) eq 6 and isNumeric(arguments.code)>
-			<!--- authenticator code --->
-			<cfset stResult.method = "totp" />
-			<cfset stFactor = getFactorType().getActiveFactor(userKey=arguments.userKey, userDirectory=this.key, factorType="totp") />
+			<!--- a 6 digit code is either an emailed one-time code or an authenticator (TOTP) code --->
+			<cfset stTOTPFactor = getFactorType().getActiveFactor(userKey=arguments.userKey, userDirectory=this.key, factorType="totp") />
+			<cfset hasTOTP = not structIsEmpty(stTOTPFactor) />
+			<!--- email is in play only when the lever allows it for this user (soleFactor rejects it once a strong factor exists) and a code has actually been issued into the pending context --->
+			<cfset bEmailChallenge = isEmailFactorUsable(arguments.userKey) and structKeyExists(stContext, "emailOTP") />
 
-			<cfif structIsEmpty(stFactor)>
+			<cfif bEmailChallenge>
+				<cfset stEmailCheck = checkEmailCode(stCodeState=stContext.emailOTP, code=arguments.code) />
+				<cfif stEmailCheck.matched>
+					<cfset stResult.method = "emailOTP" />
+					<cfif stEmailCheck.expired>
+						<cfset stResult.reason = "codeExpired" />
+						<cfset stResult.message = "That code has expired. Request a new one." />
+						<cfreturn stResult />
+					</cfif>
+					<!--- valid emailed code: single use, so clear it and stamp the factor lastUsed --->
+					<cfset structDelete(stContext, "emailOTP") />
+					<cfset stEmailFactor = getFactorType().getActiveFactor(userKey=arguments.userKey, userDirectory=this.key, factorType="emailOTP") />
+					<cfif not structIsEmpty(stEmailFactor)>
+						<cfset getFactorType().updateFactorPayload(objectid=stEmailFactor.objectid, stPayload=stEmailFactor.stPayload) />
+					</cfif>
+					<cfset resetLoginFailures(arguments.userKey) />
+					<cfset stResult.verified = true />
+					<cfset stResult.reason = "" />
+					<cfreturn stResult />
+				<cfelseif not hasTOTP>
+					<!--- the emailed code is the only 6 digit factor in play and it did not match --->
+					<cfset stResult.method = "emailOTP" />
+					<cfset stResult.message = "The code was not recognised." />
+					<cfset stResult.bLocked = recordMFAFailure(userKey=arguments.userKey) />
+					<cfreturn stResult />
+				</cfif>
+				<!--- did not match, but the user also has an authenticator: fall through and try it as a TOTP code --->
+			</cfif>
+
+			<cfif not hasTOTP>
+				<!--- no authenticator, and no usable emailed code matched --->
+				<cfset stResult.method = bEmailChallenge ? "emailOTP" : "totp" />
 				<cfset stResult.message = "The code was not recognised." />
 				<cfset stResult.bLocked = recordMFAFailure(userKey=arguments.userKey) />
 				<cfreturn stResult />
 			</cfif>
+
+			<!--- authenticator (TOTP) code --->
+			<cfset stResult.method = "totp" />
+			<cfset stFactor = stTOTPFactor />
 
 			<cftry>
 				<cfset secret = variables.oMFACrypto.decryptSecret(stFactor.stPayload.secret) />
@@ -776,6 +1089,119 @@
 		<cfreturn application.fapi.getConfig("security", "mfaMode", "off") />
 	</cffunction>
 
+	<!--- ============= Email OTP internals ============= --->
+
+	<cffunction name="getEmailOTPMode" access="private" output="false" returntype="string" hint="The email OTP policy: off / soleFactor / anyFactor (mfaEmailOTP config)">
+		<cfreturn application.fapi.getConfig("security", "mfaEmailOTP", "off") />
+	</cffunction>
+
+	<cffunction name="isEmailFactorUsable" access="private" output="false" returntype="boolean" hint="Whether email OTP may be offered and accepted for this user right now, per the mfaEmailOTP lever: off never; anyFactor always; soleFactor only when the user has no strong factor (totp/passkey).">
+		<cfargument name="userKey" type="string" required="true" />
+
+		<cfset var mode = getEmailOTPMode() />
+
+		<cfif mode eq "anyFactor">
+			<cfreturn true />
+		</cfif>
+		<cfif mode eq "soleFactor">
+			<cfreturn not getFactorType().hasStrongAuthFactor(userKey=arguments.userKey, userDirectory=this.key) />
+		</cfif>
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="sendEmailOTPCode" access="private" output="false" returntype="struct" hint="Generates a one-time code, stores its hash and expiry (epoch seconds) in the given context struct in place, and emails the plaintext to the user. Throttled by mfaEmailResendSeconds; the code is stashed only on a successful send. Returns { sent, reason: throttled/noEmail/mailError }.">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="stContext" type="struct" required="true" hint="Context to stash the code state in (the pending mfa context for a challenge, or the enrol stash)" />
+		<cfargument name="contextKey" type="string" required="false" default="emailOTP" hint="Key within the context (emailOTP for a challenge, enrolEmailOTP for enrolment)" />
+
+		<cfset var stResult = { sent = false, reason = "" } />
+		<cfset var email = "" />
+		<cfset var code = "" />
+		<cfset var hashedCode = "" />
+		<cfset var timeoutMin = int(application.fapi.getConfig("security", "mfaChallengeTimeout", 10)) />
+		<cfset var throttle = int(application.fapi.getConfig("security", "mfaEmailResendSeconds", 60)) />
+		<cfset var nowEpoch = variables.oMFACrypto.epochSeconds() />
+		<cfset var prevCount = 0 />
+
+		<!--- everything that can throw (the profile read, hashing, the mail send) is inside the try, so a failure returns { sent=false } and can never bubble up to block login --->
+		<cftry>
+			<cfset email = getUserEmail(arguments.userid) />
+
+			<cfif not len(email)>
+				<cfset stResult.reason = "noEmail" />
+				<cfreturn stResult />
+			</cfif>
+
+			<!--- throttle resends off the last successful send --->
+			<cfif structKeyExists(arguments.stContext, arguments.contextKey)
+					and structKeyExists(arguments.stContext[arguments.contextKey], "sentAt")
+					and (nowEpoch - arguments.stContext[arguments.contextKey].sentAt) lt throttle>
+				<cfset stResult.reason = "throttled" />
+				<cfreturn stResult />
+			</cfif>
+
+			<cfif structKeyExists(arguments.stContext, arguments.contextKey) and structKeyExists(arguments.stContext[arguments.contextKey], "count")>
+				<cfset prevCount = arguments.stContext[arguments.contextKey].count />
+			</cfif>
+
+			<!--- hash before sending, so a crypto failure never sends a code that can't be verified --->
+			<cfset code = variables.oMFACrypto.generateNumericCode(6) />
+			<cfset hashedCode = application.security.cryptlib.encodePassword(password=code, hashname=getOutputHashName()) />
+
+			<cfset sendEmailOTPMessage(userid=arguments.userid, email=email, code=code) />
+
+			<!--- stash only after a successful send --->
+			<cfset arguments.stContext[arguments.contextKey] = {
+				hash = hashedCode,
+				expiresAt = nowEpoch + (timeoutMin * 60),
+				sentAt = nowEpoch,
+				count = prevCount + 1
+			} />
+
+			<cfset stResult.sent = true />
+
+			<cfcatch>
+				<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="email one-time code send failed", userid="#arguments.userid#_#this.key#") />
+				<cfset stResult.sent = false />
+				<cfset stResult.reason = "mailError" />
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="sendEmailOTPMessage" access="private" output="false" returntype="void" hint="Emails a one-time code to the user (HTML mail from the configured admin address)">
+		<cfargument name="userid" type="string" required="true" />
+		<cfargument name="email" type="string" required="true" />
+		<cfargument name="code" type="string" required="true" />
+
+		<cfset var fromAddr = application.fapi.getConfig("general", "adminemail", "") />
+		<cfset var subject = application.fapi.getResource("coapi.mfa.emailcode@subject", "Your verification code") />
+		<cfset var timeoutMin = int(application.fapi.getConfig("security", "mfaChallengeTimeout", 10)) />
+		<cfset var body = "" />
+
+		<cfsavecontent variable="body"><cfoutput><p>Your verification code is:</p>
+<p style="font-size:22px; font-weight:bold; letter-spacing:3px;">#arguments.code#</p>
+<p>Enter this code to finish signing in. It expires in #timeoutMin# minutes. If you did not try to sign in, you can ignore this email.</p></cfoutput></cfsavecontent>
+
+		<cfmail to="#arguments.email#" from="#fromAddr#" subject="#subject#" type="html">#body#</cfmail>
+	</cffunction>
+
+	<!--- ============= Grace period (staged rollout): the deadline hook and its check ============= --->
+
+	<cffunction name="getMFAGraceUntil" access="private" output="false" returntype="string" hint="HOOK: the enrolment grace deadline for this user as a date, or empty to enforce immediately. Default reads the mfaGraceUntil config; override to vary the deadline by organisation, cohort or a staged schedule (the userid lets an override resolve the user's group).">
+		<cfargument name="userid" type="string" required="true" />
+		<cfreturn application.fapi.getConfig("security", "mfaGraceUntil", "") />
+	</cffunction>
+
+	<cffunction name="inMFAGrace" access="private" output="false" returntype="boolean" hint="True when an enrolment grace deadline is set and still in the future for this user; before the deadline a mandatory-but-not-enrolled user may skip enrolment, on and after it enrolment is enforced.">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var graceUntil = getMFAGraceUntil(arguments.userid) />
+
+		<cfreturn len(trim(graceUntil)) and isDate(graceUntil) and dateCompare(now(), graceUntil) lt 0 />
+	</cffunction>
+
 	<cffunction name="verifyPasskeyAssertion" access="private" output="false" returntype="struct" hint="Verifies a passkey get() response against a stored credential; feeds failures to the shared lockout like a bad code does">
 		<cfargument name="userid" type="string" required="true" />
 		<cfargument name="userKey" type="string" required="true" />
@@ -926,6 +1352,11 @@
 
 	<cffunction name="getOutputHashName" access="public" output="false" returntype="string" hint="HOOK: hash name used to one-way-hash recovery codes. Defaults to the platform default; a credential directory may override to align recovery-code hashing with its password hashing.">
 		<cfreturn application.security.cryptlib.getDefaultHashName() />
+	</cffunction>
+
+	<cffunction name="getUserEmail" access="private" output="false" returntype="string" hint="HOOK: the user's email address, for an emailed one-time code; empty string when none. Defaults to empty (email OTP then has nowhere to send and is unavailable for that user); a directory that enables the email OTP factor overrides this to resolve the address.">
+		<cfargument name="userid" type="string" required="true" />
+		<cfreturn "" />
 	</cffunction>
 
 	<cffunction name="getUserKey" access="private" output="false" returntype="string" hint="HOOK: resolve a login userid to this directory's stable user key; empty string when not found.">

@@ -21,9 +21,12 @@
 	{ type = "passkey", icon = "fa-key", name = "Passkey", description = "Use your device's fingerprint, face or screen lock, or a security key. The most phishing resistant option, and nothing to type at login." },
 	{ type = "totp", icon = "fa-mobile", name = "Authenticator app", description = "Use an app such as Google Authenticator, 1Password or Authy to generate a 6 digit code at each login." }
 ] />
+<cfif oUD.emailEnrolAvailable(userid=userid)>
+	<cfset arrayAppend(aFactorMethods, { type = "email", icon = "fa-envelope", name = "Email", description = "Get a one-time code sent to your email address at each login. The least secure option - best only if you can't use an authenticator app or passkey." }) />
+</cfif>
 
 <!--- icon for each factor type shown in the status / admin tables --->
-<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", recoveryCode = "fa-life-ring" } />
+<cfset stFactorIcons = { totp = "fa-mobile", passkey = "fa-key", emailOTP = "fa-envelope", recoveryCode = "fa-life-ring" } />
 
 
 <!-----------------------------
@@ -82,6 +85,40 @@ ACTION
 			<cfset bubbleTitle = len(trim(removedLabel)) ? ("Passkey '" & encodeForHTML(removedLabel) & "' removed") : "Passkey removed" />
 			<skin:bubble title="#bubbleTitle#" tags="security,info" />
 		</cfif>
+	</cfif>
+</ft:processform>
+
+<!--- email OTP: send / resend the enrolment code (stays in the email setup flow) --->
+<ft:processform action="mfaEmailSend">
+	<cfset setupFactor = "email" />
+	<cfset stStart = oUD.startEmailOTPEnrolment(userid=userid) />
+	<cfif not stStart.bSuccess>
+		<cfset request.mfaError = stStart.message />
+	<cfelseif len(stStart.message)>
+		<skin:bubble title="#stStart.message#" tags="security,info" />
+	</cfif>
+</ft:processform>
+
+<!--- email OTP: confirm the emailed code and activate the factor --->
+<ft:processform action="ConfirmEmail">
+	<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
+		<cfset stConfirm = oUD.confirmEmailOTPEnrolment(userid=userid, code=trim(structKeyExists(stProperties, "emailcode") ? stProperties.emailcode : "")) />
+		<cfif stConfirm.bSuccess>
+			<cfif arrayLen(stConfirm.aRecoveryCodes)>
+				<cfset request.fc.aMFARecoveryCodes = stConfirm.aRecoveryCodes />
+			</cfif>
+			<skin:bubble title="Email verification added" tags="security,info" />
+		<cfelse>
+			<cfset request.mfaError = stConfirm.message />
+			<cfset setupFactor = "email" />
+		</cfif>
+	</ft:processformObjects>
+</ft:processform>
+
+<!--- remove the email OTP factor (self-service); other factors and recovery codes are left in place --->
+<ft:processform action="Remove email">
+	<cfif oUD.removeEmailFactor(userid=userid)>
+		<skin:bubble title="Email verification removed" tags="security,info" />
 	</cfif>
 </ft:processform>
 
@@ -182,6 +219,41 @@ VIEW
 		</ft:form>
 	</cfif>
 
+<cfelseif setupFactor eq "email">
+
+	<!--- email OTP setup: send a one-time code, then confirm it. Needs no encryption key (the code is transient). --->
+	<cfif not oUD.emailEnrolAvailable(userid=userid)>
+		<cfoutput><div class="alert alert-error"><admin:resource key="security.mfa.manage.emailunavailable">Email verification is not available for your account.</admin:resource></div></cfoutput>
+	<cfelse>
+		<cfset bEmailEnrolSent = structKeyExists(session.fc, "stMFAEnrol") and structKeyExists(session.fc.stMFAEnrol, "enrolEmailOTP") />
+
+		<ft:form bFocusFirstField="true">
+			<cfif not bEmailEnrolSent>
+				<cfoutput>
+					<p><admin:resource key="security.mfa.manage.emailsendhelp">We'll email a one-time code to your address. Send it, then enter the code to finish.</admin:resource></p>
+					<p>
+						<ft:button class="btn-primary" icon="fa-envelope" value="mfaEmailSend" text="Email me a code" validate="false" />
+						<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
+					</p>
+				</cfoutput>
+			<cfelse>
+				<cfoutput><p><admin:resource key="security.mfa.manage.emailenterhelp">Enter the code we emailed you to finish setting up email verification.</admin:resource></p></cfoutput>
+				<ft:object typename="farMFAEnrol" lFields="emailcode" legend="" focusField="emailcode" r_stFields="stEmailFields" />
+				<cfoutput>
+					<fieldset>
+						<label for="#stEmailFields.emailcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
+						#stEmailFields.emailcode.html#
+					</fieldset>
+					<p>
+						<ft:button class="btn-primary" icon="fa-check" value="ConfirmEmail" text="Confirm and activate" />
+						<ft:button class="btn" icon="fa-envelope" value="mfaEmailSend" text="Resend code" validate="false" />
+						<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelsetup">Cancel</admin:resource></a>
+					</p>
+				</cfoutput>
+			</cfif>
+		</ft:form>
+	</cfif>
+
 <cfelseif stStatus.bEnrolled and bRemoveConfirm>
 
 	<cfoutput>
@@ -232,6 +304,8 @@ VIEW
 								<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><i class="fa fa-refresh"></i> <admin:resource key="security.mfa.manage.replace">Set up a new one</admin:resource></a>
 							<cfelseif qFactors.factorType eq "passkey">
 								<ft:button value="Remove passkey" text="Remove" icon="fa-trash-o" selectedObjectID="#qFactors.objectid#" validate="false" />
+							<cfelseif qFactors.factorType eq "emailOTP">
+								<ft:button value="Remove email" text="Remove" icon="fa-trash-o" validate="false" />
 							<cfelseif qFactors.factorType eq "recoveryCode">
 								<ft:button value="Regenerate recovery codes" text="Regenerate" icon="fa-refresh" validate="false" />
 							</cfif>
@@ -247,6 +321,9 @@ VIEW
 				<a class="btn btn-primary" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=passkey"><i class="fa fa-plus"></i> <admin:resource key="security.mfa.manage.addpasskey">Add a passkey</admin:resource></a>
 				<cfif not bHasTOTP>
 					<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><i class="fa fa-mobile"></i> <admin:resource key="security.mfa.manage.addtotp">Set up an authenticator app</admin:resource></a>
+				</cfif>
+				<cfif oUD.emailEnrolAvailable(userid=userid)>
+					<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=email"><i class="fa fa-envelope"></i> <admin:resource key="security.mfa.manage.addemail">Set up email verification</admin:resource></a>
 				</cfif>
 			</p>
 
