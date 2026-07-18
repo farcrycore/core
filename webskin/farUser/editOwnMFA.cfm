@@ -266,6 +266,7 @@ VIEW
 				<a href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA" class="btn"><admin:resource key="security.mfa.manage.cancelremove">Cancel</admin:resource></a>
 				<ft:button class="btn-danger" icon="fa-power-off" value="Remove multi-factor" text="Turn off multi-factor authentication" validate="false" />
 			</div>
+			<div class="clearfix"></div>
 		</cfoutput>
 	</ft:form>
 

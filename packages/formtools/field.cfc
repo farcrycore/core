@@ -12,6 +12,7 @@
 	<cfproperty name="ftStyle" required="false" default="" hint="CSS Style that can be used on the formtool input" />
 	<cfproperty name="ftPlaceholder" required="false" default="" hint="CSS placeholder text" />
 	<cfproperty name="ftAutoComplete" required="false" default="" hint="Value for the input's HTML autocomplete attribute (e.g. off, one-time-code); emitted only when set" />
+	<cfproperty name="ftIgnorePasswordManager" required="false" default="false" type="boolean" hint="Set true to discourage password managers (LastPass, 1Password) from autofilling this input - use for one-time-code and similar non-credential fields" />
 	<cfproperty name="ftValidation" required="false" hint="List of CSS classes that can be used for js validation" />
 	<cfproperty name="ftEditMethod" required="false" hint="The function that will be used to render the html output for editing a property" />
 	<cfproperty name="ftDisplayMethod" required="false" hint="The function that will be used to render the html output for displaying a property" />
@@ -56,11 +57,11 @@
 			<skin:loadJS id="fc-jquery" />
 			<skin:onReady><cfoutput>$j.validator.addClassRules("rangeLength-#arguments.stMetadata.name#", {rangelength:[0,#arguments.stMetadata.ftMaxLength#]});</cfoutput></skin:onReady>
 			<cfsavecontent variable="html">
-				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" maxLength="#arguments.stMetadata.ftMaxLength#"<cfif structKeyExists(arguments.stMetadata, "ftAutoComplete") and len(arguments.stMetadata.ftAutoComplete)> autocomplete="#encodeForHTMLAttribute(arguments.stMetadata.ftAutoComplete)#"</cfif> /></cfoutput>
+				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" maxLength="#arguments.stMetadata.ftMaxLength#"<cfif structKeyExists(arguments.stMetadata, "ftAutoComplete") and len(arguments.stMetadata.ftAutoComplete)> autocomplete="#encodeForHTMLAttribute(arguments.stMetadata.ftAutoComplete)#"</cfif><cfif structKeyExists(arguments.stMetadata, "ftIgnorePasswordManager") and arguments.stMetadata.ftIgnorePasswordManager> data-lpignore="true" data-1p-ignore="true"</cfif> /></cfoutput>
 			</cfsavecontent>
 		<cfelse>
 			<cfsavecontent variable="html">
-				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#"<cfif structKeyExists(arguments.stMetadata, "ftAutoComplete") and len(arguments.stMetadata.ftAutoComplete)> autocomplete="#encodeForHTMLAttribute(arguments.stMetadata.ftAutoComplete)#"</cfif> /></cfoutput>
+				<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.inputClass# #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#"<cfif structKeyExists(arguments.stMetadata, "ftAutoComplete") and len(arguments.stMetadata.ftAutoComplete)> autocomplete="#encodeForHTMLAttribute(arguments.stMetadata.ftAutoComplete)#"</cfif><cfif structKeyExists(arguments.stMetadata, "ftIgnorePasswordManager") and arguments.stMetadata.ftIgnorePasswordManager> data-lpignore="true" data-1p-ignore="true"</cfif> /></cfoutput>
 			</cfsavecontent>
 		</cfif>
 

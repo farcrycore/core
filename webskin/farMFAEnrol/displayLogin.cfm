@@ -94,6 +94,7 @@
 					<div class="pull-right">
 						<ft:button rendertype="button" id="mfaActivateBtn" class="btn#stPasskey.bSuccess ? '' : ' btn-primary'#" rbkey="security.mfa.buttons.activate" value="Activate" />
 					</div>
+					<div class="clearfix"></div>
 				</cfoutput>
 			</cfif>
 
