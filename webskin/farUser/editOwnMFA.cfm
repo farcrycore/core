@@ -102,7 +102,7 @@ ACTION
 <!--- email OTP: confirm the emailed code and activate the factor --->
 <ft:processform action="ConfirmEmail">
 	<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
-		<cfset stConfirm = oUD.confirmEmailOTPEnrolment(userid=userid, code=trim(structKeyExists(stProperties, "emailcode") ? stProperties.emailcode : "")) />
+		<cfset stConfirm = oUD.confirmEmailOTPEnrolment(userid=userid, code=trim(structKeyExists(stProperties, "otpcode") ? stProperties.otpcode : "")) />
 		<cfif stConfirm.bSuccess>
 			<cfif arrayLen(stConfirm.aRecoveryCodes)>
 				<cfset request.fc.aMFARecoveryCodes = stConfirm.aRecoveryCodes />
@@ -238,11 +238,11 @@ VIEW
 				</cfoutput>
 			<cfelse>
 				<cfoutput><p><admin:resource key="security.mfa.manage.emailenterhelp">Enter the code we emailed you to finish setting up email verification.</admin:resource></p></cfoutput>
-				<ft:object typename="farMFAEnrol" lFields="emailcode" legend="" focusField="emailcode" r_stFields="stEmailFields" />
+				<ft:object typename="farMFAEnrol" lFields="otpcode" legend="" focusField="otpcode" r_stFields="stEmailFields" />
 				<cfoutput>
 					<fieldset>
-						<label for="#stEmailFields.emailcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
-						#stEmailFields.emailcode.html#
+						<label for="#stEmailFields.otpcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
+						#stEmailFields.otpcode.html#
 					</fieldset>
 					<p>
 						<ft:button class="btn-primary" icon="fa-check" value="ConfirmEmail" text="Confirm and activate" />

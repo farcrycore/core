@@ -113,11 +113,11 @@
 					</cfoutput>
 				<cfelse>
 					<cfoutput><p><admin:resource key="security.mfa.enrol.emailenter">Enter the code we emailed you to finish setting up email verification.</admin:resource></p></cfoutput>
-					<ft:object typename="farMFAEnrol" lFields="emailcode" prefix="mfa" legend="" focusField="emailcode" r_stFields="stEmailFields" />
+					<ft:object typename="farMFAEnrol" lFields="otpcode" prefix="mfa" legend="" focusField="otpcode" r_stFields="stEmailFields" />
 					<cfoutput>
 						<fieldset>
-							<label for="#stEmailFields.emailcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
-							#stEmailFields.emailcode.html#
+							<label for="#stEmailFields.otpcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
+							#stEmailFields.otpcode.html#
 						</fieldset>
 						<div class="pull-right">
 							<ft:button rendertype="button" id="mfaActivateEmailBtn" class="btn btn-primary" value="mfaActivateEmail" rbkey="security.mfa.buttons.activateemail" text="Activate" />

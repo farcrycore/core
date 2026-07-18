@@ -242,7 +242,7 @@
 			<cfif sAction eq "mfaActivateEmail">
 				<ft:processform>
 					<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
-						<cfset stEnrol = confirmEmailOTPEnrolment(userid=arguments.userid, code=trim(structKeyExists(stProperties, "emailcode") ? stProperties.emailcode : "")) />
+						<cfset stEnrol = confirmEmailOTPEnrolment(userid=arguments.userid, code=trim(structKeyExists(stProperties, "otpcode") ? stProperties.otpcode : "")) />
 						<cfif stEnrol.bSuccess>
 							<cfif arrayLen(stEnrol.aRecoveryCodes)>
 								<cfset stContext.bRecoveryShown = true />
