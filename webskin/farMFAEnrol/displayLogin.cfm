@@ -120,7 +120,7 @@
 							#stEmailFields.otpcode.html#
 						</fieldset>
 						<div class="mfa-btn-row">
-							<ft:button rendertype="button" class="btn btn-link" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailresend" text="Resend code" />
+							<ft:button rendertype="button" class="btn-link" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailresend" text="Resend code" />
 							<ft:button rendertype="button" id="mfaActivateEmailBtn" class="btn btn-primary" value="mfaActivateEmail" rbkey="security.mfa.buttons.activateemail" text="Activate" />
 						</div>
 					</cfoutput>
