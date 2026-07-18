@@ -241,7 +241,7 @@ VIEW
 				<ft:object typename="farMFAEnrol" lFields="otpcode" legend="" focusField="otpcode" r_stFields="stEmailFields" />
 				<cfoutput>
 					<fieldset>
-						<label for="#stEmailFields.otpcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
+						<label for="#stEmailFields.otpcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email verification code</admin:resource></label>
 						#stEmailFields.otpcode.html#
 					</fieldset>
 					<p>

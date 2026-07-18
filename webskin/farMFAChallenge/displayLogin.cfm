@@ -45,7 +45,7 @@
 
 	<cfoutput>
 		<fieldset>
-			<label for="#stFields.code.formfieldname#"><cfif bHasTOTP><admin:resource key="security.mfa.challenge.authcode">Authenticator code</admin:resource><cfelseif bHasEmail><admin:resource key="security.mfa.challenge.emailcode">Email code</admin:resource><cfelse><admin:resource key="security.mfa.challenge.recoverycode">Recovery code</admin:resource></cfif></label>
+			<label for="#stFields.code.formfieldname#"><cfif bHasTOTP><admin:resource key="security.mfa.challenge.authcode">Authenticator code</admin:resource><cfelseif bHasEmail><admin:resource key="security.mfa.challenge.emailcode">Email verification code</admin:resource><cfelse><admin:resource key="security.mfa.challenge.recoverycode">Recovery code</admin:resource></cfif></label>
 			#stFields.code.html#
 			<cfif bHasEmail><p class="help-block"><cfif bEmailSent><admin:resource key="security.mfa.challenge.emailsent">We've emailed you a code.</admin:resource> </cfif><ft:button rendertype="button" class="btn btn-link" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailsend" text="#bEmailSent ? 'Resend code' : 'Email me a code'#" /></p></cfif>
 			<cfif bHasTOTP or bHasEmail><p class="help-block"><admin:resource key="security.mfa.challenge.recoveryhint">Lost your device? One of your recovery codes works here too.</admin:resource></p></cfif>

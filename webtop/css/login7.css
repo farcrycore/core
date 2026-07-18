@@ -235,6 +235,14 @@ input, button, select, textarea {
   height: 1px;
   background: #ddd;
 }
+/* email enrolment action row: secondary (resend) sits left of the primary (activate), right-aligned */
+.content-main .mfa-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
 
 
 li a.active { background-color:#3E84B5; color:#FFF; }

@@ -116,14 +116,13 @@
 					<ft:object typename="farMFAEnrol" lFields="otpcode" prefix="mfa" legend="" focusField="otpcode" r_stFields="stEmailFields" />
 					<cfoutput>
 						<fieldset>
-							<label for="#stEmailFields.otpcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email code</admin:resource></label>
+							<label for="#stEmailFields.otpcode.formfieldname#"><admin:resource key="security.mfa.enrol.emailcode">Email verification code</admin:resource></label>
 							#stEmailFields.otpcode.html#
 						</fieldset>
-						<div class="pull-right">
+						<div class="mfa-btn-row">
+							<ft:button rendertype="button" class="btn btn-link" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailresend" text="Resend code" />
 							<ft:button rendertype="button" id="mfaActivateEmailBtn" class="btn btn-primary" value="mfaActivateEmail" rbkey="security.mfa.buttons.activateemail" text="Activate" />
 						</div>
-						<div class="clearfix"></div>
-						<p><ft:button rendertype="button" class="btn btn-link" value="mfaEmailSend" validate="false" rbkey="security.mfa.buttons.emailresend" text="Resend code" /></p>
 					</cfoutput>
 				</cfif>
 			</cfif>
