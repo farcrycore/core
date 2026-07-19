@@ -57,7 +57,7 @@
 
 			/* live pretty dates */
 			if (typeof moment != "undefined") {
-				moment.locale(['#session.dmProfile.locale#', 'en']);
+				moment.locale(['#encodeForJavaScript(session.dmProfile.locale)#', 'en']);
 				moment.localeData("en")._relativeTime.s = "moments";
 				moment.localeData("en_AU")._relativeTime.s = "moments";
 				moment.localeData("en_US")._relativeTime.s = "moments";

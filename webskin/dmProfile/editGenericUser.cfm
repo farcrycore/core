@@ -26,7 +26,7 @@
  // view: profile form 
 --------------------------------------------------------------------------------->
 <cfoutput>
-	<h2>EDIT: #listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")# - #stObj.userdirectory#</h2>
+	<h2>EDIT: #encodeForHTML(listdeleteat(stObj.username,listlen(stObj.username,"_"),"_"))# - #encodeForHTML(stObj.userdirectory)#</h2>
 </cfoutput>
 
 <ft:form>

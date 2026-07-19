@@ -111,9 +111,9 @@ FARCRY IMPORT FILES
 						<cfif qExtraOptions.url eq "divider">
 							<li class="divider"></li>
 						<cfelseif qExtraOptions.url eq "nav-header">
-							<li class="nav-header" style="padding-left:15px;">#qExtraOptions.label#</li>
+							<li class="nav-header" style="padding-left:15px;">#encodeForHTML(qExtraOptions.label)#</li>
 						<cfelse>
-							<li <cfif qExtraOptions.selected> class="active"</cfif>><a href="#qExtraOptions.url#">#qExtraOptions.label#</a></li>
+							<li <cfif qExtraOptions.selected> class="active"</cfif>><a href="#encodeForHTMLAttribute(qExtraOptions.url)#">#encodeForHTML(qExtraOptions.label)#</a></li>
 						</cfif>
 					</cfloop>
 				</ul><!-- /.dropdown-menu -->
