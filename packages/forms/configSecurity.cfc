@@ -120,6 +120,10 @@
 		ftType="string"
 		ftHint="Optional date (yyyy-mm-dd). While it is set to a future date, a user who is required to use MFA but has not yet enrolled is prompted to set it up but may skip and continue; on and after the date, enrolment is enforced. Blank enforces enrolment immediately. Applies wherever MFA is mandatory (Required mode, or a role in the list above); already-enrolled users are always challenged regardless.">
 
+	<cfproperty name="mfaEmailMaxSendsPerHour" type="integer" ftType="integer" default="20"
+		ftSeq="53" ftFieldset="Multi-factor Authentication" ftLabel="Email codes per hour (per user)"
+		ftHint="Hard ceiling on emailed one-time codes a single user can be sent per hour, counted per application instance across every login attempt, so re-authenticating does not reset it (server-scope; in a multi-instance cluster the effective ceiling is this value times the number of front-end instances). This bounds guessing of the 6 digit email code by someone who already knows the password, and prevents mailbox flooding. Applies to both challenge and enrolment sends. Default 20; 0 disables the cap (not recommended while email OTP is enabled).">
+
 
 	<!--- Directories and storage methods --->
 	

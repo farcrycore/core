@@ -53,7 +53,9 @@
 	// action handling: two-step confirm before starting a background migration
 	action = structKeyExists(form, "selectedObjectID") ? form.selectedObjectID : "";
 	migMsg = "";
-	if (action eq "__migrate__" and not bRunning and keyConfigured and stMig.needsMigration gt 0) {
+	// CSRF: this action is dispatched from cfscript (not <ft:processform>), so validate the token the <ft:form> emitted before mutating
+	bCSRFOk = (not application.fapi.getConfig("security", "bCSRFTokens", true)) or (structKeyExists(form, "FarcryFormToken") and structKeyExists(form, "FarcryFormSubmitted") and csrfVerifyToken(form.FarcryFormToken, form.FarcryFormSubmitted));
+	if (action eq "__migrate__" and bCSRFOk and not bRunning and keyConfigured and stMig.needsMigration gt 0) {
 		startedByU = (structKeyExists(session, "security") and structKeyExists(session.security, "userid")) ? session.security.userid : "";
 		try {
 			stStart = oUD.migrateStoredSecrets(startedBy = startedByU);

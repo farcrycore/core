@@ -508,4 +508,55 @@
 		<cfreturn code />
 	</cffunction>
 
+	<cffunction name="numericCodeSelfTest" access="public" output="false" returntype="struct" hint="Checks generateNumericCode: correct length, only digits, leading zeros preserved, codes vary, and every digit 0-9 appears. Returns { pass, results }">
+		<cfset var stResult = { pass = true, results = arraynew(1) } />
+		<cfset var aLens = [4, 6, 8] />
+		<cfset var d = 0 />
+		<cfset var code = "" />
+		<cfset var samples = 500 />
+		<cfset var s = 0 />
+		<cfset var j = 0 />
+		<cfset var ch = "" />
+		<cfset var distinct = structnew() />
+		<cfset var digitsSeen = structnew() />
+		<cfset var sawZero = false />
+		<cfset var lenOk = true />
+		<cfset var onlyDigits = true />
+		<cfset var allTen = true />
+		<cfset var r = "" />
+
+		<!--- length + charset across several digit counts --->
+		<cfloop array="#aLens#" index="d">
+			<cfset code = generateNumericCode(d) />
+			<cfif len(code) neq d><cfset lenOk = false /></cfif>
+			<cfif reFind("[^0-9]", code)><cfset onlyDigits = false /></cfif>
+		</cfloop>
+		<cfset arrayAppend(stResult.results, { name = "length matches requested digits", pass = lenOk }) />
+		<cfset arrayAppend(stResult.results, { name = "only digits 0-9", pass = onlyDigits }) />
+
+		<!--- sample many 6 digit codes: leading zeros, variety, full digit coverage --->
+		<cfloop from="1" to="#samples#" index="s">
+			<cfset code = generateNumericCode(6) />
+			<cfif left(code, 1) eq "0"><cfset sawZero = true /></cfif>
+			<cfset distinct[code] = 1 />
+			<cfloop from="1" to="6" index="j">
+				<cfset ch = mid(code, j, 1) />
+				<cfset digitsSeen[ch] = 1 />
+			</cfloop>
+		</cfloop>
+		<cfset arrayAppend(stResult.results, { name = "leading zeros preserved", pass = sawZero }) />
+		<cfset arrayAppend(stResult.results, { name = "codes vary (not stuck)", pass = (structCount(distinct) gt (samples * 0.9)) }) />
+
+		<cfloop from="0" to="9" index="j">
+			<cfif not structKeyExists(digitsSeen, j)><cfset allTen = false /></cfif>
+		</cfloop>
+		<cfset arrayAppend(stResult.results, { name = "every digit 0-9 appears", pass = allTen }) />
+
+		<cfloop array="#stResult.results#" index="r">
+			<cfif not r.pass><cfset stResult.pass = false /></cfif>
+		</cfloop>
+
+		<cfreturn stResult />
+	</cffunction>
+
 </cfcomponent>

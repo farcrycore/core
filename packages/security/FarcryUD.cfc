@@ -191,7 +191,8 @@
 				<!--- User successfully logged in --->
 				<cfset stResult.authenticated = true />
 
-				<cfif qUser.failedLogins neq "[]">
+				<!--- clear the shared login-failure counter when the login fully completes: on a correct password when no second factor is required, otherwise on the successful second factor instead (each challenge/enrol success clears it), so it is not cleared here while a second factor is still owed --->
+				<cfif qUser.failedLogins neq "[]" and not requiresMFA(userid=stResult.userid)>
 					<cfset application.fapi.getContentType("farUser").resetLoginFailures(objectid=qUser.objectid) />
 				</cfif>
 			<cfelse>

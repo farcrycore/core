@@ -209,6 +209,7 @@
 			<cfset bGraceSkippable = graceSkipAvailable(arguments.userid) />
 			<cfset stResult.bGraceSkippable = bGraceSkippable />
 			<cfif bGraceSkippable and sAction eq "mfaSkip">
+				<cfset resetLoginFailures(userKey) /><!--- a successful (skipped) login clears the counter too --->
 				<cfset stResult.skipped = true />
 				<cfset stResult.reason = "" />
 				<cfreturn stResult />
@@ -1140,6 +1141,12 @@
 				<cfreturn stResult />
 			</cfif>
 
+			<!--- persistent per-user hourly ceiling on emailed codes (mfaEmailMaxSendsPerHour); the count is server-scope so it spans all of a user's login attempts --->
+			<cfif not claimEmailSendSlot(arguments.userid)>
+				<cfset stResult.reason = "throttled" />
+				<cfreturn stResult />
+			</cfif>
+
 			<cfif structKeyExists(arguments.stContext, arguments.contextKey) and structKeyExists(arguments.stContext[arguments.contextKey], "count")>
 				<cfset prevCount = arguments.stContext[arguments.contextKey].count />
 			</cfif>
@@ -1161,13 +1168,40 @@
 			<cfset stResult.sent = true />
 
 			<cfcatch>
-				<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="email one-time code send failed", userid="#arguments.userid#_#this.key#") />
+				<cfset application.security.logSecurityEvent(event="mfaUnavailable", level="error", message="email one-time code send failed: #cfcatch.type# - #cfcatch.message#", userid="#arguments.userid#_#this.key#") />
 				<cfset stResult.sent = false />
 				<cfset stResult.reason = "mailError" />
 			</cfcatch>
 		</cftry>
 
 		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="claimEmailSendSlot" access="private" output="false" returntype="boolean" hint="Persistent per-user hourly ceiling on emailed one-time codes (server scope), counted across all of a user's login attempts. Records and allows a send when under mfaEmailMaxSendsPerHour; returns false at the cap. A cap of 0 or less disables the ceiling.">
+		<cfargument name="userid" type="string" required="true" />
+
+		<cfset var cap = int(application.fapi.getConfig("security", "mfaEmailMaxSendsPerHour", 20)) />
+		<cfset var nowE = variables.oMFACrypto.epochSeconds() />
+		<cfset var windowLen = 3600 />
+		<cfset var budgetKey = arguments.userid & "|" & this.key />
+		<cfset var bOk = false />
+
+		<cfif cap lte 0><cfreturn true /></cfif>
+
+		<cflock name="farcryMFAEmailBudget_#hash(budgetKey)#" type="exclusive" timeout="10">
+			<cfif not structKeyExists(server, "farcryMFAEmailBudget")>
+				<cfset server.farcryMFAEmailBudget = structnew() />
+			</cfif>
+			<cfif not structKeyExists(server.farcryMFAEmailBudget, budgetKey) or (nowE - server.farcryMFAEmailBudget[budgetKey].windowStart) gte windowLen>
+				<cfset server.farcryMFAEmailBudget[budgetKey] = { windowStart = nowE, count = 0 } />
+			</cfif>
+			<cfif server.farcryMFAEmailBudget[budgetKey].count lt cap>
+				<cfset server.farcryMFAEmailBudget[budgetKey].count = server.farcryMFAEmailBudget[budgetKey].count + 1 />
+				<cfset bOk = true />
+			</cfif>
+		</cflock>
+
+		<cfreturn bOk />
 	</cffunction>
 
 	<cffunction name="sendEmailOTPMessage" access="private" output="false" returntype="void" hint="Emails a one-time code to the user (HTML mail from the configured admin address)">
@@ -1382,6 +1416,58 @@
 	<cffunction name="getUseridForKey" access="private" output="false" returntype="string" hint="HOOK: resolve a stable user key back to the login userid for event logging; empty string when not found.">
 		<cfargument name="userKey" type="string" required="true" />
 		<cfthrow type="MFAUserDirectory.notImplemented" message="MFAUserDirectory subclass must implement getUseridForKey()." detail="The concrete user directory must resolve a user key to its login userid for logging." />
+	</cffunction>
+
+	<!--- ============= Self-test (pure engine logic; no mail send, no DB - call on the concrete directory instance) ============= --->
+	<cffunction name="emailOTPSelfTest" access="public" output="false" returntype="struct" hint="Exercises the email OTP engine logic with no mail send and no DB: the emailed-code check (match / trimmed / wrong / expired / missing hash) and the persistent per-user hourly send cap. Returns { pass, results }">
+		<cfset var stResult = { pass = true, results = arraynew(1) } />
+		<cfset var nowE = variables.oMFACrypto.epochSeconds() />
+		<cfset var goodHash = application.security.cryptlib.encodePassword(password="123456", hashname=getOutputHashName()) />
+		<cfset var stFresh = { hash = goodHash, expiresAt = nowE + 300 } />
+		<cfset var stStale = { hash = goodHash, expiresAt = nowE - 1 } />
+		<cfset var stChk = structnew() />
+		<cfset var r = "" />
+		<cfset var testUid = "" />
+		<cfset var testKey = "" />
+		<cfset var cap = 0 />
+		<cfset var granted = 0 />
+		<cfset var probe = 0 />
+		<cfset var i = 0 />
+
+		<!--- emailed-code check: pure function of (context, code) --->
+		<cfset stChk = checkEmailCode(stCodeState=stFresh, code="123456") />
+		<cfset arrayAppend(stResult.results, { name = "valid code matches, not expired", pass = (stChk.matched and not stChk.expired) }) />
+
+		<cfset stChk = checkEmailCode(stCodeState=stFresh, code=" 123456 ") />
+		<cfset arrayAppend(stResult.results, { name = "valid code matches when padded (trimmed)", pass = (stChk.matched and not stChk.expired) }) />
+
+		<cfset stChk = checkEmailCode(stCodeState=stFresh, code="000000") />
+		<cfset arrayAppend(stResult.results, { name = "wrong code rejected", pass = (not stChk.matched) }) />
+
+		<cfset stChk = checkEmailCode(stCodeState=stStale, code="123456") />
+		<cfset arrayAppend(stResult.results, { name = "expired code flagged", pass = (stChk.matched and stChk.expired) }) />
+
+		<cfset stChk = checkEmailCode(stCodeState=structnew(), code="123456") />
+		<cfset arrayAppend(stResult.results, { name = "missing hash is safe (no match, no throw)", pass = (not stChk.matched and not stChk.expired) }) />
+
+		<!--- persistent send cap: a throwaway user is granted the slot up to the cap, then refused --->
+		<cfset testUid = "selftest-" & createUUID() />
+		<cfset testKey = testUid & "|" & this.key />
+		<cfset cap = int(application.fapi.getConfig("security", "mfaEmailMaxSendsPerHour", 20)) />
+		<cfset probe = (cap gt 0) ? (cap + 3) : 5 />
+		<cfloop from="1" to="#probe#" index="i">
+			<cfif claimEmailSendSlot(testUid)><cfset granted = granted + 1 /></cfif>
+		</cfloop>
+		<cfif structKeyExists(server, "farcryMFAEmailBudget") and structKeyExists(server.farcryMFAEmailBudget, testKey)>
+			<cfset structDelete(server.farcryMFAEmailBudget, testKey) />
+		</cfif>
+		<cfset arrayAppend(stResult.results, { name = "email send cap enforced (granted #granted# of cap #cap#)", pass = ((cap gt 0) ? (granted eq cap) : (granted eq probe)) }) />
+
+		<cfloop array="#stResult.results#" index="r">
+			<cfif not r.pass><cfset stResult.pass = false /></cfif>
+		</cfloop>
+
+		<cfreturn stResult />
 	</cffunction>
 
 </cfcomponent>
