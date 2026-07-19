@@ -76,9 +76,9 @@
 					<cfset quser=application.fapi.getContentObjects(typename='dmProfile', username_eq="#stLog.username#", lProperties="label") />
 	
 					<cfif url.linkuser>
-						<a href="#stLog.username#" class="user-stats">#quser.label#</a>
+						<a href="#encodeForHTMLAttribute(stLog.username)#" class="user-stats">#encodeForHTML(quser.label)#</a>
 					<cfelse>
-						#quser.label#
+						#encodeForHTML(quser.label)#
 					</cfif>
 				</td>
 			</tr>
