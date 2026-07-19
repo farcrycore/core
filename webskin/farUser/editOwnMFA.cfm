@@ -11,6 +11,17 @@
 	<cfexit method="exittemplate">
 </cfif>
 
+<cfif structKeyExists(session, "impersonator")>
+	<!--- impersonated session: MFA is the account holder's own security control, so show a notice and allow nothing - no status, no recovery codes, no changes. Admins manage a user's factors via the SecurityManagement-gated admin tool instead. --->
+	<admin:header>
+	<cfoutput>
+		<h1><i class="fa fa-lock"></i> <admin:resource key="security.mfa.manage.title">Multi-factor authentication</admin:resource></h1>
+		<div class="alert alert-info"><admin:resource key="security.mfa.manage.impersonating">Multi-factor authentication settings belong to the account holder and cannot be viewed or changed while you are impersonating this user. To reset a user's factors, use the admin Manage multi-factor tool.</admin:resource></div>
+	</cfoutput>
+	<admin:footer>
+	<cfexit method="exittemplate">
+</cfif>
+
 <cfset oUD = application.security.userdirectories["CLIENTUD"] />
 <cfset userid = application.factory.oUtils.listSlice(session.security.userid, 1, -2, "_") />
 <cfset setupFactor = structKeyExists(url, "setup") ? url.setup : "" /><!--- factor type the user chose to set up (totp / passkey) --->
@@ -95,7 +106,7 @@ ACTION
 	<cfif not stStart.bSuccess>
 		<cfset request.mfaError = stStart.message />
 	<cfelseif len(stStart.message)>
-		<skin:bubble title="#stStart.message#" tags="security,info" />
+		<skin:bubble title="#encodeForHTML(stStart.message)#" tags="security,info" />
 	</cfif>
 </ft:processform>
 
@@ -104,6 +115,7 @@ ACTION
 	<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
 		<cfset stConfirm = oUD.confirmEmailOTPEnrolment(userid=userid, code=trim(structKeyExists(stProperties, "otpcode") ? stProperties.otpcode : "")) />
 		<cfif stConfirm.bSuccess>
+			<cfset setupFactor = "" /><!--- leave the setup flow; fall through to the recovery-codes display (first factor) or the status table --->
 			<cfif arrayLen(stConfirm.aRecoveryCodes)>
 				<cfset request.fc.aMFARecoveryCodes = stConfirm.aRecoveryCodes />
 			</cfif>
