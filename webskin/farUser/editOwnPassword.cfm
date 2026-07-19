@@ -9,6 +9,15 @@
 
 <ft:serverSideValidation />
 
+<!--- an impersonated session must not change the account holder's password; the self-only check below passes under impersonation (both sides resolve to the impersonated user), so guard on it explicitly --->
+<cfif structKeyExists(session, "impersonator")>
+	<admin:header>
+	<cfoutput><h1>#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#</h1>
+	<div class="alert alert-info"><admin:resource key="coapi.farUser.changepassword.impersonating">You cannot change this user's password while impersonating them. Use the User Administration "Change password" action instead.</admin:resource></div></cfoutput>
+	<admin:footer>
+	<cfexit method="exittemplate">
+</cfif>
+
 <cfset stUser = getByUserId(application.factory.oUtils.listSlice(session.security.userid,1,-2,"_")) />
 <cfset stObj = stUser />
 
