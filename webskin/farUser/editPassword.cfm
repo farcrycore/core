@@ -22,7 +22,7 @@
 <admin:header />
 
 <cfoutput>
-	<h1><admin:resource key="coapi.farUser.changepassword@title" var1="#stObj.userid#">CHANGE PASSWORD: {1}</admin:resource></h1>
+	<h1><admin:resource key="coapi.farUser.changepassword@title" var1="#encodeForHTML(stObj.userid)#">CHANGE PASSWORD: {1}</admin:resource></h1>
 </cfoutput>
 
 <ft:form>

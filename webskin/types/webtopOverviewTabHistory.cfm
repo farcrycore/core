@@ -28,13 +28,13 @@
 			<div class="comment">
 				<blockquote>
 					<strong>#events[qLog.event[1]]#</strong>: 
-					<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back">#qLog.notes#<cfelse><em>No comment.</em></cfif>	
+					<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back">#encodeForHTML(qLog.notes)#<cfelse><em>No comment.</em></cfif>	
 					<cfset stProfile = oProfile.getProfile(username=qLog.userid[1]) />
 					<small><span title="#dateformat(qLog.datetimecreated[1], 'dd/mm/yyyy')# #timeformat(qLog.datetimecreated[1], 'hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated[1])#</span>
 					<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
 						| #encodeForHTML(stProfile.firstname)# #encodeForHTML(stProfile.lastname)#
 					<cfelse>
-						| #listfirst(qLog.userid[1],'_')#
+						| #encodeForHTML(listfirst(qLog.userid[1],'_'))#
 					</cfif></small>
 				</blockquote>
 				<a href="##" onclick="$j(this).hide();$j('##comment-log').show();return false;">View All</a>
@@ -46,13 +46,13 @@
 						<div class="comment">
 							<blockquote>
 								<strong>#events[qLog.event]#</strong>: 
-								<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back">#qLog.notes#<cfelse><em>No comment.</em></cfif>	
+								<cfif len(qLog.notes) and qLog.notes neq "Archive rolled back">#encodeForHTML(qLog.notes)#<cfelse><em>No comment.</em></cfif>	
 								<cfset stProfile = oProfile.getProfile(username=qLog.userid) />
 								<small><span title="#dateformat(qLog.datetimecreated, 'dd/mm/yyyy')# #timeformat(qLog.datetimecreated, 'hh:mm:ss')#">#application.fapi.prettyDate(qLog.datetimecreated)#</span>
 								<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
 									| #encodeForHTML(stProfile.firstname)# #encodeForHTML(stProfile.lastname)#
 								<cfelse>
-									| #listfirst(qLog.userid,'_')#
+									| #encodeForHTML(listfirst(qLog.userid,'_'))#
 								</cfif></small>
 							</blockquote>
 						</div>

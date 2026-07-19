@@ -36,7 +36,7 @@
 			<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
 				<cfoutput>(#encodeForHTML(stProfile.firstname)# #encodeForHTML(stProfile.lastname)#)</dt></cfoutput>
 			<cfelse>
-				<cfoutput>(#listfirst(qComments.userid,'_')#)</dt></cfoutput>
+				<cfoutput>(#encodeForHTML(listfirst(qComments.userid,'_'))#)</dt></cfoutput>
 			</cfif>
 			
 			<cfif len(qComments.notes)>

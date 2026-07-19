@@ -12,15 +12,15 @@
 		<dt>#geti18Property("emailAddress")#</dt>
 		<dd><cfif len(stObj.emailAddress)>#encodeForHTML(stObj.emailAddress)#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("position")#</dt>
-		<dd><cfif len(stObj.position)>#stObj.position#<cfelse>-</cfif></dd>
+		<dd><cfif len(stObj.position)>#encodeForHTML(stObj.position)#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("department")#</dt>
-		<dd><cfif len(stObj.department)>#stObj.department#<cfelse>-</cfif></dd>
+		<dd><cfif len(stObj.department)>#encodeForHTML(stObj.department)#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("phone")#</dt>
-		<dd><cfif len(stObj.phone)>#stObj.phone#<cfelse>-</cfif></dd>
+		<dd><cfif len(stObj.phone)>#encodeForHTML(stObj.phone)#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("fax")#</dt>
-		<dd><cfif len(stObj.fax)>#stObj.fax#<cfelse>-</cfif></dd>
+		<dd><cfif len(stObj.fax)>#encodeForHTML(stObj.fax)#<cfelse>-</cfif></dd>
 		<dt>#geti18Property("locale")#</dt>
-		<dd><cfif len(stObj.locale)>#stObj.locale#<cfelse>-</cfif></dd>
+		<dd><cfif len(stObj.locale)>#encodeForHTML(stObj.locale)#<cfelse>-</cfif></dd>
 		<skin:view typename="dmProfile" objectid="#stObj.objectid#" webskin="displaySummaryDetails#application.security.getCurrentUD()#" alternateHTML="" />
 	</dl>
 	
