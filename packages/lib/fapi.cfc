@@ -1764,6 +1764,18 @@
 	<cffunction name="logger" access="public" returntype="any" output="false" hint="Returns the framework diagnostic logger (lib/logger), e.g. application.fapi.logger().info(category, message, fields).">
 		<cfreturn application.fc.lib.logger />
 	</cffunction>
+
+	<cffunction name="addLogContext" access="public" returntype="void" output="false" hint="Merge fields into the ambient log context for the current request; every subsequent logEvent (any category) inherits them, so lines are self-describing. Request-scoped: isolated per request/thread and cleared automatically when the request ends.">
+		<cfargument name="stFields" type="struct" required="true" hint="fields to add, e.g. {correlationId=..., userId=...}" />
+		<cfif not structKeyExists(request, "logContext") or not isStruct(request.logContext)>
+			<cfset request.logContext = structNew() />
+		</cfif>
+		<cfset structAppend(request.logContext, arguments.stFields, true) />
+	</cffunction>
+
+	<cffunction name="clearLogContext" access="public" returntype="void" output="false" hint="Remove the ambient log context for the current request. Rarely needed; use to bound a section that should not carry inherited context.">
+		<cfset structDelete(request, "logContext") />
+	</cffunction>
 		
 	<!--- @@description:
 		<p>This function calls createUUID directly. It was previously used as an alternative when createUUID performance was slow but this is generally not the case now.</p>

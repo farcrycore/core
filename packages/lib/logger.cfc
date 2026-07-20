@@ -166,13 +166,19 @@
 		<cfargument name="stFields" type="struct" required="true" />
 		<cfscript>
 			var event = {};
+			var merged = structNew();
 			event["timestamp"] = "";
 			try { event["timestamp"] = application.fapi.dateToISO8601(now()); } catch (any e) {}
 			event["level"] = arguments.level;
 			event["category"] = sanitiseCategory(arguments.category);
 			event["message"] = stripNewlines(arguments.message);
 			event["app"] = structKeyExists(application, "applicationname") ? application.applicationname : "";
-			event["fields"] = duplicate(arguments.stFields);
+			// ambient request log context (MDC-style) flows onto every event; explicit call fields win on a key clash
+			if (structKeyExists(request, "logContext") and isStruct(request.logContext)) {
+				structAppend(merged, request.logContext, true);
+			}
+			structAppend(merged, arguments.stFields, true);
+			event["fields"] = duplicate(merged);
 			return event;
 		</cfscript>
 	</cffunction>
