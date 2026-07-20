@@ -58,6 +58,11 @@ type properties
 		fttype="boolean"
 		fthint="Task will be automatically rescheduled if it is missing when the application restarts.">
 
+	<cfproperty name="bAlarm" type="boolean" required="true" default="false"
+		ftSeq="14" ftFieldset="Task to Perform" ftLabel="Enable Monitoring Alarm"
+		fttype="boolean"
+		fthint="When on, this task's success and failure log events carry an alarm flag so external monitoring can watch just this task.">
+
 
 	<cfproperty name="datetimeLastExecuted" type="date" required="false" 
 		ftSeq="21" ftFieldset="Status" ftLabel="Last Executed"
@@ -107,6 +112,31 @@ type properties
 		<cfset lTemplates = listAppend(lTemplates,"#qListTemplates.path#:#qListTemplates.displayname#")>
 	</cfloop>
 	<cfreturn lTemplates>
+</cffunction>
+
+
+<cffunction name="describeTemplate" access="public" output="false" returntype="struct" hint="Path-free descriptor for a task template: name (filename, no .cfm) and source (core|project|plugin:name). Keeps full filesystem paths out of logs.">
+	<cfargument name="template" type="string" required="true" hint="The stored template path (the fullpath from listTemplates)." />
+
+	<cfset var norm = replace(arguments.template, "\", "/", "all") />
+	<cfset var stOut = { name = reReplaceNoCase(listLast(norm, "/"), "\.cfm$", ""), source = "unknown" } />
+	<cfset var plugin = "" />
+
+	<!--- match the fullpath against the same roots listTemplates scans: core, project, then each plugin --->
+	<cfif findNoCase(replace(application.path.core, "\", "/", "all") & "/webtop/scheduledTasks", norm) eq 1>
+		<cfset stOut.source = "core" />
+	<cfelseif findNoCase(replace(application.path.project, "\", "/", "all") & "/system/dmCron", norm) eq 1>
+		<cfset stOut.source = "project" />
+	<cfelse>
+		<cfloop list="#application.plugins#" index="plugin">
+			<cfif findNoCase(replace(application.path.plugins, "\", "/", "all") & "/" & plugin & "/system/dmCron", norm) eq 1>
+				<cfset stOut.source = "plugin:" & plugin />
+				<cfbreak />
+			</cfif>
+		</cfloop>
+	</cfif>
+
+	<cfreturn stOut />
 </cffunction>
 
 
@@ -511,7 +541,7 @@ type properties
 	<cfset var pathname = "" />
 
 	<cfset paths[application.rb.getResource('coapi.dmCron.tasktype.core@label','Core')] = "#application.path.core#/webtop/scheduledTasks" />
-	<cfset paths[application.rb.getResource('coapi.dmCron.tasktype.custom@label','Custom')] = "#application.path.project#/system/dmCron" />
+	<cfset paths[application.rb.getResource('coapi.dmCron.tasktype.project@label','Project')] = "#application.path.project#/system/dmCron" />
 
 	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
