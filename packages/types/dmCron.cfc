@@ -196,10 +196,12 @@ type properties
 	<cfreturn true>
 </cffunction>
 
-<cffunction name="removeJob" returntype="boolean" output="false" hint="Removes a task from the app server jobs list.">
+<cffunction name="removeJob" returntype="boolean" output="false" hint="Removes a task from the app server jobs list. Idempotent: a task that isn't present on the engine (past-dated 'once', bAutoStart=false, or not yet reasserted after a restart) is a no-op rather than an error, so object deletion still succeeds.">
 	<cfargument name="objectid" type="uuid" required="true">
 	<cfset var stobject = getData(objectid=arguments.objectid)>
-	<cfschedule	action="Delete"	task = "#application.applicationname#: #stobject.title#">
+	<cfif checkJobStatus(arguments.objectid)>
+		<cfschedule action="Delete" task = "#application.applicationname#: #stobject.title#">
+	</cfif>
 	<cfreturn true>
 </cffunction>
 
