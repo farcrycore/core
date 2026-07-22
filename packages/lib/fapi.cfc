@@ -1299,7 +1299,10 @@
 			<cfargument name="default" required="false" hint="If the config item is not found, use this as the default." />
 			
 			<cfset var result = "" />
-			
+
+			<!--- lowercase the key so mixed-case callers share one cache entry (object broker cache keys may be case-sensitive) --->
+			<cfset arguments.key = lCase(arguments.key) />
+
 			<cfif not isdefined("request.cache.config.#arguments.key#") AND isDefined("application.stCOAPI.farConfig")>
 				<cfset request.cache.config[arguments.key] = application.fapi.getContentType("farConfig").getConfig(arguments.key) />
 			</cfif>
