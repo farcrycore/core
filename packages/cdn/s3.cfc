@@ -543,6 +543,7 @@
 		<cfset var signingKey = "" />
 		<cfset var queryParams = "" />
 		<cfset var headers = "" />
+		<cfset var signedPath = "" />
 		
 		<cfif not left(urlpath,1) eq "/">
 			<cfset urlpath = "/" & urlpath />
@@ -563,11 +564,18 @@
 					"X-Amz-Expires"=numberFormat(arguments.config.urlExpiry*60, "0"),
 					"X-Amz-SignedHeaders"="host"
 				} />
+				<!--- sign the path S3 will actually see: path-style (bucket in the path) when the URL
+				      targets the S3 API endpoint, bare path when it goes via the custom domain (there
+				      the bucket is in the host). Must match the URL-host choice made below. --->
+				<cfset signedPath = urlPath />
+				<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
+					<cfset signedPath = arguments.config.apiEndpointPrefix & urlPath />
+				</cfif>
 				<cfset signature = getAWSSignature(
 					config=arguments.config,
 					timestamp=currentDate,
 					method=arguments.method,
-					path=urlPath,
+					path=signedPath,
 					queryParams=queryParams,
 					s3Path=arguments.s3Path
 				) />
