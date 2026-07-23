@@ -669,6 +669,7 @@
 		<cfset var queryParams = "" />
 		<cfset var headers = "" />
 		<cfset var stConfig = "" />
+		<cfset var signedPath = "" />
 		
 		<cfif not left(urlpath,1) eq "/">
 			<cfset urlpath = "/" & urlpath />
@@ -698,11 +699,18 @@
 					<cfset queryParams["X-Amz-Security-Token"] = stConfig.sessionToken />
 				</cfif>
 
+				<!--- sign the path S3 will actually see: path-style (bucket in the path) when the URL
+				      targets the S3 API endpoint, bare path when it goes via the custom domain (there
+				      the bucket is in the host). Must match the URL-host choice made below. --->
+				<cfset signedPath = urlPath />
+				<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
+					<cfset signedPath = arguments.config.apiEndpointPrefix & urlPath />
+				</cfif>
 				<cfset signature = getAWSSignature(
 					config=stConfig,
 					timestamp=currentDate,
 					method=arguments.method,
-					path=urlPath,
+					path=signedPath,
 					queryParams=queryParams,
 					s3Path=arguments.s3Path
 				) />
@@ -1348,6 +1356,16 @@
 		<cfset var tmpfile = "" />
 		<cfset var stAttrs = structnew() />
 		<cfset var cachePath = "" />
+		<cfset var timestamp = "" />
+		<cfset var stHeaders = "" />
+		<cfset var authArgs = {} />
+		<cfset var signature = "" />
+		<cfset var stResponse = structNew() />
+		<cfset var urlPath = "" />
+		<cfset var i = "" />
+		<cfset var errorBody = "" />
+		<cfset var substituteValues = arrayNew(1) />
+		<cfset var stConfig = "" />
 
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
@@ -1374,15 +1392,75 @@
 				
 			<cfelse>
 			
-				<!--- copy from S3 source to local destination --->
-				<cfset sourcefile = getURLPath(config=arguments.source_config,file=arguments.source_file,protocol="https") />
+				<!--- copy from S3 source to local destination.
+				      The read-back is SigV4-signed against the S3 API endpoint (same request shape
+				      as ioFileExists) so it never depends on object ACLs, bucket policy or the CDN
+				      domain - the app can always read its own objects, including on buckets with
+				      public access blocked / ACLs disabled. --->
 				<cfset destfile = arguments.dest_localpath />
-				
+
 				<cfif not directoryExists(getDirectoryFromPath(destfile))>
 					<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
 				</cfif>
 
-				<cfhttp url="#sourceFile#" method="get" path="#getDirectoryFromPath(destfile)#" file="#getFileFromPath(destfile)#" getAsBinary="yes" timeout="300"/>	
+				<cfset timestamp = application.fapi.dateToISO8601(Now()) />
+				<cfset stHeaders = { "x-amz-content-sha256" = "UNSIGNED-PAYLOAD" } />
+
+				<cfif left(arguments.source_file,1) neq "/">
+					<cfset urlPath = arguments.source_config.pathPrefix & "/" & arguments.source_file />
+				<cfelse>
+					<cfset urlPath = arguments.source_config.pathPrefix & arguments.source_file />
+				</cfif>
+
+				<cfif left(arguments.source_file,2) eq "//">
+					<!--- already a fully qualified URL: fetch as-is (legacy passthrough) --->
+					<cfset sourcefile = getURLPath(config=arguments.source_config,file=arguments.source_file,protocol="https") />
+					<cfhttp url="#sourceFile#" method="get" path="#getDirectoryFromPath(destfile)#" file="#getFileFromPath(destfile)#" getAsBinary="yes" timeout="300" result="stResponse" />
+				<cfelse>
+					<!--- resolve active credentials; sign and send the security token when temporary --->
+					<cfset stConfig = resolveSigningConfig(arguments.source_config) />
+					<cfif len(stConfig.sessionToken)>
+						<cfset stHeaders["x-amz-security-token"] = stConfig.sessionToken />
+					</cfif>
+
+					<!--- create signature --->
+					<cfset authArgs = {
+						config=stConfig,
+						timestamp=timestamp,
+						method="GET",
+						path=arguments.source_config.apiEndpointPrefix & urlPath,
+						headers=stHeaders,
+						unsignedPayload=true,
+						s3Path=true
+					} />
+					<cfset signature = getAWSAuthorization(argumentCollection=authArgs) />
+
+					<cfhttp url="https://#arguments.source_config.apiEndpoint##arguments.source_config.apiEndpointPrefix##urlPath#" method="get" path="#getDirectoryFromPath(destfile)#" file="#getFileFromPath(destfile)#" getAsBinary="yes" timeout="300" result="stResponse">
+						<cfhttpparam type="header" name="Date" value="#timestamp#" />
+						<cfhttpparam type="header" name="Authorization" value="#signature#" />
+						<cfloop collection="#stHeaders#" item="i">
+							<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+						</cfloop>
+					</cfhttp>
+				</cfif>
+
+				<!--- never persist or cache a non-success body (e.g. an S3 error XML) --->
+				<cfif NOT listFindNoCase("200,204",listfirst(stResponse.statuscode," "))>
+					<cfif fileExists(destfile)>
+						<cftry>
+							<cfif getFileInfo(destfile).size lte 65536>
+								<cffile action="read" file="#destfile#" variable="errorBody" />
+							</cfif>
+							<cffile action="delete" file="#destfile#" />
+							<cfcatch></cfcatch>
+						</cftry>
+					</cfif>
+					<cfset substituteValues = arrayNew(1)>
+					<cfset substituteValues[1] = stResponse.statuscode>
+					<cfset substituteValues[2] = sanitiseS3URL(urlPath)>
+					<cfset application.fapi.throw(message="Error reading S3 object: {1} {2}",type="s3error",detail=errorBody,substituteValues=substituteValues) />
+				</cfif>
+
 				<cfif arguments.source_config.localCacheSize>
 					<cfset tmpfile = getTemporaryFile(config=arguments.source_config,file=arguments.source_file) />
 					<cffile action="copy" source="#destfile#" destination="#tmpfile#" mode="664" nameconflict="overwrite" />
