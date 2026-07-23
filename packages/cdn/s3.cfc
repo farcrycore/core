@@ -669,6 +669,7 @@
 		<cfset var queryParams = "" />
 		<cfset var headers = "" />
 		<cfset var stConfig = "" />
+		<cfset var currentDate = "" />
 		<cfset var signedPath = "" />
 		
 		<cfif not left(urlpath,1) eq "/">
@@ -1799,13 +1800,13 @@
 		<cfargument name="file" type="string" required="true" />
 
 		<cfset var signature = "" />
-		<cfset var timestamp = GetHTTPTimeString(Now()) />
 		<cfset var cfhttp = "" />
 		<cfset var results = "" />
 		<cfset var path = "" />
 		<cfset var stDetail = structNew() />
 		<cfset var substituteValues = arrayNew(1) />
 		<cfset var header = "" />
+		<cfset var i = "" />
 		<cfset var timestamp = application.fapi.dateToISO8601(Now()) />
 		<cfset var stHeaders = {
 			"x-amz-content-sha256" = "UNSIGNED-PAYLOAD"
