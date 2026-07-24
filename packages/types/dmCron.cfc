@@ -122,14 +122,14 @@ type properties
 	<cfset var stOut = { name = reReplaceNoCase(listLast(norm, "/"), "\.cfm$", ""), source = "unknown" } />
 	<cfset var plugin = "" />
 
-	<!--- match the fullpath against the same roots listTemplates scans: core, project, then each plugin --->
-	<cfif findNoCase(replace(application.path.core, "\", "/", "all") & "/webtop/scheduledTasks", norm) eq 1>
+	<!--- match the /farcry-relative root; "/farcry/project" matches both projects/ and project/ --->
+	<cfif findNoCase("/farcry/core", norm) eq 1>
 		<cfset stOut.source = "core" />
-	<cfelseif findNoCase(replace(application.path.project, "\", "/", "all") & "/system/dmCron", norm) eq 1>
+	<cfelseif findNoCase("/farcry/project", norm) eq 1>
 		<cfset stOut.source = "project" />
 	<cfelse>
 		<cfloop list="#application.plugins#" index="plugin">
-			<cfif findNoCase(replace(application.path.plugins, "\", "/", "all") & "/" & plugin & "/system/dmCron", norm) eq 1>
+			<cfif findNoCase("/farcry/plugins/" & plugin & "/", norm) eq 1>
 				<cfset stOut.source = "plugin:" & plugin />
 				<cfbreak />
 			</cfif>
