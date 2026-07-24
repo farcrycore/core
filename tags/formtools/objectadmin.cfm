@@ -160,6 +160,7 @@
 
 	<cfset PrimaryPackage = duplicate(application.stCOAPI[attributes.typename]) />
 	<cfset PrimaryPackagePath = application.stCOAPI[attributes.typename].packagepath />
+	<cfset oType = createObject("component", PrimaryPackagePath) />
 
 	<cfif not len(attributes.sqlWhere)>
 		<cfset attributes.sqlWhere = "0=0" />
@@ -277,11 +278,9 @@
 
 	<cfif (listLen(attributes.lFilterFields) AND attributes.lFilterFields neq "label") OR len(session.objectadminFilterObjects[attributes.typename].q)>
 
-			<cfset oFilterType = createObject("component", PrimaryPackagePath) />
-
 			<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
 				
-				<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#application.fc.utils.createJavaUUID()#") />
+				<cfset session.objectadminFilterObjects[attributes.typename].stObject = oType.getData(objectid="#application.fc.utils.createJavaUUID()#") />
 				
 							
 				<cfset session.objectadminFilterObjects[attributes.typename].stObject.label = "" />
@@ -292,7 +291,7 @@
 						<cfset session.objectadminFilterObjects[attributes.typename].stObject[prop] = attributes.stFilterMetadata[prop].ftDefault />
 					</cfif>
 				</cfloop>
-				<cfset stResult = oFilterType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
+				<cfset stResult = oType.setData(stProperties=session.objectadminFilterObjects[attributes.typename].stObject, bSessionOnly=true) />
 			</cfif>
 			
 			<ft:processform action="apply filter" url="refresh">
@@ -305,7 +304,7 @@
 			</ft:processForm>
 
 
-			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
+			<cfset session.objectadminFilterObjects[attributes.typename].stObject = oType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 	
 	
 		<!------------------------
@@ -622,11 +621,10 @@
 		
 	// delete: content items deleted
 	if (isDefined("form.delete") AND form.delete AND isDefined("form.objectid")){
-		objType = CreateObject("component","#PrimaryPackagePath#");
 		aDeleteObjectID = ListToArray(form.objectid);
 	
 		for(i=1;i LTE Arraylen(aDeleteObjectID);i = i+1){
-			returnstruct = objType.delete(aDeleteObjectID[i]);
+			returnstruct = oType.delete(aDeleteObjectID[i]);
 			if(StructKeyExists(returnstruct,"bSuccess") AND NOT returnstruct.bSuccess)
 				message_error = message_error & returnstruct.message;
 		}
@@ -639,7 +637,7 @@
 		<!---response="DUMP (field: #form.dump#)actioned for: #form.objectid#."; --->
 		<cfsavecontent variable="response">
 			<cfloop list="#form.objectid#" index="i">
-				<cfset st = createObject("component", PrimaryPackagePath).getData(objectid=i) />
+				<cfset st = oType.getData(objectid=i) />
 				<cfdump var="#st#" expand="false" label="Dump of #st.label#">
 			</cfloop>
 			
@@ -703,7 +701,7 @@
 	
 	<cfset HTMLfiltersAttributes = "">
 	<cfif listLen(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
-		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
+		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 		
 		<cfloop list="#attributes.lFilterFields#" index="criteria">
 			<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
@@ -914,8 +912,6 @@
 							</cfif>
 						</cfif>
 						
-						<cfset o = createobject("component",PrimaryPackagepath) />
-						
 						<cfif arrayLen(attributes.aCustomColumns)>
 							<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 								
@@ -952,7 +948,7 @@
 										<th class="#sortableClass#" data-field="#attributes.aCustomColumns[i]#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
 											<span>
 												<cfif isDefined("PrimaryPackage.stProps.#trim(attributes.aCustomColumns[i])#.metadata.ftLabel")>
-													#o.getI18Property(attributes.aCustomColumns[i],"label")#
+													#oType.getI18Property(attributes.aCustomColumns[i],"label")#
 												<cfelse>
 													#attributes.aCustomColumns[i]#
 												</cfif>
@@ -1008,7 +1004,7 @@
 									<th class="#sortableClass#" data-field="#i#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
 									<span>
 										<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-											#application.rb.getResource("objectadmin.columns.#rereplace(i,'[^\w\d]','','ALL')#@heading", o.getI18Property(i,"label"))#
+											#application.rb.getResource("objectadmin.columns.#rereplace(i,'[^\w\d]','','ALL')#@heading", oType.getI18Property(i,"label"))#
 										<cfelse>
 											#i#
 										</cfif>
@@ -1047,7 +1043,6 @@
 						 		<cfoutput><th>&nbsp;</th></cfoutput>
 							</cfif>			
 							<cfif arrayLen(attributes.aCustomColumns)>
-								<cfset oType = createObject("component", PrimaryPackagePath) />
 								<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 									<cfif isstruct(attributes.aCustomColumns[i])>
 										<cfif structKeyExists(attributes.aCustomColumns[i],"sortable") and attributes.aCustomColumns[i].sortable>
@@ -1160,7 +1155,6 @@
 							</cfif>
 	
 							<cfif arrayLen(attributes.aCustomColumns)>
-								<cfset oType = createObject("component", PrimaryPackagePath) />
 								<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 									
 									<cfif isstruct(attributes.aCustomColumns[i])>
@@ -1299,6 +1293,7 @@
 	
 	<cfset var stObjectAdminData = structNew() />
 	<cfset var lWorkflowTypenames = "" />
+	<cfset var ActionDropdown = "" />
 
 	<cfif len(arguments.typename) AND application.stcoapi[arguments.typename].bWorkflow>
 		<cfset lWorkflowTypenames = application.fapi.getContentType("farWorkflow").getWorkflowList(arguments.typename) />
@@ -1325,8 +1320,9 @@
 		<sec:CheckPermission permission="Developer" result="arguments.stPermissions.iDeveloper" />
 	</cfif>
 	
+	<cfif attributes.bShowActionList>
 	<cfsavecontent variable="ActionDropdown">
-		
+
 		<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
 		<cfif Len(attributes.plugin)>
 			<cfset overviewURL = listAppend(overviewURL,'plugin=#attributes.plugin#', '&') />
@@ -1409,9 +1405,10 @@
 		</cfif>		
 
 	</cfsavecontent>
-	
+	</cfif>
+
 	<cfset stObjectAdminData.action = ActionDropdown />
-	
+
 	<cfreturn stObjectAdminData />
 </cffunction>
 
