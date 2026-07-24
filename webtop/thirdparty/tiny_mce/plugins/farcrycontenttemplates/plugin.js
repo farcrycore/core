@@ -131,24 +131,25 @@
 			}
 		});
 
-		// Toolbar: "Upload images" button. No-op when no bulk-upload field is configured for this field.
-		editor.ui.registry.addButton('farcryuploadcontent', {
-			icon: 'upload',
-			tooltip: 'Upload images',
-			onAction: function () {
-				var imageUploadField = editor.options.get('imageUploadField');
-				if (!imageUploadField || !imageUploadField.length || !$j('#' + imageUploadField).length) {
-					return;
+		// Toolbar: "Upload images" button. Only registered when this field has a bulk-upload
+		// image field present in the DOM; otherwise the toolbar token stays unresolved and the
+		// button drops off the toolbar (as it did pre-8) instead of showing a no-op button.
+		var imageUploadField = editor.options.get('imageUploadField');
+		if (imageUploadField && imageUploadField.length && $j('#' + imageUploadField).length) {
+			editor.ui.registry.addButton('farcryuploadcontent', {
+				icon: 'upload',
+				tooltip: 'Upload images',
+				onAction: function () {
+					var field = $j('#' + imageUploadField + '-bulkupload-type');
+					field.val(editor.options.get('imageUploadType'));
+					if (field.is('select')) {
+						field.trigger('change');
+					} else {
+						$j('#' + imageUploadField + '-bulkupload-btn').trigger('click');
+					}
 				}
-				var field = $j('#' + imageUploadField + '-bulkupload-type');
-				field.val(editor.options.get('imageUploadType'));
-				if (field.is('select')) {
-					field.trigger('change');
-				} else {
-					$j('#' + imageUploadField + '-bulkupload-btn').trigger('click');
-				}
-			}
-		});
+			});
+		}
 
 	});
 })();
