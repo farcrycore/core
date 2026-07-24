@@ -297,27 +297,54 @@ type properties
 	<cfreturn true>
 </cffunction>
 
-<cffunction name="reassertJobs" returntype="boolean" output="true" hint="Re-asserts every autostart task's job via addJob so expired/disabled ones get neutralised. Run at app start to also correct jobs that were created live but have since reached their end date.">
-	<cfset var qTasks = application.fapi.getContentObjects(typename="dmCron", lproperties="objectid", bAutoStart_eq="1") />
-	<cfset var failed = 0 />
+<cffunction name="reassertJobs" returntype="boolean" output="true" hint="Registers each enabled task on the app server jobs list at app start and logs its Job Status (active/ended/disabled/not registered) with the same objectid/title/task/source identity the run-time task logs carry, plus a summary. addJob runs only for tasks with Autocreate Job on (bAutoStart); ended and server-disabled ones register as a past-dated 'once' so they will not auto-run; disabled tasks are reported but left off the jobs list.">
+	<cfset var qTasks = application.fapi.getContentObjects(typename="dmCron", lproperties="objectid,title,template,bAutoStart,endDate,frequency") />
+	<cfset var active = 0 />
+	<cfset var ended = 0 />
+	<cfset var disabled = 0 />
+	<cfset var notRegistered = 0 />
 	<cfset var stErr = "" />
+	<cfset var stTask = {} />
+	<cfset var stDesc = { name="", source="unknown" } />
+	<cfset var stLog = {} />
+	<cfset var status = "" />
+
+	<cfif not application.fapi.getConfig("tasks", "bEnabled")>
+		<cfset application.fapi.logEvent("cron", "warning", "scheduled tasks disabled for this server, tasks will not execute automatically", {}) />
+	</cfif>
 
 	<cfloop query="qTasks">
 		<cftry>
-			<cfset addJob(qTasks.objectid) />
+			<!--- same path-free identity the run-time task logs publish via addLogContext --->
+			<cfset stDesc = describeTemplate(qTasks.template) />
+			<cfset stTask = { bAutoStart=qTasks.bAutoStart, endDate=qTasks.endDate } />
+			<!--- addJob only for enabled tasks; disabled ones are reported but left off the jobs list --->
+			<cfif qTasks.bAutoStart>
+				<cfset addJob(qTasks.objectid) />
+			</cfif>
+			<cfset status = jobStatus(stTask) />
+			<cfset stLog = { objectid=qTasks.objectid, title=qTasks.title, task=stDesc.name, source=stDesc.source } />
+			<cfif status eq "active">
+				<cfset active = active + 1 />
+				<cfset stLog.frequency = qTasks.frequency />
+			<cfelseif status eq "ended">
+				<cfset ended = ended + 1 />
+				<cfset stLog.endDate = dateFormat(qTasks.endDate, "d mmm yyyy") & " " & timeFormat(qTasks.endDate, "h:mm tt") />
+			<cfelse>
+				<cfset disabled = disabled + 1 />
+			</cfif>
+			<cfset application.fapi.logEvent("cron", "information", "scheduled task " & status, stLog) />
 			<cfcatch>
-				<!--- isolate a single bad task so the rest still get scheduled, but never silently --->
-				<cfset failed = failed + 1 />
+				<!--- isolate a single bad task so the rest still get registered, but never silently --->
+				<cfset notRegistered = notRegistered + 1 />
 				<cfset stErr = application.fc.lib.error.normalizeError(cfcatch) />
-				<cfset stErr.message = "reassertJobs: could not (re)assert scheduled task #qTasks.objectid# - " & stErr.message />
+				<cfset stErr.message = "scheduled task not registered: #qTasks.title# (#qTasks.objectid#) - " & stErr.message />
 				<cfset application.fc.lib.error.logData(stErr) />
 			</cfcatch>
 		</cftry>
 	</cfloop>
 
-	<cfif failed>
-		<cfset application.fapi.logEvent("cron", "error", "reassertJobs: autostart tasks failed to (re)assert (details in the error log)", {failed=failed, count=qTasks.recordcount}) />
-	</cfif>
+	<cfset application.fapi.logEvent("cron", (notRegistered ? "error" : "information"), "scheduled task startup complete", {total=qTasks.recordcount, active=active, ended=ended, disabled=disabled, notRegistered=notRegistered}) />
 
 	<cfreturn true>
 </cffunction>
@@ -356,6 +383,9 @@ type properties
 
 	<cfset var stExistingObj	= '' />
 	
+	<cfset var stEffective = {} />
+	<cfset var stDesc = {} />
+
 	<cfif arguments.bUpdateTask and not arguments.bSessionOnly and structKeyExists(arguments.stProperties,"title")>
 		<!--- check if task has been renamed --->
 		<cfset stExistingObj = getData(arguments.stProperties.objectid)>	
@@ -369,6 +399,15 @@ type properties
 		
 		<!--- add/update task --->
 		<cfset addJob(stobject=arguments.stProperties)>
+
+		<!--- diagnostic: record the resulting Job Status on the cron stream; best-effort, must never break the save --->
+		<cftry>
+			<cfset stEffective = duplicate(stExistingObj) />
+			<cfset structAppend(stEffective, arguments.stProperties, true) />
+			<cfset stDesc = describeTemplate(structKeyExists(stEffective, "template") ? stEffective.template : "") />
+			<cfset application.fapi.logEvent("cron", "information", "scheduled task updated", { objectid=stEffective.objectid, title=stEffective.title, task=stDesc.name, source=stDesc.source, status=jobStatus(stEffective) }) />
+			<cfcatch><!--- swallow: a diagnostic line must not fail a task save ---></cfcatch>
+		</cftry>
 	</cfif>	
 	
 	<!--- update object --->
@@ -380,6 +419,17 @@ type properties
 	<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 	<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
 		
+	<cfset var stObj = {} />
+	<cfset var stDesc = {} />
+
+	<!--- diagnostic: record the removal on the cron stream; best-effort, must never break the delete --->
+	<cftry>
+		<cfset stObj = getData(arguments.objectid) />
+		<cfset stDesc = describeTemplate(structKeyExists(stObj, "template") ? stObj.template : "") />
+		<cfset application.fapi.logEvent("cron", "information", "scheduled task removed", { objectid=arguments.objectid, title=(structKeyExists(stObj, "title") ? stObj.title : ""), task=stDesc.name, source=stDesc.source }) />
+		<cfcatch><!--- swallow: a diagnostic line must not fail a task delete ---></cfcatch>
+	</cftry>
+
 	<cfset removeJob(arguments.objectid)>
 
 	<cfreturn super.delete(argumentCollection = arguments) />
@@ -528,6 +578,19 @@ type properties
 	<cfreturn application.fapi.getConfig("tasks", "bEnabled")
 		and arguments.stCron.bAutoStart
 		and arguments.dt lte arguments.stCron.endDate />
+</cffunction>
+
+<cffunction name="jobStatus" access="private" output="false" returntype="string" hint="Job Status label (active/ended/disabled) for a task, matching what the webtop grid shows. 'not registered' is not derivable here - that is an addJob call that threw.">
+	<cfargument name="stCron" type="struct" required="true">
+	<cfif not arguments.stCron.bAutoStart>
+		<cfreturn "disabled">
+	<cfelseif arguments.stCron.endDate lt now()>
+		<cfreturn "ended">
+	<cfelseif shouldAutoFire(arguments.stCron)>
+		<cfreturn "active">
+	<cfelse>
+		<cfreturn "disabled">
+	</cfif>
 </cffunction>
 
 <!--- 
