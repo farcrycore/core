@@ -493,8 +493,8 @@
 				<cfelse>
 					<cfset errordetail = "unknown database error">
 				</cfif>
-				<!--- Looks like a property has not yet been deployed. If so, simply try a select * --->
-				<cfset application.fapi.logEvent("fourq", "error", "getData failed", {objectid=arguments.objectID, table=arguments.schema.tablename, error=errordetail}) />
+				<!--- targeted select failed - usually a column defined in code but not yet deployed to the db; fall back to select * --->
+				<cfset application.fapi.logEvent("fourq", "warning", "getData: targeted select failed, falling back to select *", {objectid=arguments.objectID, table=arguments.schema.tablename, error=errordetail}) />
 				<cfquery datasource="#this.dsn#" name="qGetData">
 					SELECT 	*
 					FROM 	#this.dbowner##arguments.schema.tablename#
