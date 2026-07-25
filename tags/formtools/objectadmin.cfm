@@ -1164,11 +1164,13 @@
 	
 							<cfif arrayLen(attributes.aCustomColumns)>
 								<cfif bTrace><cfset application.fapi.timerStart("objectadminCells") /></cfif>
+								<cfset stRowObj = "" /><!--- fetch this row's object at most once, then reuse it across webskin columns (avoids getView re-fetching per cell) --->
 								<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 									
 									<cfif isstruct(attributes.aCustomColumns[i])>
 										<cfif structKeyExists(attributes.aCustomColumns[i], "webskin")>
-											<cfset HTML = oType.getView(objectid="#st.objectid#", template="#attributes.aCustomColumns[i].webskin#")>
+											<cfif not isStruct(stRowObj)><cfset stRowObj = oType.getData(objectid=st.objectid) /></cfif>
+											<cfset HTML = oType.getView(stObject=stRowObj, template="#attributes.aCustomColumns[i].webskin#")>
 											<cfoutput><td>#HTML#</td></cfoutput>
 										<cfelse>
 											<cfoutput><td>&nbsp;</td></cfoutput>
