@@ -114,19 +114,17 @@
 	</cffunction>
 
 	<!--- timing spans: accumulate named elapsed times in request scope, then flush them as one structured trace event. All are intrinsic no-ops unless trace logging is on (via bTraceOn), so call sites never guard. --->
-	<cffunction name="bTraceOn" access="private" returntype="boolean" output="false" hint="Is trace logging on for this request? Resolved once, then cached in request.fc.bLogTrace (the FarCry request namespace).">
-		<cfif structKeyExists(request, "fc") and structKeyExists(request.fc, "bLogTrace")>
-			<cfreturn request.fc.bLogTrace />
+	<cffunction name="bTraceOn" access="private" returntype="boolean" output="false" hint="Is trace logging on for this request? Normally set once in OnRequestStart; resolved lazily here if a timer is used before that runs (e.g. during application startup), so the primitive works in any context.">
+		<cfif not (structKeyExists(request, "fc") and structKeyExists(request.fc, "bLogTrace"))>
+			<cfparam name="request.fc" default="#structNew()#" />
+			<cfset request.fc.bLogTrace = isLevelEnabled("trace") />
 		</cfif>
-		<cfparam name="request.fc" default="#structNew()#" />
-		<cfset request.fc.bLogTrace = isLevelEnabled("trace") />
 		<cfreturn request.fc.bLogTrace />
 	</cffunction>
 
 	<cffunction name="timerStart" access="public" returntype="void" output="false" hint="Begin (or resume) a named timing span for this request. No-op unless trace logging is on.">
 		<cfargument name="name" type="string" required="true" />
 		<cfif not bTraceOn()><cfreturn /></cfif>
-		<cfparam name="request.fc" default="#structNew()#" />
 		<cfparam name="request.fc.timers" default="#structNew()#" />
 		<cfif not structKeyExists(request.fc.timers, arguments.name)>
 			<cfset request.fc.timers[arguments.name] = { "total"=0, "count"=0, "start"=0, "running"=false } />
@@ -137,7 +135,7 @@
 
 	<cffunction name="timerStop" access="public" returntype="void" output="false" hint="End a named span; adds the elapsed micros to its running total. Safe to call each pass of a loop to accumulate.">
 		<cfargument name="name" type="string" required="true" />
-		<cfif structKeyExists(request, "fc") and structKeyExists(request.fc, "timers") and structKeyExists(request.fc.timers, arguments.name) and request.fc.timers[arguments.name].running>
+		<cfif structKeyExists(request.fc, "timers") and structKeyExists(request.fc.timers, arguments.name) and request.fc.timers[arguments.name].running>
 			<cfset request.fc.timers[arguments.name].total += nowMicros() - request.fc.timers[arguments.name].start />
 			<cfset request.fc.timers[arguments.name].count += 1 />
 			<cfset request.fc.timers[arguments.name].running = false />
@@ -150,7 +148,7 @@
 		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" />
 		<cfset var name = "" />
 		<cfset var out = duplicate(arguments.stFields) />
-		<cfif not (structKeyExists(request, "fc") and structKeyExists(request.fc, "timers"))>
+		<cfif not structKeyExists(request.fc, "timers")>
 			<cfreturn />
 		</cfif>
 		<cfloop collection="#request.fc.timers#" item="name">

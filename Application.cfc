@@ -546,6 +546,15 @@
 		<cfparam name="request.fc" default="#structNew()#" />
 		<cfparam name="request.fc.startTickCount" default="#getTickCount()#" />
 
+		<!--- resolve trace-logging once per request so hot paths (e.g. getView) can gate their timing probes on a plain boolean read --->
+		<cfset request.fc.bLogTrace = false />
+		<cftry>
+			<cfif structKeyExists(application, "fc") and structKeyExists(application.fc, "lib") and structKeyExists(application.fc.lib, "logger")>
+				<cfset request.fc.bLogTrace = application.fc.lib.logger.isLevelEnabled("trace") />
+			</cfif>
+			<cfcatch type="any"></cfcatch>
+		</cftry>
+
 		<cfif isdefined("session")>
 			<cfparam name="session.fc" default="#structNew()#" />
 		</cfif>
