@@ -2,8 +2,8 @@
 
 	<cfproperty name="logLevel" type="string" default="information"
 		ftSeq="1" ftFieldset="Diagnostic Logging" ftLabel="Minimum log level"
-		ftType="list" ftList="debug:Debug,information:Information,warning:Warning,error:Error" ftDefault="information"
-		ftHint="Events below this level are dropped (a cheap no-op). 'information' shows lifecycle and integration events; 'debug' is verbose." />
+		ftType="list" ftList="trace:Trace,debug:Debug,information:Information,warning:Warning,error:Error" ftDefault="information"
+		ftHint="Events below this level are dropped (a cheap no-op). 'information' shows lifecycle and integration events; 'debug' is verbose; 'trace' is the most verbose (adds timing spans and hot-path detail)." />
 
 	<cfproperty name="logSink" type="string" default="file"
 		ftSeq="2" ftFieldset="Diagnostic Logging" ftLabel="Output sink"
