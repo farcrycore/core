@@ -19,20 +19,19 @@
 --->
 
 	<cffunction name="init" access="public" returntype="logger" output="false" hint="Constructor. Reads NO config here (project config loads after lib wiring); captures engine capability only.">
-		<cfset variables.levelRanks = { "debug"=10, "information"=20, "warning"=30, "error"=40 } />
+		<cfset variables.levelRanks = { "trace"=5, "debug"=10, "information"=20, "warning"=30, "error"=40 } />
 		<cfset variables.reservedKeys = "ts,level,category,msg,app" />
 		<cfset variables.maxFieldLen = 8192 />
 		<!--- console writer per engine: lucee has systemOutput (writes the real console stream, bypassing any wrapped System.out); acf has no systemOutput, so use java System.out/System.err there --->
 		<cfset variables.hasSystemOutput = structKeyExists(server, "lucee") />
 		<cfset variables.javaSystem = "" />
 		<cfset variables.hasJavaConsole = false />
-		<cfif not variables.hasSystemOutput>
-			<cftry>
-				<cfset variables.javaSystem = createObject("java", "java.lang.System") />
-				<cfset variables.hasJavaConsole = true />
-				<cfcatch type="any"></cfcatch>
-			</cftry>
-		</cfif>
+		<!--- java System handle: the acf console split needs it, and nowMicros() uses its nanoTime() as a cross-engine monotonic clock --->
+		<cftry>
+			<cfset variables.javaSystem = createObject("java", "java.lang.System") />
+			<cfcatch type="any"></cfcatch>
+		</cftry>
+		<cfset variables.hasJavaConsole = isObject(variables.javaSystem) and not variables.hasSystemOutput />
 		<cfreturn this />
 	</cffunction>
 
@@ -100,6 +99,64 @@
 		<cfargument name="message" type="string" required="true" />
 		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" />
 		<cfset logEvent(arguments.category, "error", arguments.message, arguments.stFields) />
+	</cffunction>
+
+	<cffunction name="trace" access="public" returntype="void" output="false" hint="Log at trace level - finest-grained diagnostics (timing spans, hot-path detail). Ranks below debug; emitted only when logLevel=trace.">
+		<cfargument name="category" type="string" required="true" />
+		<cfargument name="message" type="string" required="true" />
+		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" />
+		<cfset logEvent(arguments.category, "trace", arguments.message, arguments.stFields) />
+	</cffunction>
+
+	<cffunction name="isLevelEnabled" access="public" returntype="boolean" output="false" hint="Would an event at this level currently emit? Lets a hot path gate expensive diagnostic prep (e.g. timing spans) behind one cheap check.">
+		<cfargument name="level" type="string" required="true" />
+		<cfreturn levelRank(normaliseLevel(arguments.level)) gte levelRank(effectiveLevel()) />
+	</cffunction>
+
+	<!--- timing spans: accumulate named elapsed times in request scope, then flush them as one structured trace event. Keep call sites gated on isLevelEnabled("trace") so they cost nothing when trace is off. --->
+	<cffunction name="timerStart" access="public" returntype="void" output="false" hint="Begin (or resume) a named timing span for this request.">
+		<cfargument name="name" type="string" required="true" />
+		<cfparam name="request.stLoggerTimers" default="#structNew()#" />
+		<cfif not structKeyExists(request.stLoggerTimers, arguments.name)>
+			<cfset request.stLoggerTimers[arguments.name] = { "total"=0, "count"=0, "start"=0, "running"=false } />
+		</cfif>
+		<cfset request.stLoggerTimers[arguments.name].start = nowMicros() />
+		<cfset request.stLoggerTimers[arguments.name].running = true />
+	</cffunction>
+
+	<cffunction name="timerStop" access="public" returntype="void" output="false" hint="End a named span; adds the elapsed micros to its running total. Safe to call each pass of a loop to accumulate.">
+		<cfargument name="name" type="string" required="true" />
+		<cfif structKeyExists(request, "stLoggerTimers") and structKeyExists(request.stLoggerTimers, arguments.name) and request.stLoggerTimers[arguments.name].running>
+			<cfset request.stLoggerTimers[arguments.name].total += nowMicros() - request.stLoggerTimers[arguments.name].start />
+			<cfset request.stLoggerTimers[arguments.name].count += 1 />
+			<cfset request.stLoggerTimers[arguments.name].running = false />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="timerFlush" access="public" returntype="void" output="false" hint="Emit one trace event carrying every accumulated span as a <name>Ms field (plus <name>N when a span was counted more than once), then clear this request's spans.">
+		<cfargument name="category" type="string" required="true" />
+		<cfargument name="message" type="string" required="true" />
+		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" />
+		<cfset var name = "" />
+		<cfset var out = duplicate(arguments.stFields) />
+		<cfif not structKeyExists(request, "stLoggerTimers")>
+			<cfreturn />
+		</cfif>
+		<cfloop collection="#request.stLoggerTimers#" item="name">
+			<cfset out[name & "Ms"] = round(request.stLoggerTimers[name].total / 100) / 10 />
+			<cfif request.stLoggerTimers[name].count gt 1>
+				<cfset out[name & "N"] = request.stLoggerTimers[name].count />
+			</cfif>
+		</cfloop>
+		<cfset structDelete(request, "stLoggerTimers") />
+		<cfset logEvent(arguments.category, "trace", arguments.message, out) />
+	</cffunction>
+
+	<cffunction name="nowMicros" access="private" returntype="numeric" output="false" hint="Monotonic microsecond clock. Uses java System.nanoTime() - identical on Lucee and ACF, and avoids Lucee-only getTickCount unit args; getTickCount ms-fallback only if the java bridge is unavailable.">
+		<cfif isObject(variables.javaSystem)>
+			<cfreturn variables.javaSystem.nanoTime() / 1000 />
+		</cfif>
+		<cfreturn getTickCount() * 1000 />
 	</cffunction>
 
 	<cffunction name="banner" access="public" returntype="void" output="false" hint="Prints the FarCry Core startup splash + a logging-config line to stdout. Human-only: text mode only (both Lucee and ACF); suppressed under json (the 'app' ready event carries the version + config instead).">
@@ -314,7 +371,7 @@
 	<cffunction name="writeCflog" access="private" returntype="void" output="false" hint="File sink: one file per category, app name as a field (application='true').">
 		<cfargument name="event" type="struct" required="true" />
 		<cfargument name="line" type="string" required="true" />
-		<cfset var cflogType = (arguments.event.level eq "debug") ? "information" : arguments.event.level />
+		<cfset var cflogType = listFindNoCase("debug,trace", arguments.event.level) ? "information" : arguments.event.level />
 		<cflog file="#arguments.event.category#" application="true" type="#cflogType#" text="#arguments.line#" />
 	</cffunction>
 
