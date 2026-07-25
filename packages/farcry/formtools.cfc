@@ -177,35 +177,19 @@
 		<!--- Find out how many results there will be --->
 		<cfif bHasVersionID>
 			<cfquery name="#qCountName#" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
-				SELECT COUNT(objectid) as CountAll
+				SELECT COUNT(DISTINCT objectid) as CountAll
 				from (
-					<!--- Return the objectid's of matching approved/draft-only content --->
-					SELECT tbl.objectid
-					FROM #arguments.typename# tbl 			
-					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-					<cfif l_sqlCatIds neq "">
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-						    )				
-					</cfif>
-					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-					
-					UNION
-					
-					<!--- Return the approved objectid of matching editable-draft content --->
-					SELECT tbl.versionid as objectid
+					<!--- collapse each row to its live objectid (draft -> approved objectid), then count distinct --->
+					SELECT COALESCE(NULLIF(tbl.versionid,''),tbl.objectid) as objectid
 					FROM #arguments.typename# tbl
 					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 					<cfif l_sqlCatIds neq "">
 						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
+						    select distinct objectid
+						    from refCategories
 						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-						    )				
+						    )
 					</cfif>
-					and versionid<>''
 				) joined
 			</cfquery>
 		<cfelse>
@@ -456,37 +440,7 @@
 			
 			
 			
-			<cfif bHasVersionID>
-				<cfquery name="qrecordcount" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
-					SELECT count(distinct objectid) as CountAll
-					from (
-						<!--- Return the objectid's of matching editable-draft content or approved/draft-only content --->
-						SELECT COALESCE(NULLIF(tbl.versionid,''),tbl.objectid) as objectid
-						FROM #arguments.typename# tbl 			
-						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-						<cfif l_sqlCatIds neq "">
-							AND objectid in (
-							    select distinct objectid 
-							    from refCategories 
-							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-							    )				
-						</cfif>
-					) joined
-				</cfquery>
-			<cfelse>
-				<cfquery name="qrecordcount" datasource="#arguments.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
-					SELECT count(distinct tbl.objectid) as CountAll 
-					FROM #arguments.typename# tbl 			
-					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-					<cfif l_sqlCatIds neq "">
-						AND objectid in (
-						    select distinct objectid 
-						    from refCategories 
-						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-						    )				
-					</cfif>
-				</cfquery>
-			</cfif>
+			<!--- record count already computed above, before the db-type branch; reuse qrecordcount --->
 
 			<cfquery name="qFormToolRecordset" datasource="#arguments.dsn#">
 			SELECT #arguments.sqlColumns#
