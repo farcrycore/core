@@ -1726,6 +1726,29 @@
 		</cfif>
 	</cffunction>
 
+	<cffunction name="timerStart" access="public" returntype="void" output="false" hint="Start a named timing span (facade to lib/logger). Intrinsic no-op unless trace logging is on - call unconditionally, no guard needed.">
+		<cfargument name="name" type="string" required="true" />
+		<cfif structKeyExists(application, "fc") and structKeyExists(application.fc, "lib") and structKeyExists(application.fc.lib, "logger")>
+			<cfset application.fc.lib.logger.timerStart(arguments.name) />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="timerStop" access="public" returntype="void" output="false" hint="End a named timing span, accumulating its elapsed time (facade to lib/logger). Intrinsic no-op unless trace logging is on.">
+		<cfargument name="name" type="string" required="true" />
+		<cfif structKeyExists(application, "fc") and structKeyExists(application.fc, "lib") and structKeyExists(application.fc.lib, "logger")>
+			<cfset application.fc.lib.logger.timerStop(arguments.name) />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="timerFlush" access="public" returntype="void" output="false" hint="Emit accumulated timing spans as one trace event then clear them (facade to lib/logger). Intrinsic no-op unless trace logging is on.">
+		<cfargument name="category" type="string" required="true" />
+		<cfargument name="message" type="string" required="true" />
+		<cfargument name="stFields" type="struct" required="false" default="#structNew()#" />
+		<cfif structKeyExists(application, "fc") and structKeyExists(application.fc, "lib") and structKeyExists(application.fc.lib, "logger")>
+			<cfset application.fc.lib.logger.timerFlush(arguments.category, arguments.message, arguments.stFields) />
+		</cfif>
+	</cffunction>
+
 	<cffunction name="logEventFallback" access="private" returntype="void" output="false" hint="Minimal always-available console emit for when lib/logger is unavailable. Writes straight to java System.out/System.err (no config, no lib dependency) so a broken startup still surfaces; last-ditch cflog if the console handle is unavailable.">
 		<cfargument name="category" type="string" required="true" />
 		<cfargument name="level" type="string" required="true" />
