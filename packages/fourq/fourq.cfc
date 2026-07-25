@@ -64,6 +64,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var iHashKey = "" />
 		<cfset var urlAjaxLoader = '' />
 		<cfset var stCoapi = '' />
+		<cfset var bTrace = request.fc.bLogTrace /><!--- getView is a hot path; gate the probes on this plain boolean (set once per request in OnRequestStart) so they cost ~nothing when trace is off --->
 
 		
 		
@@ -107,7 +108,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 			<cfelse>			
 				<!--- get the data for this instance --->
+				<cfif bTrace><cfset application.fapi.timerStart("fourqGetViewData") /></cfif>
 				<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
+				<cfif bTrace><cfset application.fapi.timerStop("fourqGetViewData") /></cfif>
 			</cfif>		
 
 			
@@ -293,7 +296,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=webskinTypename, template=arguments.template) />
 							
 					<cfif len(webskinPath)>
-						
+
+						<cfif bTrace><cfset application.fapi.timerStart("fourqGetViewRender") /></cfif>
 						<cfset stWebskin.webskinHTML = runView(
 															argumentCollection="#arguments#",
 															stobj="#stobj#", 
@@ -306,7 +310,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 															onExitProcess="#arguments.onExitProcess#",
 															dsn="#arguments.dsn#",
 															bAllowTrace="#arguments.bAllowTrace#") />
-						
+						<cfif bTrace><cfset application.fapi.timerStop("fourqGetViewRender") /></cfif>
+
 					<cfelseif structKeyExists(arguments, "alternateHTML")>
 						<cfset stWebskin.webskinHTML = arguments.alternateHTML />
 					<cfelse>
