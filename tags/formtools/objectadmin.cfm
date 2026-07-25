@@ -198,6 +198,10 @@
 
 <cfif thistag.executionMode eq "End">
 	
+	<!--- perf tracing: per-row probes below, so gate on a plain boolean (request.fc.bLogTrace, set in OnRequestStart) - costs ~nothing when trace is off --->
+	<cfset bTrace = request.fc.bLogTrace />
+	<cfif bTrace><cfset application.fapi.timerStart("objectadminTotal") /></cfif>
+
 	<skin:loadCSS id="fc-fontawesome" />
 	
 	<cfif len(attributes.title)>
@@ -425,6 +429,7 @@
 	<!------------------------
 	GENERATE THE RECORDSET
 	 ------------------------>
+	<cfif bTrace><cfset application.fapi.timerStart("objectadminRecordset") /></cfif>
 	<cfif isQuery(attributes.qRecordSet)>
 		<cfset stRecordSet.q = attributes.qRecordSet>
 		
@@ -451,6 +456,7 @@
 
 		<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
 	</cfif>
+	<cfif bTrace><cfset application.fapi.timerStop("objectadminRecordset") /></cfif>
 
 
 	<!------------------------
@@ -1106,7 +1112,9 @@
 				</cfif>
 				
 				
+				<cfif bTrace><cfset application.fapi.timerStart("objectadminRowData") /></cfif>
 				<cfset stObjectAdminData = getObjectAdminData(st=duplicate(st), typename="#attributes.typename#", stPermissions="#stPermissions#") />
+				<cfif bTrace><cfset application.fapi.timerStop("objectadminRowData") /></cfif>
 				<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
 
 
@@ -1155,6 +1163,7 @@
 							</cfif>
 	
 							<cfif arrayLen(attributes.aCustomColumns)>
+								<cfif bTrace><cfset application.fapi.timerStart("objectadminCells") /></cfif>
 								<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 									
 									<cfif isstruct(attributes.aCustomColumns[i])>
@@ -1175,11 +1184,14 @@
 									</cfif>
 									
 								</cfloop>
+								<cfif bTrace><cfset application.fapi.timerStop("objectadminCells") /></cfif>
 							</cfif>
 
 							<cfif len(attributes.columnList)>
 								<cfparam name="st.typename" default="#attributes.typename#" />
+								<cfif bTrace><cfset application.fapi.timerStart("objectadminFtObjectDisplay") /></cfif>
 								<ft:object stObject="#st#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
+								<cfif bTrace><cfset application.fapi.timerStop("objectadminFtObjectDisplay") /></cfif>
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 
@@ -1266,7 +1278,10 @@
 		</script>
 	</cfoutput>
 
-</cfif> 
+	<cfif bTrace><cfset application.fapi.timerStop("objectadminTotal") /></cfif>
+	<cfif bTrace><cfset application.fapi.timerFlush("perf", "objectadmin " & attributes.typename, { "records"=stRecordset.countAll }) /></cfif>
+
+</cfif>
 
 
 <cffunction name="sanitizeSQLOrderBy" returntype="string">
