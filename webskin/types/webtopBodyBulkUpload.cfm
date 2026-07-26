@@ -338,7 +338,7 @@
 <skin:loadCSS id="uploader" />
 <skin:loadCSS id="jquery-tooltip" />
 <skin:loadCSS id="bulk-upload" />
-
+<skin:loadJS id="tinymce" />
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
 		.fa-info, .fa-times, .fa-save {
