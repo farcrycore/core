@@ -333,12 +333,13 @@
       since it's rendered by JS after the auto-init's document-ready pass has run. --->
 <skin:loadJS id="jquery-tooltip" />
 <skin:loadJS id="jquery-tooltip-auto" />
+<skin:loadJS id="tinymce" />
 <skin:loadCSS id="fc-jquery-ui" />
 <skin:loadCSS id="fc-fontawesome" />
 <skin:loadCSS id="uploader" />
 <skin:loadCSS id="jquery-tooltip" />
 <skin:loadCSS id="bulk-upload" />
-<skin:loadJS id="tinymce" />
+
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
 		.fa-info, .fa-times, .fa-save {
