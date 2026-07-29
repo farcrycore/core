@@ -233,7 +233,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="logData" access="public" output="false" returntype="void" hint="Logs error to application and exception log files">
+	<cffunction name="logData" access="public" output="false" returntype="void" hint="Logs an error via the diagnostic logger (categories 'application' and 'exception', so destination and format follow config); falls back to cflog before the logger is available (early boot). Credentials are scrubbed before emit.">
 		<cfargument name="log" type="struct" required="true" />
 		<cfargument name="bApplication" type="boolean" required="false" default="true" />
 		<cfargument name="bException" type="boolean" required="false" default="true" />
@@ -244,6 +244,8 @@
 		<cfset var i = 0 />
 		<cfset var firstline = "" />
 		<cfset var message = "" />
+		<!--- route through the diagnostic logger when it is up; cflog is the fallback for early boot --->
+		<cfset var bFacade = structKeyExists(application, "fapi") />
 
 		<!--- scrub inline credentials before logging (Lucee can leak s3://key:secret@ / ftp://user:pass@ into the exception message and stack) --->
 		<cfif structkeyexists(arguments.log,"message")>
@@ -255,8 +257,13 @@
 		</cfif>
 		
 		<cfif structKeyExists(arguments,"logFile") and len(arguments.logFile) and structkeyexists(arguments.log,"message")>
+			<!--- caller-directed log to a named category --->
 			<cfif NOT structkeyexists(arguments.log,"stack")>
-				<cflog file="#arguments.logFile#" application="true" type="information" text="#message#" />
+				<cfif bFacade>
+					<cfset application.fapi.logEvent(arguments.logFile, "information", message) />
+				<cfelse>
+					<cflog file="#arguments.logFile#" application="true" type="information" text="#message#" />
+				</cfif>
 			<cfelse>
 				<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
 					<cfset stacktrace.append(arguments.log.stack[i].template) />
@@ -266,11 +273,19 @@
 						<cfset stacktrace.append(variables.newline) />
 					</cfif>
 				</cfloop>
-				<cflog file="#arguments.logFile#" application="true" type="information" text="#message#. #firstline##newline##scrubCredentials(stacktrace.toString())#" />
+				<cfif bFacade>
+					<cfset application.fapi.logEvent(arguments.logFile, "information", message, {stack=scrubCredentials(stacktrace.toString())}) />
+				<cfelse>
+					<cflog file="#arguments.logFile#" application="true" type="information" text="#message#. #firstline##newline##scrubCredentials(stacktrace.toString())#" />
+				</cfif>
 			</cfif>
 		<cfelse>
 			<cfif arguments.bApplication and structkeyexists(arguments.log,"message")>
-				<cflog log="application" application="true" type="error" text="#message#. #firstline#" />
+				<cfif bFacade>
+					<cfset application.fapi.logEvent("application", "error", "#message#. #firstline#") />
+				<cfelse>
+					<cflog log="application" application="true" type="error" text="#message#. #firstline#" />
+				</cfif>
 			</cfif>
 			<cfif arguments.bException and structkeyexists(arguments.log,"stack") and structkeyexists(arguments.log,"message")>
 				<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
@@ -281,8 +296,12 @@
 						<cfset stacktrace.append(variables.newline) />
 					</cfif>
 				</cfloop>
-				<cflog file="exception" application="true" type="#arguments.logType#" text="#message#. #firstline##newline##scrubCredentials(stacktrace.toString())#" />
-			</cfif>	
+				<cfif bFacade>
+					<cfset application.fapi.logEvent("exception", arguments.logType, message, {stack=scrubCredentials(stacktrace.toString())}) />
+				<cfelse>
+					<cflog file="exception" application="true" type="#arguments.logType#" text="#message#. #firstline##newline##scrubCredentials(stacktrace.toString())#" />
+				</cfif>
+			</cfif>
 		</cfif>
 	</cffunction>
 
