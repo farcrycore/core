@@ -91,7 +91,7 @@
 		<cffile action="read" file="#application.path.core#/major.version" variable="returnVersion">
 	</cfif>
 	
-	<cfreturn returnVersion />
+	<cfreturn trim(returnVersion) />
 </cffunction>
 
 <cffunction name="getMinorVersion" access="public" output="false" hint="Returns the contents of the minor version file if it exists" returntype="string">
@@ -101,7 +101,7 @@
 		<cffile action="read" file="#application.path.core#/minor.version" variable="returnVersion">
 	</cfif>
 	
-	<cfreturn returnVersion />
+	<cfreturn trim(returnVersion) />
 </cffunction>
 
 
@@ -112,7 +112,7 @@
 		<cffile action="read" file="#application.path.core#/patch.version" variable="returnVersion">
 	</cfif>
 	
-	<cfreturn returnVersion />
+	<cfreturn trim(returnVersion) />
 </cffunction>
 
 <cffunction name="getSVNDate" access="public" output="false" hint="Returns the contents of the SVN version file date if it exists" returntype="string">
