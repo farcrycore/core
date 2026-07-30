@@ -199,7 +199,8 @@
 			<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#</cfoutput>
 		</cfsavecontent>
 	    
-		<cfif bFileExists>
+		<!--- only read image info when ftShowMetadata is on; getImageInfo decodes the full-res source just for the size/dimensions readout --->
+		<cfif bFileExists and arguments.stMetadata.ftShowMetadata>
 			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true,location=location) />
 			<cfif isdefined("stImage.stError.message") and len(stImage.stError.message)>
 				<cfset readImageError = "Error ""#stImage.stError.message#"" because the image file is invalid or corrupted. You can upload a new image to replace it." />
