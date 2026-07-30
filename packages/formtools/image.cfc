@@ -1365,20 +1365,21 @@
 		<cfargument name="admin" type="boolean" required="false" default="false" />
 		<cfargument name="location" type="string" required="false" default="images" hint="The CDN location the image is stored in (defaults to images)" />
 
-		<cfset var stImage = structnew() />
+		<cfset var stDims = structnew() />
 		<cfset var stResult = structnew() />
 
 		<cfif application.fc.lib.cdn.ioFileExists(location=arguments.location,file=arguments.file)>
 
-				<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location=arguments.location,file=arguments.file,datatype='image')#" structName="stImage" />
+				<!--- width/height from the header only (getImageDimensions); no full-raster decode --->
+				<cfset stDims = getImageDimensions(application.fc.lib.cdn.ioReadFile(location=arguments.location,file=arguments.file,datatype="binary")) />
 
-				<cfset stResult["width"] = stImage.width />
-				<cfset stResult["height"] = stImage.height />
+				<cfset stResult["width"] = stDims.width />
+				<cfset stResult["height"] = stDims.height />
 				<cfset stResult["size"] = application.fc.lib.cdn.ioGetFileSize(location=arguments.location,file=arguments.file) />
 				<cfset stResult["path"] = application.fc.lib.cdn.ioGetFileLocation(location=arguments.location,file=arguments.file,admin=true).path />
 				
-	 			<cfif findNoCase("GRAY", stImage.colormodel.colorspace)>
-					<cfset stResult["interpolation"] = "highQuality" />
+	 			<cfif len(stDims.interpolation)>
+					<cfset stResult["interpolation"] = stDims.interpolation />
 				</cfif>
 
 		<cfelse>
@@ -1394,6 +1395,67 @@
 	</cffunction>
 	
 	
+	<cffunction name="getImageDimensions" access="public" output="false" returntype="struct" hint="Returns {width,height,interpolation} for image binary. Reads width/height from the format header only (no full-raster decode); falls back to a full decode for anything the header reader can't handle.">
+		<cfargument name="imageBytes" type="binary" required="true" />
+
+		<cfset var stResult = structnew() />
+		<cfset var oImageIO = "" />
+		<cfset var iis = "" />
+		<cfset var readers = "" />
+		<cfset var reader = "" />
+		<cfset var rawType = "" />
+		<cfset var oColorSpace = "" />
+		<cfset var stImage = structnew() />
+
+		<cfset stResult["width"] = 0 />
+		<cfset stResult["height"] = 0 />
+		<cfset stResult["interpolation"] = "" />
+
+		<cftry>
+			<!--- fast path: parse the header only - a few KB, never a megapixel-sized raster --->
+			<cfset oImageIO = createObject("java","javax.imageio.ImageIO") />
+			<cfset iis = oImageIO.createImageInputStream(createObject("java","java.io.ByteArrayInputStream").init(arguments.imageBytes)) />
+			<cfif isNull(iis)>
+				<cfthrow type="farcry.formtools.image.headerRead" message="no image input stream for supplied bytes" />
+			</cfif>
+			<cfset readers = oImageIO.getImageReaders(iis) />
+			<cfif not readers.hasNext()>
+				<cfthrow type="farcry.formtools.image.headerRead" message="no image reader for supplied format" />
+			</cfif>
+			<cfset reader = readers.next() />
+			<cfset reader.setInput(iis, true, true) /><!--- seekForwardOnly, ignoreMetadata --->
+			<cfset stResult["width"] = reader.getWidth(0) />
+			<cfset stResult["height"] = reader.getHeight(0) />
+
+			<!--- gray colorspace drives highQuality interpolation downstream; header-level and optional --->
+			<cftry>
+				<cfset rawType = reader.getRawImageType(0) />
+				<cfset oColorSpace = createObject("java","java.awt.color.ColorSpace") />
+				<cfif not isNull(rawType) and rawType.getColorModel().getColorSpace().getType() eq oColorSpace.TYPE_GRAY>
+					<cfset stResult["interpolation"] = "highQuality" />
+				</cfif>
+				<cfcatch><!--- reader can't supply a raw type; skip the optional hint ---></cfcatch>
+			</cftry>
+
+			<cfset reader.dispose() />
+			<cfset iis.close() />
+
+			<cfcatch>
+				<!--- fallback: full decode. Covers odd/unsupported formats the header reader rejects. --->
+				<cfimage action="info" source="#arguments.imageBytes#" structName="stImage" />
+				<cfset stResult["width"] = stImage.width />
+				<cfset stResult["height"] = stImage.height />
+				<cfset stResult["interpolation"] = "" />
+				<cfif findNoCase("GRAY", stImage.colormodel.colorspace)>
+					<cfset stResult["interpolation"] = "highQuality" />
+				</cfif>
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stResult />
+	</cffunction>
+
+
 	<cffunction name="GenerateImage" access="public" output="false" returntype="struct">
 		<cfargument name="source" type="string" required="true" hint="The absolute path where the image that is being used to generate this new image is located." />
 		<cfargument name="destination" type="string" required="false" default="" hint="The absolute path where the image will be stored." />
