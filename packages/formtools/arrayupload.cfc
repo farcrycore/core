@@ -1217,24 +1217,39 @@
 		<cfreturn "{}" />
 	</cffunction>
 	
-	<cffunction name="resolveJoinUploadLocation" access="private" output="false" returntype="string" hint="Resolves the CDN location of the joined file property. An explicit ftLocation override always wins. Otherwise the type's default applies: file honours ftSecure (privatefiles when secure, else publicfiles); image always defaults to images (ftSecure is a file-only concept).">
+	<cffunction name="resolveJoinUploadLocation" access="private" output="false" returntype="string" hint="Resolves the CDN location of the joined file property for uploads. An explicit ftLocation override always wins; an image defaults to images (ftSecure is a file-only concept); a secure file uses privatefiles; a non-secure file is status-aware (mirrors the file formtool read path), so a new unapproved item uploads to privatefiles until approval promotes it and an already-public item uploads to publicfiles.">
 		<cfargument name="stMetadata" required="true" type="struct" />
 
 		<cfset var stProp = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata />
 		<cfset var propType = structKeyExists(stProp,"ftType") ? stProp.ftType : "image" />
 		<cfset var propLocation = structKeyExists(stProp,"ftLocation") ? stProp.ftLocation : "" />
 		<cfset var propSecure = structKeyExists(stProp,"ftSecure") ? stProp.ftSecure : false />
+		<cfset var stNewJoin = "" />
+		<cfset var joinStatus = "" />
+		<cfset var joinAnonView = false />
+
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
 		<!--- An explicit ftLocation override always wins, regardless of type. --->
 		<cfif len(propLocation)>
 			<cfreturn propLocation />
 		</cfif>
-		<!--- file: ftSecure forces privatefiles, otherwise publicfiles. (ftSecure does not apply to images.) --->
+		<!--- file: ftSecure forces privatefiles. Otherwise status-aware, mirroring the
+		      file formtool's read path (isSecured): a joined item is created unapproved
+		      and no location move fires at create time, so the key signs to privatefiles
+		      until approval (onApproved then promotes it); only an already-public target
+		      signs to publicfiles. (ftSecure does not apply to images.) --->
 		<cfif propType eq "file">
 			<cfif isBoolean(propSecure) and propSecure>
 				<cfreturn "privatefiles" />
 			</cfif>
-			<cfreturn "publicfiles" />
+			<cfset stNewJoin = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
+			<cfset joinStatus = structKeyExists(stNewJoin,"status") ? stNewJoin.status : "" />
+			<sec:CheckPermission objectid="#stNewJoin.objectid#" type="#arguments.stMetadata.ftJoin#" permission="View" roles="Anonymous" result="joinAnonView" />
+			<cfif (joinStatus eq "" or joinStatus eq "approved") and joinAnonView>
+				<cfreturn "publicfiles" />
+			</cfif>
+			<cfreturn "privatefiles" />
 		</cfif>
 		<!--- image: always defaults to images. --->
 		<cfreturn "images" />

@@ -5,6 +5,7 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
+<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
 <!--- ensure component metadata for bulk upload is set --->
 <cfif 
@@ -25,16 +26,26 @@
 <cfset lEditFields = application.stCOAPI[stObj.name].bulkUploadEditFields />
 
 <!--- Resolve the FINAL CDN location for the upload target so we can derive the
-      storage type (s3 vs local) and presign direct-to-S3 uploads. Respects
-      ftLocation and ftSecure for ALL field types: an explicit ftLocation override
-      wins; otherwise a secure target goes to privatefiles; otherwise the type's
-      default public location (images for image, publicfiles for file). --->
+      storage type (s3 vs local) and presign direct-to-S3 uploads. ftLocation wins;
+      a secure target goes to privatefiles; an image goes to images. A non-secure
+      file is status-aware, mirroring the file formtool's read path (isSecured):
+      bulk items are created unapproved and no location move fires at create time,
+      so the key must sign to privatefiles until approval (onApproved then promotes
+      it to publicfiles). Only an already-public target signs to publicfiles. --->
 <cfif len(application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftLocation", default=""))>
 	<cfset uploadLocationBulk = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftLocation", default="") />
 <cfelseif isBoolean(application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftSecure", default=false)) and application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftSecure", default=false)>
 	<cfset uploadLocationBulk = "privatefiles" />
 <cfelseif application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftType", default="image") eq "file">
-	<cfset uploadLocationBulk = "publicfiles" />
+	<cfset stNewBulkObj = application.fapi.getNewContentObject(typename=stObj.name) />
+	<cfset bulkObjStatus = structKeyExists(stNewBulkObj,"status") ? stNewBulkObj.status : "" />
+	<cfset bulkAnonView = false />
+	<sec:CheckPermission objectid="#stNewBulkObj.objectid#" type="#stObj.name#" permission="View" roles="Anonymous" result="bulkAnonView" />
+	<cfif (bulkObjStatus eq "" or bulkObjStatus eq "approved") and bulkAnonView>
+		<cfset uploadLocationBulk = "publicfiles" />
+	<cfelse>
+		<cfset uploadLocationBulk = "privatefiles" />
+	</cfif>
 <cfelse>
 	<cfset uploadLocationBulk = "images" />
 </cfif>
@@ -106,7 +117,7 @@
 			location = uploadLocationBulk,
 			destination = application.fapi.getPropertyMetadata(typename=stObj.name, property=uploadTarget, md="ftDestination", default=""),
 			filename = structKeyExists(stBody,"filename") ? stBody.filename : "upload",
-			uniqueAmong = uploadLocationBulk,
+			uniqueAmong = listfindnocase("publicfiles,privatefiles", uploadLocationBulk) ? "privatefiles,publicfiles" : uploadLocationBulk,
 			contentType = structKeyExists(stBody,"type") ? stBody.type : "",
 			maxSize = (val(sizeLimit) gt 0) ? val(sizeLimit) : 0,
 			acceptExtensions = bulkAllowedExts
