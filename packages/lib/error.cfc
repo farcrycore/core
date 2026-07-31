@@ -128,7 +128,7 @@
 		<cfelse>
 			<cfset stResult["coreversion"] = "Unknown" />
 		</cfif>
-		<cfset stResult["bot"] = IIF(!isdefined("request.fc.hasSessionScope") || !request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
+		<cfset stResult["bot"] = ( structKeyExists(request, "fc") AND structKeyExists(request.fc, "hasSessionScope") AND request.fc.hasSessionScope ) ? "not a bot" : "bot" />
 		<cfset stResult["browser"] = cgi.HTTP_USER_AGENT />
 		<cfset stResult["datetime"] = now() />
 		<cfset stResult["host"] = cgi.http_host />
