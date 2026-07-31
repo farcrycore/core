@@ -980,7 +980,7 @@
 		
 		<cfif structkeyexists(url,"add")>
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
-			<cfif not isdefined("form.items") or not len(form.items)>
+			<cfif not structKeyExists(form, "items") or not len(form.items)>
 				<cfreturn "" />
 			</cfif>
 			
@@ -1005,7 +1005,7 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"edit")><!--- Edit an array item --->
-			<cfif not isdefined("form.item") or not len(form.item)>
+			<cfif not structKeyExists(form, "item") or not len(form.item)>
 				<cfreturn "No item specified" />
 			</cfif>
 
@@ -1026,7 +1026,7 @@
 		
 		<cfif structkeyexists(url,"update")><!--- Update an array item --->
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
-			<cfif not isdefined("form._objectid") or not len(form._objectid)>
+			<cfif not structKeyExists(form, "_objectid") or not len(form._objectid)>
 				<cfreturn "No data specified" />
 			</cfif>
 			
@@ -1056,7 +1056,7 @@
 		
 		<cfif structkeyexists(url,"delete")>
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
-			<cfif not isdefined("form.items") or not len(form.items)>
+			<cfif not structKeyExists(form, "items") or not len(form.items)>
 				<cfreturn "[]" />
 			</cfif>
 			
@@ -1119,14 +1119,14 @@
 
 			</cfif>
 			
-			<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
+			<cfif structKeyExists(stResult, "stError") and structKeyExists(stResult.stError, "message") and len(stResult.stError.message)>
 				<cfset stJSON = structnew() />
 				<cfset stJSON["error"] = stResult.stError.message />
 				<cfset stJSON["value"] = stResult.value />
 				<cfreturn serializeJSON(stJSON) />
 			</cfif>
 			
-			<cfif isdefined("stResult.bSuccess") and stResult.bSuccess and isdefined("stResult.value") and len(stResult.value)>
+			<cfif structKeyExists(stResult, "bSuccess") and stResult.bSuccess and structKeyExists(stResult, "value") and len(stResult.value)>
 				
 				<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
 					
@@ -1173,9 +1173,9 @@
 						</cfif>
 						<cfset stNewObject[arguments.stMetadata.ftFileProperty] = stResult.value />
 						<cfloop collection="#application.stCOAPI[arguments.stMetadata.ftJoin].stProps#" item="thisfield">
-							<cfif isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#thisfield#.metadata.ftType") 
+							<cfif structKeyExists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata, "ftType") 
 								and application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata.ftType eq "image"
-								and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#thisfield#.metadata.ftSourceField")
+								and structKeyExists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata, "ftSourceField")
 								and listfirst(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata.ftSourceField,":") eq arguments.stMetadata.ftFileProperty>
 								
 								<cfset stFP[thisfield] = structnew() />

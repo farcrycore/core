@@ -118,7 +118,7 @@
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<cfif isdefined("url.resolvelabels")>
+		<cfif structKeyExists(url, "resolvelabels")>
 			<cfloop list="#convertPropertyToValue(listtoarray(url.resolvelabels),arguments.stMetadata.ftJoin)#" index="id" delimiters=";">
 				<cfset st = structnew() />
 				<cfset st["id"] = listfirst(id,"|") />
@@ -131,7 +131,7 @@
 			</cfloop>
 			
 			<cfcontent type="application/json" variable="#ToBinary( ToBase64( serializeJSON(aResult) ) )#" reset="yes" />
-		<cfelseif isdefined("url.resolvecurrent")>
+		<cfelseif structKeyExists(url, "resolvecurrent")>
 			<!--- Resolve the object's CURRENT attached value(s) for this property, so the field can
 			      repaint after a library add/create. The new id is attached server-side, but a
 			      select.val() cannot select an option that does not exist on the element yet. --->

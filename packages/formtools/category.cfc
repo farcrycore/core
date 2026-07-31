@@ -291,7 +291,7 @@
 			<cfreturn super.ajax(argumentCollection=arguments) />
 		</cfif>
 		
-		<cfif isdefined("url.hash") and stTree.hash neq url.hash>
+		<cfif structKeyExists(url, "hash") and stTree.hash neq url.hash>
 			<cfset stResult = structnew() />
 			<cfset stResult["error"] = "The tree has changed since you last loaded the page." />
 			<cfset stResult["code"] = "treechanged" />
@@ -299,23 +299,23 @@
 		</cfif>
 		
 		<cftry>
-			<cfif arguments.stMetadata.ftJQueryAllowMove and isdefined("url.move")>
+			<cfif arguments.stMetadata.ftJQueryAllowMove and structKeyExists(url, "move")>
 				<cfset stResult = application.factory.oTree.moveBranch(objectid=url.move,parentid=url.to,pos=url.position) />
 				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 				<cfset stResult["roothash"] = stTree.hash />
 				<cfreturn serializeJSON(stResult) />
-			<cfelseif arguments.stMetadata.ftJQueryAllowAdd and isdefined("url.add")>
+			<cfelseif arguments.stMetadata.ftJQueryAllowAdd and structKeyExists(url, "add")>
 				<cfset stCat = application.fapi.getContentObject(objectid=url.add) />
 				<cfset stResult = application.factory.oTree.setYoungest(objectid=url.add,parentid=url.to,objectname=stCat.label,typename=stCat.typename) />
 				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 				<cfset stResult["roothash"] = stTree.hash />
 				<cfreturn serializeJSON(stResult) />
-			<cfelseif arguments.stMetadata.ftJQueryAllowRemove and isdefined("url.remove")>
+			<cfelseif arguments.stMetadata.ftJQueryAllowRemove and structKeyExists(url, "remove")>
 				<cfset stResult = application.fapi.getContentType("dmCategory").deleteCategory(dsn=application.dsn,categoryid=url.remove) />
 				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.fapi.getCatID("root")) />
 				<cfset stResult["roothash"] = stTree.hash />
 				<cfreturn serializeJSON(stResult) />
-			<cfelseif isdefined("url.node")>
+			<cfelseif structKeyExists(url, "node")>
 				<cfif url.node eq stTree.id>
 					<cfset stResult = stTree />
 					<cfset stResult["roothash"] = stTree.hash />
@@ -325,7 +325,7 @@
 				</cfif>
 				<cfset stResult["newid"] = createuuid() />
 				<cfreturn serializeJSON(stResult) />
-			<cfelseif (arguments.stMetadata.ftJQueryAllowAdd or arguments.stMetadata.ftJQueryAllowEdit) and isdefined("url.update")>
+			<cfelseif (arguments.stMetadata.ftJQueryAllowAdd or arguments.stMetadata.ftJQueryAllowEdit) and structKeyExists(url, "update")>
 				<cfset stSource = structnew() />
 				<cfset stSource.objectid = url.update />
 				<cfset stSource.typename = "dmCategory" />
@@ -338,7 +338,7 @@
 				<cfset application.fapi.setData(stProperties=stSource) />
 				
 				<cfreturn serializeJSON(stSource) />
-			<cfelseif (arguments.stMetadata.ftJQueryAllowAdd or arguments.stMetadata.ftJQueryAllowEdit) and isdefined("url.edit")>
+			<cfelseif (arguments.stMetadata.ftJQueryAllowAdd or arguments.stMetadata.ftJQueryAllowEdit) and structKeyExists(url, "edit")>
 				<cfset request.mode.ajax = true />
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="border: 1px solid ##c8c8c8\9;background-color:##FFFFFF;padding:15px;-webkit-box-shadow: 0 0 8px rgba(128,128,128,0.75);-moz-box-shadow: 0 0 8px rgba(128,128,128,0.75);box-shadow: 0 0 8px rgba(128,128,128,0.75);">

@@ -246,7 +246,7 @@
 			<cfset WebskinCacheID = listAppend(WebskinCacheID,"script_name:#cgi.script_name#,query_string:#cgi.query_string#") />
 		</cfif>
 		
-		<cfif arguments.bCacheByForm AND isDefined("form")>
+		<cfif arguments.bCacheByForm>
 			<cfif structIsEmpty(form)>
 				<cfset WebskinCacheID = listAppend(WebskinCacheID, "form:empty") />
 			<cfelse>
@@ -541,8 +541,7 @@
 		<cfif structkeyexists(arguments,"template")>
 			<!--- Form post --->
 			<cfset baseCheck = baseCheck and not (
-			  	isDefined("form") AND 
-			  	not structIsEmpty(form) and 
+			  	not structIsEmpty(form) and
 			  	application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=arguments.typename,template=arguments.template)
 			  ) />
 			<cfif baseCheck eq false>
@@ -629,7 +628,7 @@
 		<cfset var regex = "^#rereplace(application.applicationname,'[^a-zA-Z\d]','','ALL')#_#arguments.typename#_#arguments.objectid#_[^_]+_#arguments.template#" />
 		<cfset var aRemove = arraynew(1) />
 
-		<cfif not isdefined("application.objectbroker.#arguments.typename#")>
+		<cfif not structKeyExists(application.objectbroker, arguments.typename)>
 			<cfreturn false />
 		</cfif>
 

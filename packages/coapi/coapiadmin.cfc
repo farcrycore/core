@@ -356,9 +356,9 @@
 				
 		
 		<!--- If the webskins are available from the application or request scope, just use those --->
-		<cfif not bForceRefresh AND isdefined("application.stcoapi.#arguments.typename#.qWebskins")>
+		<cfif not bForceRefresh AND structKeyExists(application.stcoapi, arguments.typename) AND structKeyExists(application.stcoapi[arguments.typename], "qWebskins")>
 			<cfset qResult = application.stcoapi[arguments.typename].qWebskins />
-		<cfelseif isdefined("request.fc.stcoapiWebskins.#arguments.typename#.qWebskins")>
+		<cfelseif structKeyExists(request, "fc") AND structKeyExists(request.fc, "stcoapiWebskins") AND structKeyExists(request.fc.stcoapiWebskins, arguments.typename) AND structKeyExists(request.fc.stcoapiWebskins[arguments.typename], "qWebskins")>
 			<cfset qResult = request.fc.stcoapiWebskins[arguments.typename].qWebskins />
 		</cfif>
 		
@@ -453,7 +453,7 @@
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="webskin" type="string" required="true" hint="methodname" />
 		
-		<cfif len(arguments.typename) gt 0 AND isdefined("application.stCOAPI.#arguments.typename#.stWebskins.#arguments.webskin#")>
+		<cfif len(arguments.typename) gt 0 AND structKeyExists(application.stCOAPI, arguments.typename) AND structKeyExists(application.stCOAPI[arguments.typename].stWebskins, arguments.webskin)>
 			<cfreturn application.stCOAPI[arguments.typename].stWebskins[arguments.webskin] />
 		<cfelse><!--- Not found --->
 			<cfreturn structnew() />

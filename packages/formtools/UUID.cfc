@@ -195,7 +195,7 @@
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
 				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" style="width:auto;">
-				<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
+				<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif queryKeyExists(qLibraryList, "label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
 				

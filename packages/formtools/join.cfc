@@ -131,7 +131,7 @@
 					<cfif len(arguments.stMetadata.ftFirstListLabel) AND NOT arguments.stMetadata.ftSelectMultiple>
 						<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 					</cfif>
-					<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif listFindNoCase(joinItems,qLibraryList.objectid)> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
+					<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif listFindNoCase(joinItems,qLibraryList.objectid)> selected="selected"</cfif>><cfif queryKeyExists(qLibraryList, "label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
 					</select>
 					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 					
@@ -192,7 +192,7 @@
 										name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
 										<cfif isSimpleValue(arguments.stObject[arguments.stMetaData.Name]) and arguments.stObject[arguments.stMetaData.Name] EQ ""> checked="checked"</cfif> 
 										value="" />
-									<cfif isDefined("qLibraryList.label")>#arguments.stMetadata.ftFirstListLabel#</cfif>
+									<cfif queryKeyExists(qLibraryList, "label")>#arguments.stMetadata.ftFirstListLabel#</cfif>
 								</label>
 							</cfif>
 							<cfloop query="qLibraryList">
@@ -739,7 +739,7 @@
 				<cfif qLibraryList.recordcount>
 					<cfoutput>
 					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" class="selectInput #arguments.stMetadata.class#">
-					<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
+					<cfloop query="qLibraryList"><option value="#encodeForHTMLAttribute(qLibraryList.objectid)#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif queryKeyExists(qLibraryList, "label")>#encodeForHTML(qLibraryList.label)#<cfelse>#encodeForHTML(qLibraryList.objectid)#</cfif></option></cfloop>
 					</select>
 					</cfoutput>
 					
@@ -796,7 +796,7 @@
 								name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
 								<cfif arguments.stObject[arguments.stMetaData.Name] EQ ""> checked</cfif> 
 								value="" />
-							<cfif isDefined("qLibraryList.label")>#arguments.stMetadata.ftFirstListLabel#</cfif>
+							<cfif queryKeyExists(qLibraryList, "label")>#arguments.stMetadata.ftFirstListLabel#</cfif>
 						</label>
 					</cfif>
 					<cfloop query="qLibraryList">
@@ -846,7 +846,7 @@
 							<cfset dataTypename = qArrayField.typename />
 							<cfset HTML = "" />
 						
-	 						<cfif isDefined("qArrayField.label") AND len(qArrayField.label)>
+	 						<cfif queryKeyExists(qArrayField, "label") AND len(qArrayField.label)>
 								<cfset variables.alternateHTML = qArrayField.Label />
 							<cfelse>
 								<cfset variables.alternateHTML = "" />

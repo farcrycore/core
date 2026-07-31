@@ -114,7 +114,7 @@
 		<cfif NOT listFindNoCase(variables.farcryFormPrefixesToProcess,variables.Prefix)><!--- Eliminates Duplicates --->
 			
 			<!--- Processing an Object --->
-			<cfif isDefined("stObj.ObjectID") AND len(stObj.ObjectID)>	
+			<cfif structKeyExists(stObj, "ObjectID") AND len(stObj.ObjectID)>	
 				
 				<cfif structKeyExists(form,"#Prefix#ObjectID") AND FORM["#Prefix#ObjectID"] EQ stObj.ObjectID>
 					
@@ -123,7 +123,7 @@
 				</cfif>
 	
 				
-				<cfif NOT isDefined("CALLER.stPLP.plp.inputObjects") or NOT structKeyExists(CALLER.stPLP.plp.inputObjects,stObj.ObjectID)>
+				<cfif NOT (structKeyExists(caller, "stPLP") AND structKeyExists(caller.stPLP, "plp") AND structKeyExists(caller.stPLP.plp, "inputObjects")) or NOT structKeyExists(CALLER.stPLP.plp.inputObjects,stObj.ObjectID)>
 					<cfset CALLER.stPLP.plp.inputObjects[stObj.ObjectID] = Duplicate(stObj)>	
 					<cfset CALLER.stPLP.plp.outputObjects[stObj.ObjectID] = Duplicate(stObj)>	
 				</cfif>
@@ -166,7 +166,7 @@
 	Have we flagged this object to be saved to the session only?
 	This is done by calling <ft:sessionOnly /> often used for inline server side validation
 	 --->
-	<cfif (isDefined("Request.SaveCurrentFormObjectSessionOnly") AND Request.SaveCurrentFormObjectSessionOnly)>
+	<cfif (structKeyExists(request, "SaveCurrentFormObjectSessionOnly") AND Request.SaveCurrentFormObjectSessionOnly)>
 		
 		<cfset variables.bSessionOnly = true />
 		
@@ -177,7 +177,7 @@
 		<cfset variables.bSessionOnly = attributes.bSessionOnly />		
 	</cfif>
 
-	<cfif (isDefined("Request.BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject)>
+	<cfif (structKeyExists(request, "BreakProcessingCurrentFormObject") AND Request.BreakProcessingCurrentFormObject)>
 		
 		<!--- DO NOT PROCESS THIS LOOP --->
 		<cfset Request.BreakProcessingCurrentFormObject = 0>
@@ -228,11 +228,11 @@
 			</cfloop>
 			
 	
-		<cfelseif isDefined("attributes.insidePLP") AND attributes.insidePLP EQ 1>
+		<cfelseif structKeyExists(attributes, "insidePLP") AND attributes.insidePLP EQ 1>
 
 	
 				
-			<cfif not isDefined("CALLER.inputObjects") OR not structKeyExists(CALLER.inputObjects,Caller[attributes.r_stProperties].ObjectID)>	
+			<cfif not structKeyExists(caller, "inputObjects") OR not structKeyExists(CALLER.inputObjects,Caller[attributes.r_stProperties].ObjectID)>	
 				
 				<cfif not structKeyExists(Caller[attributes.r_stProperties], "typename") or not len(Caller[attributes.r_stProperties].typename)>
 		
@@ -253,13 +253,13 @@
 			
 			<cfloop list="#lFields#" index="i" >
 
-				<cfif isDefined("Caller.#attributes.r_stProperties#.#i#")>	
+				<cfif structKeyExists(caller, attributes.r_stProperties) AND structKeyExists(caller[attributes.r_stProperties], i)>
 					<cfset callerID = Caller[attributes.r_stProperties].objectid />
 					<!--- PLP outputObjects is used to store multiple objects in the plp. --->					
 					<cfset CALLER.outputObjects[#callerID#][#i#] = Caller[attributes.r_stProperties][i]>	
 					
 					<!--- PLP object is used to store the base object of the PLP --->
-					<cfif isDefined("CALLER.output.objectid") AND CALLER.output.objectID EQ callerID>						
+					<cfif structKeyExists(caller, "output") AND structKeyExists(caller.output, "objectid") AND CALLER.output.objectID EQ callerID>						
 						<cfset CALLER.output[#i#] = Caller[attributes.r_stProperties][i]>	
 					</cfif>
 				</cfif>
@@ -275,7 +275,7 @@
 			<cfset stObj = stType.setData(stProperties=Caller[attributes.r_stProperties],user=Variables.LockedBy, bSessionONly="#variables.bSessionOnly#",bAudit=attributes.bAudit,auditNote=attributes.auditNote)>		
 			
 			<!--- We need to return the new structure if requested. --->
-			<cfif isDefined("attributes.r_stObject") AND len(attributes.r_stObject)>
+			<cfif structKeyExists(attributes, "r_stObject") AND len(attributes.r_stObject)>
 				<cfset caller[attributes.r_stObject] = stType.getData(objectid=Caller[attributes.r_stProperties].objectid) />
 			</cfif>
 			
@@ -378,7 +378,7 @@
 	<cfelseif len(arguments.ObjectID)>
 
 		
-		<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
+		<cfif not structKeyExists(arguments, "typename") or not len(arguments.typename)>
 
 			<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
@@ -450,7 +450,7 @@
 			</cfif>
 			
 			<!--- SETUP REQUIRED PARAMETERS --->
-			<cfif not isDefined("ftFieldMetadata.ftType")>
+			<cfif not structKeyExists(ftFieldMetadata, "ftType")>
 	
 				<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
 	

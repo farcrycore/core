@@ -41,7 +41,7 @@
 	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
 	
 	<!--- If not in a farcry form, default the type as a button. --->
-	<cfif NOT isDefined("Request.farcryForm.Name")>
+	<cfif NOT (structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "Name"))>
 		<cfif not len(attributes.type)>
 			<cfset attributes.Type = "button" />
 		</cfif>
@@ -64,12 +64,12 @@
 	</cfif>
 	
 	<!--- run the button click event if in a form --->
-	<cfif isDefined("Request.farcryForm.Name")>
+	<cfif structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "Name")>
 		<cfset attributes.onClick = listAppend(attributes.onClick, "btnClick('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#')", ";")  />
 	</cfif>
 	
 	<!--- ONLY ADD JS VALIDATION IF VALIDATION LOADED IN THE ft:form --->
-	<cfif isDefined("Request.farcryForm.Name") AND Request.farcryForm.Validation>
+	<cfif structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "Name") AND Request.farcryForm.Validation>
 		<cfif attributes.validate>
 			<cfset attributes.onClick = listAppend(attributes.onClick, "btnTurnOnServerSideValidation()", ";") />
 		<cfelse>
@@ -91,7 +91,7 @@
 	</cfif>
 
 	<!--- If we are not validating, we need to update the attribute on the form --->
-	<cfif isDefined("Request.farcryForm.Name") AND NOT attributes.validate>
+	<cfif structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "Name") AND NOT attributes.validate>
 		<cfset attributes.onClick = listPrepend(attributes.onClick, "$j('###Request.farcryForm.Name#').attr('fc:validate',false)", ";") />
 	</cfif>
 	
@@ -111,7 +111,7 @@
 	
 	
 	<!--- Set the default action if requested --->
-	<cfif isDefined("Request.farcryForm.defaultAction")>
+	<cfif structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "defaultAction")>
 		<cfif attributes.bDefaultAction OR (attributes.Type EQ "submit" AND not len(Request.farcryForm.defaultAction))>
 			<cfset Request.farcryForm.defaultAction = attributes.value />
 		</cfif>
@@ -160,7 +160,7 @@
 		</cfif>
 		
 
-		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>
+		<cfif attributes.bSpamProtect AND structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "Name")>
 		
 			<cfif not structKeyExists(request, "bRenderFormSpamProtection")>
 				<cfinclude template="#application.url.webtop#/cffp/cfformprotect/cffp.cfm" /> 

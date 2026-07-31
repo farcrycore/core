@@ -170,10 +170,10 @@
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 
 		<cfcase value="dropdown">
-			<cfif not isdefined("arguments.stMetadata.ftStartYear") or not len(arguments.stMetadata.ftStartYear)>
+			<cfif not structKeyExists(arguments.stMetadata, "ftStartYear") or not len(arguments.stMetadata.ftStartYear)>
 				<cfset arguments.stMetadata.ftStartYear = year(now()) + arguments.stMetadata.ftStartYearShift />
 			</cfif>
-			<cfif not isdefined("arguments.stMetadata.ftEndYear") or not len(arguments.stMetadata.ftEndYear)>
+			<cfif not structKeyExists(arguments.stMetadata, "ftEndYear") or not len(arguments.stMetadata.ftEndYear)>
 				<cfset arguments.stMetadata.ftEndYear = year(now()) + arguments.stMetadata.ftEndYearShift />
 			</cfif>
 		

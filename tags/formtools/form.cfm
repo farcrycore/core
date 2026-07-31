@@ -29,7 +29,7 @@ It just ignores the inner ones.
 
 	
 	<!--- Check to make sure that Request.farcryForm.Name exists. This is because other tags may have created Request.farcryForm but only this tag creates "Name" --->
-	<cfif thistag.ExecutionMode EQ "Start" AND NOT isDefined("Request.farcryForm.Name")>
+	<cfif thistag.ExecutionMode EQ "Start" AND NOT (structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "Name"))>
 
 		<cfset Variables.CorrectForm = 1>
 		
@@ -130,7 +130,7 @@ It just ignores the inner ones.
 
 	</cfif>
 	
-	<cfif thistag.ExecutionMode EQ "End" and isDefined("Variables.CorrectForm")>
+	<cfif thistag.ExecutionMode EQ "End" and structKeyExists(variables, "CorrectForm")>
 
 		<cfset innerHTML = "" />
 		<cfif len(thisTag.generatedContent)>

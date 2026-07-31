@@ -119,7 +119,7 @@
 	<cfif len(attributes.ObjectID)>
 	<!--- build metadata from objectid --->
 	
-		<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
+		<cfif not structKeyExists(attributes, "typename") or not len(attributes.typename)>
 			<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 			<cfset attributes.typename = q4.findType(objectid=attributes.objectid)>
 		</cfif>		
@@ -252,7 +252,7 @@
 	
 	
 	<!--- Determine fields to exclude from render --->
-	<cfif isDefined("attributes.lExcludeFields") and len(attributes.lExcludeFields)>
+	<cfif structKeyExists(attributes, "lExcludeFields") and len(attributes.lExcludeFields)>
 		<cfloop list="#lFieldsToRender#" index="i">
 			<cfif ListFindNoCase(attributes.lExcludeFields,i)>
 				<cfset lFieldsToRender =  listdeleteat(lFieldsToRender,ListFindNoCase(lFieldsToRender,i))>
@@ -262,9 +262,9 @@
 
 		
 	<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
-	<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
+	<cfif structKeyExists(variables, "stObj") and not structIsEmpty(variables.stObj)>
 	
-		<cfif not isDefined("Request.farcryForm.stObjects")>
+		<cfif not (structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "stObjects"))>
 			<!--- If the call to this tag is not made within the confines of a <ft:form> tag, then we need to create a temp one and then delete it at the end of the tag. --->
 			<cfset Request.farcryForm.stObjects = StructNew()>
 			<cfset Request.tmpDeleteFarcryForm = attributes.ObjectID>		
@@ -302,7 +302,7 @@
 		
 	
 	<!--- IF WE ARE RENDERING AN EXISTING OBJECT, ADD THE OBJECTID TO stObjects --->	
-	<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
+	<cfif structKeyExists(variables, "stObj") and not structIsEmpty(variables.stObj)>
 		<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID = stObj.ObjectID>
 	</cfif>
 	
@@ -320,7 +320,7 @@
 	<cfif attributes.IncludeFieldSet>
 		<cfoutput><fieldset class="fieldset"></cfoutput>
 	
-		<cfif isDefined("attributes.legend") and len(attributes.legend)>
+		<cfif structKeyExists(attributes, "legend") and len(attributes.legend)>
 			<!--- <cfoutput><h2 class="legend">#attributes.legend#</h2></cfoutput> --->
 			<cfoutput><legend>#attributes.legend#</legend></cfoutput>
 		</cfif>	
@@ -365,7 +365,7 @@
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = attributes.stPropValues[i]>
 			<cfset variables.stObj[i] = attributes.stPropValues[i]>
 		<cfelse>
-			<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>					
+			<cfif structKeyExists(variables, "stObj") and not structIsEmpty(variables.stObj)>					
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = variables.stObj[i]>
 			<cfelseif structKeyExists(stFields[i].MetaData, "ftDefault")>
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value = stFields[i].MetaData.ftDefault>
@@ -535,7 +535,7 @@
 				
 			</cfif>
 
-			<cfif isDefined("request.hideAutoSaveWrapper") AND request.hideAutoSaveWrapper EQ 1>
+			<cfif structKeyExists(request, "hideAutoSaveWrapper") AND request.hideAutoSaveWrapper EQ 1>
 				<!--- Leave returnHTML as is --->
 			<cfelse>
 			
@@ -561,7 +561,7 @@
 				
 				<cfif len(attributes.autosave)>
 					<cfset bAddAutoSave = attributes.autosave />
-				<cfelseif isDefined("Request.farcryForm.autoSave") AND len(Request.farcryForm.autoSave)>
+				<cfelseif structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "autoSave") AND len(Request.farcryForm.autoSave)>
 					<cfset bAddAutoSave = Request.farcryForm.autoSave />
 				<cfelse>
 					<cfif ftTypeMetadataAutoSave EQ "*" OR listFindNoCase(ftTypeMetadataAutoSave,ftFieldMetadata.Name)>
@@ -598,7 +598,7 @@
 					<cfset bShowLabel = true />
 				</cfif>
 	
-				<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
+				<cfif bShowLabel AND structKeyExists(attributes, "IncludeLabel") AND attributes.IncludeLabel EQ 1>
 					<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
 						<!--- <cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput> --->
 						<cfoutput>#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></cfoutput>
@@ -652,7 +652,7 @@
 					<cfset ftFieldMetadata = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i]>
 
 					<!--- webskin rendered before the field (ftRenderWebskinBefore) --->
-					<cfif isDefined("ftFieldMetadata.ftRenderWebskinBefore") AND len(ftFieldMetadata.ftRenderWebskinBefore)>
+					<cfif structKeyExists(ftFieldMetadata, "ftRenderWebskinBefore") AND len(ftFieldMetadata.ftRenderWebskinBefore)>
 						<skin:view stObject="#stObj#" webskin="#ftFieldMetadata.ftRenderWebskinBefore#" />
 					</cfif>
 
@@ -675,7 +675,7 @@
 					</ft:field>
 
 					<!--- webskin rendered after the field (ftRenderWebskinAfter) --->
-					<cfif isDefined("ftFieldMetadata.ftRenderWebskinAfter") AND len(ftFieldMetadata.ftRenderWebskinAfter)>
+					<cfif structKeyExists(ftFieldMetadata, "ftRenderWebskinAfter") AND len(ftFieldMetadata.ftRenderWebskinAfter)>
 						<skin:view stObject="#stObj#" webskin="#ftFieldMetadata.ftRenderWebskinAfter#" />
 					</cfif>
 
@@ -732,7 +732,7 @@
 		<cfset Request.farcryForm.lFarcryObjectsRendered = ListAppend(Request.farcryForm.lFarcryObjectsRendered,Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 	</cfif>
 	
-	<cfif isDefined("Request.tmpDeleteFarcryForm") AND Request.tmpDeleteFarcryForm EQ attributes.ObjectID AND  isDefined("Request.farcryForm")>
+	<cfif structKeyExists(request, "tmpDeleteFarcryForm") AND Request.tmpDeleteFarcryForm EQ attributes.ObjectID AND  structKeyExists(request, "farcryForm")>
 		<!--- If the call to this tag is not made within the confines of a <ft:form> tag and this is the object that created it, then we need to delete the temp one we created. --->
 		<cfset dummy = structDelete(Request,"farcryForm")>
 		<cfset dummy = structDelete(Request,"tmpDeleteFarcryForm")>

@@ -112,7 +112,7 @@ object methods
 							<cfloop query="qFieldset">
 
 								<cfset propertyFormat = "edit">
-								<cfif isDefined("application.config_readonly.#arguments.stObject.configkey#.#qFieldset.propertyname#")>
+								<cfif structKeyExists(application, "config_readonly") AND structKeyExists(application.config_readonly, arguments.stObject.configkey) AND structKeyExists(application.config_readonly[arguments.stObject.configkey], qFieldset.propertyname)>
 									<cfset propertyFormat = "display">
 									<cfset stMeta = structNew()>
 									<cfset stMeta[qFieldset.propertyname] = structNew()>
@@ -247,7 +247,7 @@ object methods
 
 		<cfset var newLabel = stProperties.configkey>
 
-		<cfif structKeyExists(stProperties, "configtypename") AND len(stProperties.configtypename) and isDefined("application.stCOAPI.#stProperties.configtypename#.displayname")>
+		<cfif structKeyExists(stProperties, "configtypename") AND len(stProperties.configtypename) and structKeyExists(application.stCOAPI, stProperties.configtypename) AND structKeyExists(application.stCOAPI[stProperties.configtypename], "displayname")>
 			<cfset newLabel = trim(application.stCOAPI[stProperties.configtypename].displayname)>			
 		</cfif>
 
@@ -412,7 +412,7 @@ object methods
 		<cfparam name="application.config_readonly" default="#structNew()#">
 
 		<!--- re-apply read only properties --->
-		<cfif isDefined("application.config.#arguments.configkey#") and isDefined("application.config_readonly.#arguments.configkey#")>
+		<cfif structKeyExists(application.config, arguments.configkey) and structKeyExists(application, "config_readonly") AND structKeyExists(application.config_readonly, arguments.configkey)>
 			<cfset structAppend(application.config[arguments.configkey], application.config_readonly[arguments.configkey], true)>
 		</cfif>
 	</cffunction>

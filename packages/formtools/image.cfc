@@ -202,7 +202,7 @@
 		<!--- only read image info when ftShowMetadata is on; getImageInfo decodes the full-res source just for the size/dimensions readout --->
 		<cfif bFileExists and arguments.stMetadata.ftShowMetadata>
 			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true,location=location) />
-			<cfif isdefined("stImage.stError.message") and len(stImage.stError.message)>
+			<cfif structKeyExists(stImage, "stError") and structKeyExists(stImage.stError, "message") and len(stImage.stError.message)>
 				<cfset readImageError = "Error ""#stImage.stError.message#"" because the image file is invalid or corrupted. You can upload a new image to replace it." />
 			<cfelse>
 				<cfif stImage.width lt imageMaxWidth>
@@ -613,7 +613,7 @@
 
 		<cfif structkeyexists(url,"check")>
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
-			<cfif isdefined("url.callback")>
+			<cfif structKeyExists(url, "callback")>
 				<cfreturn "#url.callback#([])" />
 			<cfelse>
 				<cfreturn "[]" />
@@ -707,12 +707,12 @@
 				location=location
 			) />
 		
-		<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
+		<cfif structKeyExists(stResult, "stError") and structKeyExists(stResult.stError, "message") and len(stResult.stError.message)>
 			<cfset stJSON = structnew() />
 			<cfset stJSON["error"] = stResult.stError.message />
 			<cfset stJSON["value"] = stResult.value />
 			
-			<cfif isdefined("url.callback")>
+			<cfif structKeyExists(url, "callback")>
 				<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
 			<cfelse>
 				<cfreturn serializeJSON(stJSON) />
@@ -721,7 +721,7 @@
 		
 		<cfif stResult.bChanged>
 		
-			<cfif isdefined("stResult.value") and len(stResult.value)>
+			<cfif structKeyExists(stResult, "value") and len(stResult.value)>
 			
 				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
@@ -762,7 +762,7 @@
 					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stFixed.value) />
 				</cfif>
 
-				<cfif isdefined("url.callback")>
+				<cfif structKeyExists(url, "callback")>
 					<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
 				<cfelse>
 					<cfreturn serializeJSON(stJSON) />
@@ -815,7 +815,7 @@
 					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stFixed.value) />
 				</cfif>
 				
-				<cfif isdefined("url.callback")>
+				<cfif structKeyExists(url, "callback")>
 					<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
 				<cfelse>
 					<cfreturn serializeJSON(stJSON) />
@@ -823,7 +823,7 @@
 			</cfif>
 		</cfif>
 		
-		<cfif isdefined("url.callback")>
+		<cfif structKeyExists(url, "callback")>
 			<cfreturn "#url.callback#({})" />
 		<cfelse>
 			<cfreturn "{}" />
@@ -1797,7 +1797,7 @@
 				
 				<cfset stResult = handleFileSource(sourceField=arguments.stFields[thisfield].metadata.ftSourceField,stObject=arguments.stProperties,destination=arguments.stFields[thisfield].metadata.ftDestination,stFields=arguments.stFields,location=resolveUploadLocation(arguments.stFields[thisfield].metadata)) />
 				
-				<cfif isdefined("stResult.value") and len(stResult.value)>
+				<cfif structKeyExists(stResult, "value") and len(stResult.value)>
 					
 					<cfparam name="arguments.stFormPost.#thisfield#.stSupporting.ResizeMethod" default="#arguments.stFields[thisfield].metadata.ftAutoGenerateType#" />
 					<cfparam name="arguments.stFormPost.#thisfield#.stSupporting.Quality" default="#arguments.stFields[thisfield].metadata.ftQuality#" />
@@ -1979,7 +1979,7 @@
 											stFields=stProps,
 											location=destLocation ) />
 
-		<cfif isdefined("stResult.value") and len(stResult.value)>
+		<cfif structKeyExists(stResult, "value") and len(stResult.value)>
 
 
 			<cfset source_image = application.fc.lib.cdn.ioCopyFile(	source_location=sourceLocation,

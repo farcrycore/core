@@ -94,7 +94,7 @@
 		<cfif NOT listFindNoCase(variables.farcryFormPrefixesToProcess,variables.Prefix)><!--- Eliminates Duplicates --->
 			
 			<!--- Processing an Object --->
-			<cfif isDefined("stObj.ObjectID") AND len(stObj.ObjectID)>	
+			<cfif structKeyExists(stObj, "ObjectID") AND len(stObj.ObjectID)>	
 				
 				<cfif structKeyExists(form,"#Prefix#ObjectID") AND FORM["#Prefix#ObjectID"] EQ stObj.ObjectID>
 					
@@ -103,7 +103,7 @@
 				</cfif>
 	
 				
-				<cfif NOT isDefined("CALLER.stPLP.plp.inputObjects") or NOT structKeyExists(CALLER.stPLP.plp.inputObjects,stObj.ObjectID)>
+				<cfif NOT (structKeyExists(caller, "stPLP") AND structKeyExists(caller.stPLP, "plp") AND structKeyExists(caller.stPLP.plp, "inputObjects")) or NOT structKeyExists(CALLER.stPLP.plp.inputObjects,stObj.ObjectID)>
 					<cfset CALLER.stPLP.plp.inputObjects[stObj.ObjectID] = Duplicate(stObj)>	
 					<cfset CALLER.stPLP.plp.outputObjects[stObj.ObjectID] = Duplicate(stObj)>	
 				</cfif>
@@ -186,7 +186,7 @@
 	<cfelseif len(arguments.ObjectID)>
 
 		
-		<cfif not isDefined("arguments.typename") or not len(arguments.typename)>
+		<cfif not structKeyExists(arguments, "typename") or not len(arguments.typename)>
 
 			<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
 			<cfset arguments.typename = q4.findType(objectid=arguments.objectid)>
@@ -285,7 +285,7 @@
 			</cfif>
 			
 			<!--- SETUP REQUIRED PARAMETERS --->
-			<cfif not isDefined("ftFieldMetadata.ftType")>
+			<cfif not structKeyExists(ftFieldMetadata, "ftType")>
 	
 				<cfset ftFieldMetadata.ftType = ftFieldMetadata.Type>
 	

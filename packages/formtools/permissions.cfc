@@ -27,7 +27,7 @@
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<cfif isdefined("url.deploypermission") and (listcontains(arguments.stMetadata.ftPermissions,url.deploypermission) or arguments.stMetadata.ftPermissions eq url.deploypermission)>
+		<cfif structKeyExists(url, "deploypermission") and (listcontains(arguments.stMetadata.ftPermissions,url.deploypermission) or arguments.stMetadata.ftPermissions eq url.deploypermission)>
 			<cfloop list="#url.deploypermission#" index="thispermission">
 				<cfif not oPermission.permissionExists(thispermission)>
 					<cfset stPermission = structnew() />

@@ -461,7 +461,7 @@
 		<cfset var j	= '' />
 		
 		<!--- incorporate formtool specific defaults --->
-		<cfif structkeyexists(arguments.data,"ftType") and isdefined("application.formtools.#arguments.data.ftType#.stProps")>
+		<cfif structkeyexists(arguments.data,"ftType") and structKeyExists(application.formtools, arguments.data.ftType) AND structKeyExists(application.formtools[arguments.data.ftType], "stProps")>
 			<cfloop collection="#application.formtools[arguments.data.ftType].stProps#" item="j">
 				<cfif not structkeyexists(arguments.data,j) and structkeyexists(application.formtools[arguments.data.ftType].stProps[j].METADATA,"default")>
 					<cfset arguments.data[j] = application.formtools[arguments.data.ftType].stProps[j].METADATA.default />

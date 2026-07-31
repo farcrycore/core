@@ -81,7 +81,7 @@
 		</cfif>
 		
 			
-		<cfif isDefined("FORM.FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton)>
+		<cfif structKeyExists(form, "FarcryFormSubmitButton") AND len(FORM.FarcryFormSubmitButton)>
 
 			<cfif listFindNoCase(attributes.action,FORM.FarcryFormSubmitButton) OR attributes.action EQ "*">
 				<cfif NOT listFindNoCase(attributes.excludeAction,FORM.FarcryFormSubmitButton)>
@@ -162,7 +162,7 @@
 
 	
 	<!--- have we requested to exit this webskin? --->
-	<cfif isDefined("attributes.Exit") AND attributes.Exit>
+	<cfif structKeyExists(attributes, "Exit") AND attributes.Exit>
 	
 		<cfset Request.FarcryFormOnExitRun = true />
 
@@ -176,7 +176,7 @@
 			</cfif>
 		</cfif>
 
-		<cfif not isDefined("stLocal.onExitProcess") OR not isStruct(stLocal.onExitProcess)>
+		<cfif not structKeyExists(stLocal, "onExitProcess") OR not isStruct(stLocal.onExitProcess)>
 			<cfif not len(stLocal.onExitProcess)>
 				<cfif structKeyExists(url, "dialogID")>
 										

@@ -188,7 +188,7 @@
 
 		<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
 
-		<cfif isDefined("attributes.r_oTypeAdmin")>
+		<cfif structKeyExists(attributes, "r_oTypeAdmin")>
 			<cfset caller[attributes.r_oTypeAdmin]=oTypeAdmin>
 		</cfif>	
 	</cfif>
@@ -222,20 +222,20 @@
 	
 	
 	<!--- IF javascript has set the selected objectid, set the form.objectid to it. --->
-	<cfif isDefined("FORM.selectedObjectID") and len(form.selectedObjectID)>
+	<cfif structKeyExists(form, "selectedObjectID") and len(form.selectedObjectID)>
 		<cfset form.objectid = form.selectedObjectID />
 	</cfif>
 	
 	
 	<ft:processform action="delete" url="refresh">
-		<cfif isDefined("form.objectid") and len(form.objectID)>
+		<cfif structKeyExists(form, "objectid") and len(form.objectID)>
 			
 			<cfloop list="#form.objectid#" index="i">
 				<cfset o = application.fapi.getContentType(attributes.typename) />
 				<cfset stDeletingObject = o.getData(objectid=i) />
 				<cfset stResult = o.delete(objectid=i) />
 				
-				<cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
+				<cfif structKeyExists(stResult, "bSuccess") AND not stResult.bSuccess>
 					<skin:bubble title="Error deleting - #stDeletingObject.label#" bAutoHide="true" tags="type,#attributes.typename#,error">
 						<cfoutput>#stResult.message#</cfoutput>
 					</skin:bubble>
@@ -247,7 +247,7 @@
 	</ft:processForm>
 	
 	<ft:processform action="unlock" url="refresh"> 
-		<cfif isDefined("form.objectid") and len(form.objectID)>
+		<cfif structKeyExists(form, "objectid") and len(form.objectID)>
 			
 			<cfloop list="#form.objectid#" index="i">
 				<cfset application.fapi.getContentType(attributes.typename).setlock(objectid="#i#", locked="false") />
@@ -264,13 +264,13 @@
 	</cfif>
 
 	<!--- set the quick filter in the session and always start at page 1 for new searches --->
-	<cfif isDefined("form.btnsearch") and form.btnsearch eq 1>
+	<cfif structKeyExists(form, "btnsearch") and form.btnsearch eq 1>
 		<cfset session.objectadminFilterObjects[attributes.typename].q = form.q />
 		<cfset session.ftpagination[attributes.typename] = 1 />
 	</cfif>
 
 	<!--- clear the quick filter from the session and reset the pagingation --->
-	<cfif isDefined("form.clearfilter") and form.clearfilter eq 1>
+	<cfif structKeyExists(form, "clearfilter") and form.clearfilter eq 1>
 		<cfset form.q = "">
 		<cfset session.objectadminFilterObjects[attributes.typename] = structNew() />
 		<cfset session.objectadminFilterObjects[attributes.typename].q = "" />
@@ -415,7 +415,7 @@
 	 ------------------------>
 	<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = "" />
 	<cfif len(attributes.sortableColumns)>
-		<cfif isDefined("form.sqlOrderBy") and len(form.sqlOrderby)>
+		<cfif structKeyExists(form, "sqlOrderBy") and len(form.sqlOrderby)>
 			<cfset session.objectadminFilterObjects[attributes.typename].sqlOrderBy = sanitizeSQLOrderBy(form.sqlOrderby) />
 		</cfif>
 	</cfif>
@@ -617,16 +617,14 @@
 	<cfscript>
 	// response: action message container for objectadmin
 	response="";
-	if (not isDefined("message_error")){
-		message_error = "";
-	}
+	param name="message_error" default="";
 
 	
 	// add: content item added
 	// JS window.location from button press
 		
 	// delete: content items deleted
-	if (isDefined("form.delete") AND form.delete AND isDefined("form.objectid")){
+	if (structKeyExists(form, "delete") AND form.delete AND structKeyExists(form, "objectid")){
 		aDeleteObjectID = ListToArray(form.objectid);
 	
 		for(i=1;i LTE Arraylen(aDeleteObjectID);i = i+1){
@@ -639,7 +637,7 @@
 	
 	<!---// dump: content items to dump
 	// TODO: implement object dump code! --->
-	<cfif isDefined("form.dump") AND isDefined("form.objectid") AND len(form.objectid)>
+	<cfif structKeyExists(form, "dump") AND structKeyExists(form, "objectid") AND len(form.objectid)>
 		<!---response="DUMP (field: #form.dump#)actioned for: #form.objectid#."; --->
 		<cfsavecontent variable="response">
 			<cfloop list="#form.objectid#" index="i">
@@ -654,8 +652,8 @@
 	// status: change status of the selected content items
 	// todo: make three unique buttons, match on buttontype *not* resource bundle label
 	statusurl="";
-	if (isDefined("form.status")) {
-		if (isDefined("form.objectID")) {
+	if (structKeyExists(form, "status")) {
+		if (structKeyExists(form, "objectID")) {
 			if (form.status contains 'Approve') {
 				status = 'approved';
 			}	
@@ -685,7 +683,7 @@
 	// custom: custom button action
 	--->
 	<cfif NOT structisempty(form)>
-		<cfif NOT isDefined("form.objectid")>
+		<cfif NOT structKeyExists(form, "objectid")>
 			<cfscript>
 				form.objectid = application.fc.utils.createJavaUUID();
 			</cfscript>
@@ -712,7 +710,7 @@
 		<cfloop list="#attributes.lFilterFields#" index="criteria">
 			<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
 					<cfset thisCriteria = lcase(criteria)>
-					<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
+					<cfif structKeyExists(application.types, attributes.typename) AND structKeyExists(application.types[attributes.typename].stProps, criteria) AND structKeyExists(application.types[attributes.typename].stProps[criteria].metadata, "ftLabel")>
 						<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
 					</cfif>
 					<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
@@ -735,7 +733,7 @@
 	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
 	<cfif listLen(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
-			<cfif NOT (isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1)>
+			<cfif NOT (structKeyExists(request, "fc") AND structKeyExists(request.fc, "inwebtop") AND request.fc.inwebtop eq 1)>
 				<ft:button type="button" value="Filter" icon="fa fa-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
 			</cfif>
 				
@@ -759,7 +757,7 @@
 	</cfif>
 
 
-	<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
+	<cfif structKeyExists(request, "fc") AND structKeyExists(request.fc, "inwebtop") AND request.fc.inwebtop eq 1>
 		<cfoutput>
 			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2"  data-intro="Perform complex searches with advanced filtering options" data-position="left">
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
@@ -814,7 +812,7 @@
 
 								<cfset icon = "">
 								<cfset class = "">
-								<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
+								<cfif structKeyExists(request, "fc") AND structKeyExists(request.fc, "inwebtop") AND request.fc.inwebtop eq 1>
 									<!--- bootstrap --->
 									<cfif structkeyexists(attributes.aButtons[i],"icon")>
 										<cfset icon =  attributes.aButtons[i].icon />
@@ -889,7 +887,7 @@
 				
 				<cfoutput>
 
-				<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
+				<cfif structKeyExists(request, "fc") AND structKeyExists(request.fc, "inwebtop") AND request.fc.inwebtop eq 1>
 					<table width="100%" class="farcry-objectadmin table table-striped table-hover">
 				<cfelse>
 					<table width="100%" class="objectAdmin">
@@ -932,7 +930,7 @@
 								<cfelse><!--- Normal field --->
 									
 									<cfset headerColumnStyle = "">
-									<cfif isDefined("PrimaryPackage.stProps.#attributes.aCustomColumns[i]#.metadata.ftType") AND PrimaryPackage.stProps[#attributes.aCustomColumns[i]#].metadata.ftType eq "datetime">
+									<cfif structKeyExists(PrimaryPackage.stProps, attributes.aCustomColumns[i]) AND structKeyExists(PrimaryPackage.stProps[attributes.aCustomColumns[i]].metadata, "ftType") AND PrimaryPackage.stProps[#attributes.aCustomColumns[i]#].metadata.ftType eq "datetime">
 										<cfset headerColumnStyle = "width: 8em;">
 									</cfif>
 
@@ -953,7 +951,7 @@
 									<cfoutput>
 										<th class="#sortableClass#" data-field="#attributes.aCustomColumns[i]#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
 											<span>
-												<cfif isDefined("PrimaryPackage.stProps.#trim(attributes.aCustomColumns[i])#.metadata.ftLabel")>
+												<cfif structKeyExists(PrimaryPackage.stProps, trim(attributes.aCustomColumns[i])) AND structKeyExists(PrimaryPackage.stProps[trim(attributes.aCustomColumns[i])].metadata, "ftLabel")>
 													#oType.getI18Property(attributes.aCustomColumns[i],"label")#
 												<cfelse>
 													#attributes.aCustomColumns[i]#
@@ -982,10 +980,10 @@
 						
 						<cfloop list="#attributes.columnlist#" index="i">
 
-							<cfif isDefined("PrimaryPackage.stProps.#trim(i)#")>
+							<cfif structKeyExists(PrimaryPackage.stProps, trim(i))>
 
 								<cfset headerColumnStyle = "">
-								<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftType") AND PrimaryPackage.stProps[#trim(i)#].metadata.ftType eq "datetime">
+								<cfif structKeyExists(PrimaryPackage.stProps, trim(i)) AND structKeyExists(PrimaryPackage.stProps[trim(i)].metadata, "ftType") AND PrimaryPackage.stProps[#trim(i)#].metadata.ftType eq "datetime">
 									<cfset headerColumnStyle = "width: 8em;">
 								</cfif>
 								<cfif i eq "status">
@@ -1009,7 +1007,7 @@
 								<cfoutput>
 									<th class="#sortableClass#" data-field="#i#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
 									<span>
-										<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
+										<cfif structKeyExists(PrimaryPackage.stProps, trim(i)) AND structKeyExists(PrimaryPackage.stProps[trim(i)].metadata, "ftLabel")>
 											#application.rb.getResource("objectadmin.columns.#rereplace(i,'[^\w\d]','','ALL')#@heading", oType.getI18Property(i,"label"))#
 										<cfelse>
 											#i#
@@ -1035,7 +1033,7 @@
 					</cfoutput>
 					
 
-					<cfif len(attributes.SortableColumns) AND NOT (isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1)>
+					<cfif len(attributes.SortableColumns) AND NOT (structKeyExists(request, "fc") AND structKeyExists(request.fc, "inwebtop") AND request.fc.inwebtop eq 1)>
 						<cfoutput>
 						<tr>
 						</cfoutput>
@@ -1084,7 +1082,7 @@
 					
 							<cfloop list="#attributes.columnlist#" index="i">
 
-								<cfif isDefined("PrimaryPackage.stProps.#trim(i)#")>
+								<cfif structKeyExists(PrimaryPackage.stProps, trim(i))>
 									<cfoutput><th></cfoutput>					
 										<cfif listContainsNoCase(attributes.SortableColumns,i)>
 											<cfoutput>
@@ -1118,7 +1116,7 @@
 				<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
 
 
-				<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
+				<cfif structKeyExists(request, "fc") AND structKeyExists(request.fc, "inwebtop") AND request.fc.inwebtop eq 1>
 					<cfset st.currentRowClass = "">
 				</cfif>
 					
@@ -1144,7 +1142,7 @@
 				 			<cfset statusOutput = "">
 				 			<cfif structKeyExists(st, "status")>
 					 			<cfset statusOutput = application.rb.getResource("constants.status.#st.status#@label",st.status)>
-								<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
+								<cfif structKeyExists(request, "fc") AND structKeyExists(request.fc, "inwebtop") AND request.fc.inwebtop eq 1>
 						 			<cfif st.status eq "draft">
 							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
 							 		<cfelseif st.status eq "approved">
@@ -1197,7 +1195,7 @@
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 
-									<cfif isDefined("PrimaryPackage.stProps.#trim(i)#")>
+									<cfif structKeyExists(PrimaryPackage.stProps, trim(i))>
 
 										<cfif structKeyExists(stFields, i)>
 											<cfif i eq "status">

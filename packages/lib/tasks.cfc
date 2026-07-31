@@ -433,7 +433,7 @@
 		
 		<cfset var stTask = "" />
 		
-		<cfif isdefined("this.threads.#arguments.threadID#")>
+		<cfif structKeyExists(this, "threads") AND structKeyExists(this.threads, arguments.threadID)>
 			<cfif structkeyexists(this.threads[arguments.threadID],"thread")>
 				<!--- terminate thread --->
 				<cfset this.threads[arguments.threadID].thread.cancel() />

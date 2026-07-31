@@ -167,7 +167,7 @@ environment references (might be nice to clean these up)
 			</cfquery>
 		</cfif>
 		<!--- <cfdump var="#recordset#" label="Category Filtered Recordset"> --->
-	<cfelseif isDefined("attributes.query")>
+	<cfelseif structKeyExists(attributes, "query")>
 		<cfif isQuery(attributes.query)>
 			<cfset recordset=attributes.query>
 		<cfelse>
@@ -380,10 +380,7 @@ environment references (might be nice to clean these up)
 		//remember to delimit dynamic expressions ##
 		aDefaultButtons=arrayNew(1);
 		editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=#attributes.typename#&ref=typeadmin&module=#url.module#";
-		if (IsDefined("url.Lib")) editObjectURL = editObjectURL&"&lib="&url.lib;
-
-		// set bunlock for now, needs to be set if locked objects exist
-		bUnlock=true;
+		if (structKeyExists(url, "Lib")) editObjectURL = editObjectURL&"&lib="&url.lib;
 
 		//add, delete, unlock, dump, requestapproval, approve, sendtodraft
 		// add button
@@ -424,19 +421,16 @@ environment references (might be nice to clean these up)
 			stBut.icon="fa-trash-o";
 			arrayAppend(aDefaultButtons,stBut);
 
-		// check if there are locked objects
-		if (isdefined("bUnlock")) {
-			stBut=structNew();
-			stBut.type="Submit";
-			stBut.name="unlock";
-			stBut.value="Unlock";
-			stBut.class="f-submit";
-			stBut.onClick="";
-			stBut.permission="";
-			stBut.buttontype="unlock";
-			stBut.icon="fa-unlock";
-			arrayAppend(aDefaultButtons,stBut);
-		}
+		stBut=structNew();
+		stBut.type="Submit";
+		stBut.name="unlock";
+		stBut.value="Unlock";
+		stBut.class="f-submit";
+		stBut.onClick="";
+		stBut.permission="";
+		stBut.buttontype="unlock";
+		stBut.icon="fa-unlock";
+		arrayAppend(aDefaultButtons,stBut);
 		
 		// check if object uses status
 		if (structKeyExists(PrimaryPackage.stProps,"status")) {
@@ -559,7 +553,7 @@ environment references (might be nice to clean these up)
 	</cfloop>
 
 	<cfset ArraySort(aKeywordField,"textnocase","asc")>
-	<cfif isdefined("variables.attributes.query") and isQuery(variables.attributes.query) and variables.attributes.query.recordcount>
+	<cfif structKeyExists(variables.attributes, "query") and isQuery(variables.attributes.query) and variables.attributes.query.recordcount>
 		<!--- key words should list columns in the query if a custom q1uery has been passed into the tag --->
 		<cfsavecontent variable="panel"><cfoutput>
 		<b>Properties:</b>
@@ -574,7 +568,7 @@ environment references (might be nice to clean these up)
 		</cfsavecontent>	
 	<cfelse>
 		<cfsavecontent variable="panel"><cfoutput>
-		<cfif isDefined("keywordsFilterList")>#keywordsFilterList#</cfif>
+		<cfif structKeyExists(variables, "keywordsFilterList")>#keywordsFilterList#</cfif>
 		<!--- todo: i18n --->
 		<b>Properties:</b>
 			<select name="keywords_field" id="keywords_field"><cfloop index="i" from="1" to="#Arraylen(aKeywordField)#">
@@ -621,7 +615,7 @@ environment references (might be nice to clean these up)
 	</cfif>
 
 	<cfsavecontent variable="panel"><cfoutput>
-		<cfif isDefined("dateRangeFilterList")>#dateRangeFilterList#</cfif>
+		<cfif structKeyExists(variables, "dateRangeFilterList")>#dateRangeFilterList#</cfif>
 		<cfif ArrayLen(aDateField)>
 		<!--- <label for="daterange"> --->
 		<b>Date Field:</b>
@@ -675,7 +669,7 @@ environment references (might be nice to clean these up)
 
 	<cfsavecontent variable="panel">
 		<cfoutput>
-		<cfif isDefined("categoryFilterList")>#categoryFilterList#</cfif>
+		<cfif structKeyExists(variables, "categoryFilterList")>#categoryFilterList#</cfif>
 		<label for="cat"><b>Category Filter</b>
 		<select id="cat" name="categoryid"></cfoutput><cfoutput query="qCats">
 			<option value="#qCats.objectid#"><cfloop from="1" to="#qCats.nlevel-1#" index="i">- </cfloop>#qCats.objectname#</option></cfoutput><cfoutput>

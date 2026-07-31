@@ -924,7 +924,7 @@
 				<cfelseif structkeyexists(arguments.stURL,urlvar) and ((arguments.stURL[urlvar] eq application.updateappkey AND application.updateappkey neq 1) or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1))>
 					<cfset request.mode[thisvar] = 1 />
 					<cfset session.fc.mode[thisvar] = 1 />
-				<cfelseif isdefined("session.fc.mode.#thisvar#")>
+				<cfelseif structKeyExists(session.fc.mode, thisvar)>
 					<cfset request.mode[thisvar] = session.fc.mode[thisvar] />
 				</cfif>
 			</cfloop>

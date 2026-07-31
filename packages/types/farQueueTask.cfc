@@ -166,7 +166,7 @@
 					</tr>
 				</table>
 				<div id="#arguments.fieldname#details" style="display:none;">
-					<cfif isdefined("application.fc.lib.tasks.threads.#arguments.stMetadata.value#")>
+					<cfif structKeyExists(application.fc.lib.tasks, "threads") AND structKeyExists(application.fc.lib.tasks.threads, arguments.stMetadata.value)>
 						<cfset stInfo = duplicate(application.fc.lib.tasks.threads[arguments.stMetadata.value]) />
 						
 						Thread was created at #timeformat(stInfo.created,'hh:mmtt')#, #dateformat(stInfo.created,'d mmm yyyy')# (#application.fapi.prettyDate(stInfo.created)# ago).<br>

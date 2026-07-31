@@ -491,7 +491,7 @@
 		
 		
 		<cfloop list="#StructKeyList(arguments.stFields)#" index="field">
-			<cfif structKeyExists(arguments.stProperties,field) AND isDefined("arguments.stFields.#field#.Metadata.bLabel") AND arguments.stFields[field].Metadata.bLabel>
+			<cfif structKeyExists(arguments.stProperties,field) AND structKeyExists(arguments.stFields[field], "Metadata") AND structKeyExists(arguments.stFields[field].Metadata, "bLabel") AND arguments.stFields[field].Metadata.bLabel>
 				<cfset NewLabel = "#NewLabel# #arguments.stProperties[field]#">
 			</cfif>
 		</cfloop>

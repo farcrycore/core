@@ -10,7 +10,7 @@
 <cfloop collection="#application.stCOAPI#" item="thistype">
 	<cfif listcontains("type,rule",application.stCOAPI[thistype].class)>
 		<cfloop collection="#application.stCOAPI[thistype].stProps#" item="thisprop">
-			<cfif isdefined("application.stCOAPI.#thistype#.stProps.#thisprop#.metadata.ftType") and application.stCOAPI[thistype].stProps[thisprop].metadata.ftType eq "file">
+			<cfif structKeyExists(application.stCOAPI[thistype].stProps[thisprop].metadata, "ftType") and application.stCOAPI[thistype].stProps[thisprop].metadata.ftType eq "file">
 				<cfset o = application.fapi.getContentType(typename=thistype) />
 				<cfquery datasource="#application.dsn#" name="q">
 					select		objectid,label,#thisprop#

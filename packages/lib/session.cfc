@@ -36,7 +36,7 @@ component {
 				querySetCell(qSessions, "sessionID", sessionID);
 				querySetCell(qSessions, "lastAccessed", session.sessions[sessionID].lastAccessed);
 				querySetCell(qSessions, "bCurrent", 0);
-				querySetCell(qSessions, "user", isdefined("session.sessions.#sessionID#.dmProfile.label") ? session.sessions[sessionID].dmProfile.label : "anonymous");
+				querySetCell(qSessions, "user", structKeyExists(session.sessions[sessionID], "dmProfile") AND structKeyExists(session.sessions[sessionID].dmProfile, "label") ? session.sessions[sessionID].dmProfile.label : "anonymous");
 			}
 		}
 
@@ -82,7 +82,7 @@ component {
 		else if (arguments.sessionID eq currentSessionID){
 			clearCurrentSession();
 		}
-		else if (isDefined("session.sessions.#arguments.sessionID#")){
+		else if (structKeyExists(session.sessions, arguments.sessionID)){
 			structDelete(session.sessions, arguments.sessionID);
 		}
 	}
@@ -95,7 +95,7 @@ component {
 		if (arguments.sessionID eq currentSessionID){
 			return session;
 		}
-		if (isDefined("session.sessions.#arguments.sessionID#")){
+		if (structKeyExists(session.sessions, arguments.sessionID)){
 			return session.sessions[arguments.sessionID];
 		}
 		
