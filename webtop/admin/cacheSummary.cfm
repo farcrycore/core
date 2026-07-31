@@ -37,14 +37,14 @@ out:
 
 <sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<!--- clean selected blocks --->
-	<cfif isdefined("form.cleanBlock")>
+	<cfif structKeyExists(form, "cleanBlock")>
 		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheClean">
 			<cfinvokeargument name="cacheBlockName" value="#form.cleanBlock#"/>
 			<cfinvokeargument name="bShowResults" value="true"/>
 		</cfinvoke>
 	</cfif>
 	<!--- flush selected blocks --->
-	<cfif isdefined("form.flushBlock")>
+	<cfif structKeyExists(form, "flushBlock")>
 		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheFlush">
 			<cfinvokeargument name="cacheBlockName" value="#form.flushBlock#"/>
 			<cfinvokeargument name="bShowResults" value="true"/>

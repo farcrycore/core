@@ -1,23 +1,23 @@
 <cfsetting enablecfoutputonly="true" />
 <cfsetting showdebugoutput="false">
 
-<cfif isDefined("url.node")>
+<cfif structKeyExists(url, "node")>
 	<cfset form.node = url.node />
 </cfif>
-<cfif isDefined("attributes.node")>
+<cfif structKeyExists(attributes, "node")>
 	<cfset form.node = attributes.node />
 </cfif>
-<cfif isDefined("url.root") AND url.root NEQ "source">
+<cfif structKeyExists(url, "root") AND url.root NEQ "source">
 	<cfset form.node = url.root />
 </cfif>
-<cfif isDefined("url.fieldname")>
+<cfif structKeyExists(url, "fieldname")>
 	<cfset form.fieldname = url.fieldname />
 </cfif>
-<cfif isDefined("url.multiple")>
+<cfif structKeyExists(url, "multiple")>
 	<cfset form.multiple = url.multiple />
 </cfif>
 
-<cfif isDefined("url.lSelectedItems")>
+<cfif structKeyExists(url, "lSelectedItems")>
 	<cfset form.lSelectedItems = url.lSelectedItems />
 </cfif>
 
@@ -98,7 +98,7 @@
 	<cfset arrayappend(aResult,stNode) />
 </cfloop>
 
-<cfif isdefined("attributes.variable")>
+<cfif structKeyExists(attributes, "variable")>
 	<cfset "caller.#attributes.variable#" = aResult />
 <cfelse>
 	<cfcontent type="application/json" variable="#ToBinary( ToBase64( serializejson(aResult) ) )#" reset="Yes">

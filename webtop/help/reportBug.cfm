@@ -46,7 +46,7 @@ $out:$
 <sec:CheckPermission error="true" permission="MainNavHelpTab">
 	<div class="formtitle"><cfoutput>#application.rb.getResource("reportBug")#</cfoutput></div>
 	
-	<cfif isdefined("form.submit")>
+	<cfif structKeyExists(form, "submit")>
 		<!--- send email --->
 		<!--- i18n: leaving these alone, going to oz?? --->
 		<cfmail from="#form.emailAddress#" to="#application.fapi.getConfig("general","bugEmail")#" subject="#form.bugTitle#">

@@ -10,7 +10,7 @@
 <cfparam name="url.ref" default="overview" />
 
 <cfif unlockRet.bsuccess>
-	<cfif isdefined("url.return")>
+	<cfif structKeyExists(url, "return")>
 		<cflocation url="#application.url.farcry#/index.cfm?section=home" addtoken="no">
 	<cfelse>
 		<!--- return to overview page --->

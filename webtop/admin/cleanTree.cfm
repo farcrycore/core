@@ -44,7 +44,7 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfif IsDefined("form.submit")><!--- process the form --->
+	<cfif structKeyExists(form, "submit")><!--- process the form --->
 	    <cfparam name="form.debug" default="0"><!--- if they ask for debug, this is overwritten--->
 	    
 		<!--- set up return query --->

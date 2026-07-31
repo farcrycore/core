@@ -6,7 +6,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 
-<cfif isdefined("url.copy")>
+<cfif structKeyExists(url, "copy")>
 	<cftry>
 		<cfset stResult = structnew() />
 		<cfset stResult["file"] = url.copy />

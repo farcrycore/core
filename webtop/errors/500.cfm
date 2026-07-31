@@ -3,7 +3,7 @@
 <cfheader statuscode="500" statustext="Internal Server Error" />
 
 <cfset webtopPath = "/webtop">
-<cfif isDefined("application.url.webtop")>
+<cfif structKeyExists(application, "url") AND structKeyExists(application.url, "webtop")>
 	<cfset webtopPath = application.url.webtop>
 </cfif>
 
@@ -12,7 +12,7 @@
 <cfif structKeyExists(application, "fapi")>
 	<cfset urlDebug = application.fapi.getConfig("security","urlDebug","boolean")>
 </cfif>
-<cfif isdefined("url.debug") AND urlDebug neq "disable">
+<cfif structKeyExists(url, "debug") AND urlDebug neq "disable">
 	<cfif urlDebug eq "updateappkey" AND url.debug eq application.updateappKey>
 		<cfset showError = true>
 	<cfelseif urlDebug eq "boolean" AND url.debug eq 1>
@@ -26,7 +26,7 @@
 <cfoutput>
 	<html>
 		<head>
-			<title><cfif isdefined("application.fapi") and isdefined("application.rb")>#application.fapi.getResource('error.500@title','There was a problem with that last request')#<cfelse>There was a problem with that last request</cfif></title>
+			<title><cfif structKeyExists(application, "fapi") and structKeyExists(application, "rb")>#application.fapi.getResource('error.500@title','There was a problem with that last request')#<cfelse>There was a problem with that last request</cfif></title>
 			<style type="text/css">
 				body { 
 					margin:0px; 
@@ -107,7 +107,7 @@
 			</script>
 		</head>
 		<body>
-			<cfif isdefined("application.fapi") and isdefined("application.rb")>
+			<cfif structKeyExists(application, "fapi") and structKeyExists(application, "rb")>
 				<h1>#application.fapi.getResource('error.500@title','There was a problem with that last request')#</h1>
 				#application.fapi.getResource('error.goback@html','<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>')#
 			<cfelse>

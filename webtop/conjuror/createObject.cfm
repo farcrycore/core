@@ -47,7 +47,7 @@ $out:$
 <cfparam name="url.objectId" default="">
 <cfparam name="url.nodetype" default="dmNavigation">
 
-<cfif NOT isDefined("URL.typename")>
+<cfif NOT structKeyExists(url, "typename")>
 	<h3>URL.typename variable not provided</h3>
 	<cfabort>
 </cfif>

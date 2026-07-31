@@ -48,7 +48,7 @@ $out:$
 <cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm" />
 
 <!--- Legacy support for old pages referring to URL.type--->
-<cfif isDefined("URL.type") AND NOT isDefined("URL.typename")>
+<cfif structKeyExists(url, "type") AND NOT structKeyExists(url, "typename")>
 	<cfset URL.typename = URL.type />
 </cfif>
 

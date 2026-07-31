@@ -53,7 +53,7 @@ $out:$
 <admin:header>
 <cfoutput>
 <span class="FormTitle">
-<cfif isDefined("URL.draftObjectID")>
+<cfif structKeyExists(url, "draftObjectID")>
 	<admin:resource key="workflow.messages.objStatusRequest@text">Set content item status for underlying draft content item to 'request'</admin:resource>
 <cfelse>	
 	<admin:resource key="workflow.messages.setObjStatus@text" variables="url.status">Set content item status to {1}</admin:resource>
@@ -85,10 +85,10 @@ $out:$
 </cfoutput>
 
 <!--- show comment form --->
-<cfif not isdefined("form.commentLog") and listlen(attributes.lObjectIDs) eq 1>
+<cfif not structKeyExists(form, "commentLog") and listlen(attributes.lObjectIDs) eq 1>
 	<!--- get object details --->
 	<q4:contentobjectget objectid="#attributes.lobjectIDs#" r_stobject="stObj">
-	<cfif isdefined("stObj.status")>
+	<cfif structKeyExists(stObj, "status")>
 		<cfoutput>
 			<form name="form" action="" method="post">
 			<span class="formLabel">#application.rb.getResource("workflow.labels.addComments@label","Add your comments")#:</span><br>
@@ -145,7 +145,7 @@ $out:$
 			<cfset active = 0>
 			
 			<!--- checkk if underlying draft obejct --->
-			<cfif isDefined("URL.draftObjectID")>
+			<cfif structKeyExists(url, "draftObjectID")>
 				<cfset pendingObject = "#URL.draftObjectID#"/>
 			<cfelse>
 				<cfset pendingObject = "#stObj.objectID#"/>
@@ -206,7 +206,7 @@ $out:$
 		<!--- Call this to get all descendants of this node --->
 
 		<!--- If we are approving the whole branch - then we will be wanting all objectIDS --->
-		<cfif isDefined("URL.approveBranch")>
+		<cfif structKeyExists(url, "approveBranch")>
 			<cfset keyList = attributes.objectID>
 			<cfif isArray(stObj.aObjectIds)>
 				<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
@@ -223,12 +223,12 @@ $out:$
 				</cfif>	
 			</cfloop>
 		<cfelse>  <!--- else - just get the objectIDS in this nodes aObjects array --->
-			<cfif isDefined("URL.draftObjectID")>
+			<cfif structKeyExists(url, "draftObjectID")>
 				<cfset keyList = URL.draftObjectID>
 			<cfelse>	
 				<cfset keyList = attributes.objectID>
 			</cfif>	
-			<cfif isdefined("stObj.aObjectIds") and isArray(stObj.aObjectIds)>
+			<cfif structKeyExists(stObj, "aObjectIds") and isArray(stObj.aObjectIds)>
 				<cfset keyList = listAppend(keyList,arrayToList(stObj.aObjectIds))>
 			</cfif>
 		</cfif>

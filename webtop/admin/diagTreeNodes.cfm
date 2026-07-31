@@ -79,7 +79,7 @@ $out:$
 	<cfoutput><h3>#application.rb.getResource("fixtree.headings.diagOrphanNodes@text","Diagnostics :: Orphaned Nodes")#</h3></cfoutput>
 	
 	<!--- if requested, attach orphans to navnode in tree --->
-	<cfif isDefined("form.objectid")>
+	<cfif structKeyExists(form, "objectid")>
 	
 		<cftry>
 		<!--- exclusive lock tree.moveBranch() to prevent corruption --->

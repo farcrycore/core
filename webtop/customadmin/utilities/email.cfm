@@ -15,14 +15,14 @@
 
 <ft:processform action="Send Email">
 	<cfset attachmentPath = "" />
-	<cfif isdefined("form.attachment") and len(form.attachment)>
+	<cfif structKeyExists(form, "attachment") and len(form.attachment)>
 		<cffile action="upload" filefield="attachment" destination="#gettempdirectory()#" nameConflict="overwrite" />
 		<cfset attachmentPath = cffile.ServerDirectory & "/" & cffile.serverfile />
 	</cfif>
 	
 	<cfset result = application.fc.lib.email.send(to=form.to,bcc=form.bcc,from=form.from,subject=form.subject,bodyPlain=form.bodyPlain,bodyHTML=form.bodyHTML,attachment=attachmentPath) />
 	
-	<cfif isdefined("form.attachment") and len(form.attachment)>
+	<cfif structKeyExists(form, "attachment") and len(form.attachment)>
 		<cffile action="delete" file="#attachmentPath#" />
 	</cfif>
 	

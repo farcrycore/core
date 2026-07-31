@@ -25,7 +25,7 @@
 	<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	--->
-<cfif isDefined("url.method")>
+<cfif structKeyExists(url, "method")>
 	<cfset defMethod = url.method>
 <cfelse>
 	<cfset defMethod = "edit">
@@ -91,11 +91,11 @@
 		<cfelse>
 			<!--- go to edit --->
 			<cfset onExitProcess = StructNew() />
-			<cfif url.ref eq "typeadmin" AND (isDefined("url.module") AND Len(url.module))>
+			<cfif url.ref eq "typeadmin" AND (structKeyExists(url, "module") AND Len(url.module))>
 				<!--- typeadmin redirect --->
 				<cfset onExitProcess.Type = "URL" />
 				<cfset onExitProcess.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#&ref=#url.ref#" />
-				<cfif isDefined("URL.plugin")>
+				<cfif structKeyExists(url, "plugin")>
 					<cfset onExitProcess.Content = onExitProcess.Content & "&plugin=" & url.plugin />
 				</cfif>
 			<cfelseif url.ref eq "closewin">

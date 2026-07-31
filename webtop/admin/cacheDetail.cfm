@@ -37,7 +37,7 @@ out:
 
 <sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<!--- flush selected caches --->
-	<cfif isdefined("form.flush")>
+	<cfif structKeyExists(form, "flush")>
 		<cfinvoke component="#application.packagepath#.farcry.cache" method="cacheFlush">
 			<cfinvokeargument name="lcachenames" value="#form.flush#"/>
 			<cfinvokeargument name="bShowResults" value="true"/>

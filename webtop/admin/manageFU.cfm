@@ -52,7 +52,7 @@ $out:$
 	
 	
 	<!--- check if items have been marked for deletion --->
-	<cfif isDefined("form.lMappings") and len(form.lMappings)>
+	<cfif structKeyExists(form, "lMappings") and len(form.lMappings)>
 		<!--- loop over marked items --->
 		<cfloop list="#form.lMappings#" index="i">
 			<!--- delete fu --->
@@ -100,7 +100,7 @@ $out:$
 	</cfoutput>
 
 	<!--- check mappings are loaded --->
-	<cfif isDefined("application.fc.factory.farFU.stMappings")>
+	<cfif structKeyExists(application.fc.factory, "farFU") AND structKeyExists(application.fc.factory.farFU, "stMappings")>
 		<!--- loop over mappings --->
 		<cfloop collection="#application.fc.factory.farFU.stMappings#" item="key">
 			<!--- check if filter has been entered --->

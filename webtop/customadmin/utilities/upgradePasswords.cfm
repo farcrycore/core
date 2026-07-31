@@ -9,7 +9,7 @@
 <sec:CheckPermission error="true" permission="AdminCOAPITab" result="bPermitted" />
 
 <cfif bPermitted>
-	<cfif isDefined("Form.submit")>
+	<cfif structKeyExists(form, "submit")>
 		<cfparam name="form.bPlainToBcrypt" type="boolean" default="false" >
 		<cfparam name="form.bMD5toMD5thenbcrypt"  type="boolean" default="false" >
 		

@@ -49,31 +49,31 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
 <!--- required parameters as FORM or URL variables --->
-<cfif isDefined("url.objectid") AND len(url.objectid)>
+<cfif structKeyExists(url, "objectid") AND len(url.objectid)>
 	<cfset objectid=url.objectid>
-<cfelseif isDefined("form.objectid") AND len(form.objectid)>
+<cfelseif structKeyExists(form, "objectid") AND len(form.objectid)>
 	<cfset objectid=form.objectid>
 <cfelse>
 	<cfabort showerror="<strong>Error:</strong> objectid is a required parameter.">
 </cfif>
-<cfif isDefined("url.typename") AND len(url.typename)>
+<cfif structKeyExists(url, "typename") AND len(url.typename)>
 	<cfset typename=url.typename>
-<cfelseif isDefined("form.typename") AND len(form.typename)>
+<cfelseif structKeyExists(form, "typename") AND len(form.typename)>
 	<cfset typename=form.typename>
 <cfelse>
 	<cfset typename="">
 </cfif>
-<cfif isDefined("url.ref") AND len(url.ref)>
+<cfif structKeyExists(url, "ref") AND len(url.ref)>
 	<cfset ref=url.ref>
-<cfelseif isDefined("form.ref") AND len(form.ref)>
+<cfelseif structKeyExists(form, "ref") AND len(form.ref)>
 	<cfset ref=form.ref>
 <cfelse>
 	<cfset ref="sitetree">
 </cfif>
 <!--- status: default options include approved, requestapproval, draft --->
-<cfif isDefined("url.status") AND len(url.status)>
+<cfif structKeyExists(url, "status") AND len(url.status)>
 	<cfset status=url.status>
-<cfelseif isDefined("form.status") AND len(form.status)>
+<cfelseif structKeyExists(form, "status") AND len(form.status)>
 	<cfset status=form.status>
 <cfelse>
 	<cfabort showerror="<strong>Error:</strong> status is a required parameter.">
@@ -84,13 +84,13 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 
 <!--- finishURL: location to return user post finish --->
-<cfif isDefined("url.finishURL") AND len(url.finishURL)>
+<cfif structKeyExists(url, "finishURL") AND len(url.finishURL)>
 	<cfset finishURL=url.finishURL>
-<cfelseif isDefined("form.finishURL") AND len(form.finishURL)>
+<cfelseif structKeyExists(form, "finishURL") AND len(form.finishURL)>
 	<cfset finishURL=form.finishURL>
-<cfelseif isDefined("url.module") AND isDefined("url.plugin")>
+<cfelseif structKeyExists(url, "module") AND structKeyExists(url, "plugin")>
 	<cfset finishURL = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#&plugin=#URL.plugin#" />
-<cfelseif isDefined("url.module")>
+<cfelseif structKeyExists(url, "module")>
 	<cfset finishURL = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
 <cfelse>
 	<cfabort showerror="<strong>Error:</strong> finishURL is a required parameter.">
@@ -115,7 +115,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 </cfif>
 
 <!--- // self posting form action --->
-<cfif isDefined("form.updatestatus")>
+<cfif structKeyExists(form, "updatestatus")>
 <cfloop list="#objectid#" index="id">
 	<cfset oType=createObject("component", "#typepath#")>
 	<cfset stobj=otype.getdata(objectid=id)>

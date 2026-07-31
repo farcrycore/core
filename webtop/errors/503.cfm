@@ -3,7 +3,7 @@
 <cfheader statuscode="500" statustext="Internal Server Error" />
 
 <cfset webtopPath = "/webtop">
-<cfif isDefined("application.url.webtop")>
+<cfif structKeyExists(application, "url") AND structKeyExists(application.url, "webtop")>
 	<cfset webtopPath = application.url.webtop>
 </cfif>
 
@@ -11,7 +11,7 @@
 <cfoutput>
 	<html>
 		<head>
-			<title><cfif isdefined("application.fapi") and isdefined("application.rb")>#application.fapi.getResource('error.500@title','There was a problem with that last request')#<cfelse>There was a problem with that last request</cfif></title>
+			<title><cfif structKeyExists(application, "fapi") and structKeyExists(application, "rb")>#application.fapi.getResource('error.500@title','There was a problem with that last request')#<cfelse>There was a problem with that last request</cfif></title>
 			<style type="text/css">
 				body { 
 					margin:0px; 

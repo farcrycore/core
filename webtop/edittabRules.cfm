@@ -111,7 +111,7 @@ function reinstateRuleListing()
 	</cfcase>
 	
 	<cfdefaultcase>
-		<cfif isDefined("url.objectid") and isValid("uuid", url.objectid)>
+		<cfif structKeyExists(url, "objectid") and isValid("uuid", url.objectid)>
 			<cfscript>
 				ofourq = createObject("component","farcry.core.packages.fourq.fourq");
 				q = oCon.getContainersByObject(objectid=URL.objectid,dsn=application.dsn);

@@ -7,7 +7,7 @@
 <cfif structKeyExists(application, "fapi")>
 	<cfset urlDebug = application.fapi.getConfig("security","urlDebug","boolean")>
 </cfif>
-<cfif isdefined("url.debug") AND urlDebug neq "disable">
+<cfif structKeyExists(url, "debug") AND urlDebug neq "disable">
 	<cfif urlDebug eq "updateappkey" AND url.debug eq application.updateappKey>
 		<cfset showError = true>
 	<cfelseif urlDebug eq "boolean" AND url.debug eq 1>

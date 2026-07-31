@@ -51,7 +51,7 @@
 	<cfargument name="maxrows" type="string" required="false">
 	<cfset var q = ''>
 	
-	 <cfif isDefined("arguments.maxrows")>
+	 <cfif structKeyExists(arguments, "maxrows")>
 	 	<cfquery name="q" dbtype="query" maxrows="#arguments.maxrows#">
 			#preserveSingleQuotes(arguments.sql)#
 		</cfquery>
@@ -76,10 +76,10 @@
 		<cfoutput>
 		#arguments.selectclause#
 		FROM arguments.tablename
-		<cfif isDefined("arguments.whereclause")>
+		<cfif structKeyExists(arguments, "whereclause")>
 			#arguments.whereclause#
 		</cfif>
-		<cfif isDefined("arguments.orderbyclause")>
+		<cfif structKeyExists(arguments, "orderbyclause")>
 			#arguments.orderbyclause#
 		</cfif>
 		</cfoutput>
@@ -87,7 +87,7 @@
 		
 	
 	<cftry>
-		<cfif isDefined("arguments.maxrows")>
+		<cfif structKeyExists(arguments, "maxrows")>
 		 	<cfquery name="q" dbtype="query" maxrows="#arguments.maxrows#">
 			#preserveSingleQuotes(sql)#
 			</cfquery>

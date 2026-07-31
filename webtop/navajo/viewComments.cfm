@@ -9,7 +9,7 @@
 
 <cfsetting enablecfoutputonly="Yes">
 
-<cfif isdefined("URL.objectID")>
+<cfif structKeyExists(url, "objectID")>
 	<!--- get object details --->
 	<q4:contentobjectget objectid="#listgetat(URL.objectID,1)#" r_stobject="stObj">
 
@@ -21,9 +21,9 @@
 		<!--- i18n: double check logic, geez i HATE compound rb string --->
 		<cfif stObj.label eq "">
 		#application.rb.getResource("workflow.headings.comments@text","COMMENTS")#
-		<cfelseif stObj.label neq "" AND (NOT isdefined("stObj.versionId") OR stObj.versionID eq "")>
+		<cfelseif stObj.label neq "" AND (NOT structKeyExists(stObj, "versionId") OR stObj.versionID eq "")>
 		#application.rb.formatRBString("workflow.headings.commentsFor@text",stObj.label,"COMMENTS FOR <strong>{1}</strong>")#
-		<cfelseif stObj.label neq "" AND (isdefined("stObj.versionId") AND stObj.versionID eq "")>
+		<cfelseif stObj.label neq "" AND (structKeyExists(stObj, "versionId") AND stObj.versionID eq "")>
 		#application.rb.formatRBString("workflow.headings.draftCommentsFor@text",stObj.label,"COMMENTS FOR <strong>{1} (DRAFT)</strong>")#
 		</cfif>
 		</td>

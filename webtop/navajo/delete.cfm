@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true">
 
-<cfif not isDefined("URL.objectID")>
+<cfif not structKeyExists(url, "objectID")>
 	<cfthrow detail="URL.objectID not passed">
 </cfif>
 
@@ -8,7 +8,7 @@
 <cfparam name="url.ref" default="overview" />
 
 
-<cfif not isDefined("url.typename")>
+<cfif not structKeyExists(url, "typename")>
 	<cfset url.typename = createObject("component", "farcry.core.packages.fourq.fourq").findType(objectid=url.objectid) />
 </cfif>
 
@@ -16,7 +16,7 @@
 <cfset stResult = oType.delete(objectid="#url.objectID#") />
 
 
-<cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
+<cfif structKeyExists(stResult, "bSuccess") AND not stResult.bSuccess>
 
 	<cfoutput><div class="error">#stResult.message#</div></cfoutput>
 

@@ -9,7 +9,7 @@ merge of ../admin/navajo/delete.cfm and ../tags/navajo/delete.cfm
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<cfif isDefined("URL.objectID")>
+<cfif structKeyExists(url, "objectID")>
 	
 	<!--- Get the object --->
 	

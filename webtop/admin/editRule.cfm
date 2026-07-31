@@ -41,7 +41,7 @@ $out:$
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfscript>
-	if(isDefined("url.typename") AND isDefined("url.ruleid"))
+	if(structKeyExists(url, "typename") AND structKeyExists(url, "ruleid"))
 	{
 		o = createObject("component", application.rules[url.typename].rulePath);
 		if (url.typename eq "ruleHandpicked") {
