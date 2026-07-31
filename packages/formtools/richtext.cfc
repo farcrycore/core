@@ -84,7 +84,7 @@
 				<cfset stType["id"] = thistype />
 				<cfset stType["label"] = thistype />
 
-				<cfif isdefined("application.stCOAPI.#thistype#.displayname")>
+				<cfif structKeyExists(application.stCOAPI, thistype) AND structKeyExists(application.stCOAPI[thistype], "displayname")>
 					<cfset stType["label"] = application.stCOAPI[thistype].displayname />
 				</cfif>
 

@@ -16,7 +16,7 @@
 		
 		<cfset var result = true /><!--- Assume true unless specifically instructed not too. --->
 		
-		<cfif isDefined("application.stCoapi.#arguments.typename#.bRefObjects") AND NOT application.stCoapi[arguments.typename].bRefObjects>
+		<cfif structKeyExists(application.stCoapi, arguments.typename) AND structKeyExists(application.stCoapi[arguments.typename], "bRefObjects") AND NOT application.stCoapi[arguments.typename].bRefObjects>
 			<cfset result = false />
 		</cfif>
 		

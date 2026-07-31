@@ -327,7 +327,7 @@
 			<!--- vary the status labels, icon, and edit URL by the object status --->
 			<cfset thisStatusLabel = "">
 			<cfset thisLeafTypenameIcon = "fa-file-o">
-			<cfif len(stLeafNode.typename) AND isDefined("application.stCOAPI.#stLeafNode.typename#.icon") AND len(application.stCOAPI[stLeafNode.typename].icon)>
+			<cfif len(stLeafNode.typename) AND structKeyExists(application.stCOAPI, stLeafNode.typename) AND structKeyExists(application.stCOAPI[stLeafNode.typename], "icon") AND len(application.stCOAPI[stLeafNode.typename].icon)>
 				<cfset thisLeafTypenameIcon = application.stCOAPI[stLeafNode.typename].icon>
 			</cfif>
 			<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa #thisLeafTypenameIcon# fa-stack-1x'></i></span>">

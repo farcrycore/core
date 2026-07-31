@@ -52,7 +52,7 @@ tag of the same name.
 	uniqueId = replace(attributes.objectid,'-','','all');
 	objcall="request.o#uniqueid#";
 	bcacheused=1;
-	if (NOT isDefined(objcall)) {
+	if (NOT structKeyExists(request, "o#uniqueid#")) {
 		request["o#uniqueid#"] = createObject("component", "#attributes.typename#");
 		bcacheused=0;
 	}
@@ -60,7 +60,7 @@ tag of the same name.
 </cfscript>
 
 <!--- debug output --->
-<cfif isDefined("bcacheused") AND bcacheused>
+<cfif bcacheused>
 	<cftrace type="information" category="coapi" text="Request cache used for #attributes.typename#.#attributes.method#()" var="attributes.objectid" />
 <cfelse>
 	<cftrace type="information" category="coapi" text="Instance created for #attributes.typename#.#attributes.method#()" var="attributes.objectid" />

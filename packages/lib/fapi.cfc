@@ -347,7 +347,7 @@
 		
 		<cfif len(arguments.typename) 
 				AND len(arguments.webskin) 
-				AND isDefined("application.stcoapi.#arguments.typename#.stWebskins") 
+				AND structKeyExists(application.stcoapi, arguments.typename)
 				AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.webskin)>
 			<cfset bHasWebskin = true />
 		</cfif>			
@@ -770,7 +770,7 @@
 		
 		<cfset var result = arguments.default />
 		
-		<cfif isDefined("application.stCoapi.#arguments.typename#.stProps.#arguments.property#.METADATA")>
+		<cfif structKeyExists(application.stCoapi, arguments.typename) AND structKeyExists(application.stCoapi[arguments.typename].stProps, arguments.property) AND structKeyExists(application.stCoapi[arguments.typename].stProps[arguments.property], "METADATA")>
 			<cfif len(arguments.md)>
 				<cfif structKeyExists(application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA, arguments.md)>
 					<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
@@ -791,7 +791,7 @@
 		
 		<cfset var result = arguments.default />
 		
-		<cfif isDefined("application.formtools.#arguments.formtool#.stProps.#arguments.property#.METADATA")>
+		<cfif structKeyExists(application.formtools, arguments.formtool) AND structKeyExists(application.formtools[arguments.formtool].stProps, arguments.property) AND structKeyExists(application.formtools[arguments.formtool].stProps[arguments.property], "METADATA")>
 			<cfif len(arguments.md)>
 				<cfif structKeyExists(application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA, arguments.md)>
 					<cfset result = application.formtools['#arguments.formtool#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
@@ -1303,13 +1303,13 @@
 			<!--- lowercase the key so mixed-case callers share one cache entry (object broker cache keys may be case-sensitive) --->
 			<cfset arguments.key = lCase(arguments.key) />
 
-			<cfif not isdefined("request.cache.config.#arguments.key#") AND isDefined("application.stCOAPI.farConfig")>
+			<cfif not (structKeyExists(request, "cache") AND structKeyExists(request.cache, "config") AND structKeyExists(request.cache.config, arguments.key)) AND structKeyExists(application.stCOAPI, "farConfig")>
 				<cfset request.cache.config[arguments.key] = application.fapi.getContentType("farConfig").getConfig(arguments.key) />
 			</cfif>
 
-			<cfif isdefined("application.config_readonly.#arguments.key#.#arguments.name#")>
+			<cfif structKeyExists(application, "config_readonly") AND structKeyExists(application.config_readonly, arguments.key) AND structKeyExists(application.config_readonly[arguments.key], arguments.name)>
 				<cfset result = application.config_readonly[arguments.key][arguments.name] />
-			<cfelseif isDefined("request.cache.config.#arguments.key#.#arguments.name#")>
+			<cfelseif structKeyExists(request, "cache") AND structKeyExists(request.cache, "config") AND structKeyExists(request.cache.config, arguments.key) AND structKeyExists(request.cache.config[arguments.key], arguments.name)>
 				<cfset result = request.cache.config[arguments.key][arguments.name] />
 			<cfelseif structKeyExists(arguments, "default")>
 				<cfset result = arguments.default />
@@ -1333,7 +1333,7 @@
 			<cfargument name="value" required="true" hint="The value to set the config item to." />
 			<cfargument name="bReadOnly" required="false" default="false" hint="Flag this config item as read only so that it cannot be edited via the webtop." />
 
-			<cfif isDefined("application.config.#arguments.key#.#arguments.name#")>
+			<cfif structKeyExists(application.config, arguments.key) AND structKeyExists(application.config[arguments.key], arguments.name)>
 				<cfset application.config[arguments.key][arguments.name] = arguments.value />
 			</cfif>
 
@@ -1359,7 +1359,7 @@
 	
 			<cfset var result = "" />
 			
-			<cfif not isdefined("request.cache.navid")>
+			<cfif not (structKeyExists(request, "cache") AND structKeyExists(request.cache, "navid"))>
 				<cfset request.cache.navid = application.fapi.getContentType("dmNavigation").getNavAlias() />
 			</cfif>
 
@@ -1387,7 +1387,7 @@
 			<cfset var result = "" />
 			<cfset var message	= '' />
 			
-			<cfif not isdefined("request.cache.navid")>
+			<cfif not (structKeyExists(request, "cache") AND structKeyExists(request.cache, "navid"))>
 				<cfset request.cache.navid = application.fapi.getContentType("dmNavigation").getNavAlias() />
 			</cfif>
 
@@ -1408,7 +1408,7 @@
 	
 			<cfset var result = "" />
 			
-			<cfif not isdefined("request.cache.catid")>
+			<cfif not (structKeyExists(request, "cache") AND structKeyExists(request.cache, "catid"))>
 				<cfset request.cache.catid = application.fapi.getContentType("dmCategory").getCatAliases() />
 			</cfif>
 
@@ -1428,7 +1428,7 @@
 			<cfset var result = "" />
 			<cfset var message = "" />
 			
-			<cfif not isdefined("request.cache.catid")>
+			<cfif not (structKeyExists(request, "cache") AND structKeyExists(request.cache, "catid"))>
 				<cfset request.cache.catid = application.fapi.getContentType("dmCategory").getCatAliases() />
 			</cfif>
 

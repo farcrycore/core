@@ -802,7 +802,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 
 		
-		<cfif isdefined("application.stCOAPI.#typename#.bArraysAsStructs") and (not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs))>		
+		<cfif structKeyExists(application.stCOAPI, typename) and structKeyExists(application.stCOAPI[typename], "bArraysAsStructs") and (not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs))>		
 			<cfset arguments.bArraysAsStructs = application.stCOAPI[typename].bArraysAsStructs />
 			<cfparam name="arguments.bUseInstanceCache" default="true" />
 		<cfelseif not structKeyExists(arguments, "bArraysAsStructs") or not isNumeric(arguments.bArraysAsStructs)>
@@ -1449,7 +1449,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				</cfif>
 			</cfcase>
 			<cfcase value="hint">
-				<cfif isdefined("application.stCOAPI.#getTypename()#.stProps.#arguments.property#.metadata.ftHint") and len(application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"])>
+				<cfif structKeyExists(application.stCOAPI[getTypeName()].stProps[arguments.property].metadata, "ftHint") and len(application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"])>
 					<cfreturn application.fapi.getResource(key="coapi.#getTypeName()#.properties.#arguments.property#@hint",default=application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"]) />
 				<cfelse>
 					<cfreturn application.fapi.getResource(key="coapi.#getTypeName()#.properties.#arguments.property#@hint",default="") />

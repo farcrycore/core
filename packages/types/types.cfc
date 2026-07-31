@@ -245,8 +245,8 @@ default handlers
 		
 		<cfset stNewObject = super.createData(stProperties=arguments.stProperties,objectid=arguments.stProperties.objectid,dsn=arguments.dsn,bAudit=arguments.bAudit,auditNote=arguments.auditNote) />
 		
-		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
-		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#getTypeName()#.bAudit") or application.stcoapi[getTypeName()].bAudit)>
+		<!--- guard the chain because application.stcoapi may not exist yet --->
+		<cfif arguments.bAudit and (not (structKeyExists(application.stcoapi, getTypeName()) and structKeyExists(application.stcoapi[getTypeName()], "bAudit")) or application.stcoapi[getTypeName()].bAudit)>
 			<farcry:logevent object="#stNewObject.objectid#" type="types" event="create" notes="#arguments.auditNote#" />
 		</cfif>
 		
@@ -468,7 +468,7 @@ default handlers
 		
 		<!--- if the object has any category fields filled out, update the refCategories table --->
 		<cfloop collection="#arguments.stProperties#" item="thisfield">
-			<cfif isdefined("application.stCOAPI.#typename#.stProps.#thisfield#.metadata.ftType") 
+			<cfif structKeyExists(application.stCOAPI, typename) and structKeyExists(application.stCOAPI[typename].stProps, thisfield) and structKeyExists(application.stCOAPI[typename].stProps[thisfield].metadata, "ftType")
 				and application.stCOAPI[typename].stProps[thisfield].metadata.ftType eq "category"
 				and listlen(arguments.stProperties[thisfield])>
 				
@@ -494,7 +494,7 @@ default handlers
 		<cfset var stMetadata = "" />
 		
 		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
-			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
+			<cfif structKeyExists(application.stCOAPI[arguments.typename].stProps[thisprop].metadata, "ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
 				<cfset stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
 				<cfset oFactory = application.formtools[stMetadata.ftType].oFactory />
 				<cfif structkeyexists(oFactory,"on#arguments.newStatus#")>
@@ -1398,7 +1398,7 @@ default handlers
 		<cfset var stMetadata = "" />
 		
 		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
-			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
+			<cfif structKeyExists(application.stCOAPI[arguments.typename].stProps[thisprop].metadata, "ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
 				<cfset stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
 
 				<cfif structKeyExists(application.formtools, stMetadata.ftType)>
@@ -1435,7 +1435,7 @@ default handlers
 		</cfif>
 		
 		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
-			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
+			<cfif structKeyExists(application.stCOAPI[arguments.typename].stProps[thisprop].metadata, "ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
 				<cfset arguments.stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
 				<cfset oFactory = application.formtools[arguments.stMetadata.ftType].oFactory />
 				<cfif structkeyexists(oFactory,"onSecurityChange")>

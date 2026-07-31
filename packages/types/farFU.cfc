@@ -460,7 +460,7 @@
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 
-		<cfif structkeyexists(stObj,"typename") and isDefined("application.stCoapi.#stObj.typename#.bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
+		<cfif structkeyexists(stObj,"typename") and structKeyExists(application.stCoapi, stObj.typename) and structKeyExists(application.stCoapi[stObj.typename], "bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
 		
 			<!--- default stFriendlyURL structure --->
 			<cfset stFriendlyURL.objectid = stobj.objectid>
@@ -1072,7 +1072,7 @@
 		<cfset stReturn.bSuccess = 1>
 		<cfset stReturn.message = "Set friendly URL for #arguments.objectid#.">
 
-		<cfif structkeyexists(stObj,"typename") and isDefined("application.stCoapi.#stObj.typename#.bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
+		<cfif structkeyexists(stObj,"typename") and structKeyExists(application.stCoapi, stObj.typename) and structKeyExists(application.stCoapi[stObj.typename], "bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
 		
 			<!--- default stFriendlyURL structure --->
 			<cfset stFriendlyURL.objectid = stobj.objectid>
@@ -1311,7 +1311,7 @@
 		<cfset var id = "" />
 		
 		<cfif len(arguments.type)>
-			<cfif isdefined("application.stCOAPI.#arguments.type#.fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
+			<cfif structKeyExists(application.stCOAPI, arguments.type) and structKeyExists(application.stCOAPI[arguments.type], "fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
 				
 				<cfif getExistsTypeFU(arguments.type)>
 					<cfset typeFU = arguments.type />

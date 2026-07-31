@@ -177,7 +177,7 @@ FARCRY INCLUDE FILES
 			</cfif>	
 		
 			<cfloop query="stLocal.qTabs">
-				<cfif stLocal.qTabs.methodname neq "webtopOverviewTab" and isdefined("application.stCOAPI.#stObj.typename#.stWebskins.#stLocal.qTabs.methodname#.displayname")>
+				<cfif stLocal.qTabs.methodname neq "webtopOverviewTab" and structKeyExists(application.stCOAPI[stObj.typename].stWebskins, stLocal.qTabs.methodname) and structKeyExists(application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname], "displayname")>
 					<admin:tabItem id="#tabID#-custom-#stLocal.qTabs.currentRow#" 
 									title="#application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname].displayname#">
 								
