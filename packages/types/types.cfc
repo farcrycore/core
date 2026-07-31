@@ -58,7 +58,7 @@ default handlers
 		
 		<cfset var stObj = StructNew() />
 		
-		<cfif isDefined("arguments.stobject")>
+		<cfif structKeyExists(arguments, "stobject")>
 			<cfset stobj=arguments.stobject />
 		<cfelse>
 			<!--- If the objectid has not been sent, we need to create a default object. --->
@@ -380,7 +380,7 @@ default handlers
 	   	 			
 			<!--- set friendly url for content item. --->
 			<!--- TODO: Checking for application.fc so that it is ignored on Install. This needs to be more eloquent --->	
-			<cfif isDefined("application.fc.factory.farFU")>
+			<cfif structKeyExists(application.fc.factory, "farFU")>
 				<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(objectID="#arguments.stProperties.objectid#", typename="#arguments.stProperties.typename#") />
 			</cfif>
 			
@@ -658,7 +658,7 @@ default handlers
 				
 		
 		<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
-		<cfif not isDefined("Request.farcryForm.stObjects")>
+		<cfif not (structKeyExists(request, "farcryForm") AND structKeyExists(request.farcryForm, "stObjects"))>
 			<!--- If the call to this tag is not made within the confines of a <ft:form> tag, then we need to create a temp one and then delete it at the end of the tag. --->
 			<cfset Request.farcryForm.stObjects = StructNew()>	
 		</cfif>
@@ -837,7 +837,7 @@ default handlers
 		 --->
 		<cfset var newLabel = "" />
 		
-		<cfif not isdefined("request.inthread") and structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
+		<cfif not structKeyExists(request, "inthread") and structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
 			<cfset newLabel = getView(stObject=arguments.stProperties,template="displayLabel",alternateHTML="",bIgnoreSecurity=true) />
 		</cfif>
 		

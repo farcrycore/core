@@ -205,7 +205,7 @@
 	</cffunction>
 
 	<cffunction name="getCurrentRoles" access="public" output="false" returntype="string" hint="Returns the roles of the current logged in user" bDocument="true">
-		<cfif not isdefined("this.cache.defaultroles")>
+		<cfif not (structKeyExists(this, "cache") AND structKeyExists(this.cache, "defaultroles"))>
 			<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
 		</cfif>
 		<cfif isdefined("session.security.roles")>
@@ -963,7 +963,7 @@
 		
 		<!--- ajax mode --->
 		<cfif (structKeyExists(arguments.stURL,"ajaxmode") AND isBoolean(listlast(arguments.stURL.ajaxmode)) AND listlast(arguments.stURL.ajaxmode))
-            OR (isdefined("form.ajaxmode") AND isBoolean(listlast(form.ajaxmode)) AND listlast(form.ajaxmode))>
+            OR (structKeyExists(form, "ajaxmode") AND isBoolean(listlast(form.ajaxmode)) AND listlast(form.ajaxmode))>
 			<cfset request.mode.ajax = 1 />
 		</cfif>
 		

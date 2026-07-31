@@ -54,7 +54,7 @@
 		<cfset var oResult = "" />
 		<cfset var message	= '' />
 		
-		<cfif structKeyExists(application.stCoapi, arguments.typename) and (arguments.singleton or isdefined("request.inthread"))>
+		<cfif structKeyExists(application.stCoapi, arguments.typename) and (arguments.singleton or structKeyExists(request, "inthread"))>
 			<cfset oResult = application.stcoapi["#arguments.typename#"].oFactory />
 		<cfelseif structKeyExists(application.stCoapi, arguments.typename)>
 			<cfset oResult = createObject("component", application.stcoapi["#arguments.typename#"].packagePath) />
@@ -934,12 +934,12 @@
 		<cfif not GetPageContext().GetResponse().IsCommitted()>
 			<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 			
-			<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
+			<cfif structKeyExists(request, "fc") AND structKeyExists(request.fc, "okToCache") and request.fc.okToCache>
 				<!--- Page ok to cache, a webskin has specified a cache timeout --->
-				<cfif not isdefined("request.fc.browserCacheTimeout") or request.fc.browserCacheTimeout eq -1>
+				<cfif not (structKeyExists(request, "fc") AND structKeyExists(request.fc, "browserCacheTimeout")) or request.fc.browserCacheTimeout eq -1>
 					<cfset request.fc.browserCacheTimeout = application.defaultBrowserCacheTimeout />
 				</cfif>
-				<cfif not isdefined("request.fc.proxyCacheTimeout") or request.fc.proxyCacheTimeout eq -1>
+				<cfif not (structKeyExists(request, "fc") AND structKeyExists(request.fc, "proxyCacheTimeout")) or request.fc.proxyCacheTimeout eq -1>
 					<cfset request.fc.proxyCacheTimeout = application.defaultProxyCacheTimeout />
 				</cfif>
 			<cfelse>
@@ -1588,7 +1588,7 @@
 			</cfif>
 
 			<!--- Add missing URL --->			
-			<cfif not len(returnURL) and isdefined("url.furl")>
+			<cfif not len(returnURL) and structKeyExists(url, "furl")>
 				<cfset returnURL = url.furl />
 			<cfelseif not len(returnURL)>
 				<cfset returnURL = "#cgi.script_name#?#cgi.query_string#" />
@@ -1933,12 +1933,12 @@
 	<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a depricated message">
 		<cfargument name="message" default="" required="false" hint="The message to be logged.  Should include instructions for the appropriate best practice to replace the deprecated code.">
 			
-		<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
+		<cfif structKeyExists(application, "log") AND structKeyExists(application.log, "bDeprecated") AND application.log.bDeprecated>		
 			<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #arguments.message#" abort="false" />
 			<cfset application.fapi.logEvent("deprecated", "warning", arguments.message, {location=GetBaseTemplatePath()}) />
 		</cfif>
 			
-		<cfif isdefined("application.log.bDeprecatedBubble") AND application.log.bDeprecatedBubble>	
+		<cfif structKeyExists(application, "log") AND structKeyExists(application.log, "bDeprecatedBubble") AND application.log.bDeprecatedBubble>	
 			<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 			<skin:bubble title="Deprecated" message="#message#" tags="deprecated,warning" />
 		</cfif>
@@ -2670,7 +2670,7 @@
 		
 		<cfif structkeyexists(url,"profile") and (url.profile eq "1" or url.profile eq application.updateappkey)>
 			<cfparam name="request.fc.trayData" default="#structnew()#" />
-			<cfif not isdefined("request.fc.trayData.profile")>
+			<cfif not (structKeyExists(request, "fc") AND structKeyExists(request.fc, "trayData") AND structKeyExists(request.fc.trayData, "profile"))>
 				<cfset request.fc.trayData.profile = querynew("section,label,tick","varchar,varchar,bigint") />
 			</cfif>
 			
@@ -2774,7 +2774,7 @@
 		
 		<cfif structkeyexists(url,"profile") and (url.profile eq "1" or url.profile eq application.updateappkey)>
 			<cfparam name="request.fc.trayData" default="#structnew()#" />
-			<cfif not isdefined("request.fc.trayData.log")>
+			<cfif not (structKeyExists(request, "fc") AND structKeyExists(request.fc, "trayData") AND structKeyExists(request.fc.trayData, "log"))>
 				<cfset request.fc.trayData.log = querynew("when,text","time,varchar") />
 			</cfif>
 			

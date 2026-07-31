@@ -401,7 +401,7 @@
 		<cfset var k_secret = JavaCast("string","AWS4" & arguments.secret).getBytes("UTF8") />
 	    <cfset var k_key = "" />
 
-	    <cfif isdefined("arguments.validate.secret") and lcase(binaryEncode(k_secret, 'hex')) neq arguments.validate.secret>
+	    <cfif structKeyExists(arguments, "validate") AND structKeyExists(arguments.validate, "secret") and lcase(binaryEncode(k_secret, 'hex')) neq arguments.validate.secret>
 		    <cfthrow message="Secret stage did not match" detail='{ "expected":"#arguments.validate.secret#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
 
@@ -410,22 +410,22 @@
 		<cfelse>
 		    <cfset k_key = HMAC_SHA256(arguments.date, k_secret) />
 		</cfif>
-	    <cfif isdefined("arguments.validate.date") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.date>
+	    <cfif structKeyExists(arguments, "validate") AND structKeyExists(arguments.validate, "date") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.date>
 		    <cfthrow message="Date stage [#dateformat(arguments.date,"YYYYmmdd")#] did not match" detail='{ "expected":"#arguments.validate.secret#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
 
 	    <cfset k_key = HMAC_SHA256(arguments.region, k_key) />
-	    <cfif isdefined("arguments.validate.region") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.region>
+	    <cfif structKeyExists(arguments, "validate") AND structKeyExists(arguments.validate, "region") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.region>
 		    <cfthrow message="Region stage [#arguments.region#] did not match" detail='{ "expected":"#arguments.validate.region#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
 
 	    <cfset k_key = HMAC_SHA256(arguments.service, k_key) />
-	    <cfif isdefined("arguments.validate.service") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.service>
+	    <cfif structKeyExists(arguments, "validate") AND structKeyExists(arguments.validate, "service") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.service>
 		    <cfthrow message="Service stage [#arguments.service#] did not match" detail='{ "expected":"#arguments.validate.service#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
 
 	    <cfset k_key = HMAC_SHA256("aws4_request", k_key) />
-	    <cfif isdefined("arguments.validate.signing") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.signing>
+	    <cfif structKeyExists(arguments, "validate") AND structKeyExists(arguments.validate, "signing") and lcase(binaryEncode(k_key, 'hex')) neq arguments.validate.signing>
 		    <cfthrow message="Signing stage [#aws4_request#] did not match" detail='{ "expected":"#arguments.validate.signing#", "got":"#lcase(binaryEncode(k_secret, 'hex'))#" }' />
 	    </cfif>
 
@@ -560,7 +560,7 @@
 
 	
 	<cffunction name="getAwsCredentials" access="private" output="false" returntype="any" hint="Returns the shared AWS credential resolver (application.fc.lib.awscredentials, auto-registered by lib.cfc) so its refresh cache is shared app-wide. Falls back to a private instance only on early-init/test paths where the shared lib isn't built yet.">
-		<cfif isDefined("application.fc.lib") and structkeyexists(application.fc.lib,"awscredentials")>
+		<cfif structKeyExists(application.fc, "lib") and structkeyexists(application.fc.lib,"awscredentials")>
 			<cfreturn application.fc.lib.awscredentials />
 		</cfif>
 		<cfif not structkeyexists(this,"awscreds")>

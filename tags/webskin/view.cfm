@@ -62,7 +62,7 @@
 		<cfset application.fapi.throw(message="invalid typename passed or could not be determined.") />
 	</cfif>	
 	
-	<cfif attributes.typename EQ "farCoapi" and (isdefined("attributes.stObject.objectid") or len(attributes.objectid))>
+	<cfif attributes.typename EQ "farCoapi" and (structKeyExists(attributes, "stObject") AND structKeyExists(attributes.stObject, "objectid") or len(attributes.objectid))>
 		<cfif structKeyExists(attributes.stObject, "objectid") and len(attributes.stObject.objectid)>
 			<cfset attributes.objectid = attributes.stObject.objectid />
 		</cfif>

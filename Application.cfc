@@ -385,7 +385,7 @@
 		<!----------------------------------- 
 		INITIALISE THE REQUESTED PLUGINS
 		 ----------------------------------->
-		<cfif isDefined("application.plugins")>
+		<cfif structKeyExists(application, "plugins")>
 			<cfloop list="#application.plugins#" index="plugin">
 				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
 					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm" />
@@ -474,7 +474,7 @@
 		<!----------------------------------- 
 		CALL THE PLUGINS AFTER INIT VARIABLES
 		 ----------------------------------->
-		<cfif isDefined("application.plugins")>
+		<cfif structKeyExists(application, "plugins")>
 			<cfloop list="#application.plugins#" index="plugin">
 				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVarsAfterInit.cfm")>
 					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVarsAfterInit.cfm">
@@ -494,7 +494,7 @@
 		<!----------------------------------- 
 		APPLICAION UPTIME INFO
 		------------------------------------>
-		<cfif not isdefined("application.fcstats.updateapp") or not isquery(application.fcstats.updateapp)>
+		<cfif not (structKeyExists(application, "fcstats") AND structKeyExists(application.fcstats, "updateapp")) or not isquery(application.fcstats.updateapp)>
 			<cfparam name="application.fcstats" default="#structnew()#" />
 			<cfset application.fcstats.updateapp = querynew("when,howlong","time,bigint") />
 		</cfif>
@@ -599,7 +599,7 @@
 		<cfif not structKeyExists(request.fc, "bLocating") and not structKeyExists(request,"fcInitError")>
 
 			<!--- project and plugin request processing --->
-			<cfif isdefined("application.sysinfo.aOnRequestEnd") and arraylen(application.sysinfo.aOnRequestEnd)>
+			<cfif structKeyExists(application, "sysinfo") AND structKeyExists(application.sysinfo, "aOnRequestEnd") and arraylen(application.sysinfo.aOnRequestEnd)>
 				<cfloop from="1" to="#arraylen(application.sysinfo.aOnRequestEnd)#" index="i">
 					<cfinclude template="#application.sysinfo.aOnRequestEnd[i]#" />
 				</cfloop>
@@ -703,7 +703,7 @@
 			<cfsetting requesttimeout="#CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout() + 10#" />
 		</cfif>
 		
-		<cfif isdefined("application.fc.lib.error")>
+		<cfif structKeyExists(application, "fc") AND structKeyExists(application.fc, "lib") AND structKeyExists(application.fc.lib, "error")>
 			<cfset oError = application.fc.lib.error />
 		<cfelse>
 			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
@@ -714,7 +714,7 @@
 		<cfset oError.logData(stException) />
 		
 		<!--- Email error --->
-		<cfif isdefined("application.fapi") and application.fapi.getConfig("general","bEmailErrors",true) and len(application.fapi.getConfig("general","errorEmail","")) and len(application.fapi.getConfig("general","adminEmail",""))>
+		<cfif structKeyExists(application, "fapi") and application.fapi.getConfig("general","bEmailErrors",true) and len(application.fapi.getConfig("general","errorEmail","")) and len(application.fapi.getConfig("general","adminEmail",""))>
 			<cfmail to="#application.fapi.getConfig("general","errorEmail","")#" from="#application.fapi.getConfig("general","adminEmail","")#" subject="#application.applicationname#: #stException.message# (#stException.bot#)" type="text/plain"><cfoutput>#oError.formatError(stException,"text")#</cfoutput></cfmail>
 		</cfif>
 		
@@ -731,7 +731,7 @@
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
 		
-		<cfif isdefined("application.fc.lib.error")>
+		<cfif structKeyExists(application, "fc") AND structKeyExists(application.fc, "lib") AND structKeyExists(application.fc.lib, "error")>
 			<cfset oError = application.fc.lib.error />
 		<cfelse>
 			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
@@ -867,7 +867,7 @@
 		<!----------------------------------------
 		EVENT: URL logout
 		----------------------------------------->
-		<cfif isDefined("url.logout") and url.logout eq 1>
+		<cfif structKeyExists(url, "logout") and url.logout eq 1>
 			<cfset application.security.logout() />
 			<cflocation url="#application.fapi.fixURL(removevalues='logout')#" addtoken="false" />
 		</cfif>
@@ -932,14 +932,14 @@
 	<cffunction name="initApplicationScope" access="private" output="false" hint="Sets up the main farcry application scope variables." returntype="void">
 
 		<!--- REQUIRED VARIABLES SETUP IN THE FARCRYCONSTRUCTOR --->
-		<cfif not isDefined("this.name")>
+		<cfif not structKeyExists(this, "name")>
 			<cfabort showerror="this.name not defined in your projects farcryConstructor.">
 		</cfif>
 
 		<cfset application.farcryUseJARPath = true />
 
 		<cfparam name="this.dsn" default="#this.name#" />
-		<cfif not isDefined("this.dbtype")>
+		<cfif not structKeyExists(this, "dbtype")>
 			<cfset this.dbType = detectDBType()>
 			<cfif NOT len(this.dbType)>
 				<cfabort showerror="this.dbtype not defined in your projects farcryConstructor or could not be auto-detected.">

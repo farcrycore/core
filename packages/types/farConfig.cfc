@@ -268,7 +268,7 @@ object methods
 		<cfset var formkey = "" />
 		<cfset var stResult = structnew() />
 
-		<cfif isdefined("application.fc.lib.objectbroker") and not arguments.bIgnoreCache>
+		<cfif structKeyExists(application.fc.lib, "objectbroker") and not arguments.bIgnoreCache>
 			<!--- if the objectbroker is set up and we aren't skipping the cache, get the config from object broker --->
 			<cfset stResult = application.fc.lib.objectbroker.GetFromObjectBroker(arguments.key,"config") />
 		</cfif>
@@ -345,7 +345,7 @@ object methods
 				<cfset stObj.datetimecreated = now() />
 
 				<!--- Save the config data (ensures that new configs and new properties are saved) --->
-				<cfif isdefined("application.fc.lib")>
+				<cfif structKeyExists(application.fc, "lib")>
 					<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
 				</cfif>
 			</cfif>
@@ -359,7 +359,7 @@ object methods
 
 			<cfset stResult.datetimeLastUpdated = now() />
 
-			<cfif isdefined("application.fc.lib.objectbroker")>
+			<cfif structKeyExists(application.fc.lib, "objectbroker")>
 				<cfset application.fc.lib.objectBroker.AddToObjectBroker(stResult,"config",arguments.key) />
 			</cfif>
 		</cfif>
@@ -436,7 +436,7 @@ object methods
 
 		<cfset application.config[arguments.stProperties.configkey] = duplicate(config) />
 
-		<cfif isdefined("application.fc.lib.objectbroker")>
+		<cfif structKeyExists(application.fc.lib, "objectbroker")>
 			<cfset application.fc.lib.objectBroker.AddToObjectBroker(config,"config",arguments.stProperties.configkey) />
 		</cfif>
 		

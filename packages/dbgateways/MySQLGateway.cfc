@@ -621,7 +621,7 @@
 					<cfset stColumn.precision = "#qColumns.numeric_precision#,#qColumns.decimal_digits#" />
 				</cfcase>
 				<cfcase value="int">
-					<cfif isDefined("qColumns.extra") AND qColumns.extra eq "auto_increment">
+					<cfif queryKeyExists(qColumns, "extra") AND qColumns.extra eq "auto_increment">
 						<cfset stColumn.type = "identity" />
 						<cfset stColumn.precision = "11" />
 						<cfset stColumn.nullable = false />

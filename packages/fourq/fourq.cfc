@@ -95,7 +95,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 		
-		<cfif isDefined("arguments.stobject") and not structIsEmpty(arguments.stObject)>
+		<cfif structKeyExists(arguments, "stobject") and not structIsEmpty(arguments.stObject)>
 			<cfset stobj=arguments.stobject />
 		<cfelse>
 			<cfif not len(arguments.objectid)>
@@ -622,7 +622,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset stProps=structNew()>
 		
-		<cfif isDefined("arguments.ObjectID") and len(arguments.ObjectID)>		
+		<cfif structKeyExists(arguments, "ObjectID") and len(arguments.ObjectID)>		
 			<cfset stProps.objectid = arguments.ObjectID>		
 		<cfelse>
 			<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
@@ -837,7 +837,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
-			<cfif isdefined("request.mode.rebuild") and request.mode.rebuild eq "page">
+			<cfif structKeyExists(request, "mode") AND structKeyExists(request.mode, "rebuild") and request.mode.rebuild eq "page">
 				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,typename) />
 			</cfif>
 			
@@ -1588,7 +1588,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var oFormtools = "" />
 		<cfset var stLibraryData = {} />
 
-		<cfif len(arguments.filter) AND (NOT isDefined("arguments.stMetadata.ftCustomFilter") OR arguments.stMetadata.ftCustomFilter eq false)>
+		<cfif len(arguments.filter) AND (NOT (structKeyExists(arguments, "stMetadata") AND structKeyExists(arguments.stMetadata, "ftCustomFilter")) OR arguments.stMetadata.ftCustomFilter eq false)>
 			<cfquery datasource="#application.dsn_read#" name="qFiltered">
 				SELECT objectid AS "key"
 				FROM #arguments.filterType#

@@ -18,7 +18,7 @@
 			</cfloop>
 		</cfif>
 
-		<cfif not isdefined("application.fcstats.objectbroker") or not isobject(application.fcstats.objectbroker)>
+		<cfif not (structKeyExists(application, "fcstats") AND structKeyExists(application.fcstats, "objectbroker")) or not isobject(application.fcstats.objectbroker)>
 			<cfparam name="application.fcstats" default="#structnew()#" />
 			<cfset application.fcstats.objectbroker = createObject("component","farcry.core.packages.lib.objectBrokerStats").init() />
 		</cfif>

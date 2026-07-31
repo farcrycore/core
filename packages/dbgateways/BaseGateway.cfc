@@ -486,9 +486,9 @@
 			</cfquery>
 			
 		 	<cfcatch type="database">
-				<cfif isDefined("cfcatch.detail")>
+				<cfif structKeyExists(cfcatch, "detail")>
 					<cfset errordetail = cfcatch.detail>
-				<cfelseif isDefined("cfcatch.message")>
+				<cfelseif structKeyExists(cfcatch, "message")>
 					<cfset errordetail = cfcatch.message>
 				<cfelse>
 					<cfset errordetail = "unknown database error">

@@ -100,7 +100,7 @@
 	
 	<cfset initValues(1) />
 	
-	<cfloop condition="isdefined('attributes.values#thistag.valuescount#')">
+	<cfloop condition="structKeyExists(attributes, 'values#thistag.valuescount#')">
 		<cfset thistag.valuescount = thistag.valuescount + 1 />
 	</cfloop>
 	<cfset thistag.valuescount = thistag.valuescount - 1 />

@@ -7,7 +7,7 @@
 		<cfset var utils = createobject("component","farcry.core.packages.farcry.utils") />
 		<cfset var engine = "unknown" />
 		
-		<cfif isdefined("application.sysinfo.engine.engine")>
+		<cfif structKeyExists(application, "sysinfo") AND structKeyExists(application.sysinfo, "engine") AND structKeyExists(application.sysinfo.engine, "engine")>
 			<cfset engine = application.sysinfo.engine.engine />
 		</cfif>
 		
