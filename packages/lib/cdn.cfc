@@ -200,6 +200,70 @@
 		<cfreturn this.locations[arguments.location].cdn />
 	</cffunction>
 
+	<cffunction name="hasControlCharacters" returntype="boolean" access="private" output="false" hint="True when the string contains an ASCII control character. Done char by char so the result is identical on every supported engine and regex mode.">
+		<cfargument name="text" type="string" required="true" />
+
+		<cfset var i = 0 />
+		<cfset var code = 0 />
+
+		<cfloop from="1" to="#len(arguments.text)#" index="i">
+			<cfset code = asc(mid(arguments.text,i,1)) />
+			<cfif code lt 32 or code eq 127>
+				<cfreturn true />
+			</cfif>
+		</cfloop>
+
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="validateDirectUploadPath" returntype="void" access="public" output="false" hint="Throws unless the path is an unambiguous direct-upload target: location relative, single forward slashes, no relative, drive or UNC segments, no control characters. Deliberately separate from normalizePath(), which silently rewrites and is relied on by the legacy upload paths.">
+		<cfargument name="path" type="string" required="true" />
+
+		<cfset var segment = "" />
+		<cfset var bValid = len(arguments.path) and left(arguments.path,1) eq "/" and right(arguments.path,1) neq "/" />
+
+		<!--- backslash, doubled slash and colon cover the drive, UNC and separator-ambiguity forms --->
+		<cfif bValid and (find("\",arguments.path) or find("//",arguments.path) or find(":",arguments.path) or hasControlCharacters(arguments.path))>
+			<cfset bValid = false />
+		</cfif>
+
+		<cfif bValid>
+			<cfloop list="#arguments.path#" index="segment" delimiters="/">
+				<cfif segment eq "." or segment eq "..">
+					<cfset bValid = false />
+				</cfif>
+			</cfloop>
+		</cfif>
+
+		<cfif not bValid>
+			<cfset application.fapi.throw(message="Invalid upload path",type="uploaderror") />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="getDirectUploadFilename" returntype="string" access="public" output="false" hint="Returns the basename a direct upload may use from a client-supplied filename. Throws on any form that could retarget the upload: absolute, drive or UNC paths, relative segments, separator ambiguity or control characters. A client filename is a name, never a path - the destination is always derived server side.">
+		<cfargument name="filename" type="string" required="true" />
+
+		<cfset var name = arguments.filename />
+
+		<!--- a leading slash is an absolute path, not a name --->
+		<cfif not len(name) or left(name,1) eq "/">
+			<cfset application.fapi.throw(message="Invalid upload filename",type="uploaderror") />
+		</cfif>
+
+		<!--- held to the same target rules as a resolved path --->
+		<cfset validateDirectUploadPath("/" & name) />
+
+		<!--- what survives that is a benign name, so keep only its basename --->
+		<cfset name = reReplace(name, "^.*/", "") />
+
+		<!--- and it has to still name something once the legacy filename rules have run --->
+		<cfif not len(sanitizeFilename(name))>
+			<cfset application.fapi.throw(message="Invalid upload filename",type="uploaderror") />
+		</cfif>
+
+		<cfreturn name />
+	</cffunction>
+
 	<cffunction name="prepareDirectUpload" returntype="struct" access="public" output="false" hint="Resolves a unique target path for a direct browser-to-bucket upload and builds the transport params. Returns { value, params } where value is the CDN-relative path to store and params is the transport-specific upload descriptor. Only supported by CDN types that implement getPresignedPostData (s3).">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="destination" type="string" required="true" hint="Directory within the location (ftDestination)" />
@@ -210,6 +274,7 @@
 		<cfargument name="acceptExtensions" type="string" required="false" default="" hint="comma list of allowed extensions; when set, the key's extension is validated before signing (empty = allow all)" />
 
 		<cfset var dest = arguments.destination />
+		<cfset var filename = getDirectUploadFilename(arguments.filename) />
 		<cfset var value = "" />
 		<cfset var params = "" />
 
@@ -220,9 +285,15 @@
 		<cfif len(dest) and right(dest,1) eq "/">
 			<cfset dest = left(dest, len(dest)-1) />
 		</cfif>
+		<cfif len(dest)>
+			<cfset validateDirectUploadPath(dest) />
+		</cfif>
 
 		<!--- Field value: relative CDN path, made unique (mirrors local makeunique) --->
-		<cfset value = ioGetUniqueFilename(locations=arguments.uniqueAmong, file="#dest#/#arguments.filename#") />
+		<cfset value = ioGetUniqueFilename(locations=arguments.uniqueAmong, file="#dest#/#filename#") />
+
+		<!--- the resolved value is what gets signed, so assert its shape before a capability is issued --->
+		<cfset validateDirectUploadPath(value) />
 
 		<!--- reject a disallowed extension before signing; same check as the local ioUploadFile path --->
 		<cfif len(arguments.acceptExtensions) and not listfindnocase(arguments.acceptExtensions,listlast(value,"."))>
@@ -236,10 +307,16 @@
 			maxSize=arguments.maxSize
 		) />
 
+		<!--- the signed value is authoritative: what gets stored and what the policy authorises
+		      must be the same string, so take it back from the transport when it reports one --->
+		<cfif structKeyExists(params,"value") and len(params.value)>
+			<cfset value = params.value />
+		</cfif>
+
 		<cfreturn { "value" = value, "params" = params } />
 	</cffunction>
 
-	<cffunction name="getPresignedPostData" returntype="struct" access="public" output="false" hint="Builds presigned POST params for a direct browser-to-bucket upload of the given CDN-relative value. Only supported by CDN types that implement it (s3).">
+	<cffunction name="getPresignedPostData" returntype="struct" access="public" output="false" hint="Builds presigned POST params for a direct browser-to-bucket upload of the given CDN-relative value. The result reports the exact normalized value and storage key the capability is scoped to, so a finalize step can bind to them. Only supported by CDN types that implement it (s3).">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="value" type="string" required="true" hint="CDN-relative path to store (no pathPrefix); the cdn type derives its own storage key from it" />
 		<cfargument name="contentType" type="string" required="false" default="" />
