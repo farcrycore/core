@@ -122,7 +122,7 @@ $out:$
 					<th>#application.rb.getResource("fixtree.labels.title@label","Title")#</th>
 				</tr>
 				<cfloop query="qOrphans">
-					<tr class="#IIF(qOrphans.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
+					<tr class="#(qOrphans.currentRow MOD 2) ? 'dataOddRow' : 'dataEvenRow'#">
 						<td><input type="checkbox" class="f-checkbox" name="objectid" value="#objectid#" /></td>
 						<td>#objectid#</td>
 						<td>#parentid#</td>

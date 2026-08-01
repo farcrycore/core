@@ -99,7 +99,7 @@ http://www.amazon.com/gp/registry/wishlist/35SOQPL36CP87/104-4400936-8795966
 	<cffunction name="isValidTZ" output="false" returntype="boolean" access="public"
 				hint="validates if a given timezone is in list of timezones available on this server">
 		<cfargument name="tz" required="false" default="#variables.mytz#">
-		<cfreturn IIF(listFindNoCase(variables.tzList,arguments.tz), true, false)>
+		<cfreturn listFindNoCase(variables.tzList,arguments.tz) gt 0>
 	</cffunction>
 
 

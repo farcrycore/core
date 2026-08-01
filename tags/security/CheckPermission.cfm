@@ -89,7 +89,7 @@
 
 		<!--- Save result of check --->
 		<cfif len(attributes.result)>
-			<cfset evaluate("caller.#attributes.result#=#iif(permitted,"1","0")#") />
+			<cfset evaluate("caller.#attributes.result#=#permitted ? 1 : 0#") />
 		</cfif>
 
 		<cfif permitted>

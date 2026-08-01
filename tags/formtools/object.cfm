@@ -663,7 +663,7 @@
 					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
 								label="#ftFieldMetadata.ftLabel#" 
 								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
-								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
+								hint="#attributes.bShowFieldHints ? ftFieldMetadata.ftHint : ''#" 
 								errorMessage="#ftFieldMetadata.errorMessage#"
 								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
 								formTheme="#attributes.formTheme#"

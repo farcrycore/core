@@ -591,7 +591,7 @@
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var stReturn = StructNew()>
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		<cfset var schema = getTableMetadata(arguments.typename) />
 		
 		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
@@ -612,7 +612,7 @@
 		<cfargument name="stProperties" required="true" />
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,listlast(arguments.typename,".")) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var logLocation = (listfindnocase(this.logChangeFlags,listlast(arguments.typename,".")) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		<cfset var schema = getTableMetadata(arguments.typename) />
 		
 		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
@@ -629,7 +629,7 @@
 		<cfargument name="aProperties" required="true" type="array" />
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		<cfset var schema = getTableMetadata(arguments.typename) />
 		
 		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
@@ -659,7 +659,7 @@
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var stReturn = StructNew()>
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		
 		<cfset arguments.schema = getTableMetadata(arguments.typename) />
 		
@@ -780,7 +780,7 @@
 		<cfargument name="bDropTable" type="boolean" required="true" />
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		<cfset var schema = getTableMetadata(arguments.typename) />
 		
 		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
@@ -794,7 +794,7 @@
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		<cfset var schema = getTableMetadata(arguments.typename) />
 		
 		<cfif not len(arguments.dsn) and structKeyExists(schema, "dsn")>
@@ -829,7 +829,7 @@
 		<cfset var logLocation = "" />
 		
 		<cfloop from="1" to="#arraylen(arguments.changes)#" index="i">
-			<cfset arguments.changes[i].logLocation = iif(listfindnocase(this.logChangeFlags,listfirst(arguments.changes[i].schema.tablename,"_")) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
+			<cfset arguments.changes[i].logLocation = (listfindnocase(this.logChangeFlags,listfirst(arguments.changes[i].schema.tablename,"_")) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 
 			<cfif len(arguments.dsn)>
 				<cfset gateway = getGateway(dsn=arguments.dsn, mode="write") />
