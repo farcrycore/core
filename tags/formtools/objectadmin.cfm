@@ -46,8 +46,6 @@
 
 	<cfparam name="pluginURL" default="" /><!--- used in case we are in a plugin object admin --->
 
-	<cfparam name="session.objectadmin" default="#structnew()#" type="struct">
-
 	<cfparam name="attributes.title" default="" type="string">
 	<cfif not len(attributes.title)>
 		<cfset attributes.title = application.rb.getResource("coapi.#attributes.typename#.headings.typeadministration@text", application.rb.getResource("objectadmin.general.headings.typeadministration@text", "{1} Administration"))>
@@ -154,10 +152,6 @@
 		<cfset typelabel = attributes.typename />
 	</cfif>
 
-	<cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
-		<cfset structInsert(session.objectadmin, attributes.typename, structnew())>
-	</cfif>
-
 	<cfset PrimaryPackage = duplicate(application.stCOAPI[attributes.typename]) />
 	<cfset PrimaryPackagePath = application.stCOAPI[attributes.typename].packagepath />
 	<cfset oType = createObject("component", PrimaryPackagePath) />
@@ -186,7 +180,7 @@
 		
 	<cfelse>
 
-		<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
+		<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(attributes=attributes)>
 
 		<cfif structKeyExists(attributes, "r_oTypeAdmin")>
 			<cfset caller[attributes.r_oTypeAdmin]=oTypeAdmin>
@@ -217,7 +211,6 @@
 		</cfoutput>
 	</cfif>
 	
-	<cfset stPrefs = oTypeAdmin.getPrefs() />
 	<cfset stpermissions=oTypeAdmin.getBasePermissions()>
 	
 	
