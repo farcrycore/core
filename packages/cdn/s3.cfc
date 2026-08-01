@@ -749,6 +749,7 @@
 		<cfset var key = "" />
 		<cfset var stConfig = resolveSigningConfig(arguments.config) />
 		<cfset var postContentType = trim(arguments.contentType) />
+		<cfset var derivedContentType = "" />
 		<cfset var aclPermission = (structKeyExists(arguments.config, "security") and arguments.config.security eq "private") ? "private" : "public-read" />
 		<cfset var isoTime = application.fapi.dateToISO8601(now()) />
 		<cfset var dateStamp = left(isoTime, 8) />
@@ -774,11 +775,15 @@
 		</cfif>
 
 		<!--- Content-Type is bound exactly, so one capability cannot be reused to store a
-		      different type. When the browser could not supply a usable type, fall back to the
-		      type the server-side upload path would have stored for this extension rather than
-		      authorising every type. --->
-		<cfif not reFindNoCase("^[a-z0-9][a-z0-9!##$&^_.+-]*/[a-z0-9][a-z0-9!##$&^_.+-]*$", postContentType)>
-			<cfset postContentType = this.cdn.getMimeType(key) />
+		      different type. The extension has already been approved, so the type is derived from
+		      it - the same value the server-side put path stores - and the requester's type is
+		      only consulted for an extension the mime map cannot name. Neither available means
+		      octet-stream, which is what S3 stored when no type was posted at all. --->
+		<cfset derivedContentType = this.cdn.getMimeType(file=key, defaultType="") />
+		<cfif len(derivedContentType)>
+			<cfset postContentType = derivedContentType />
+		<cfelseif not reFindNoCase("^[a-z0-9][a-z0-9!##$&^_.+-]*/[a-z0-9][a-z0-9!##$&^_.+-]*$", postContentType)>
+			<cfset postContentType = "application/octet-stream" />
 		</cfif>
 
 		<!--- Every field returned below has a matching condition here, so none of them can be

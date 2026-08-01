@@ -130,15 +130,16 @@
 
 	<cffunction name="getMimeType" output="false" access="public" returntype="string" hint="Returns a mime type string for a file">
 		<cfargument name="file" type="string" required="true" />
+		<cfargument name="defaultType" type="string" required="false" default="text/plain" hint="returned when the mime map does not recognise the extension; pass an empty string to detect that case rather than get a guess" />
 
 		<cfset var stLocals = structnew() />
 
 		<cfset stLocals.content_type = getPageContext().getServletContext().getMimeType(lcase(arguments.file)) />
-		
+
 		<!--- Fails if result above is null which is the same as not existing in CFML --->
 		<!--- the value from key [CONTENT_TYPE] is NULL, which is the same as not existing in CFML --->
 		<cfif isNull(stLocals.content_type)>
-			<cfset stLocals["content_type"] = "text/plain" />
+			<cfset stLocals["content_type"] = arguments.defaultType />
 		</cfif>
 		
 		<cfif not isdefined("stLocals.content_type")>
