@@ -1322,6 +1322,12 @@ legend + .control-group {
 	min-width: 0;
 	max-width: 50px;
 }
+/* let the browser size its own time input rather than the 240px minimum above */
+.controls input.fc-time {
+	width: auto;
+	min-width: 0;
+	max-width: 130px;
+}
 .typeahead {
 	z-index: 0;
 }

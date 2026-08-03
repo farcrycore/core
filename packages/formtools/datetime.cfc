@@ -33,6 +33,14 @@
 			ftType="datetime" ftShowTime="false" ftlabel="Date Only" />
 	</code>
 
+	<p>Restrict the time to 15 minute increments</p>
+	<code>
+		<cfproperty
+			name="startTime" type="date" hint="The start time of the session" required="no" default=""
+			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
+			ftType="datetime" ftMinutesIncrement="15" ftlabel="Start Time" />
+	</code>
+
 	<p>Disable dateTime field by default</p>
 	<code>
 		<cfproperty
@@ -53,14 +61,15 @@
 <cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types">
 
 	<!--- edit handler options --->
-	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, input)" />
+	<cfproperty name="ftRenderType" default="jquery" hint="How the date is rendered. dropdown is day, month and year select lists, with no time part. input is a plain text field with no widget. Any other value, including the historical default jquery, renders a text field with the bootstrap-datepicker widget." />
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
 	<cfproperty name="ftDateFormatMask" default="d mmm yyyy" hint="Coldfusion mask for date for edit handler" />
 	<cfproperty name="ftStartYearShift" default="0" hint="Used when ftRenderType is set to dropDown, sets start of year range in select list." />
 	<cfproperty name="ftEndYearShift" default="-100" hint="Used when ftRenderType is set to dropDown, sets end of year range in select list." />
 	<cfproperty name="ftStartYear" default="" hint="Used when ftRenderType is set to dropDown, sets the value of the first year in year range." />
-	<cfproperty name="ftEndYear" default="" hint="Used when ftRenderType is set to dropDown,, sets the value of the last year in year range. " />
+	<cfproperty name="ftEndYear" default="" hint="Used when ftRenderType is set to dropDown, sets the value of the last year in year range." />
 	<cfproperty name="ftShowTime" default="true" hint="Display time portion of dateTime field." />
+	<cfproperty name="ftMinutesIncrement" default="0" hint="Granularity of the time input in minutes, from 0 to 30. The default 0 leaves the browser's own granularity of one minute; a value outside the range is ignored." />
 
 	<!--- display handler options --->
 	<cfproperty name="ftDateMask" default="d-mmm-yy" hint="Coldfusion date mask for display handler." />
@@ -131,6 +140,11 @@
 		<cfset var i = "">
 		<cfset var step=1>
 		<cfset var jsDateFormatMask = "">
+		<cfset var timeValue = "">
+		<cfset var timeStep = 0>
+		<cfset var theme = "">
+		<cfset var oFormTheme = "">
+		<cfset var stValConfig = "">
 	
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch) and isDate(arguments.stObject[arguments.stMetadata.ftWatch]) and isDate(arguments.stMetadata.value)>
 			<cfif DateCompare(arguments.stObject[arguments.stMetadata.ftWatch], arguments.stMetadata.value) eq 1>
@@ -232,11 +246,6 @@
 					</div>
 				</div>
 				<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
-					<cfif request.fc.inWebtop>
-						<cfset theme = application.fapi.getConfig("formtheme", "webtop")>
-					<cfelse>
-						<cfset theme = application.fapi.getConfig("formtheme", "site")>
-					</cfif>
 					<cfset theme = application.fapi.getConfig("formtheme", "webtop")>
 					<cfset oFormTheme = application.fapi.getContentType(typename="formTheme#theme#")>
 					<cfset stValConfig = oFormTheme.getValidationConfig()>
@@ -275,7 +284,7 @@
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true" />
 			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
 			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
-			<cfparam name="session.dmProfile.timeFormat" type="string" default="12h" />
+			<cfparam name="arguments.stMetadata.ftMinutesIncrement" default="0" />
 
 			<cfif arguments.stMetadata.ftRenderType neq "input">
 				<!--- load jquery-ui before bootstrap-datepicker so that bootstrap-datepicker overwrites it --->
@@ -290,6 +299,16 @@
 				<cfset locale = session.dmProfile.locale>
 			<cfelse>
 				<cfset locale = "en_AU">
+			</cfif>
+
+			<!--- the time input takes and returns a 24 hour value; the browser decides how to present it --->
+			<cfif isDate(arguments.stMetadata.value)>
+				<cfset timeValue = timeFormat(arguments.stMetadata.value, "HH:mm") />
+			</cfif>
+
+			<!--- step is in seconds. an increment outside 1-30 minutes is left off, so the browser keeps its default of one minute --->
+			<cfif isNumeric(arguments.stMetadata.ftMinutesIncrement) AND int(arguments.stMetadata.ftMinutesIncrement) GT 0 AND int(arguments.stMetadata.ftMinutesIncrement) LTE 30>
+				<cfset timeStep = int(arguments.stMetadata.ftMinutesIncrement) * 60 />
 			</cfif>
 
 			<cfsavecontent variable="html">
@@ -341,33 +360,7 @@
 						</cfif>
 
 						<cfif arguments.stMetadata.ftShowTime>
-							<cfif session.dmProfile.timeFormat IS "24h">
-								<select class="fc-time" name="#arguments.fieldname#Hour">
-								<cfloop list="00,01,02,03,04,05,06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23" index="i">
-									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'HH') EQ i> selected="selected"</cfif>>#i#</option>
-								</cfloop>
-								</select>
-								<select class="fc-time" name="#arguments.fieldname#Minute">
-									<cfloop from="0" to="59" index="i">
-										<option value="#numberFormat(i, '00')#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i> selected="selected"</cfif>>#numberFormat(i, '00')#</option>
-									</cfloop>
-								</select>
-							<cfelse>
-								<select class="fc-time" name="#arguments.fieldname#Hour">
-								<cfloop from="1" to="12" index="i">
-									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'h') EQ i> selected="selected"</cfif>>#i#</option>
-								</cfloop>
-								</select>
-								<select class="fc-time" name="#arguments.fieldname#Minute">
-									<cfloop from="0" to="59" index="i">
-										<option value="#numberFormat(i, '00')#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i> selected="selected"</cfif>>#numberFormat(i, '00')#</option>
-									</cfloop>
-								</select>
-								<select class="fc-time" name="#arguments.fieldname#Period">
-									<option value="AM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "AM"> selected="selected"</cfif>>AM</option>
-									<option value="PM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "PM"> selected="selected"</cfif>>PM</option>
-								</select>
-							</cfif>
+							<input type="time" name="#arguments.fieldname#Time" id="#arguments.fieldname#Time" value="#timeValue#" class="fc-time" aria-label="Time"<cfif timeStep GT 0> step="#timeStep#"</cfif> />
 						</cfif>
 						&nbsp;
 					</div>
@@ -430,6 +423,7 @@
 		<cfset var stResult = passed(value="") />
 		<cfset var newDate = "" />
 		<cfset var newTime = "" />
+		<cfset var timeError = "" />
 
 		<cfparam name="arguments.stFieldPost.stSupporting.renderType" default="calendar" />
 		<cfparam name="session.dmProfile.timeFormat" type="string" default="12h" />
@@ -498,7 +492,18 @@
 			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1) AND isDate(arguments.stFieldPost.Value)>
 
 				<cftry>
-					<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
+					<cfif structKeyExists(arguments.stFieldPost.stSupporting,"time")>
+
+						<!--- an empty time input means the editor cleared it, which is midnight --->
+						<cfif len(trim(arguments.stFieldPost.stSupporting.time))>
+							<cfset newTime = normaliseTimeValue(arguments.stFieldPost.stSupporting.time) />
+							<cfif not len(newTime)>
+								<cfset timeError = "You need to enter a valid time." />
+							</cfif>
+						</cfif>
+
+					<!--- hour, minute and period are the dropdowns this formtool rendered before the time input, still accepted for overridden edit handlers --->
+					<cfelseif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"period")
 						AND session.dmProfile.timeFormat IS "12h">
@@ -522,8 +527,12 @@
 						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
 					</cfif>
 
-					<cfset newDate = CreateODBCDateTime("#DateFormat(arguments.stFieldPost.Value,arguments.stMetadata.ftDateFormatMask)# #newTime#") />
-					<cfset stResult = passed(value="#newDate#") />
+					<cfif len(timeError)>
+						<cfset stResult = failed(value="#arguments.stFieldPost.value#", message=timeError) />
+					<cfelse>
+						<cfset newDate = CreateODBCDateTime("#DateFormat(arguments.stFieldPost.Value,arguments.stMetadata.ftDateFormatMask)# #newTime#") />
+						<cfset stResult = passed(value="#newDate#") />
+					</cfif>
 					<cfcatch type="any">
 						<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
 					</cfcatch>
@@ -808,6 +817,24 @@
 		</cfsavecontent>
 
 		<cfreturn resultHTML />
+	</cffunction>
+
+	<cffunction name="normaliseTimeValue" access="private" output="false" returnType="string" hint="Converts the 24 hour value posted by a time input into a time string the date parser accepts. Returns an empty string if it is not a valid time.">
+		<cfargument name="time" type="string" required="true" hint="A 24 hour time, ie HH:mm or HH:mm:ss" />
+
+		<cfset var thisTime = trim(arguments.time) />
+		<cfset var seconds = 0 />
+
+		<cfif not reFind("^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$", thisTime)>
+			<cfreturn "" />
+		</cfif>
+
+		<!--- browsers only post seconds when the step is finer than a minute, but honour them if they are there --->
+		<cfif listLen(thisTime, ":") EQ 3>
+			<cfset seconds = listGetAt(thisTime, 3, ":") />
+		</cfif>
+
+		<cfreturn timeFormat(createTime(listGetAt(thisTime, 1, ":"), listGetAt(thisTime, 2, ":"), seconds), 'hh:mm:ss tt') />
 	</cffunction>
 
 	<cffunction name="cf2jsDate" access="private" output="false" returnType="string" hint="converts a cf date object to a js date object">
