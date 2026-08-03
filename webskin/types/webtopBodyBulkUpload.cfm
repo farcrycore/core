@@ -166,7 +166,16 @@
 		) />
 		<cfset stResult = stPrep.params />
 
-		<cfcatch>
+		<!--- A refusal is not a fault. uploaderror is what the permission checks, the claim
+		      and cdn's path/extension validation throw, so those return the message alone and
+		      are logged as a warning; anything else keeps the full diagnostic below. Matters
+		      because that diagnostic is plugin-extensible and this template renders it. --->
+		<cfcatch type="uploaderror">
+			<cfset application.fapi.logEvent("cdn","warning","bulk upload refused",{typename=stObj.name, reason=cfcatch.message}) />
+			<cfset stResult = structnew() />
+			<cfset stResult["error"] = { "message" = cfcatch.message } />
+		</cfcatch>
+		<cfcatch type="any">
 			<cfset stResult = structnew() />
 			<cfset stResult["error"] = application.fc.lib.error.normalizeError(cfcatch) />
 			<cfset application.fc.lib.error.logData(stResult.error) />
@@ -257,7 +266,16 @@
 
 		</cfif>
 
-		<cfcatch>
+		<!--- A refusal is not a fault. uploaderror is what the permission checks, the claim
+		      and cdn's path/extension validation throw, so those return the message alone and
+		      are logged as a warning; anything else keeps the full diagnostic below. Matters
+		      because that diagnostic is plugin-extensible and this template renders it. --->
+		<cfcatch type="uploaderror">
+			<cfset application.fapi.logEvent("cdn","warning","bulk upload refused",{typename=stObj.name, reason=cfcatch.message}) />
+			<cfset stResult = structnew() />
+			<cfset stResult["error"] = { "message" = cfcatch.message } />
+		</cfcatch>
+		<cfcatch type="any">
 			<cfset stResult = structnew() />
 			<cfset stResult["error"] = application.fc.lib.error.normalizeError(cfcatch) />
 			<cfset application.fc.lib.error.logData(stResult.error) />
@@ -328,7 +346,16 @@
 		<cfset stResult["files"][1]["taskID"] = stTask.objectid />
 		<cfset stResult["files"][1]["objectid"] = fileObjectID />
 		
-		<cfcatch>
+		<!--- A refusal is not a fault. uploaderror is what the permission checks, the claim
+		      and cdn's path/extension validation throw, so those return the message alone and
+		      are logged as a warning; anything else keeps the full diagnostic below. Matters
+		      because that diagnostic is plugin-extensible and this template renders it. --->
+		<cfcatch type="uploaderror">
+			<cfset application.fapi.logEvent("cdn","warning","bulk upload refused",{typename=stObj.name, reason=cfcatch.message}) />
+			<cfset stResult = structnew() />
+			<cfset stResult["error"] = { "message" = cfcatch.message } />
+		</cfcatch>
+		<cfcatch type="any">
 			<cfset stResult = structnew() />
 			<cfset stResult["error"] = application.fc.lib.error.normalizeError(cfcatch) />
 			<cfset application.fc.lib.error.logData(stResult.error) />
