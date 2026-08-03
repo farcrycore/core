@@ -34,7 +34,8 @@
 						<td class="reverseuuid-gripper" style="cursor:move"><i class="fa fa-sort"></i></td>
 					</cfif>
 					<td>
-						<skin:view objectid="#stParam.q.objectid#" webskin="librarySelected" />
+						<!--- pass the child typename so the row does not depend on a refObjects lookup --->
+						<skin:view typename="#stParam.stMetadata.ftJoin#" objectid="#stParam.q.objectid#" webskin="librarySelected" />
 					</td>
 					<td>
 						<ft:button type="button" value="edit" class="reverseuuid-edit btn-small" icon="fa-pencil" text="" />
