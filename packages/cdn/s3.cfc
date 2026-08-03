@@ -189,6 +189,12 @@
 		<cfelse>
 			<cfparam name="st.urlExpiry" default="60" />
 		</cfif>
+
+		<!--- optional upload window for the direct-upload POST policy; defaults to urlExpiry --->
+		<cfif structkeyexists(st,"uploadExpiry") and (not isnumeric(st.uploadExpiry) or st.uploadExpiry lt 0)>
+			<cfset application.fapi.throw(message="the 'uploadExpiry' value must be a positive integer",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
+		</cfif>
+		<cfparam name="st.uploadExpiry" default="#st.urlExpiry#" />
 		
 		<cfif structkeyexists(st,"readers") and not isarray(st.readers)>
 			<cfset application.fapi.throw(message="the 'readers' value must be an array of canonical user ids or email addresses or ACL structs",type="cdnconfigerror",detail=serializeJSON(sanitiseS3Config(arguments.config))) />
@@ -754,7 +760,7 @@
 		<cfset var isoTime = application.fapi.dateToISO8601(now()) />
 		<cfset var dateStamp = left(isoTime, 8) />
 		<cfset var credential = "#stConfig.accessKeyId#/#dateStamp#/#stConfig.region#/s3/aws4_request" />
-		<cfset var expiry = structKeyExists(arguments.config, "urlExpiry") ? arguments.config.urlExpiry : 60 />
+		<cfset var expiry = structKeyExists(arguments.config, "uploadExpiry") ? arguments.config.uploadExpiry : 60 />
 		<cfset var expiration = dateConvert("local2utc", dateAdd("s", expiry * 60, now())) />
 		<cfset var policy = "" />
 		<cfset var serializedPolicy = "" />
