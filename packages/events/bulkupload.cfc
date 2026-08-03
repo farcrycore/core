@@ -37,6 +37,16 @@
 			<!--- Direct-to-S3: the object is already in its final CDN location
 			      (presigned at sign time). No temp file to copy — just record the
 			      value. createFromUpload below still resizes the S3-resident file. --->
+
+			<!--- these details are only produced by a finalize that claimed its upload
+			      authorization, which is what confirmed the object and the actor. an
+			      unmarked directValue did not come from that path, so it is not acted on --->
+			<cfif not structkeyexists(arguments.details,"bDirectAuthorized") or not isBoolean(arguments.details.bDirectAuthorized) or not arguments.details.bDirectAuthorized
+					or not structkeyexists(arguments.details,"directAuthorizedBy") or not len(arguments.details.directAuthorizedBy)>
+				<cfset application.fapi.logEvent("bulkupload", "warning", "refused unauthorized direct upload task", {typename=arguments.details.typename, targetfield=arguments.details.targetfield, objectid=arguments.taskID}) />
+				<cfthrow message="This upload was not authorized" type="uploaderror" />
+			</cfif>
+
 			<cfset stObject[arguments.details.targetfield] = arguments.details.directValue />
 		<cfelse>
 			<!--- copy file up. ftLocation is passed so the file formtool honours an

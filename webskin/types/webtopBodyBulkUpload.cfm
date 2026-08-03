@@ -7,6 +7,21 @@
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
+<!--- the direct upload branches below take a JSON POST only. checked at the top of
+      the template so a request of another shape reaches neither branch, and reaches
+      nothing else here that reads a body or writes state --->
+<cfif structkeyexists(url,"s3op")>
+	<cfset s3opContentType = trim(listfirst(lcase(cgi.content_type),";")) />
+
+	<cfif cgi.request_method neq "POST">
+		<cfset application.fapi.stream(content={ "error" = "Direct upload requests must be POSTed" },type="json",status="405 Method Not Allowed") />
+		<cfexit method="exittemplate" />
+	<cfelseif s3opContentType neq "application/json" and right(s3opContentType,5) neq "+json">
+		<cfset application.fapi.stream(content={ "error" = "Direct upload requests must declare a JSON content type" },type="json",status="415 Unsupported Media Type") />
+		<cfexit method="exittemplate" />
+	</cfif>
+</cfif>
+
 <!--- ensure component metadata for bulk upload is set --->
 <cfif 
 	NOT application.stCOAPI[stObj.name].bBulkUpload
@@ -106,12 +121,19 @@
 	<cftry>
 		<cfset stBody = deserializeJSON(toString(getHTTPRequestData().content)) />
 
+		<!--- bulk upload creates records of the target type, so signing is gated on the
+		      same permission the launch button expresses --->
+		<cfif not application.fc.lib.directupload.checkUploadPermission(typename=stObj.name)>
+			<cfthrow message="You do not have permission to create #stObj.name# records." type="uploaderror" />
+		</cfif>
+
 		<cfset sizeLimit = 0 />
 		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftSizeLimit")>
 			<cfset sizeLimit = application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftSizeLimit />
 		<cfelseif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftMaxSize")>
 			<cfset sizeLimit = application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftMaxSize />
 		</cfif>
+		<cfset sizeLimit = (val(sizeLimit) gt 0) ? val(sizeLimit) : 0 />
 
 		<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
 			location = uploadLocationBulk,
@@ -119,11 +141,29 @@
 			filename = structKeyExists(stBody,"filename") ? stBody.filename : "upload",
 			uniqueAmong = listfindnocase("publicfiles,privatefiles", uploadLocationBulk) ? "privatefiles,publicfiles" : uploadLocationBulk,
 			contentType = structKeyExists(stBody,"type") ? stBody.type : "",
-			maxSize = (val(sizeLimit) gt 0) ? val(sizeLimit) : 0,
+			maxSize = sizeLimit,
 			acceptExtensions = bulkAllowedExts
 		) />
 		<!--- Carry the resolved value to the client so finalize can echo it back. --->
 		<cfset stPrep.params["value"] = stPrep.value />
+		<!--- One authorization per signed file, claimed at that file's finalize: every file
+		      gets its own exact key, so a batch-level record would describe a set rather
+		      than an object. The size limit is carried here because the policy's copy is
+		      only enforced by the bucket, and finalize cannot assume the POST happened. --->
+		<cfset stPrep.params["uploadid"] = application.fc.lib.directupload.issue(
+			bind = {
+				"surface" = "bulk",
+				"location" = uploadLocationBulk,
+				"typename" = stObj.name,
+				"property" = uploadTarget
+			},
+			grant = {
+				"value" = stPrep.value,
+				"key" = structKeyExists(stPrep.params,"key") ? stPrep.params.key : "",
+				"maxsize" = sizeLimit,
+				"extension" = listlast(stPrep.value,".")
+			}
+		) />
 		<cfset stResult = stPrep.params />
 
 		<cfcatch>
@@ -140,41 +180,82 @@
       final CDN location, so we queue the same background task as the local path
       but with directValue instead of a temp file, and return the same shape. --->
 <cfif structkeyexists(url,"action") and url.action eq "upload" and structkeyexists(url,"s3op") and url.s3op eq "finalize">
+	<cfset bulkReplay = "" />
 	<cftry>
 		<cfset stBody = deserializeJSON(toString(getHTTPRequestData().content)) />
+		<cfset bulkUploadID = structKeyExists(stBody,"uploadid") ? stBody.uploadid : "" />
 
-		<cfset stDefaults = structnew() />
-		<cfloop list="#lDefaultFields#" index="thisprop">
-			<cfif structkeyexists(stBody,thisprop)>
-				<cfset stDefaults[thisprop] = stBody[thisprop] />
-			</cfif>
-		</cfloop>
+		<cfif not application.fc.lib.directupload.checkUploadPermission(typename=stObj.name)>
+			<cfthrow message="You do not have permission to create #stObj.name# records." type="uploaderror" />
+		</cfif>
 
-		<cfset stTask = {
-			objectid = application.fapi.getUUID(),
-			directValue = structKeyExists(stBody,"value") ? stBody.value : "",
-			directLocation = uploadLocationBulk,
-			typename = stObj.name,
-			targetfield = uploadTarget,
-			defaults = stDefaults
-		} />
-		<cfset application.fc.lib.tasks.addTask(taskID=stTask.objectid,jobID=stBody.uploaderID,action="bulkupload.upload",details=stTask) />
+		<!--- existence and the signed size limit are established before anything is queued
+		      and before the session-only object is created --->
+		<cfset stBulkClaim = application.fc.lib.directupload.claimAndVerify(
+			uploadid = bulkUploadID,
+			expect = {
+				"surface" = "bulk",
+				"location" = uploadLocationBulk,
+				"typename" = stObj.name,
+				"property" = uploadTarget
+			},
+			clientValue = structKeyExists(stBody,"value") ? stBody.value : ""
+		) />
 
-		<!--- session only object for webskins --->
-		<cfset fileObjectID = application.fapi.getUUID()>
-		<cfset application.fapi.setData(typename=stObj.name,objectid=fileObjectID,bSessionOnly="true") />
+		<!--- a repeat of a finalize that already reported a result gets that result back
+		      verbatim rather than queueing a second task for the same object --->
+		<cfif stBulkClaim.status eq "replay">
+			<cfset bulkReplay = stBulkClaim.result />
+		<cfelseif stBulkClaim.status neq "ok">
+			<cfthrow message="#stBulkClaim.message#" type="uploaderror" />
+		<cfelse>
 
-		<cfset stResult = structnew() />
-		<cfset stResult["files"] = arraynew(1) />
-		<cfset stResult["files"][1] = structnew() />
-		<cfset stResult["files"][1]["name"] = listlast(URLDecode(stTask.directValue),"/") />
-		<cfset stResult["files"][1]["url"] = application.fapi.fixURL(removevalues="upload",addvalues="action=view&uploader=#stBody.uploaderID#&file=#fileObjectID#") />
-		<cfset stResult["files"][1]["thumbnail_url"] = "" />
-		<cfset stResult["files"][1]["delete_url"] = "" />
-		<cfset stResult["files"][1]["delete_type"] = "DELETE" />
-		<cfset stResult["files"][1]["fileID"] = structKeyExists(stBody,"fileID") ? stBody.fileID : "" />
-		<cfset stResult["files"][1]["taskID"] = stTask.objectid />
-		<cfset stResult["files"][1]["objectid"] = fileObjectID />
+			<!--- the accepted value is the one the server authorised, never the request's --->
+			<cfset bulkValue = stBulkClaim.value />
+
+			<cfset stDefaults = structnew() />
+			<cfloop list="#lDefaultFields#" index="thisprop">
+				<cfif structkeyexists(stBody,thisprop)>
+					<cfset stDefaults[thisprop] = stBody[thisprop] />
+				</cfif>
+			</cfloop>
+
+			<!--- bDirectAuthorized marks details produced by a claimed authorization;
+			      directAuthorizedBy names the actor it was authorised for. Kept as two fields
+			      so the marker does not depend on the actor being non-empty. The task runs
+			      later, outside the request, and is not re-checked then - the bind is at
+			      enqueue, and addTask records the same actor as the task owner. --->
+			<cfset stTask = {
+				objectid = application.fapi.getUUID(),
+				directValue = bulkValue,
+				directLocation = uploadLocationBulk,
+				bDirectAuthorized = true,
+				directAuthorizedBy = application.security.getCurrentUserID(),
+				typename = stObj.name,
+				targetfield = uploadTarget,
+				defaults = stDefaults
+			} />
+			<cfset application.fc.lib.tasks.addTask(taskID=stTask.objectid,jobID=stBody.uploaderID,action="bulkupload.upload",details=stTask,ownedBy=stTask.directAuthorizedBy) />
+
+			<!--- session only object for webskins --->
+			<cfset fileObjectID = application.fapi.getUUID()>
+			<cfset application.fapi.setData(typename=stObj.name,objectid=fileObjectID,bSessionOnly="true") />
+
+			<cfset stResult = structnew() />
+			<cfset stResult["files"] = arraynew(1) />
+			<cfset stResult["files"][1] = structnew() />
+			<cfset stResult["files"][1]["name"] = listlast(URLDecode(stTask.directValue),"/") />
+			<cfset stResult["files"][1]["url"] = application.fapi.fixURL(removevalues="upload",addvalues="action=view&uploader=#stBody.uploaderID#&file=#fileObjectID#") />
+			<cfset stResult["files"][1]["thumbnail_url"] = "" />
+			<cfset stResult["files"][1]["delete_url"] = "" />
+			<cfset stResult["files"][1]["delete_type"] = "DELETE" />
+			<cfset stResult["files"][1]["fileID"] = structKeyExists(stBody,"fileID") ? stBody.fileID : "" />
+			<cfset stResult["files"][1]["taskID"] = stTask.objectid />
+			<cfset stResult["files"][1]["objectid"] = fileObjectID />
+
+			<cfset application.fc.lib.directupload.complete(uploadid=bulkUploadID,result=serializeJSON(stResult)) />
+
+		</cfif>
 
 		<cfcatch>
 			<cfset stResult = structnew() />
@@ -183,12 +264,22 @@
 		</cfcatch>
 	</cftry>
 
-	<cfset application.fapi.stream(content=stResult,type="json") />
+	<cfif len(bulkReplay)>
+		<cfset application.fapi.stream(content=bulkReplay,type="json") />
+	<cfelse>
+		<cfset application.fapi.stream(content=stResult,type="json") />
+	</cfif>
 </cfif>
 
 <!--- Handle upload request --->
 <cfif structkeyexists(url,"action") and url.action eq "upload" and not structkeyexists(url,"s3op")>
 	<cftry>
+		<!--- same permission as the direct-to-bucket branch above; this transport writes the
+		      file through the server but creates the same records --->
+		<cfif not application.fc.lib.directupload.checkUploadPermission(typename=stObj.name)>
+			<cfthrow message="You do not have permission to create #stObj.name# records." type="uploaderror" />
+		</cfif>
+
 		<cfset allowedExtensions = "" />
 		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[uploadTarget].metadata,"ftAllowedExtensions")>
 			<cfset allowedExtensions = application.stCOAPI[stObj.name].stProps[uploadTarget].metadata.ftAllowedExtensions />

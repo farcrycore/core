@@ -45,10 +45,12 @@
  *   false (presigned POST only). The browser POSTs the file straight to the
  *   bucket; the FarCry endpoint is hit twice over fetch():
  *     - `&s3op=sign`     before upload — returns the presigned POST params
- *                        ({ method, url, fields, headers }) for getUploadParameters
- *     - `&s3op=finalize` after the object lands in S3 — records the path, runs
- *                        post-processing, and returns the SAME JSON shape the
- *                        local XHR path returns, so onComplete is unchanged.
+ *                        ({ method, url, fields, headers }) for getUploadParameters,
+ *                        plus an `uploadid` naming the authorization it issued
+ *     - `&s3op=finalize` after the object lands in S3 — presents that `uploadid`,
+ *                        records the path, runs post-processing, and returns the
+ *                        SAME JSON shape the local XHR path returns, so onComplete
+ *                        is unchanged. Without the id the finalize is refused.
  *   shouldUseMultipart is the extension point for resumable multipart uploads
  *   of large files in a later phase — the sign/finalize structure stays.
  */
@@ -229,8 +231,23 @@
 		// server never has to reverse an S3 key into a value.
 		var s3ValueByFileId = {};
 
+		// The sign step's authorization id, carried through to finalize. The server
+		// holds what it authorises; this is only the handle to it, so finalize is
+		// refused without the id the matching sign returned.
+		var s3UploadIdByFileId = {};
+
 		function withParam(url, key, value){
 			return url + (url.indexOf("?") === -1 ? "?" : "&") + encodeURIComponent(key) + "=" + encodeURIComponent(value);
+		}
+
+		// A FarCry endpoint reports failure as an `error` key, but not always as a
+		// string: the bulk webskin returns the framework's normalised error struct
+		// (it renders {{error.message}} in its own templates). Read either shape so
+		// a real message reaches onError instead of "[object Object]".
+		function errorText(data){
+			if (!data || !data.error) return "";
+			if (typeof data.error === "string") return data.error;
+			return data.error.message || "Upload failed";
 		}
 
 		function postJSON(url, payload){
@@ -244,8 +261,9 @@
 					var data;
 					try { data = text ? JSON.parse(text) : {}; }
 					catch (err){ throw new Error("Non-JSON response from server" + (bodySnippet(text) ? ": " + bodySnippet(text) : "")); }
-					if (!res.ok) throw new Error((data && data.error) || ("Request failed (" + res.status + ")"));
-					if (data && data.error) throw new Error(data.error);
+					var err = errorText(data);
+					if (!res.ok) throw new Error(err || ("Request failed (" + res.status + ")"));
+					if (err) throw new Error(err);
 					return data;
 				});
 			});
@@ -270,14 +288,16 @@
 
 		function fetchSignParams(file){
 			return postJSON(withParam(opts.endpoint, "s3op", "sign"), s3Meta(file)).then(function(data){
-				s3ValueByFileId[file.id] = data.value || "";
+				s3ValueByFileId[file.id]    = data.value || "";
+				s3UploadIdByFileId[file.id] = data.uploadid || "";
 				return data;
 			});
 		}
 
 		function finalizeS3(file){
 			var payload = s3Meta(file);
-			payload.value = s3ValueByFileId[file.id] || "";
+			payload.value    = s3ValueByFileId[file.id] || "";
+			payload.uploadid = s3UploadIdByFileId[file.id] || "";
 			return postJSON(withParam(opts.endpoint, "s3op", "finalize"), payload);
 		}
 

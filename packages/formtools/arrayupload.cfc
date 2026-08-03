@@ -768,8 +768,12 @@
 				<!--- Factory must be defined before init() runs. --->
 				<cfoutput>#factoryScript#</cfoutput>
 
-				<!--- Carry ftJoin in the URL; ajax() rebuilds stMetadata from COAPI and would
-				      otherwise lose a render-time-injected ftJoin (e.g. the bulk-upload form). --->
+				<!--- Record the ftJoin this render resolved, so ajax() can recover it without
+				      trusting the request: ajax() rebuilds stMetadata from COAPI and would
+				      otherwise lose a render-time-injected ftJoin (e.g. the bulk-upload form).
+				      Still carried in the URL as well, but only as a cross-check now - the
+				      session copy is the authority, because it is the value the server chose. --->
+				<cfset rememberJoinType(typename=arguments.typename, property=arguments.stMetadata.name, objectid=arguments.stObject.objectid, ftJoin=listFirst(arguments.stMetadata.ftJoin)) />
 				<cfset uploadAjaxURL = application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true) & "/ftjoin/" & listFirst(arguments.stMetadata.ftJoin) />
 				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#encodeForJavaScript(arguments.typename)#','#encodeForJavaScript(arguments.stObject.objectid)#','#uploadAjaxURL#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#',#len(arguments.stMetadata.ftEditableProperties) gt 0#,'#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
 
@@ -909,17 +913,39 @@
 	    <cfset var uploadLocationS3 = "" />
 	    <cfset var joinLocation = "" />
 	    <cfset var stJoinRestrict = "" />
+	    <cfset var bJoinRecovered = false />
+	    <cfset var recoveredJoin = "" />
+	    <cfset var stBind = structnew() />
+	    <cfset var stClaim = "" />
+	    <cfset var maxsize = 0 />
+	    <cfset var uploadid = "" />
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-		<!--- Recover ftJoin from the URL when COAPI has none (render-time-injected ftJoin).
-		      Gated to genuine arrayupload fields so the endpoint can't be repurposed against
-		      an unrelated property via URL tampering. --->
+		<!--- Recover ftJoin when COAPI has none (render-time-injected ftJoin). The value comes
+		      from what edit() recorded for this property in this session, never from the
+		      request, so a caller cannot select the target type. Gated to genuine arrayupload
+		      fields. When the request also carries one it must agree, which catches a page
+		      rendered against different metadata as well as outright tampering.
+
+		      The provenance is still kept: a value recovered this way is a rendering aid, and
+		      the branches that act on an existing record require declared metadata. --->
 		<cfif (not structKeyExists(arguments.stMetadata,"ftJoin") or not listlen(arguments.stMetadata.ftJoin) eq 1)
-				and structKeyExists(arguments.stMetadata,"ftType") and arguments.stMetadata.ftType EQ "arrayupload"
-				and structKeyExists(url,"ftjoin") and listlen(url.ftjoin) eq 1>
-			<cfset arguments.stMetadata.ftJoin = url.ftjoin />
+				and structKeyExists(arguments.stMetadata,"ftType") and arguments.stMetadata.ftType EQ "arrayupload">
+			<cfset recoveredJoin = recallJoinType(typename=arguments.typename, property=arguments.stMetadata.name, objectid=arguments.stObject.objectid) />
+
+			<cfif not len(recoveredJoin)>
+				<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
+			</cfif>
+			<cfif structKeyExists(url,"ftjoin") and compareNoCase(trim(url.ftjoin),recoveredJoin) neq 0>
+				<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
+			</cfif>
+
+			<cfset arguments.stMetadata.ftJoin = recoveredJoin />
+			<cfset bJoinRecovered = true />
 		</cfif>
 
 	    <cfif not listlen(arguments.stMetadata.ftJoin) eq 1>
@@ -954,17 +980,37 @@
 			<cfset stBody = application.formtools.field.oFactory.getAjaxRequestBody() />
 			<cfset uploadLocationS3 = resolveJoinUploadLocation(arguments.stMetadata) />
 			<cftry>
+				<!--- signing authorises the write that follows it, so it is gated on the same
+				      permission as the upload branch rather than only that branch --->
+				<cfif not application.fc.lib.directupload.checkUploadPermission(typename=arguments.typename, objectid=arguments.stObject.objectid, joinTypename=arguments.stMetadata.ftJoin)>
+					<cfreturn serializeJSON({ "error" = "You do not have permission to add #arguments.stMetadata.ftJoin# records to this field." }) />
+				</cfif>
+
+				<cfset maxsize = (val(arguments.stMetadata.ftSizeLimit) gt 0) ? val(arguments.stMetadata.ftSizeLimit) : 0 />
+				<cfset stBind = directUploadBind(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata, location=uploadLocationS3) />
+
 				<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
 					location=uploadLocationS3,
 					destination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
 					filename=structKeyExists(stBody,"filename") ? stBody.filename : "upload",
 					uniqueAmong=listfindnocase("publicfiles,privatefiles", uploadLocationS3) ? "privatefiles,publicfiles" : uploadLocationS3,
 					contentType=structKeyExists(stBody,"type") ? stBody.type : "",
-					maxSize=(val(arguments.stMetadata.ftSizeLimit) gt 0) ? val(arguments.stMetadata.ftSizeLimit) : 0,
+					maxSize=maxsize,
 					acceptExtensions=arguments.stMetadata.ftAllowedFileExtensions
 				) />
 				<!--- Carry the resolved value to the client so finalize can echo it back. --->
 				<cfset stPrep.params["value"] = stPrep.value />
+				<!--- and the authorization finalize has to present. what it grants is held
+				      server side; the client only ever carries the id --->
+				<cfset stPrep.params["uploadid"] = application.fc.lib.directupload.issue(
+					bind = stBind,
+					grant = {
+						"value" = stPrep.value,
+						"key" = structKeyExists(stPrep.params,"key") ? stPrep.params.key : "",
+						"maxsize" = maxsize,
+						"extension" = listlast(stPrep.value,".")
+					}
+				) />
 				<cfreturn serializeJSON(stPrep.params) />
 
 				<cfcatch type="any">
@@ -1005,6 +1051,9 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"edit")><!--- Edit an array item --->
+			<cfif bJoinRecovered>
+				<cfreturn "This field does not declare a related type" />
+			</cfif>
 			<cfif not structKeyExists(form, "item") or not len(form.item)>
 				<cfreturn "No item specified" />
 			</cfif>
@@ -1026,6 +1075,9 @@
 		
 		<cfif structkeyexists(url,"update")><!--- Update an array item --->
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+			<cfif bJoinRecovered>
+				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
+			</cfif>
 			<cfif not structKeyExists(form, "_objectid") or not len(form._objectid)>
 				<cfreturn "No data specified" />
 			</cfif>
@@ -1056,6 +1108,9 @@
 		
 		<cfif structkeyexists(url,"delete")>
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+			<cfif bJoinRecovered>
+				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
+			</cfif>
 			<cfif not structKeyExists(form, "items") or not len(form.items)>
 				<cfreturn "[]" />
 			</cfif>
@@ -1074,10 +1129,12 @@
 		<cfif structkeyexists(url,"upload")><!--- Upload / finalise a new array item --->
 			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 
-			<!--- Upload creates a new ftJoin record, so require Create permission on that
-			      type. Guards both the URL-recovered ftJoin and the declared-in-type path. --->
-			<cfif not application.security.checkPermission(permission="Create", type=arguments.stMetadata.ftJoin)>
-				<cfreturn serializeJSON({ "error" = "You do not have permission to create #arguments.stMetadata.ftJoin# records." }) />
+			<!--- Upload creates a new ftJoin record and mutates the parent's relationship, so
+			      require Create on the joined type AND the parent's own Edit/Create - the same
+			      mapping the direct-to-bucket branch uses, so both transports agree. Guards the
+			      recovered ftJoin and the declared-in-type path alike. --->
+			<cfif not application.fc.lib.directupload.checkUploadPermission(typename=arguments.typename, objectid=arguments.stObject.objectid, joinTypename=arguments.stMetadata.ftJoin)>
+				<cfreturn serializeJSON({ "error" = "You do not have permission to add #arguments.stMetadata.ftJoin# records to this field." }) />
 			</cfif>
 
 			<!--- stFieldPost is supplied by the dispatcher for form posts but may be
@@ -1097,13 +1154,47 @@
 
 			<cfif structkeyexists(url,"s3op") and url.s3op eq "finalize">
 				<!--- Direct-to-S3 finalize: the object is already in S3. Synthesize the
-				      handleFilePost result from the echoed value so the existing
+				      handleFilePost result from the AUTHORIZED value so the existing
 				      object-create / resize / render pipeline below runs unchanged
-				      (no temp file, no server-side copy). --->
-				<cfset stBody = application.formtools.field.oFactory.getAjaxRequestBody() />
-				<cfset stResult.location = joinLocation />
-				<cfset stResult.value = structKeyExists(stBody,"value") ? stBody.value : "" />
-				<cfset stResult.bSuccess = len(stResult.value) gt 0 />
+				      (no temp file, no server-side copy).
+
+				      Inside a JSON error boundary so this surface fails the same
+				      recognisable way as its siblings rather than as an error page. --->
+				<cftry>
+					<cfset stBody = application.formtools.field.oFactory.getAjaxRequestBody() />
+					<cfset uploadid = structKeyExists(stBody,"uploadid") ? stBody.uploadid : "" />
+
+					<cfif not application.fc.lib.directupload.checkUploadPermission(typename=arguments.typename, objectid=arguments.stObject.objectid, joinTypename=arguments.stMetadata.ftJoin)>
+						<cfreturn serializeJSON({ "error" = "You do not have permission to add #arguments.stMetadata.ftJoin# records to this field.", "value" = "" }) />
+					</cfif>
+
+					<!--- existence and size are established here, ahead of the row creation
+					      below, so no joined record describes an object that is not in the
+					      bucket or that exceeds the limit the server signed for --->
+					<cfset stClaim = application.fc.lib.directupload.claimAndVerify(
+						uploadid = uploadid,
+						expect = directUploadBind(typename=arguments.typename, stObject=arguments.stObject, stMetadata=arguments.stMetadata, location=joinLocation),
+						clientValue = structKeyExists(stBody,"value") ? stBody.value : ""
+					) />
+
+					<!--- a repeat of a finalize that already reported a result gets that result
+					      back rather than creating a second joined record --->
+					<cfif stClaim.status eq "replay">
+						<cfreturn stClaim.result />
+					</cfif>
+					<cfif stClaim.status neq "ok">
+						<cfreturn serializeJSON({ "error" = stClaim.message, "value" = "" }) />
+					</cfif>
+
+					<!--- the accepted value is the one the server authorised, never the request's --->
+					<cfset stResult.location = joinLocation />
+					<cfset stResult.value = stClaim.value />
+					<cfset stResult.bSuccess = true />
+
+					<cfcatch type="any">
+						<cfreturn serializeJSON({ "error" = cfcatch.message, "value" = "" }) />
+					</cfcatch>
+				</cftry>
 
 			<cfelse>
 
@@ -1207,14 +1298,96 @@
 					</cftry>
 					
 				</cfif>
-					
-				<cfreturn serializeJSON(stJSON) />
-				
+
+				<cfset json = serializeJSON(stJSON) />
+
+				<!--- hold the completed response against the authorization so a repeated
+				      finalize returns it instead of creating a second joined record. only a
+				      clean run is held: after a failure the record stays consumed, so a retry
+				      is refused rather than re-running side effects that may have landed --->
+				<cfif len(uploadid) and not (structKeyExists(stJSON,"error") and len(stJSON.error))>
+					<cfset application.fc.lib.directupload.complete(uploadid=uploadid,result=json) />
+				</cfif>
+
+				<cfreturn json />
+
 			</cfif>
 		</cfif>
-		
+
 		<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 		<cfreturn "{}" />
+	</cffunction>
+
+	<cffunction name="joinTypeKey" access="private" output="false" returntype="string" hint="Identifies the field the render resolved a join type for: the type, the property and the parent record. Deliberately NOT keyed on fieldname - that arrives as url.fieldname on the ajax request, so keying on it would let a request naming one parent present another parent's fieldname and recover its entry. The parent is the target of the operation, so it is what the entry has to be tied to.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
+
+		<cfreturn "#arguments.typename#|#arguments.property#|#arguments.objectid#" />
+	</cffunction>
+
+	<cffunction name="rememberJoinType" access="private" output="false" returntype="void" hint="Records the ftJoin a render resolved for this parent, so the matching ajax request can recover it from the server rather than from the request. Only records when COAPI cannot supply the value itself, which is the only case ajax() consults it - so the store holds render-time-injected fields only, not every arrayupload ever rendered.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
+		<cfargument name="ftJoin" required="true" type="string" />
+
+		<cfset var stDeclared = "" />
+
+		<cfif structKeyExists(application.stCOAPI,arguments.typename) and structKeyExists(application.stCOAPI[arguments.typename].stProps,arguments.property)>
+			<cfset stDeclared = application.stCOAPI[arguments.typename].stProps[arguments.property].metadata />
+			<cfif structKeyExists(stDeclared,"ftJoin") and listlen(stDeclared.ftJoin) eq 1>
+				<cfreturn />
+			</cfif>
+		</cfif>
+
+		<cfparam name="session.fc" default="#structNew()#" />
+		<cfparam name="session.fc.arrayuploadJoins" default="#structNew()#" />
+
+		<!--- the parent is stored as well as keyed on, so recall asserts it rather than
+		      trusting that the key was assembled from the requested parent --->
+		<cfset session.fc.arrayuploadJoins[joinTypeKey(argumentCollection=arguments)] = {
+			"ftJoin" = arguments.ftJoin,
+			"objectid" = arguments.objectid
+		} />
+	</cffunction>
+
+	<cffunction name="recallJoinType" access="private" output="false" returntype="string" hint="The ftJoin a render recorded for this property against this parent in this session, or an empty string when there is none. Server authoritative: the only writer is edit(), from the metadata the server was given, and the stored parent must match the one being operated on.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
+
+		<cfset var key = joinTypeKey(argumentCollection=arguments) />
+		<cfset var stEntry = "" />
+
+		<cfif structKeyExists(session,"fc") and structKeyExists(session.fc,"arrayuploadJoins") and structKeyExists(session.fc.arrayuploadJoins,key)>
+			<cfset stEntry = session.fc.arrayuploadJoins[key] />
+
+			<cfif isStruct(stEntry) and structKeyExists(stEntry,"objectid") and structKeyExists(stEntry,"ftJoin")
+					and compareNoCase(stEntry.objectid,arguments.objectid) eq 0>
+				<cfreturn stEntry.ftJoin />
+			</cfif>
+		</cfif>
+
+		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="directUploadBind" access="private" output="false" returntype="struct" hint="The facts an arrayupload direct upload is authorised against. Built identically at sign and at finalize, so a finalize presenting a different parent object, joined type or file property is refused.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="stObject" required="true" type="struct" />
+		<cfargument name="stMetadata" required="true" type="struct" />
+		<cfargument name="location" required="true" type="string" />
+
+		<cfreturn {
+			"surface" = "arrayupload",
+			"location" = arguments.location,
+			"typename" = arguments.typename,
+			"property" = arguments.stMetadata.name,
+			"objectid" = arguments.stObject.objectid,
+			"formtool" = structKeyExists(url,"formtool") ? url.formtool : "",
+			"ftjoin" = arguments.stMetadata.ftJoin,
+			"ftfileproperty" = arguments.stMetadata.ftFileProperty
+		} />
 	</cffunction>
 	
 	<cffunction name="resolveJoinUploadLocation" access="private" output="false" returntype="string" hint="Resolves the CDN location of the joined file property for uploads. An explicit ftLocation override always wins; an image defaults to images (ftSecure is a file-only concept); a secure file uses privatefiles; a non-secure file is status-aware (mirrors the file formtool read path), so a new unapproved item uploads to privatefiles until approval promotes it and an already-public item uploads to publicfiles.">

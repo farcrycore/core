@@ -137,7 +137,7 @@
 	    <cfset var ToggleOffGenerateImageJS = "" />
 	    <cfset var stImage = structnew() />
 	    <cfset var stFile = structnew() />
-	    <cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomright="Crop Bottom Left",bottomright="Crop Bottom Center" } />
+	    <cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomleft="Crop Bottom Left",bottomcenter="Crop Bottom Center",bottomright="Crop Bottom Right" } />
 	    <cfset var stInfo = "" />
 	    <cfset var metadatainfo = "" />
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
@@ -471,7 +471,7 @@
 		<cfset var html = "" />
 		<cfset var metadatainfo = "" />
 		<cfset var preview = "" />
-		<cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomright="Crop Bottom Left",bottomright="Crop Bottom Center" } />
+		<cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomleft="Crop Bottom Left",bottomcenter="Crop Bottom Center",bottomright="Crop Bottom Right" } />
 	    <cfset var stImage = structnew() />
 	    <cfset var stFile = structnew() />
 	    <cfset var location = resolveUploadLocation(arguments.stMetadata) />
@@ -618,6 +618,17 @@
 			<cfelse>
 				<cfreturn "[]" />
 			</cfif>
+		</cfif>
+
+		<!--- Same content permission as the direct-to-bucket branch above. This is the
+		      transport that writes the file through the server rather than to a bucket, and
+		      it performs the same content operation, so it is gated the same way.
+		      Everything below this point either writes the image or serves the crop dialog for
+		      editing it, so one gate covers the upload, the source/autogenerate branch and the
+		      dialog. --->
+		<cfif not application.fc.lib.directupload.checkUploadPermission(typename=arguments.typename, objectid=arguments.stObject.objectid)>
+			<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
+			<cfreturn serializeJSON({ "error" = "You do not have permission to upload to this field.", "value" = "" }) />
 		</cfif>
 		
 		<cfif structkeyexists(url,"crop")>
@@ -848,6 +859,11 @@
 		<cfset var resizeKey = "#arguments.stMetadata.name#RESIZEMETHOD" />
 		<cfset var qualityKey = "#arguments.stMetadata.name#QUALITY" />
 		<cfset var location = resolveUploadLocation(arguments.stMetadata) />
+		<cfset var stBind = structnew() />
+		<cfset var stClaim = "" />
+		<cfset var maxsize = 0 />
+		<cfset var json = "" />
+		<cfset var uploadid = "" />
 
 		<cfparam name="arguments.stMetadata.ftDestination" default="/images" />
 		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="" /><!--- real default comes from the image cfproperty via COAPI --->
@@ -857,18 +873,46 @@
 
 		<cfheader name="Content-Type" value="application/json; charset=UTF-8" />
 
+		<!--- the facts this upload is authorised against. resolved the same way at sign and
+		      at finalize, so a finalize that presents a different context is refused --->
+		<cfset stBind = {
+			"surface" = "image",
+			"location" = location,
+			"typename" = arguments.typename,
+			"property" = arguments.stMetadata.name,
+			"objectid" = arguments.stObject.objectid
+		} />
+
+		<!--- both steps authorise a write against this object, and authorization can change
+		      between two requests, so both are gated rather than only the first --->
+		<cfif not application.fc.lib.directupload.checkUploadPermission(typename=arguments.typename, objectid=arguments.stObject.objectid)>
+			<cfreturn serializeJSON({ "error" = "You do not have permission to upload to this field.", "value" = "" }) />
+		</cfif>
+
 		<cfif url.s3op eq "sign">
 			<cftry>
+				<cfset maxsize = val(arguments.stMetadata.ftSizeLimit) />
 				<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
 					location=location,
 					destination=arguments.stMetadata.ftDestination,
 					filename=structkeyexists(stBody,"filename") ? stBody.filename : "upload",
 					uniqueAmong=location,
 					contentType=structkeyexists(stBody,"type") ? stBody.type : "",
-					maxSize=arguments.stMetadata.ftSizeLimit,
+					maxSize=maxsize,
 					acceptExtensions=arguments.stMetadata.ftAllowedExtensions
 				) />
 				<cfset stPrep.params["value"] = stPrep.value />
+				<!--- and the authorization finalize has to present. what it grants is held
+				      server side; the client only ever carries the id --->
+				<cfset stPrep.params["uploadid"] = application.fc.lib.directupload.issue(
+					bind = stBind,
+					grant = {
+						"value" = stPrep.value,
+						"key" = structKeyExists(stPrep.params,"key") ? stPrep.params.key : "",
+						"maxsize" = maxsize,
+						"extension" = listlast(stPrep.value,".")
+					}
+				) />
 				<cfreturn serializeJSON(stPrep.params) />
 
 				<cfcatch type="any">
@@ -877,56 +921,95 @@
 			</cftry>
 		</cfif>
 
-		<!--- finalize: the original now lives in the bucket --->
-		<cfset value = structkeyexists(stBody,"value") ? stBody.value : "" />
+		<!--- finalize: the original now lives in the bucket. the whole step runs inside a
+		      JSON error boundary, like its sibling surfaces, so a present but undecodable
+		      object comes back as a readable error rather than an unhandled 500 --->
+		<cftry>
+			<!--- existence and size are established here, so the resize pipeline is only
+			      ever reached by an object that is present and within the signed limit --->
+			<cfset uploadid = structkeyexists(stBody,"uploadid") ? stBody.uploadid : "" />
+			<cfset stClaim = application.fc.lib.directupload.claimAndVerify(
+				uploadid = uploadid,
+				expect = stBind,
+				clientValue = structkeyexists(stBody,"value") ? stBody.value : "",
+				noun = "image"
+			) />
 
-		<cfif not len(value) or not getFileExists(file=value,location=location)>
-			<cfset stJSON["error"] = "Uploaded image could not be found" />
-			<cfset stJSON["value"] = "" />
-			<cfreturn serializeJSON(stJSON) />
+			<!--- a repeat of a finalize that already reported a result gets that result back
+			      rather than rewriting the image a second time --->
+			<cfif stClaim.status eq "replay">
+				<cfreturn stClaim.result />
+			</cfif>
+			<cfif stClaim.status neq "ok">
+				<cfset stJSON["error"] = stClaim.message />
+				<cfset stJSON["value"] = "" />
+				<cfreturn serializeJSON(stJSON) />
+			</cfif>
+
+			<!--- the accepted value is the one the server authorised, never the request's --->
+			<cfset value = stClaim.value />
+
+			<!--- Resize method / quality may be supplied via the uploader's extra form data.
+			      Both select a server side transform that writes back over the object, so
+			      each is held to what the pipeline actually accepts and otherwise falls back
+			      to the property's own setting. --->
+			<cfif structkeyexists(stBody,resizeKey) and isValidResizeMethod(stBody[resizeKey])>
+				<cfset resizeMethod = stBody[resizeKey] />
+			</cfif>
+			<cfif structkeyexists(stBody,qualityKey) and isnumeric(stBody[qualityKey]) and val(stBody[qualityKey]) gte 0 and val(stBody[qualityKey]) lte 1>
+				<cfset quality = stBody[qualityKey] />
+			</cfif>
+
+			<cfset stFixed = fixImage(value,arguments.stMetadata,resizeMethod,quality) />
+
+			<cfset stJSON = structnew() />
+			<cfset stJSON["error"] = "" />
+			<cfif stFixed.bSuccess>
+				<cfset stJSON["resizedetails"] = structnew() />
+				<cfset stJSON["resizedetails"]["method"] = resizeMethod />
+				<cfset stJSON["resizedetails"]["quality"] = round(quality*100) />
+				<cfset value = stFixed.value />
+			</cfif>
+
+			<cfset stImage = duplicate(arguments.stObject) />
+			<cfset stImage[arguments.stMetadata.name] = value />
+			<cfset stLoc = getFileLocation(stObject=stImage,stMetadata=arguments.stMetadata,admin=true) />
+
+			<cfset stJSON["value"] = value />
+			<cfset stJSON["filename"] = listfirst(listlast(value,'/'),"?") />
+			<cfset stJSON["fullpath"] = stLoc.path />
+
+			<cfif arguments.stMetadata.ftShowMetadata>
+				<cfset stImage = getImageInfo(file=value,admin=true,location=location) />
+				<cfset stJSON["size"] = round(stImage.size / 1024) />
+				<cfset stJSON["width"] = stImage.width />
+				<cfset stJSON["height"] = stImage.height />
+			<cfelse>
+				<cfset stJSON["size"] = 0 />
+				<cfset stJSON["width"] = 0 />
+				<cfset stJSON["height"] = 0 />
+			</cfif>
+
+			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=value) />
+
+			<cfset json = serializeJSON(stJSON) />
+			<cfset application.fc.lib.directupload.complete(uploadid=uploadid,result=json) />
+			<cfreturn json />
+
+			<cfcatch type="any">
+				<cfreturn serializeJSON({ "error" = cfcatch.message, "value" = "" }) />
+			</cfcatch>
+		</cftry>
+	</cffunction>
+
+	<cffunction name="isValidResizeMethod" access="private" output="false" returntype="boolean" hint="True for a resize method GenerateImage actually handles: one of the named methods, or a custom crop rectangle in x,y-x2,y2 form as written by the crop UI.">
+		<cfargument name="resizeMethod" type="string" required="true" />
+
+		<cfif listfindnocase("none,fitinside,forcesize,croptofit,pad,center,topleft,topcenter,topright,left,right,bottomleft,bottomcenter,bottomright",arguments.resizeMethod)>
+			<cfreturn true />
 		</cfif>
 
-		<!--- Resize method / quality may be supplied via the uploader's extra form data --->
-		<cfif structkeyexists(stBody,resizeKey) and len(stBody[resizeKey])>
-			<cfset resizeMethod = stBody[resizeKey] />
-		</cfif>
-		<cfif structkeyexists(stBody,qualityKey) and isnumeric(stBody[qualityKey])>
-			<cfset quality = stBody[qualityKey] />
-		</cfif>
-
-		<cfset stFixed = fixImage(value,arguments.stMetadata,resizeMethod,quality) />
-
-		<cfset stJSON = structnew() />
-		<cfset stJSON["error"] = "" />
-		<cfif stFixed.bSuccess>
-			<cfset stJSON["resizedetails"] = structnew() />
-			<cfset stJSON["resizedetails"]["method"] = resizeMethod />
-			<cfset stJSON["resizedetails"]["quality"] = round(quality*100) />
-			<cfset value = stFixed.value />
-		</cfif>
-
-		<cfset stImage = duplicate(arguments.stObject) />
-		<cfset stImage[arguments.stMetadata.name] = value />
-		<cfset stLoc = getFileLocation(stObject=stImage,stMetadata=arguments.stMetadata,admin=true) />
-
-		<cfset stJSON["value"] = value />
-		<cfset stJSON["filename"] = listfirst(listlast(value,'/'),"?") />
-		<cfset stJSON["fullpath"] = stLoc.path />
-
-		<cfif arguments.stMetadata.ftShowMetadata>
-			<cfset stImage = getImageInfo(file=value,admin=true,location=location) />
-			<cfset stJSON["size"] = round(stImage.size / 1024) />
-			<cfset stJSON["width"] = stImage.width />
-			<cfset stJSON["height"] = stImage.height />
-		<cfelse>
-			<cfset stJSON["size"] = 0 />
-			<cfset stJSON["width"] = 0 />
-			<cfset stJSON["height"] = 0 />
-		</cfif>
-
-		<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=value) />
-
-		<cfreturn serializeJSON(stJSON) />
+		<cfreturn refind("^\d+,\d+-\d+,\d+$",arguments.resizeMethod) gt 0 />
 	</cffunction>
 
 	<cffunction name="fixImage" access="public" output="false" returntype="struct" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">

@@ -22,8 +22,42 @@
 <cfparam name="url.formtheme" default="" />
 <cfparam name="url.format" default="edit" />
 
+<!--- the direct upload routes take a JSON POST only. checked here, above the
+      pre-dispatch session save, so a request of another shape mutates nothing --->
+<cfif structKeyExists(url,"s3op")>
+	<cfset s3opContentType = trim(listfirst(lcase(cgi.content_type),";")) />
+
+	<cfif cgi.request_method neq "POST">
+		<cfset application.fapi.stream(content={ "error" = "Direct upload requests must be POSTed" },type="json",status="405 Method Not Allowed") />
+		<cfabort />
+	<cfelseif s3opContentType neq "application/json" and right(s3opContentType,5) neq "+json">
+		<cfset application.fapi.stream(content={ "error" = "Direct upload requests must declare a JSON content type" },type="json",status="415 Unsupported Media Type") />
+		<cfabort />
+	</cfif>
+</cfif>
+
+<!--- a request naming a type or property this server does not declare resolves to nothing,
+      so it is refused here rather than failing further in. url.formtool is not checked for
+      existence: the agreement check below already pins it to the property's own ftType, and
+      an ftType with no matching component (ftType defaults to the property's type, and there
+      is no "date" formtool) is only ever reached by a type that handles the call itself --->
+<cfif not structKeyExists(application.stCOAPI,url.typename)
+		or not structKeyExists(application.stCOAPI[url.typename].stProps,url.property)>
+	<cfset application.fapi.stream(content={ "error" = "Unknown type or property" },type="json",status="404 Not Found") />
+	<cfabort />
+</cfif>
 
 <cfset stMetadata = duplicate(application.stCOAPI[url.typename].stProps[url.property].metadata) />
+
+<!--- the handling component must be the one the property declares. the metadata is resolved
+      server side above, so requiring agreement means every downstream check reads a context
+      that is internally consistent. every core caller builds this url from the property's own
+      ftType, so agreement is the normal case --->
+<cfif not structKeyExists(stMetadata,"ftType") or compareNoCase(url.formtool,stMetadata.ftType) neq 0>
+	<cfset application.fapi.stream(content={ "error" = "Formtool does not match the property" },type="json",status="400 Bad Request") />
+	<cfabort />
+</cfif>
+
 <cfset oType = createobject("component",application.stCOAPI[url.typename].packagepath) />
 
 <!---

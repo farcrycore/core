@@ -448,6 +448,13 @@
 			<cfreturn "[]" />
 		</cfif>
 
+		<!--- Same content permission as the direct-to-bucket branch above. This is the
+		      transport that writes the file through the server rather than to a bucket, and
+		      it performs the same content operation, so it is gated the same way. --->
+		<cfif not application.fc.lib.directupload.checkUploadPermission(typename=arguments.typename, objectid=arguments.stObject.objectid)>
+			<cfreturn serializeJSON({ "error" = "You do not have permission to upload to this field." }) />
+		</cfif>
+
 		<cfif structkeyexists(arguments.stObject,"status")>
 			<cfset objStatus = arguments.stObject.status />
 		</cfif>
@@ -543,26 +550,58 @@
 		<cfset var stPrep = "" />
 		<cfset var stJSON = structnew() />
 		<cfset var value = "" />
+		<cfset var stBind = structnew() />
+		<cfset var stClaim = "" />
+		<cfset var maxsize = 0 />
+		<cfset var json = "" />
+		<cfset var uploadid = "" />
 
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
 		<cfparam name="arguments.stMetadata.ftMaxSize" default="0" />
 		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="" /><!--- real default comes from the file cfproperty via COAPI; "" mirrors ajax() --->
 
+		<!--- the facts this upload is authorised against. resolved the same way at sign and
+		      at finalize, so a finalize that presents a different context is refused --->
+		<cfset stBind = {
+			"surface" = "file",
+			"location" = location,
+			"typename" = arguments.typename,
+			"property" = arguments.stMetadata.name,
+			"objectid" = arguments.stObject.objectid
+		} />
+
+		<!--- both steps authorise a write against this object, and authorization can change
+		      between two requests, so both are gated rather than only the first --->
+		<cfif not application.fc.lib.directupload.checkUploadPermission(typename=arguments.typename, objectid=arguments.stObject.objectid)>
+			<cfreturn serializeJSON({ "error" = "You do not have permission to upload to this field." }) />
+		</cfif>
 
 		<cfif url.s3op eq "sign">
 			<cftry>
+				<cfset maxsize = val(arguments.stMetadata.ftMaxSize) />
 				<cfset stPrep = application.fc.lib.cdn.prepareDirectUpload(
 					location=location,
 					destination=arguments.stMetadata.ftDestination,
 					filename=structKeyExists(stBody,"filename") ? stBody.filename : "upload",
 					uniqueAmong="privatefiles,publicfiles",
 					contentType=structKeyExists(stBody,"type") ? stBody.type : "",
-					maxSize=val(arguments.stMetadata.ftMaxSize),
+					maxSize=maxsize,
 					acceptExtensions=arguments.stMetadata.ftAllowedFileExtensions
 				) />
 				<!--- Carry the resolved value to the client so finalize can echo it back
 				      (the client treats it as an opaque token; no key->value reversal needed). --->
 				<cfset stPrep.params["value"] = stPrep.value />
+				<!--- and the authorization finalize has to present. what it grants is held
+				      server side; the client only ever carries the id --->
+				<cfset stPrep.params["uploadid"] = application.fc.lib.directupload.issue(
+					bind = stBind,
+					grant = {
+						"value" = stPrep.value,
+						"key" = structKeyExists(stPrep.params,"key") ? stPrep.params.key : "",
+						"maxsize" = maxsize,
+						"extension" = listlast(stPrep.value,".")
+					}
+				) />
 				<cfreturn serializeJSON(stPrep.params) />
 
 				<cfcatch type="any">
@@ -572,12 +611,24 @@
 
 		<cfelseif url.s3op eq "finalize">
 			<cftry>
-				<cfset value = structKeyExists(stBody,"value") ? stBody.value : "" />
+				<cfset uploadid = structKeyExists(stBody,"uploadid") ? stBody.uploadid : "" />
+				<cfset stClaim = application.fc.lib.directupload.claimAndVerify(
+					uploadid = uploadid,
+					expect = stBind,
+					clientValue = structKeyExists(stBody,"value") ? stBody.value : ""
+				) />
 
-				<!--- confirm the object actually landed before recording the client value (mirrors image.cfc) --->
-				<cfif not len(value) or not application.fc.lib.cdn.ioFileExists(location=location, file=value)>
-					<cfreturn serializeJSON({ "objectid"=arguments.stObject.objectid, "value"="", "filename"="", "fullpath"="", "error"="Uploaded file could not be found" }) />
+				<!--- a repeat of a finalize that already reported a result gets that result
+				      back rather than a second run --->
+				<cfif stClaim.status eq "replay">
+					<cfreturn stClaim.result />
 				</cfif>
+				<cfif stClaim.status neq "ok">
+					<cfreturn serializeJSON({ "objectid"=arguments.stObject.objectid, "value"="", "filename"="", "fullpath"="", "error"=stClaim.message }) />
+				</cfif>
+
+				<!--- the accepted value is the one the server authorised, never the request's --->
+				<cfset value = stClaim.value />
 
 				<cfset stJSON["objectid"] = arguments.stObject.objectid />
 				<cfset stJSON["value"] = value />
@@ -588,7 +639,10 @@
 					<cfset stJSON["fullpath"] = application.fc.lib.cdn.ioGetFileLocation(location=location, file=value, bRetrieve=false).path />
 					<cfcatch type="any"></cfcatch>
 				</cftry>
-				<cfreturn serializeJSON(stJSON) />
+
+				<cfset json = serializeJSON(stJSON) />
+				<cfset application.fc.lib.directupload.complete(uploadid=uploadid, result=json) />
+				<cfreturn json />
 
 				<cfcatch type="any">
 					<cfreturn serializeJSON({ "objectid"=arguments.stObject.objectid, "value"="", "filename"="", "fullpath"="", "error"=cfcatch.message }) />
