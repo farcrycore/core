@@ -229,8 +229,50 @@
 		<cfif structKeyExists(stException, "where") and len(stException.where)>
 			<cfset stResult["where"] = stException.where />
 		</cfif>
-		
+
+		<!--- last, so it also covers anything collectRequestInfo was extended to add --->
+		<cfset scrubSessionTokens(stResult) />
+
 		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="scrubSessionTokens" access="private" output="false" returntype="void" hint="Removes session identifiers from an error report, in place, wherever they appear in it. Runs last in normalizeError because this struct has two destinations - callers render it and reporters transmit it - and a session identifier in either is a credential, whichever layer put it there.">
+		<cfargument name="data" type="any" required="true" />
+		<cfargument name="depth" type="numeric" required="false" default="0" />
+
+		<cfset var i = 0 />
+		<cfset var aKeys = arraynew(1) />
+
+		<!--- Mutates in place. Safe because the report holds only scalars and copies, never a
+		      live scope reference - collectRequestInfo returns scalars, the exception is
+		      duplicated, and anything an extension adds must already be copyable to survive
+		      being serialized. Only structs are modified, and those are by reference on both
+		      engines. The depth bound is insurance; duplicate() upstream would have failed on
+		      a cycle first. --->
+		<cfif arguments.depth gt 20>
+			<cfreturn />
+		</cfif>
+
+		<cfif isStruct(arguments.data)>
+			<!--- structKeyArray, not structKeyList: a key containing a comma would split. It also
+			      snapshots the keys, so deleting while iterating is safe. --->
+			<cfset aKeys = structKeyArray(arguments.data) />
+
+			<cfloop from="1" to="#arraylen(aKeys)#" index="i">
+				<cfif listfindnocase("cfid,cftoken,jsessionid,sessionid,urltoken",listlast(aKeys[i],"."))>
+					<cfset structDelete(arguments.data,aKeys[i]) />
+				<cfelseif structKeyExists(arguments.data,aKeys[i]) and not isSimpleValue(arguments.data[aKeys[i]])>
+					<cfset scrubSessionTokens(arguments.data[aKeys[i]],arguments.depth+1) />
+				</cfif>
+			</cfloop>
+
+		<cfelseif isArray(arguments.data)>
+			<cfloop from="1" to="#arraylen(arguments.data)#" index="i">
+				<cfif not isSimpleValue(arguments.data[i])>
+					<cfset scrubSessionTokens(arguments.data[i],arguments.depth+1) />
+				</cfif>
+			</cfloop>
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="logData" access="public" output="false" returntype="void" hint="Logs an error via the diagnostic logger (categories 'application' and 'exception', so destination and format follow config); falls back to cflog before the logger is available (early boot). Credentials are scrubbed before emit.">
