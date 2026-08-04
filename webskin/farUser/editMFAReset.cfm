@@ -68,7 +68,7 @@ VIEW
 			</tbody>
 		</table>
 
-		<div class="alert alert-warning"><admin:resource key="security.mfa.admin.resethelp">Resetting removes every factor. They will be asked to enrol again at next login if your policy requires it.</admin:resource></div>
+		<div class="alert alert-warning"><admin:resource key="security.mfa.admin.resethelp">Resetting removes every factor, recovery codes included. If your policy requires multi-factor authentication for this user, they must set it up again to sign in - a user who has enrolled before is not offered the enrolment grace period a second time.</admin:resource></div>
 	</cfoutput>
 
 	<ft:form>

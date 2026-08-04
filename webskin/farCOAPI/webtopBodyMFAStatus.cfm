@@ -10,7 +10,9 @@
 	secrets need migrating onto the current encryption key after a rotation. When migration is
 	needed, an admin can start a background re-wrap (the bulk counterpart to the lazy re-wrap on
 	login); progress is read from a server-scope flag. All figures come from indexed aggregate
-	queries. SecurityManagement-gated.
+	queries. It also surfaces the one cleanup the lifecycle can no longer create for itself -
+	recovery-code sets left active on an account with no second factor - with a revoke action.
+	SecurityManagement-gated.
 --->
 
 <cfif not application.security.checkPermission(permission="SecurityManagement")>
@@ -39,6 +41,9 @@
 	// factor statistics + migration status (indexed aggregate queries - no row loading)
 	stStats = oFactor.getFactorStats(userDirectory = udKey);
 	stMig = oFactor.getTOTPMigrationStats(currentKeyId = currentKeyId, userDirectory = udKey);
+	// recovery-code sets left active on an account with no active primary factor: only possible from before
+	// the last-factor cascade, so they are cleanup evidence rather than a live state the flows can reach
+	orphanSets = oFactor.getOrphanRecoveryCodeSets(userDirectory = udKey).recordcount;
 
 	// migration progress flag (server scope, per application)
 	function readMigrationFlag() {
@@ -73,10 +78,23 @@
 	}
 	bConfirm = (action eq "__migrateconfirm__" and not bRunning and keyConfigured and stMig.needsMigration gt 0);
 
+	// revoke orphaned recovery-code sets (idempotent; rows are revoked and cleared, never deleted, so the
+	// enrolment history survives the cleanup)
+	orphanMsg = "";
+	if (action eq "__revokeorphans__" and bCSRFOk and orphanSets gt 0) {
+		revokedOrphans = oFactor.revokeOrphanRecoveryCodes(userDirectory = udKey);
+		orphanMsg = "Revoked " & revokedOrphans & " orphaned recovery-code set" & ((revokedOrphans neq 1) ? "s" : "") & ".";
+		orphanSets = oFactor.getOrphanRecoveryCodeSets(userDirectory = udKey).recordcount;
+		stStats = oFactor.getFactorStats(userDirectory = udKey);
+	}
+	bOrphanConfirm = (action eq "__revokeorphansconfirm__" and orphanSets gt 0);
+
 	// display helpers
 	pctCurrent = (stMig.total gt 0) ? round(stMig.current / stMig.total * 100) : 100;
 	migPlural = (stMig.needsMigration neq 1) ? "s" : "";
 	migBtnLabel = "Migrate " & stMig.needsMigration & " secret" & migPlural & " to the current key";
+	orphanPlural = (orphanSets neq 1) ? "s" : "";
+	orphanBtnLabel = "Revoke " & orphanSets & " orphaned recovery-code set" & orphanPlural;
 	flagTotal = structKeyExists(stFlag, "total") ? stFlag.total : 0;
 	flagDone = structKeyExists(stFlag, "done") ? stFlag.done : 0;
 	flagFailed = structKeyExists(stFlag, "failed") ? stFlag.failed : 0;
@@ -129,6 +147,19 @@
 			<div class="mfa-tile"><div class="n">#stStats.emailOTP#</div><div class="l">Email codes</div></div>
 			<div class="mfa-tile"><div class="n">#stStats.recoveryCode#</div><div class="l">Recovery-code sets</div></div>
 		</div>
+
+		<cfif len(orphanMsg)><p class="text-success">#encodeForHTML(orphanMsg)#</p></cfif>
+
+		<cfif orphanSets gt 0>
+			<p><i class="fa fa-exclamation-triangle text-warning"></i> <strong>#orphanSets#</strong> recovery-code set#orphanPlural# #(orphanSets neq 1) ? "belong" : "belongs"# to an account with no active second factor. Retiring the last factor now retires its codes with it, so #(orphanSets neq 1) ? "these are" : "this is"# left over from an earlier removal and should be revoked.</p>
+			<cfif bOrphanConfirm>
+				<div class="alert alert-warning">This revokes #orphanSets# recovery-code set#orphanPlural# and clears the stored codes. The rows are kept as enrolment history, so an affected user still has to enrol again rather than skipping during a grace period. Proceed?</div>
+				<ft:button value="Revoke sets" text="Revoke them now" selectedObjectID="__revokeorphans__" validate="false" />
+				<ft:button value="Cancel" selectedObjectID="__cancel__" validate="false" />
+			<cfelse>
+				<ft:button value="#orphanBtnLabel#" selectedObjectID="__revokeorphansconfirm__" validate="false" />
+			</cfif>
+		</cfif>
 	</div>
 
 	<div class="mfa-panel">

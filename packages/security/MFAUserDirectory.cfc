@@ -41,7 +41,7 @@
 		<cfreturn isMFAMandatory(arguments.userid) />
 	</cffunction>
 
-	<cffunction name="isMFAMandatory" access="public" output="false" returntype="boolean" hint="True when policy compels MFA for this user (required mode, or they hold a role in mfaRequiredRoles). Distinct from requiresMFA: a mandatory user may not remove their own factor, whereas a merely-enrolled user in optional mode may">
+	<cffunction name="isMFAMandatory" access="public" output="false" returntype="boolean" hint="True when policy compels MFA for this user (required mode, or they hold a role in mfaRequiredRoles). Distinct from requiresMFA, which is also true for any enrolled user in optional mode: a mandatory user may not turn MFA off, and only a mandatory user is subject to the enrolment grace deadline. Removing an individual self-service factor is allowed either way - a mandatory user who removes their last one must re-enrol at the next login">
 		<cfargument name="userid" type="string" required="true" />
 
 		<cfset var mode = getMFAMode() />
@@ -272,13 +272,19 @@
 				<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
 					<cfset stEnrol = confirmTOTPEnrolment(userid=arguments.userid, code=trim(stProperties.code)) />
 					<cfif stEnrol.bSuccess>
-						<!--- persist the codes so the display step survives a refresh; cleared on ack or login --->
-						<cfset stContext.bRecoveryShown = true />
-						<cfset stContext.aRecoveryCodes = stEnrol.aRecoveryCodes />
-						<cfset stContext.enrolMethod = "totp" />
-						<cfset stResult.reason = "recoveryCodes" />
-						<cfset stResult.bShowRecovery = true />
-						<cfset stResult.aRecoveryCodes = stEnrol.aRecoveryCodes />
+						<cfif arrayLen(stEnrol.aRecoveryCodes)>
+							<!--- first factor: persist the codes so the display step survives a refresh; cleared on ack or login --->
+							<cfset stContext.bRecoveryShown = true />
+							<cfset stContext.aRecoveryCodes = stEnrol.aRecoveryCodes />
+							<cfset stContext.enrolMethod = "totp" />
+							<cfset stResult.reason = "recoveryCodes" />
+							<cfset stResult.bShowRecovery = true />
+							<cfset stResult.aRecoveryCodes = stEnrol.aRecoveryCodes />
+						<cfelse>
+							<cfset stResult.verified = true />
+							<cfset stResult.reason = "" />
+							<cfset stResult.method = "totp" />
+						</cfif>
 					<cfelse>
 						<cfset stResult.reason = stEnrol.reason />
 						<cfset stResult.message = stEnrol.message />
@@ -320,7 +326,7 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="confirmTOTPEnrolment" access="public" output="false" returntype="struct" hint="Verifies the confirmation code, activates the factor and issues recovery codes">
+	<cffunction name="confirmTOTPEnrolment" access="public" output="false" returntype="struct" hint="Verifies the confirmation code, activates the factor, and issues recovery codes only when this is the user's first active factor (replacing an authenticator, or adding one alongside another factor, leaves the existing codes alone)">
 		<cfargument name="userid" type="string" required="true" />
 		<cfargument name="code" type="string" required="true" />
 
@@ -329,6 +335,7 @@
 		<cfset var stVerify = structnew() />
 		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var sealed = "" />
+		<cfset var bFirstFactor = false />
 
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 
@@ -357,10 +364,15 @@
 			</cfcatch>
 		</cftry>
 
-		<!--- idempotent: a re-enrolment replaces the existing authenticator rather than stacking a second (dead) totp row --->
-		<cfset getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="totp") />
+		<!--- first active factor, read before anything is written: recovery codes back an enrolment, so they issue on that transition only and are not rotated out from under a user who is already enrolled --->
+		<cfset bFirstFactor = not getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
+
+		<!--- idempotent: a re-enrolment retires the existing authenticator rather than stacking a second (dead) totp row. The new code is verified above, so the old factor is only revoked once the replacement is proven. --->
+		<cfset getFactorType().revokeFactors(userKey=userKey, userDirectory=this.key, factorType="totp") />
 		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="totp", stPayload={ secret = sealed, lastStep = stVerify.step }, label="Authenticator app", keyId=variables.oMFACrypto.envelopeKeyId(sealed)) />
-		<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
+		<cfif bFirstFactor>
+			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
+		</cfif>
 		<cfset structDelete(stContext, "enrolSecret") />
 
 		<cfset resetLoginFailures(userKey) />
@@ -443,10 +455,11 @@
 			<cfreturn stResult />
 		</cfif>
 
+		<!--- first active factor, read before anything is written --->
 		<cfset bFirstFactor = not getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
 
-		<!--- idempotent: replace any existing email factor rather than stacking a second --->
-		<cfset getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="emailOTP") />
+		<!--- idempotent: retire any existing email factor rather than stacking a second --->
+		<cfset getFactorType().revokeFactors(userKey=userKey, userDirectory=this.key, factorType="emailOTP") />
 		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="emailOTP", stPayload={ enrolledAt = now() }, label="Email") />
 		<cfset structDelete(stContext, "enrolEmailOTP") />
 
@@ -465,26 +478,30 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="regenerateRecoveryCodes" access="public" output="false" returntype="struct" hint="Replaces the user's recovery codes; returns the new set for one-time display">
+	<cffunction name="regenerateRecoveryCodes" access="public" output="false" returntype="struct" hint="Replaces the user's recovery codes; returns the new set for one-time display. Refused for a user with no active factor - recovery codes exist as the fallback for an enrolment, so issuing them to a de-enrolled account would only leave an orphaned set behind.">
 		<cfargument name="userid" type="string" required="true" />
 
-		<cfset var stResult = { bSuccess = false, aRecoveryCodes = arraynew(1) } />
+		<cfset var stResult = { bSuccess = false, reason = "", message = "", aRecoveryCodes = arraynew(1) } />
 		<cfset var userKey = getUserKey(arguments.userid) />
 
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 
-		<cfif len(userKey)>
-			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
-			<cfset stResult.bSuccess = true />
-
-			<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="recovery codes regenerated", userid="#arguments.userid#_#this.key#", stFields={ method = "recoveryCode" }) />
-			<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="recoveryCode" />
+		<cfif not len(userKey) or not getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key)>
+			<cfset stResult.reason = "notEnrolled" />
+			<cfset stResult.message = "Recovery codes are issued with a second factor. Set one up first." />
+			<cfreturn stResult />
 		</cfif>
+
+		<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
+		<cfset stResult.bSuccess = true />
+
+		<cfset application.security.logSecurityEvent(event="mfaEnrolled", message="recovery codes regenerated", userid="#arguments.userid#_#this.key#", stFields={ method = "recoveryCode" }) />
+		<farcry:logevent type="security" event="mfaEnrolled" userid="#arguments.userid#_#this.key#" notes="recoveryCode" />
 
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="resetMFA" access="public" output="false" returntype="numeric" hint="Removes all of a user's factors (admin reset or self-service disable); returns the number removed">
+	<cffunction name="resetMFA" access="public" output="false" returntype="numeric" hint="Retires all of a user's active factors, recovery codes included (admin reset or self-service disable); returns the number revoked, 0 when there was nothing active. The rows are kept as non-secret enrolment history, so a mandatory user who has enrolled before re-enrols at the next login rather than falling back into the grace skip; purgeFactors is the deliberate way to erase that history.">
 		<cfargument name="userKey" type="string" required="true" hint="The stable user key" />
 		<cfargument name="by" type="string" required="false" default="admin" hint="self / admin" />
 
@@ -494,7 +511,9 @@
 
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 
-		<cfset count = getFactorType().removeFactors(userKey=arguments.userKey, userDirectory=this.key) />
+		<cflock name="#factorLockName(arguments.userKey)#" type="exclusive" timeout="10">
+			<cfset count = getFactorType().revokeFactors(userKey=arguments.userKey, userDirectory=this.key) />
+		</cflock>
 
 		<cfif count gt 0>
 			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="second factor disabled", userid=eventUserid, stFields={ by = arguments.by }) />
@@ -515,6 +534,8 @@
 		<cfset stResult.bKeyConfigured = variables.oMFACrypto.isKeyConfigured() />
 		<cfset stResult.userKey = userKey />
 		<cfset stResult.bEnrolled = len(userKey) and getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
+		<!--- has been enrolled at some point, whether or not they are now: a mandatory user in this state re-enrols at the next login instead of being offered the grace skip --->
+		<cfset stResult.bEverEnrolled = len(userKey) and getFactorType().hasEverEnrolled(userKey=userKey, userDirectory=this.key) />
 		<cfset stResult.bRequired = requiresMFA(userid=arguments.userid) />
 		<cfset stResult.bMandatory = isMFAMandatory(userid=arguments.userid) />
 		<cfif len(userKey)>
@@ -577,6 +598,7 @@
 		<cfset var stPayload = structnew() />
 		<cfset var aTransports = arraynew(1) />
 		<cfset var t = "" />
+		<cfset var bFirstFactor = false />
 
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 
@@ -610,11 +632,16 @@
 		<cfset stPayload = duplicate(stReg.stCredential) />
 		<cfset stPayload.transports = aTransports />
 
+		<!--- first active factor, read before the new row lands. The test is that transition, not whether a
+		      recovery-code row exists, so historical rows cannot suppress issuance for a new enrolment. --->
+		<cfset bFirstFactor = not getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key) />
+
 		<cfset getFactorType().createFactor(userKey=userKey, userDirectory=this.key, factorType="passkey", stPayload=stPayload, label=left(trim(arguments.label), 255)) />
 
-		<!--- first factor for this user? issue recovery codes as the account recovery fallback. A passkey added
-		      alongside an existing factor keeps the codes already in place (no array returned = no display step). --->
-		<cfif structIsEmpty(getFactorType().getActiveFactor(userKey=userKey, userDirectory=this.key, factorType="recoveryCode"))>
+		<!--- first factor for this user? issue recovery codes as the account recovery fallback, replacing any older
+		      set. A passkey added alongside an existing factor keeps the codes already in place (no array returned
+		      = no display step). --->
+		<cfif bFirstFactor>
 			<cfset stResult.aRecoveryCodes = issueRecoveryCodes(userKey=userKey) />
 		</cfif>
 
@@ -664,12 +691,13 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="removePasskey" access="public" output="false" returntype="boolean" hint="Removes one of the user's passkeys (self-service); leaves other factors and recovery codes in place. Ownership is checked in storage.">
+	<cffunction name="removePasskey" access="public" output="false" returntype="boolean" hint="Retires one of the user's passkeys (self-service); other factors are left in place, and the recovery codes with them unless this was the last active factor. Ownership and factor type are both checked in storage.">
 		<cfargument name="userid" type="string" required="true" />
 		<cfargument name="objectid" type="uuid" required="true" />
 
 		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var bRemoved = false />
+		<cfset var bLastFactor = false />
 
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 
@@ -677,11 +705,17 @@
 			<cfreturn false />
 		</cfif>
 
-		<cfset bRemoved = getFactorType().removeFactorForUser(objectid=arguments.objectid, userKey=userKey, userDirectory=this.key) />
+		<!--- the revoke and the last-factor cascade are one operation, so the codes cannot outlive the enrolment --->
+		<cflock name="#factorLockName(userKey)#" type="exclusive" timeout="10">
+			<cfset bRemoved = getFactorType().revokeFactorForUser(objectid=arguments.objectid, userKey=userKey, userDirectory=this.key, factorType="passkey") />
+			<cfif bRemoved>
+				<cfset bLastFactor = revokeRecoveryCodesWhenUnenrolled(userKey) />
+			</cfif>
+		</cflock>
 
 		<cfif bRemoved>
-			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="passkey removed", userid="#arguments.userid#_#this.key#", stFields={ method = "passkey", by = "self" }) />
-			<farcry:logevent type="security" event="mfaDisabled" userid="#arguments.userid#_#this.key#" notes="passkey removed by self" />
+			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="passkey removed", userid="#arguments.userid#_#this.key#", stFields={ method = "passkey", by = "self", lastFactor = bLastFactor }) />
+			<farcry:logevent type="security" event="mfaDisabled" userid="#arguments.userid#_#this.key#" notes="passkey removed by self#bLastFactor ? ' (last factor)' : ''#" />
 		</cfif>
 
 		<cfreturn bRemoved />
@@ -749,11 +783,12 @@
 		<cfreturn isEmailFactorUsable(userKey) />
 	</cffunction>
 
-	<cffunction name="removeEmailFactor" access="public" output="false" returntype="boolean" hint="Removes the user's email OTP factor (self-service); returns true when one was removed. Other factors and recovery codes are left in place.">
+	<cffunction name="removeEmailFactor" access="public" output="false" returntype="boolean" hint="Retires the user's email OTP factor (self-service); returns true when one was removed. Other factors are left in place, and the recovery codes with them unless this was the last active factor.">
 		<cfargument name="userid" type="string" required="true" />
 
 		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var n = 0 />
+		<cfset var bLastFactor = false />
 
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 
@@ -761,11 +796,16 @@
 			<cfreturn false />
 		</cfif>
 
-		<cfset n = getFactorType().removeFactors(userKey=userKey, userDirectory=this.key, factorType="emailOTP") />
+		<cflock name="#factorLockName(userKey)#" type="exclusive" timeout="10">
+			<cfset n = getFactorType().revokeFactors(userKey=userKey, userDirectory=this.key, factorType="emailOTP") />
+			<cfif n gt 0>
+				<cfset bLastFactor = revokeRecoveryCodesWhenUnenrolled(userKey) />
+			</cfif>
+		</cflock>
 
 		<cfif n gt 0>
-			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="email factor removed", userid="#arguments.userid#_#this.key#", stFields={ method = "emailOTP", by = "self" }) />
-			<farcry:logevent type="security" event="mfaDisabled" userid="#arguments.userid#_#this.key#" notes="emailOTP removed by self" />
+			<cfset application.security.logSecurityEvent(event="mfaDisabled", message="email factor removed", userid="#arguments.userid#_#this.key#", stFields={ method = "emailOTP", by = "self", lastFactor = bLastFactor }) />
+			<farcry:logevent type="security" event="mfaDisabled" userid="#arguments.userid#_#this.key#" notes="emailOTP removed by self#bLastFactor ? ' (last factor)' : ''#" />
 		</cfif>
 
 		<cfreturn n gt 0 />
@@ -773,7 +813,7 @@
 
 	<!--- ============= Grace period (staged rollout) ============= --->
 
-	<cffunction name="graceSkipAvailable" access="public" output="false" returntype="boolean" hint="True when a mandatory but not-yet-enrolled user may skip enrolment during the grace period (drives the 'skip for now' option; the skip is always re-checked server-side on submit).">
+	<cffunction name="graceSkipAvailable" access="public" output="false" returntype="boolean" hint="True when a mandatory user who has NEVER enrolled may skip enrolment during the grace period (drives the 'skip for now' option; the skip is always re-checked server-side on submit).">
 		<cfargument name="userid" type="string" required="true" />
 
 		<cfset var userKey = getUserKey(arguments.userid) />
@@ -781,7 +821,10 @@
 		<cfif not len(userKey)>
 			<cfreturn false />
 		</cfif>
-		<cfif getFactorType().hasActiveAuthFactor(userKey=userKey, userDirectory=this.key)>
+
+		<!--- SECURITY INVARIANT: eligibility is prior enrolment, not the current active-factor count. The skip is a
+		      one-off nudge for an account that has never enrolled; a returning enrollee goes to re-enrolment. --->
+		<cfif getFactorType().hasEverEnrolled(userKey=userKey, userDirectory=this.key)>
 			<cfreturn false />
 		</cfif>
 
@@ -790,6 +833,24 @@
 
 
 	<!--- MFA private helpers --->
+
+	<cffunction name="factorLockName" access="private" output="false" returntype="string" hint="Lock name serialising the factor-lifecycle operations for one user in this directory, so a revoke and its recovery-code cascade cannot interleave with another removal for the same account. Hashed because the user key goes into the name.">
+		<cfargument name="userKey" type="string" required="true" />
+
+		<cfreturn "farcryMFAFactorLifecycle_" & hash(arguments.userKey & "|" & this.key) />
+	</cffunction>
+
+	<cffunction name="revokeRecoveryCodesWhenUnenrolled" access="private" output="false" returntype="boolean" hint="Retires the active recovery-code set when the user has no active primary factor left, so codes issued for an enrolment cannot outlive it. Returns true when that was the case (the caller has just removed the last factor). Call inside factorLockName so the check and the revoke are one operation.">
+		<cfargument name="userKey" type="string" required="true" />
+
+		<cfif getFactorType().hasActiveAuthFactor(userKey=arguments.userKey, userDirectory=this.key)>
+			<cfreturn false />
+		</cfif>
+
+		<cfset getFactorType().revokeFactors(userKey=arguments.userKey, userDirectory=this.key, factorType="recoveryCode") />
+
+		<cfreturn true />
+	</cffunction>
 
 	<cffunction name="checkEmailCode" access="private" output="false" returntype="struct" hint="Checks a submitted code against a stashed email-code state { hash, expiresAt }; returns { matched, expired }. Match is via the hash comparison; expiry is by epoch seconds.">
 		<cfargument name="stCodeState" type="struct" required="true" />
@@ -1065,7 +1126,7 @@
 		<cfreturn dateDiff("n", lastActivity, now()) lt 30 />
 	</cffunction>
 
-	<cffunction name="issueRecoveryCodes" access="private" output="false" returntype="array" hint="Generates a fresh recovery code set, stores the hashes and returns the plain codes for one-time display">
+	<cffunction name="issueRecoveryCodes" access="private" output="false" returntype="array" hint="Generates a fresh recovery code set, stores the hashes and returns the plain codes for one-time display. Storage retires the previous set first, so exactly one set is ever active and codes from an earlier enrolment stop authenticating.">
 		<cfargument name="userKey" type="string" required="true" />
 
 		<cfset var aCodes = variables.oMFACrypto.generateRecoveryCodes(10) />

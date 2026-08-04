@@ -23,7 +23,7 @@
 	<cfproperty name="status" type="string" default="active"
 		ftSeq="4" ftFieldset="" ftLabel="Status"
 		ftType="string" dbIndex="IDX_mfaFactorKey:2"
-		hint="active / revoked">
+		hint="active / revoked. Only an active row can authenticate. A revoked row keeps no payload and exists solely as non-secret evidence that the user completed an enrolment once, so a returning enrollee stays distinguishable from a new one after a removal (see hasEverEnrolled). The security events remain the audit record.">
 
 	<cfproperty name="payload" type="longchar" default=""
 		ftSeq="5" ftFieldset="" ftLabel="Payload"
@@ -97,6 +97,23 @@
 		</cfloop>
 
 		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="hasEverEnrolled" access="public" output="false" returntype="boolean" hint="True when this user has completed an enrolment at some point, read from retained factor history rather than the current active-factor count. Any row counts - active or revoked, primary factor or recovery-code set - because a row is only ever written once a factor has been proven. This is what tells a previously enrolled user apart from a genuinely never-enrolled one after a removal, so the enrolment grace skip cannot be handed back by removing a factor. A row hard-deleted by purgeFactors is gone from this history by design.">
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+
+		<cfset var qHistory = "" />
+
+		<cfquery datasource="#application.dsn#" name="qHistory">
+			SELECT COUNT(*) AS n
+			FROM #application.dbowner#farMFAFactor
+			WHERE
+				userKey = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userKey#">
+				AND userDirectory = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userDirectory#">
+		</cfquery>
+
+		<cfreturn val(qHistory.n) gt 0 />
 	</cffunction>
 
 	<cffunction name="createFactor" access="public" output="false" returntype="string" hint="Creates a factor row and returns its objectid. The payload must already have secret material encrypted. Pass keyId for a totp factor (the id its secret is sealed under) so the denormalised column stays in step; leave empty for factor types not sealed with the rotating key.">
@@ -245,19 +262,58 @@
 		<cfreturn structnew() />
 	</cffunction>
 
-	<cffunction name="removeFactorForUser" access="public" output="false" returntype="boolean" hint="Deletes one factor row, but only when it belongs to the given user (guards a forged objectid from removing another user's factor). Returns true when a row was removed.">
+	<cffunction name="revokeFactorForUser" access="public" output="false" returntype="boolean" hint="Soft-revokes one factor row, but only when it belongs to the given user and - when factorType is passed - is of that type. Both are checked here rather than trusted from the caller, so a removal only ever reaches the row the operation names. Returns true when a row moved from active to revoked.">
 		<cfargument name="objectid" type="uuid" required="true" />
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="true" />
+		<cfargument name="factorType" type="string" required="false" default="" hint="Constrain the removal to this factor type; empty allows any" />
 
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 
-		<cfif not structIsEmpty(stObj) and structKeyExists(stObj, "userKey") and stObj.userKey eq arguments.userKey and stObj.userDirectory eq arguments.userDirectory>
-			<cfset delete(objectid=arguments.objectid) />
-			<cfreturn true />
+		<cfif structIsEmpty(stObj) or not structKeyExists(stObj, "userKey")>
+			<cfreturn false />
+		</cfif>
+		<cfif stObj.userKey neq arguments.userKey or stObj.userDirectory neq arguments.userDirectory>
+			<cfreturn false />
+		</cfif>
+		<cfif len(arguments.factorType) and stObj.factorType neq arguments.factorType>
+			<cfreturn false />
 		</cfif>
 
-		<cfreturn false />
+		<cfreturn revokeFactor(objectid=arguments.objectid) gt 0 />
+	</cffunction>
+
+	<cffunction name="revokeFactors" access="public" output="false" returntype="numeric" hint="Soft-revokes every ACTIVE factor row for a user, optionally of one type, and returns how many were revoked. Idempotent over retained history: a repeat call returns 0 rather than reporting already-revoked rows as newly removed.">
+		<cfargument name="userKey" type="string" required="true" />
+		<cfargument name="userDirectory" type="string" required="true" />
+		<cfargument name="factorType" type="string" required="false" default="" />
+
+		<cfset var qFactors = getFactors(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType=arguments.factorType, status="active") />
+		<cfset var i = 0 />
+		<cfset var revoked = 0 />
+
+		<cfloop from="1" to="#qFactors.recordcount#" index="i">
+			<cfset revoked = revoked + revokeFactor(objectid=qFactors.objectid[i]) />
+		</cfloop>
+
+		<cfreturn revoked />
+	</cffunction>
+
+	<cffunction name="revokeFactor" access="private" output="false" returntype="numeric" hint="Marks one row revoked and strips what could still authenticate with it: the payload (a sealed totp secret, passkey credential material, or a recovery-code set's hashes) and the stale keyId. What is left is non-secret enrolment history, not an audit trail - the security events own that. Returns 1 when a row moved from active to revoked, 0 when it was already revoked or gone.">
+		<cfargument name="objectid" type="uuid" required="true" />
+
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+
+		<cfif structIsEmpty(stObj) or not structKeyExists(stObj, "status") or stObj.status neq "active">
+			<cfreturn 0 />
+		</cfif>
+
+		<cfset stObj.status = "revoked" />
+		<cfset stObj.payload = "" />
+		<cfset stObj.keyId = "" />
+		<cfset setData(stProperties=stObj, bAudit=false) />
+
+		<cfreturn 1 />
 	</cffunction>
 
 	<cffunction name="setFactorLabel" access="public" output="false" returntype="boolean" hint="Renames one factor, but only when it belongs to the given user. Returns true when the label was changed.">
@@ -289,7 +345,8 @@
 			<cfset arrayAppend(aCodes, { hash = hash, used = false }) />
 		</cfloop>
 
-		<cfset removeFactors(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCode") />
+		<!--- revoke the outgoing set (its hashes are cleared with it) before the new one lands, so exactly one set is ever active --->
+		<cfset revokeFactors(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCode") />
 		<cfset createFactor(userKey=arguments.userKey, userDirectory=arguments.userDirectory, factorType="recoveryCode", stPayload={ codes = aCodes }, label="Recovery codes") />
 	</cffunction>
 
@@ -348,7 +405,7 @@
 		<cfreturn remaining />
 	</cffunction>
 
-	<cffunction name="removeFactors" access="public" output="false" returntype="numeric" hint="Deletes factor rows for a user (all statuses); returns the number removed">
+	<cffunction name="purgeFactors" access="public" output="false" returntype="numeric" hint="HARD-deletes factor rows for a user (every status, history included); returns the number deleted. For intentional purge and cleanup only - removing the owning user record, or discarding a test account. Retiring a factor is revokeFactors: purging also erases the enrolment history hasEverEnrolled reads, after which the account is treated as never enrolled.">
 		<cfargument name="userKey" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="true" />
 		<cfargument name="factorType" type="string" required="false" default="" />
@@ -411,6 +468,47 @@
 		<cfreturn stResult />
 	</cffunction>
 
+	<cffunction name="getOrphanRecoveryCodeSets" access="public" output="false" returntype="query" hint="Active recovery-code sets belonging to a user who holds no active primary factor. The current lifecycle cannot produce this - revoking the last primary factor revokes the set with it - so a row here predates that rule and its hashes should no longer authenticate anything. Scoped to a userDirectory when given.">
+		<cfargument name="userDirectory" type="string" required="false" default="" />
+
+		<cfset var qOrphans = "" />
+
+		<cfquery datasource="#application.dsn#" name="qOrphans">
+			SELECT r.objectid, r.userKey, r.userDirectory
+			FROM #application.dbowner#farMFAFactor r
+			WHERE r.status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
+				AND r.factorType = <cfqueryparam cfsqltype="cf_sql_varchar" value="recoveryCode">
+				<cfif len(arguments.userDirectory)>
+				AND r.userDirectory = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.userDirectory#">
+				</cfif>
+				AND NOT EXISTS (
+					SELECT 1
+					FROM #application.dbowner#farMFAFactor p
+					WHERE p.userKey = r.userKey
+						AND p.userDirectory = r.userDirectory
+						AND p.status = <cfqueryparam cfsqltype="cf_sql_varchar" value="active">
+						AND p.factorType <> <cfqueryparam cfsqltype="cf_sql_varchar" value="recoveryCode">
+				)
+			ORDER BY r.objectid
+		</cfquery>
+
+		<cfreturn qOrphans />
+	</cffunction>
+
+	<cffunction name="revokeOrphanRecoveryCodes" access="public" output="false" returntype="numeric" hint="Revokes and clears every orphaned recovery-code set (see getOrphanRecoveryCodeSets), returning how many were revoked. Idempotent, and it keeps the rows as enrolment history rather than deleting them, so the cleanup does not change how a de-enrolled account is classified.">
+		<cfargument name="userDirectory" type="string" required="false" default="" />
+
+		<cfset var qOrphans = getOrphanRecoveryCodeSets(userDirectory=arguments.userDirectory) />
+		<cfset var i = 0 />
+		<cfset var revoked = 0 />
+
+		<cfloop from="1" to="#qOrphans.recordcount#" index="i">
+			<cfset revoked = revoked + revokeFactor(objectid=qOrphans.objectid[i]) />
+		</cfloop>
+
+		<cfreturn revoked />
+	</cffunction>
+
 	<cffunction name="getTOTPMigrationStats" access="public" output="false" returntype="struct" hint="How many active totp secrets are on the current key vs still need migrating after a rotation, from the indexed keyId column (equality counts; needsMigration is total minus on-current so an unexpected value can never be double-counted).">
 		<cfargument name="currentKeyId" type="string" required="true" />
 		<cfargument name="userDirectory" type="string" required="false" default="" />
@@ -458,6 +556,72 @@
 		</cfquery>
 
 		<cfreturn qPage />
+	</cffunction>
+
+
+	<!--- ============= Self-test (factor lifecycle; touches the database under a throwaway key, then purges it) ============= --->
+
+	<cffunction name="factorLifecycleSelfTest" access="public" output="false" returntype="struct" hint="Exercises the factor lifecycle end to end against the database using a throwaway user key in a throwaway directory, then purges the fixture: a revoke clears the payload but keeps the enrolment history, revocation is idempotent, the ownership and factor-type constraints hold, exactly one recovery-code set is ever active, and an orphaned set is detected and revoked. Writes only rows it owns (userDirectory SELFTESTUD) and deletes them again. Returns { pass, results }.">
+
+		<cfset var stResult = { pass = true, results = arraynew(1) } />
+		<cfset var testKey = "selftest-" & createUUID() />
+		<cfset var testDir = "SELFTESTUD" />
+		<cfset var totpId = "" />
+		<cfset var oldCodesId = "" />
+		<cfset var stOld = structnew() />
+		<cfset var qRows = "" />
+		<cfset var r = "" />
+
+		<cftry>
+			<cfset arrayAppend(stResult.results, { name = "unknown user has no enrolment history", pass = (not hasEverEnrolled(userKey=testKey, userDirectory=testDir)) }) />
+
+			<!--- enrol a totp factor --->
+			<cfset totpId = createFactor(userKey=testKey, userDirectory=testDir, factorType="totp", stPayload={ secret = "gcm.1.iv.cipher", lastStep = 1 }, label="Authenticator app", keyId="1") />
+			<cfset arrayAppend(stResult.results, { name = "new factor is active and counts as enrolment", pass = (hasActiveAuthFactor(userKey=testKey, userDirectory=testDir) and hasStrongAuthFactor(userKey=testKey, userDirectory=testDir) and hasEverEnrolled(userKey=testKey, userDirectory=testDir)) }) />
+
+			<!--- issue, then re-issue, a recovery-code set --->
+			<cfset saveRecoveryCodes(userKey=testKey, userDirectory=testDir, aHashes=["hashA", "hashB"]) />
+			<cfset oldCodesId = getActiveFactor(userKey=testKey, userDirectory=testDir, factorType="recoveryCode").objectid />
+			<cfset arrayAppend(stResult.results, { name = "recovery codes issued (2 remaining)", pass = (getRecoveryCodesRemaining(userKey=testKey, userDirectory=testDir) eq 2) }) />
+
+			<cfset saveRecoveryCodes(userKey=testKey, userDirectory=testDir, aHashes=["hashC"]) />
+			<cfset qRows = getFactors(userKey=testKey, userDirectory=testDir, factorType="recoveryCode", status="active") />
+			<cfset stOld = getData(objectid=oldCodesId) />
+			<cfset arrayAppend(stResult.results, { name = "re-issue leaves exactly one active set", pass = (qRows.recordcount eq 1 and getRecoveryCodesRemaining(userKey=testKey, userDirectory=testDir) eq 1) }) />
+			<cfset arrayAppend(stResult.results, { name = "superseded set is revoked with its hashes cleared", pass = (stOld.status eq "revoked" and not len(stOld.payload)) }) />
+
+			<!--- ownership and factor-type constraints on a single revoke --->
+			<cfset arrayAppend(stResult.results, { name = "revoke refused for another user's objectid", pass = (not revokeFactorForUser(objectid=totpId, userKey="selftest-other-" & createUUID(), userDirectory=testDir)) }) />
+			<cfset arrayAppend(stResult.results, { name = "revoke refused when the factor type does not match", pass = (not revokeFactorForUser(objectid=totpId, userKey=testKey, userDirectory=testDir, factorType="passkey")) }) />
+			<cfset arrayAppend(stResult.results, { name = "refused revokes left the factor active", pass = hasActiveAuthFactor(userKey=testKey, userDirectory=testDir) }) />
+
+			<!--- revoke the only primary factor --->
+			<cfset arrayAppend(stResult.results, { name = "owned revoke of the matching type succeeds", pass = revokeFactorForUser(objectid=totpId, userKey=testKey, userDirectory=testDir, factorType="totp") }) />
+			<cfset stOld = getData(objectid=totpId) />
+			<cfset arrayAppend(stResult.results, { name = "revoked factor keeps no secret or key id", pass = (stOld.status eq "revoked" and not len(stOld.payload) and not len(stOld.keyId)) }) />
+			<cfset arrayAppend(stResult.results, { name = "de-enrolled, but the enrolment history remains", pass = (not hasActiveAuthFactor(userKey=testKey, userDirectory=testDir) and hasEverEnrolled(userKey=testKey, userDirectory=testDir)) }) />
+			<cfset arrayAppend(stResult.results, { name = "bulk revoke is idempotent over revoked history", pass = (revokeFactors(userKey=testKey, userDirectory=testDir, factorType="totp") eq 0) }) />
+
+			<!--- the recovery set is now orphaned: this exercises storage directly, so the directory's last-factor cascade never ran --->
+			<cfset qRows = getOrphanRecoveryCodeSets(userDirectory=testDir) />
+			<cfset arrayAppend(stResult.results, { name = "orphaned recovery set detected", pass = (qRows.recordcount eq 1) }) />
+			<cfset arrayAppend(stResult.results, { name = "orphaned recovery set revoked", pass = (revokeOrphanRecoveryCodes(userDirectory=testDir) eq 1 and getOrphanRecoveryCodeSets(userDirectory=testDir).recordcount eq 0 and getRecoveryCodesRemaining(userKey=testKey, userDirectory=testDir) eq 0) }) />
+			<cfset arrayAppend(stResult.results, { name = "orphan sweep is idempotent", pass = (revokeOrphanRecoveryCodes(userDirectory=testDir) eq 0) }) />
+
+			<cfcatch>
+				<cfset arrayAppend(stResult.results, { name = "self-test threw: #cfcatch.message#", pass = false }) />
+			</cfcatch>
+		</cftry>
+
+		<!--- purge the fixture: the one place a hard delete is the right call --->
+		<cfset purgeFactors(userKey=testKey, userDirectory=testDir) />
+		<cfset arrayAppend(stResult.results, { name = "fixture purged (history gone)", pass = (not hasEverEnrolled(userKey=testKey, userDirectory=testDir)) }) />
+
+		<cfloop array="#stResult.results#" index="r">
+			<cfif not r.pass><cfset stResult.pass = false /></cfif>
+		</cfloop>
+
+		<cfreturn stResult />
 	</cffunction>
 
 </cfcomponent>

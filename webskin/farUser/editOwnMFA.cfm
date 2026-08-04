@@ -50,8 +50,14 @@ ACTION
 	<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
 		<cfset stConfirm = oUD.confirmTOTPEnrolment(userid=userid, code=trim(stProperties.code)) />
 		<cfif stConfirm.bSuccess>
-			<cfset request.fc.aMFARecoveryCodes = stConfirm.aRecoveryCodes />
-			<skin:bubble title="Multi-factor authentication is now active" tags="security,info" />
+			<cfif arrayLen(stConfirm.aRecoveryCodes)>
+				<!--- first factor: codes issued with it, shown once --->
+				<cfset request.fc.aMFARecoveryCodes = stConfirm.aRecoveryCodes />
+				<skin:bubble title="Multi-factor authentication is now active" tags="security,info" />
+			<cfelse>
+				<!--- replacing an authenticator, or adding one alongside another factor: the existing recovery codes still stand --->
+				<skin:bubble title="Authenticator app updated" tags="security,info" />
+			</cfif>
 		<cfelse>
 			<cfset request.mfaError = stConfirm.message />
 		</cfif>
@@ -84,6 +90,8 @@ ACTION
 	<cfif stRegen.bSuccess>
 		<cfset request.fc.aMFARecoveryCodes = stRegen.aRecoveryCodes />
 		<skin:bubble title="New recovery codes generated" tags="security,info" />
+	<cfelse>
+		<cfset request.mfaError = stRegen.message />
 	</cfif>
 </ft:processform>
 
@@ -196,7 +204,7 @@ VIEW
 
 <cfelseif setupFactor eq "totp">
 
-	<!--- authenticator (TOTP) setup: first enrolment or replacement. confirmTOTPEnrolment is idempotent - an existing factor keeps working until the new code is confirmed, then it is replaced and fresh recovery codes are issued --->
+	<!--- authenticator (TOTP) setup: first enrolment or replacement. confirmTOTPEnrolment is idempotent - an existing factor keeps working until the new code is confirmed, then it is retired --->
 	<cfset stEnrol = oUD.startTOTPEnrolment(userid=userid) />
 
 	<cfif not stEnrol.bSuccess>
@@ -204,7 +212,7 @@ VIEW
 	<cfelse>
 		<cfoutput>
 			<cfif stStatus.bEnrolled>
-				<p><admin:resource key="security.mfa.manage.replacehelp">Set up a new authenticator app to replace your current one. Your existing authenticator keeps working until you confirm the new one, and a fresh set of recovery codes is issued.</admin:resource></p>
+				<p><admin:resource key="security.mfa.manage.replacehelp">Set up a new authenticator app to replace your current one. Your existing authenticator keeps working until you confirm the new one, and your recovery codes are unchanged.</admin:resource></p>
 			<cfelse>
 				<p><admin:resource key="security.mfa.manage.setuphelp">Scan the QR code with an authenticator app, then enter the 6 digit code it shows to finish.</admin:resource></p>
 			</cfif>
@@ -288,6 +296,7 @@ VIEW
 	<cfset qFactors = oFactor.getFactors(userKey=stStatus.userKey, userDirectory="CLIENTUD", status="active") />
 	<cfset recoveryRemaining = oFactor.getRecoveryCodesRemaining(userKey=stStatus.userKey, userDirectory="CLIENTUD") />
 	<cfset bHasTOTP = false />
+	<cfset bHasRecovery = false />
 
 	<cfoutput><div class="alert alert-success"><admin:resource key="security.mfa.manage.active">Multi-factor authentication is active on your account.</admin:resource></div></cfoutput>
 
@@ -307,6 +316,7 @@ VIEW
 		</cfoutput>
 		<cfloop query="qFactors">
 			<cfif qFactors.factorType eq "totp"><cfset bHasTOTP = true /></cfif>
+			<cfif qFactors.factorType eq "recoveryCode"><cfset bHasRecovery = true /></cfif>
 			<cfoutput>
 					<tr>
 						<td><i class="fa fa-fw #structKeyExists(stFactorIcons, qFactors.factorType) ? stFactorIcons[qFactors.factorType] : 'fa-lock'#"></i> <cfif qFactors.factorType eq "recoveryCode"><strong><admin:resource key="security.mfa.manage.recoverycodes">Recovery codes</admin:resource></strong><br /><i class="fa fa-fw"></i> <small class="muted">#recoveryRemaining# <admin:resource key="security.mfa.manage.remaining">remaining</admin:resource></small><cfelseif qFactors.factorType eq "passkey"><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : "Passkey")#</strong><br /><i class="fa fa-fw"></i> <small class="muted"><admin:resource key="security.mfa.manage.kind.passkey">Passkey</admin:resource></small><cfelseif qFactors.factorType eq "totp"><strong><admin:resource key="security.mfa.manage.authapp">Authenticator app</admin:resource></strong><cfelse><strong>#encodeForHTML(len(qFactors.label) ? qFactors.label : qFactors.factorType)#</strong></cfif></td>
@@ -338,6 +348,10 @@ VIEW
 				<cfif oUD.emailEnrolAvailable(userid=userid)>
 					<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=email"><i class="fa fa-envelope"></i> <admin:resource key="security.mfa.manage.addemail">Set up email verification</admin:resource></a>
 				</cfif>
+				<cfif not bHasRecovery>
+					<!--- enrolled with no recovery codes: only reachable for a set removed outside the normal lifecycle, which issues one with the first factor. Offer the way back rather than leaving the account without a fallback. --->
+					<ft:button value="Regenerate recovery codes" text="Generate recovery codes" icon="fa-life-ring" validate="false" />
+				</cfif>
 			</p>
 
 			<cfif not stStatus.bMandatory>
@@ -354,7 +368,10 @@ VIEW
 
 	<!--- not enrolled: offer the available second-factor methods (framing depends on whether policy requires it). passkey and authenticator app today; new methods become extra rows in aFactorMethods plus their own setup branch above --->
 	<cfoutput>
-		<cfif stStatus.bMandatory>
+		<cfif stStatus.bMandatory and stStatus.bEverEnrolled>
+			<!--- removed their last factor: mandatory, and past the one-off grace skip, so re-enrolment is enforced at the next sign-in --->
+			<div class="alert alert-warning"><admin:resource key="security.mfa.manage.offerreenrol"><strong>Your account requires multi-factor authentication and you no longer have a second factor set up.</strong> Set up one of the methods below now, or you will be asked to do it before you can sign in next time.</admin:resource></div>
+		<cfelseif stStatus.bMandatory>
 			<div class="alert alert-warning"><admin:resource key="security.mfa.manage.offerrequired"><strong>Your account requires multi-factor authentication.</strong> Add a second step to your login by setting up one of the methods below.</admin:resource></div>
 		<cfelse>
 			<div class="alert alert-info"><admin:resource key="security.mfa.manage.offeroptional"><strong>Multi-factor authentication is optional for your account.</strong> It adds a second step at login to help protect your account. Set up a method below, or leave it for now; you can come back any time.</admin:resource></div>
