@@ -311,6 +311,28 @@
 				<cfset timeStep = int(arguments.stMetadata.ftMinutesIncrement) * 60 />
 			</cfif>
 
+			<cfif timeStep GT 0>
+				<!--- jquery-validate turns a step attribute into a validation rule, and its step rule throws on any
+					input it cannot do decimal arithmetic on, which includes time. the browser enforces the step on
+					those types itself, so skip the rule for them and leave every other type to the original. --->
+				<skin:onReady>
+					<cfoutput>
+						if (typeof $j.validator != "undefined" && !$j.validator.methods.step.fcSkipsNativeStepTypes) {
+							$j.validator.methods.step = (function (original) {
+								var skipNativeStepTypes = function (value, element, param) {
+									if (/^(time|date|datetime-local|month|week)$/i.test($j(element).attr("type"))) {
+										return true;
+									}
+									return original.call(this, value, element, param);
+								};
+								skipNativeStepTypes.fcSkipsNativeStepTypes = true;
+								return skipNativeStepTypes;
+							}($j.validator.methods.step));
+						}
+					</cfoutput>
+				</skin:onReady>
+			</cfif>
+
 			<cfsavecontent variable="html">
 
 				<cfoutput>
