@@ -50,6 +50,7 @@ ACTION
 	<ft:processformObjects typename="farMFAEnrol" r_stProperties="stProperties">
 		<cfset stConfirm = oUD.confirmTOTPEnrolment(userid=userid, code=trim(stProperties.code)) />
 		<cfif stConfirm.bSuccess>
+			<cfset setupFactor = "" /><!--- leave the setup flow; fall through to the recovery-codes display (first factor) or the status table --->
 			<cfif arrayLen(stConfirm.aRecoveryCodes)>
 				<!--- first factor: codes issued with it, shown once --->
 				<cfset request.fc.aMFARecoveryCodes = stConfirm.aRecoveryCodes />
@@ -211,7 +212,7 @@ VIEW
 		<cfoutput><div class="alert alert-error">#encodeForHTML(stEnrol.message)#</div></cfoutput>
 	<cfelse>
 		<cfoutput>
-			<cfif stStatus.bEnrolled>
+			<cfif oUD.hasTOTPFactor(userid=userid)><!--- replacing an authenticator, not merely enrolled: a user whose active factor is email or a passkey is adding one, not replacing --->
 				<p><admin:resource key="security.mfa.manage.replacehelp">Set up a new authenticator app to replace your current one. Your existing authenticator keeps working until you confirm the new one, and your recovery codes are unchanged.</admin:resource></p>
 			<cfelse>
 				<p><admin:resource key="security.mfa.manage.setuphelp">Scan the QR code with an authenticator app, then enter the 6 digit code it shows to finish.</admin:resource></p>
