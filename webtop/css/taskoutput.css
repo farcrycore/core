@@ -1,0 +1,14 @@
+/* base styles for the dmCron task output frame */
+
+body {
+	margin: 0;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+	color: #333;
+	background-color: #fff;
+}
+
+pre {
+	white-space: pre-wrap;
+}
