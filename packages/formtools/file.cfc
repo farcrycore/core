@@ -313,7 +313,8 @@
 										var filename = results.filename || file.name || (results.value ? results.value.split('/').pop() : '');
 										// Prefer the CDN-resolved fullpath (works pre-save). Fall back to download.cfm (works post-save).
 										var previewURL = results.fullpath || '#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#';
-										$j('###arguments.fieldname#-preview').attr('href', previewURL);
+										// resolved server side, but it is going into an href, so it is gated on the way in
+										$j('###arguments.fieldname#-preview').attr('href', $fc.uploader.safeURL(previewURL) || '##');
 										fcRenderDetails(filename, file.size || 0);
 										showDetails();
 										announce('File uploaded: ' + filename);

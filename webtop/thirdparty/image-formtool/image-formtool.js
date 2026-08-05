@@ -379,22 +379,21 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					// zero-height image and only snapped into place on a second hover.)
 					var imageMaxHeight = (results.width && results.height) ? Math.round(results.height * imageMaxWidth / results.width) : 0;
 					if (imageMaxHeight > 400) { imageMaxWidth = Math.round(imageMaxWidth * 400 / imageMaxHeight); imageMaxHeight = 400; }
-					var previewDims = (imageMaxWidth ? " width='"+imageMaxWidth+"'" : "") + (imageMaxHeight ? " height='"+imageMaxHeight+"'" : "");
 					var complete = imageformtool.multiview.findView("complete")
 						.find(".image-status").html('<i class="fa fa-file-image-o"></i>').end()
-						.find(".image-filename").html(results.filename).end()
-						.find(".image-size").html(results.size).end()
-						.find(".image-width").html(results.width).end()
-						.find(".image-height").html(results.height).end();
+						.find(".image-filename").text(results.filename).end()
+						.find(".image-size").text(results.size).end()
+						.find(".image-width").text(results.width).end()
+						.find(".image-height").text(results.height).end();
 
 					if (results.resizedetails){
-						complete.find(".image-quality").html(results.resizedetails.quality.toString()).end();
+						complete.find(".image-quality").text(results.resizedetails.quality.toString()).end();
 						// When no transform happened the server reports resized:false — say "Uploaded"
 						// rather than "Resized to" so the dimensions read accurately. Backwards-compatible:
 						// only an explicit false (boolean or "false" string, depending on the CF engine's
 						// JSON serialization) flips the verb; a missing key falls back to "Resized to".
 						var bNoResize = (results.resizedetails.resized === false || results.resizedetails.resized === "false");
-						complete.find(".image-resize-verb").html(bNoResize ? "Uploaded" : "Resized to").end();
+						complete.find(".image-resize-verb").text(bNoResize ? "Uploaded" : "Resized to").end();
 						complete.find(".image-resize-information").show().end();
 					}
 					else {
@@ -412,20 +411,27 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					if (! results.fullpath.match(/res.cloudinary.com/gi) && results.fullpath.indexOf("?") === -1) {
 						cachebust = "?"+new Date().getTime();
 					}
+					// The preview URL is the CDN path this upload resolved to server side, but it
+					// is assigned to an href/src, so it goes through the uploader's URL gate first
+					// and the tooltip is built as nodes rather than as a markup string.
+					var previewHREF = $fc.uploader.safeURL(results.fullpath);
+					var previewSRC = $fc.uploader.safeURL(results.fullpath + cachebust);
 					if (imageformtool.inline){
 						imageformtool.inlineview
-							.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+cachebust+"'"+previewDims+" style='max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").end()
+							.find("a.image-preview").attr("href",previewHREF || "#").tooltipster("update", imageformtool.buildPreviewTooltip(previewSRC,imageMaxWidth,imageMaxHeight,results)).end()
 							.find("span.action-preview").show().end()
 							.find("span.dependant-options").show().end();
 						imageformtool.multiview.selectView("cancel");
 					}
 					else{
-						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+cachebust+"'"+previewDims+" style='max-width:400px; max-height:400px;'>");
+						imageformtool.multiview.find("a.image-preview").attr("href",previewHREF || "#").tooltipster("update", imageformtool.buildPreviewTooltip(previewSRC,imageMaxWidth,imageMaxHeight));
 						imageformtool.multiview.selectView("complete");
 					}
 				}
 			}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
-				$j('#'+prefix+property+"_"+action+"error").html(message).show();
+				// message carries filenames, server exception text and HTTP response
+				// snippets, so it is displayed as text, never as markup.
+				$j('#'+prefix+property+"_"+action+"error").text(message).show();
 				if (action === "upload") imageformtool.resetUploadView();
 			}).bind("cancelcrop",function onImageFormtoolCancelCropEvent(){
 				// A complete-view "Re-crop image" sets deletef=true up front; if the user
@@ -657,6 +663,28 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			//delete source
 			imageformtool.deleteImage();
 		}
+
+		// Preview tooltip content, built as nodes rather than as a markup string.
+		// tooltipster 2.1.4 hands its content to .html(), which appends a node as-is
+		// instead of parsing it, so the src is the only thing that has to be trusted -
+		// and it arrives already gated by $fc.uploader.safeURL (empty = show no image).
+		this.buildPreviewTooltip = function imageFormtoolBuildPreviewTooltip(src,width,height,results){
+			var $content = $j("<span></span>");
+
+			if (src){
+				var $img = $j("<img>").attr("src",src).css({ "max-width":"400px", "max-height":"400px" });
+				if (width) $img.attr("width",width);
+				if (height) $img.attr("height",height);
+				$content.append($img);
+			}
+			// the inline view captions the preview with the size and dimensions
+			if (results){
+				$content.append($j("<br>"))
+					.append($j("<span></span>").text(results.size+"KB, "+results.width+"px x "+results.height+"px"));
+			}
+
+			return $content;
+		};
 
 		// --- During-upload dropzone / progress UI (mirrors the file formtool) ---------
 		this.formatBytes = function imageFormtoolFormatBytes(bytes){

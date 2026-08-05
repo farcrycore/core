@@ -252,6 +252,12 @@
 							if (filename.length > 20) return filename.substr(0,20) + '...';
 							return filename;
 		    			};
+
+		    			// Row feedback: the styled span is built here and the message goes in as
+		    			// text. Messages carry server exception text and HTTP response snippets.
+		    			function showItemError(errorloc,message){
+		    				errorloc.empty().append($("<span></span>").addClass("fc-uploader-error-text").text(message));
+		    			};
 		    			
 		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,allowRemove,removeType,quickEdit,view,tilewidth,tileheight,storage){
 		    				var fieldname = prefix + property;
@@ -325,7 +331,7 @@
 									delete arrayuploadformtool.idMap[file.id];
 
 									if (results.error && results.error.length){
-										$("##join-item-#arguments.stMetadata.name#-"+ID+" .fc-arrayupload-feedback",arrayuploadformtool.displaylist).html('<span class="fc-uploader-error-text">Server error: '+results.error+'</span>');
+										showItemError($("##join-item-#arguments.stMetadata.name#-"+ID+" .fc-arrayupload-feedback",arrayuploadformtool.displaylist),"Server error: "+results.error);
 									}
 									else {
 										$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
@@ -343,15 +349,15 @@
 									if (ID == null) return;
 									var errorloc = $("##join-item-#arguments.stMetadata.name#-"+ID+" .fc-arrayupload-feedback",arrayuploadformtool.displaylist);
 									if (error.type === "http")
-										errorloc.html('<span class="fc-uploader-error-text">HTTP error: '+(error.status||"")+'</span>');
+										showItemError(errorloc,"HTTP error: "+(error.status||""));
 									else if (error.type === "size")
-										errorloc.html('<span class="fc-uploader-error-text">File size: File is not within the file size limit of '+getBytesOutput(sizeLimit)+'</span>');
+										showItemError(errorloc,"File size: File is not within the file size limit of "+getBytesOutput(sizeLimit));
 									else if (error.type === "type")
-										errorloc.html('<span class="fc-uploader-error-text">File type: '+error.message+'</span>');
+										showItemError(errorloc,"File type: "+error.message);
 									else if (error.type === "network")
-										errorloc.html('<span class="fc-uploader-error-text">Network error: '+error.message+'</span>');
+										showItemError(errorloc,"Network error: "+error.message);
 									else
-										errorloc.html('<span class="fc-uploader-error-text">'+(error.type||"server")+': '+error.message+'</span>');
+										showItemError(errorloc,(error.type||"server")+": "+error.message);
 								}
 							});
 							
@@ -372,9 +378,29 @@
 							return values;
 		    			};
 		    			
+		    			// A template value lands in markup, so it is escaped on the way in.
+		    			// displayhtml is the one exception: it IS the server-rendered webskin
+		    			// for the item, so it stays markup (see rawvars in getHTML).
+		    			function escapeTemplateValue(value){
+		    				if (value === null || value === undefined) return "";
+		    				return String(value)
+		    					.replace(/&/g,"&amp;")
+		    					.replace(/</g,"&lt;")
+		    					.replace(/>/g,"&gt;")
+		    					.replace(/"/g,"&quot;")
+		    					.replace(/'/g,"&##39;");
+		    			};
+
 		    			this.getHTML = function(templateid,tempvars){
 		    				var html = $.trim($("##"+templateid+"-"+prefix+property+", ##"+templateid).html());
-		    				
+		    				var rawvars = { displayhtml:true };
+
+		    				// {{itemid}} names a content object and lands in element ids, an input
+		    				// value and the inline handlers, so it is held to an identifier shape
+		    				// rather than escaped for one of them: an objectid is only ever
+		    				// alphanumerics and dashes.
+		    				if ("itemid" in tempvars) tempvars.itemid = String(tempvars.itemid).replace(/[^A-Za-z0-9_\-]/g,"");
+
 		    				$.extend(tempvars,{
 		    					typename 		: arrayuploadformtool.typename,
 		    					objectid 		: arrayuploadformtool.objectid,
@@ -396,7 +422,9 @@
 		    					}
 		    					html = html.replace(regexes[k+"-ifthen"],tempvars[k] ? "$1" : "");
 			    				html = html.replace(regexes[k+"-ifnot"],tempvars[k] ? "" : "$1");
-		    					html = html.replace(regexes[k],tempvars[k]);
+		    					// replacer function, not a string: a value is inserted verbatim
+		    					// rather than being read for $1 / $& substitution patterns
+		    					html = html.replace(regexes[k],(function(v){ return function(){ return v; }; })(rawvars[String(k).toLowerCase()] ? tempvars[k] : escapeTemplateValue(tempvars[k])));
 		    				}
 		    				
 		    				return html;

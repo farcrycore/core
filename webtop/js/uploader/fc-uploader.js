@@ -559,6 +559,27 @@
 	};
 
 	/**
+	 * $fc.uploader.safeURL - gate a URL before it is assigned to an href or src.
+	 *
+	 * The only URLs the uploaders assign are the CDN-resolved paths a server
+	 * response carries: site-relative ("/images/x.jpg"), protocol-relative
+	 * ("//bucket.example.com/images/x.jpg", what the S3 CDN returns) or an
+	 * absolute http(s) URL. Returns "" for anything else, so an active scheme
+	 * (javascript:, data:) or a value carrying control characters (which the
+	 * browser would strip before resolving the scheme) is never assigned.
+	 */
+	$fc.uploader.safeURL = function fcUploaderSafeURL(url){
+		var value = (url === null || url === undefined) ? "" : String(url);
+		if (!value) return "";
+		// no whitespace or controls: "java\tscript:" resolves as javascript: in the browser
+		if (/[\u0000-\u0020\u007F]/.test(value)) return "";
+		if (value.indexOf("//") === 0) return value;                       // protocol-relative
+		if (/^[a-z][a-z0-9+.\-]*:/i.test(value))                           // carries a scheme
+			return /^https?:/i.test(value) ? value : "";
+		return value;                                                      // relative reference
+	};
+
+	/**
 	 * $fc.uploader.confirm — a small, framework-agnostic confirm dialog.
 	 *
 	 * Deliberately NOT built on Bootstrap (or any framework) so the planned
