@@ -573,10 +573,14 @@
 		if (!value) return "";
 		// no whitespace or controls: "java\tscript:" resolves as javascript: in the browser
 		if (/[\u0000-\u0020\u007F]/.test(value)) return "";
-		if (value.indexOf("//") === 0) return value;                       // protocol-relative
-		if (/^[a-z][a-z0-9+.\-]*:/i.test(value))                           // carries a scheme
-			return /^https?:/i.test(value) ? value : "";
-		return value;                                                      // relative reference
+		// "//host/path" is protocol-relative, not a scheme; a real scheme must be http(s).
+		// NB: the http(s) test is negated rather than returned - JSMin (the combine
+		// minifier) only reads "/" as a regex after ( , = : [ ! & | ? { } ; or a newline,
+		// so a regex literal straight after "return" makes it throw and the combine fail.
+		if (value.indexOf("//") !== 0
+				&& /^[a-z][a-z0-9+.\-]*:/i.test(value)
+				&& !/^https?:/i.test(value)) return "";
+		return value;                                                      // relative, or an approved absolute
 	};
 
 	/**
