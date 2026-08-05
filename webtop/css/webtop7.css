@@ -1489,6 +1489,19 @@ br[style*="clear:both"] {
 	padding: 0;
 }
 
+/* SCHEDULED TASK OUTPUT */
+
+/* sandboxed frame, so it cannot be auto-sized: fill the modal (100vh is the modal body) and let it scroll */
+.fc-task-output {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	height: calc(100vh - 20px);
+	min-height: 200px;
+	border: 1px solid #ccc;
+	background-color: #fff;
+}
+
 /* MEDIA QUERIES AND RESPONSIVE RELATED STYLES */
 
 /* match bootstrap media query and change header to absolute instead of fixed */
