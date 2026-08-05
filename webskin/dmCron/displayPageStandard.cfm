@@ -4,7 +4,8 @@
 
 <cfset executionKey = application.fapi.getConfig("tasks", "executionKey") />
 <cfif len(executionKey) and (not structKeyExists(url, "executionKey") or url.executionKey neq executionKey)>
-	<cfset application.fapi.logEvent("cron", "warning", "ignored scheduled task: invalid execution key", {query=cgi.query_string}) />
+	<!--- safe server-known fields only: the query string carries the supplied key, so it is never logged --->
+	<cfset application.fapi.logEvent("cron", "warning", "ignored scheduled task: invalid execution key", {reason="invalidExecutionKey", method=cgi.request_method, objectid=stObj.objectid}) />
 	<cfexit>
 </cfif>
 
