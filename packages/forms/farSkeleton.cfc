@@ -575,7 +575,7 @@
 				<cfset stResult.message = cfcatch>
 				<cfset stResult.bExportComplete = 0>
 
-				<!--- don't log the whole result, stResult.message holds the whole exception --->
+				<!--- log the error only, stResult.message holds the whole exception --->
 				<cfset application.fapi.logEvent("export", "error", "error exporting table", {table=stTable.name, error=cfcatch.message, detail=cfcatch.detail}) />
 				
 			</cfcatch>

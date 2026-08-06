@@ -741,6 +741,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfset var bRefCreated = false>
 		<cfset var thisTypename = "">
+		<cfset var stLastResult = structNew()>
+		<cfset var errorDetail = "">
 		<cfif structKeyExists(arguments.stProperties, "typename")>
 			<cfset thisTypename = arguments.stProperties.typename>
 		<cfelse>
@@ -763,7 +765,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 		<cfif NOT stReturn.bSuccess>
-			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {error=stReturn.message, detail=stReturn.results[arraylen(stReturn.results)].detail, sql=stReturn.results[arraylen(stReturn.results)].sql}) />
+			<!--- log the error only, the sql includes the values --->
+			<cfif arraylen(stReturn.results)>
+				<cfset stLastResult = stReturn.results[arraylen(stReturn.results)] />
+			</cfif>
+			<cfif structKeyExists(stLastResult,"detail")><cfset errorDetail = stLastResult.detail /></cfif>
+			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {objectid=stReturn.objectid, typename=thisTypename, error=stReturn.message, detail=errorDetail, properties=structKeyList(arguments.stProperties)}) />
 		</cfif>
 		
 		<cfparam name="arguments.stProperties.typename" default="#thisTypename#" />

@@ -593,7 +593,7 @@
 		<cfset var stReturn = StructNew()>
 		<cfset var stLastResult = StructNew()>
 		<cfset var errorDetail = "">
-		<cfset var errorSQL = "">
+		<cfset var errorObjectID = "">
 		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		<cfset var schema = getTableMetadata(arguments.typename) />
 		
@@ -604,13 +604,13 @@
 		<cfset stReturn = getGateway(dsn=arguments.dsn, mode="write").createData(schema=schema,stProperties=stProperties,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
-			<!--- don't log the whole result, it includes the values being saved --->
+			<!--- log the error only, the sql and result include the values --->
 			<cfif arraylen(stReturn.results)>
 				<cfset stLastResult = stReturn.results[arraylen(stReturn.results)] />
 			</cfif>
 			<cfif structKeyExists(stLastResult,"detail")><cfset errorDetail = stLastResult.detail /></cfif>
-			<cfif structKeyExists(stLastResult,"sql")><cfset errorSQL = stLastResult.sql /></cfif>
-			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {typename=arguments.typename, error=stReturn.message, detail=errorDetail, sql=errorSQL}) />
+			<cfif structKeyExists(stReturn,"objectid")><cfset errorObjectID = stReturn.objectid /></cfif>
+			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {objectid=errorObjectID, typename=arguments.typename, error=stReturn.message, detail=errorDetail, properties=structKeyList(arguments.stProperties)}) />
 		</cfif>
 		
     	<cfreturn stReturn />
@@ -668,6 +668,7 @@
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var stReturn = StructNew()>
+		<cfset var errorObjectID = "">
 		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		
 		<cfset arguments.schema = getTableMetadata(arguments.typename) />
@@ -679,7 +680,9 @@
 		<cfset stReturn = getGateway(dsn=arguments.dsn, mode="write").deleteData(argumentCollection=arguments,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
-			<cfset application.fapi.logEvent("coapi", "error", "deleteData failed", {error=stReturn.message, detail=stReturn.results[arraylen(stReturn.results)].detail, sql=stReturn.results[arraylen(stReturn.results)].sql}) />
+			<!--- log the error only, the sql includes the values --->
+			<cfif structKeyExists(arguments,"objectid")><cfset errorObjectID = arguments.objectid /></cfif>
+			<cfset application.fapi.logEvent("coapi", "error", "deleteData failed", {objectid=errorObjectID, typename=arguments.typename, error=stReturn.message, detail=stReturn.results[arraylen(stReturn.results)].detail}) />
 		</cfif>
 		
     	<cfreturn stReturn />
