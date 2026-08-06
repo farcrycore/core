@@ -449,9 +449,9 @@
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="isSensitiveKey" access="private" returntype="boolean" output="false" hint="True if a field key name looks like a secret.">
+	<cffunction name="isSensitiveKey" access="private" returntype="boolean" output="false" hint="True if a field key name looks like a secret. Covers the names Core uses for passwords, credentials, session ids and recovery codes - not every name an application might use.">
 		<cfargument name="key" type="string" required="true" />
-		<cfreturn reFindNoCase("(secret|sessiontoken|accesskey|password|authorization|token)", arguments.key) gt 0 />
+		<cfreturn reFindNoCase("(secret|sessiontoken|accesskey|password|authorization|token|cfid|jsessionid|sessionid|recoverycode)", arguments.key) gt 0 />
 	</cffunction>
 
 	<cffunction name="scrubCredentials" access="private" returntype="string" output="false" hint="Strip inline s3://key:secret@ / ftp://user:pass@ credentials before logging.">

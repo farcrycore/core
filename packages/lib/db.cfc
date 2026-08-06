@@ -591,6 +591,9 @@
 		<cfargument name="dsn" type="string" required="false" default="" />
 		
 		<cfset var stReturn = StructNew()>
+		<cfset var stLastResult = StructNew()>
+		<cfset var errorDetail = "">
+		<cfset var errorSQL = "">
 		<cfset var logLocation = (listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*") ? this.logLocation : "" />
 		<cfset var schema = getTableMetadata(arguments.typename) />
 		
@@ -601,7 +604,13 @@
 		<cfset stReturn = getGateway(dsn=arguments.dsn, mode="write").createData(schema=schema,stProperties=stProperties,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
-			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {detail=serializeJSON(stReturn)}) />
+			<!--- don't log the whole result, it includes the values being saved --->
+			<cfif arraylen(stReturn.results)>
+				<cfset stLastResult = stReturn.results[arraylen(stReturn.results)] />
+			</cfif>
+			<cfif structKeyExists(stLastResult,"detail")><cfset errorDetail = stLastResult.detail /></cfif>
+			<cfif structKeyExists(stLastResult,"sql")><cfset errorSQL = stLastResult.sql /></cfif>
+			<cfset application.fapi.logEvent("coapi", "error", "createData failed", {typename=arguments.typename, error=stReturn.message, detail=errorDetail, sql=errorSQL}) />
 		</cfif>
 		
     	<cfreturn stReturn />
