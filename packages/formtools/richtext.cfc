@@ -18,7 +18,7 @@
 	
 	<cfproperty name="ftLabelAlignment" required="false" default="block" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
 	<cfproperty name="ftWidth" required="false" default="100%" hint="Width required for the rich text editor." />
-	<cfproperty name="ftHeight" required="false" default="380px" hint="Height required for the rich text editor." />
+	<cfproperty name="ftHeight" required="false" default="420px" hint="Height required for the rich text editor." />
 	<cfproperty name="ftContentCSS" required="false" default="" hint="This option enables you to specify a custom CSS file that extends the theme content CSS. This CSS file is the one used within the editor (the editable area). This option can also be a comma separated list of URLs." />
 	<cfproperty name="ftRichtextConfig" required="false" default="" hint="A custom method to use to return the richtext config, or the richtext config as a string (useful when overriding property metadata)" />
 	
