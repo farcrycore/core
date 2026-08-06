@@ -606,7 +606,14 @@
 		<cfargument name="stConfig" required="false" type="struct" default="#structNew()#" hint="An optional config struct to populate and return; defaults to a new struct.">
 
 		<cfset arguments.stConfig["plugins"] = "farcrycontenttemplates,image,link,insertdatetime,media,searchreplace,directionality,fullscreen,visualchars,nonbreaking,anchor,charmap,lists,table,code" />
-		<cfset arguments.stConfig["extended_valid_elements"] = "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],ul,ol,li" />
+		<!--- tinymce's default html5 schema already allows everything this toolbar produces, so
+			  extended_valid_elements is not set. if you add one, naming an element replaces its allowed
+			  attributes rather than adding to them: "img" on its own strips every image attribute. --->
+
+		<!--- body fields hold prose. forms and embedded documents belong in a dedicated field on the content
+			  type, or in a postprocessor that expands a url at render time. removing a tag keeps the text
+			  inside it, so a pasted form leaves its wording behind; an iframe has no text and just goes. --->
+		<cfset arguments.stConfig["invalid_elements"] = "form,input,select,option,optgroup,textarea,button,fieldset,legend,label,iframe" />
 		<cfset arguments.stConfig["menubar"] = false />
 		<cfset arguments.stConfig["toolbar"] = "undo redo | cut copy paste pastetext | styles | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen" />
 		<cfset arguments.stConfig["remove_linebreaks"] = false />
