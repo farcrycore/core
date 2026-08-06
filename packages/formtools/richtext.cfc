@@ -619,6 +619,7 @@
 		<cfset arguments.stConfig["invalid_elements"] = "form,input,select,option,optgroup,textarea,button,fieldset,legend,label,iframe" />
 		<cfset arguments.stConfig["menubar"] = false />
 		<cfset arguments.stConfig["toolbar"] = "undo redo | cut copy paste pastetext | styles | bold italic underline | bullist numlist link image table | farcrycontenttemplates farcryuploadcontent | code | fullscreen" />
+		<cfset arguments.stConfig["toolbar_mode"] = "wrap" />
 		<cfset arguments.stConfig["remove_linebreaks"] = false />
 		<cfset arguments.stConfig["forced_root_block"] = "p" />
 		<cfset arguments.stConfig["relative_urls"] = false />
