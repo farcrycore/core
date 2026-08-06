@@ -606,9 +606,12 @@
 		<cfargument name="stConfig" required="false" type="struct" default="#structNew()#" hint="An optional config struct to populate and return; defaults to a new struct.">
 
 		<cfset arguments.stConfig["plugins"] = "farcrycontenttemplates,image,link,insertdatetime,media,searchreplace,directionality,fullscreen,visualchars,nonbreaking,anchor,charmap,lists,table,code" />
-		<!--- tinymce's default html5 schema already allows everything this toolbar produces, so
-			  extended_valid_elements is not set. if you add one, naming an element replaces its allowed
-			  attributes rather than adding to them: "img" on its own strips every image attribute. --->
+		<!--- empty on purpose: tinymce's default html5 schema already allows everything this toolbar
+			  produces. keep the key even while it is empty, because projects append to it from a
+			  getConfigJSON() override and removing it breaks them. if you do add entries, naming an
+			  element replaces its allowed attributes rather than adding to them: "img" on its own
+			  would strip every image attribute. --->
+		<cfset arguments.stConfig["extended_valid_elements"] = "" />
 
 		<!--- body fields hold prose. forms and embedded documents belong in a dedicated field on the content
 			  type, or in a postprocessor that expands a url at render time. removing a tag keeps the text
