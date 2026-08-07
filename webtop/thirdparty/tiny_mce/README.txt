@@ -24,10 +24,19 @@ wrapper. Source view now uses TinyMCE 8's built-in `code` plugin (plain editable
 HTML, no syntax highlighting). There is no CodeMirror anywhere in the tree any
 more.
 
-Bundles DOMPurify 3.3.2 (SAFE_FOR_XML default). This strips/normalises some
+Bundles DOMPurify 3.4.5 (SAFE_FOR_XML default). This strips/normalises some
 legacy content patterns on round-trip (IE conditional comments, Word-paste
 <o:p>/<xml> residue, embedded MathML/RDF/custom-namespace SVG, etc.). See ADR
 core/docs/0006-tinymce-8-upgrade.md "Release notes / downstream impact".
+
+  Version provenance: tinymce.min.js opens with an upstream banner claiming
+  "DOMPurify 3.3.2" and linking the 3.2.6 licence. That header is stale in the
+  8.6.0 build. The code actually inlined further down carries its own
+  "DOMPurify 3.4.5" licence banner and sets version="3.4.5" at runtime, and
+  tinymce.js (unminified) carries only the 3.4.5 banner. 3.4.5 is the shipped
+  version; the vendor file is left byte-for-byte as upstream published it
+  rather than edited to correct its own comment. Re-check this on each upgrade
+  by reading the version= assignment, not the file header.
 
 FarCry-custom content in this distribution (DO NOT overwrite on update):
   - plugins/farcrycontenttemplates/  — FarCry "content templates" + upload
@@ -66,5 +75,7 @@ To update:
      CHANGELOG.md/notices.txt/tinymce.d.ts).
   4. Bump cache_suffix: "?v=<X.Y.Z>" in richtext.cfc and the version above.
   5. Skim https://www.tiny.cloud/docs/tinymce/latest/migration-from-7x/ (and
-     the 4->7 guide) for breaking changes; re-run the smoke tests in
-     TESTING_TODO.md.
+     the 4->7 guide) for breaking changes; re-run the editor smoke tests from
+     the pending-tests log.
+  6. Re-read the DOMPurify version from the bundle (see the provenance note
+     above) and update it here and in core/docs/0006-tinymce-8-upgrade.md.
