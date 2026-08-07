@@ -657,7 +657,7 @@
 			<cfset record(stOut, "assertion rejects wrong rpId", not stVerify.verified and stVerify.reason eq "rpIdMismatch", stVerify.reason) />
 
 			<!--- tamper: flipped signature byte --->
-			<cfset stVerify = verifyAssertion(clientDataJSON=clientB64, authenticatorData=base64UrlEncode(binaryDecode(authAssertHex, "hex")), signature=flipLastChar(sigB64), expectedChallenge=challenge, aExpectedOrigins=aOrigins, rpId=rpId, stStoredKey=stKey, storedSignCount=1) />
+			<cfset stVerify = verifyAssertion(clientDataJSON=clientB64, authenticatorData=base64UrlEncode(binaryDecode(authAssertHex, "hex")), signature=tamperSignature(sigB64), expectedChallenge=challenge, aExpectedOrigins=aOrigins, rpId=rpId, stStoredKey=stKey, storedSignCount=1) />
 			<cfset record(stOut, "assertion rejects bad signature", not stVerify.verified and stVerify.reason eq "badSignature", stVerify.reason) />
 
 			<!--- replay: signCount not advanced (5 <= stored 5) --->
@@ -700,11 +700,15 @@
 		<cfreturn right(repeatString("0", arguments.width) & arguments.hex, arguments.width) />
 	</cffunction>
 
-	<cffunction name="flipLastChar" access="private" output="false" returntype="string" hint="Flips the last base64url char so a signature no longer validates">
+	<cffunction name="tamperSignature" access="private" output="false" returntype="string" hint="Alters a signature so it no longer validates. Works on the decoded bytes, not on the base64url text: for most signature lengths the final base64url character carries spare bits, so changing that character can re-encode to the same bytes and leave the signature valid.">
 		<cfargument name="s" type="string" required="true" />
 
-		<cfset var last = right(arguments.s, 1) />
-		<cfreturn left(arguments.s, len(arguments.s) - 1) & (last eq "A" ? "B" : "A") />
+		<cfset var hex = lcase(binaryEncode(base64UrlDecode(arguments.s), "hex")) />
+
+		<!--- every hex digit is four meaningful bits, so this always changes the final byte --->
+		<cfset hex = left(hex, len(hex) - 1) & (right(hex, 1) eq "0" ? "1" : "0") />
+
+		<cfreturn base64UrlEncode(binaryDecode(hex, "hex")) />
 	</cffunction>
 
 	<cffunction name="record" access="private" output="false" returntype="void" hint="Appends a self test result">
