@@ -412,4 +412,141 @@
 		</cftry>
 	</cffunction>
 
+
+	<!--- ------------------------------------------------------------------
+	      Self test
+	      ------------------------------------------------------------------ --->
+
+	<cffunction name="authorizationSelfTest" access="public" output="false" returntype="struct" hint="Exercises the whole pending authorization lifecycle in process, against an isolated store that is swapped in and restored: issue, single use, replay, context binding, expiry, pruning and the concurrency ceiling. Needs an authenticated request because an authorization is issued to an actor. Each refused claim emits a cdn warning event, as a real refusal does. Returns { pass, results }.">
+		<cfset var stOut = { pass = true, results = arraynew(1) } />
+		<cfset var stSaved = getStore() />
+		<cfset var stStore = "" />
+		<cfset var stBind = { "typename" = "dmFile", "property" = "filename", "location" = "selftestloc", "surface" = "file" } />
+		<cfset var stGrant = { "value" = "/dmfile/probe.pdf", "key" = "selftest/dmfile/probe.pdf", "maxsize" = 1000000 } />
+		<cfset var id1 = "" /><cfset var id2 = "" /><cfset var id3 = "" /><cfset var id4 = "" />
+		<cfset var id5 = "" /><cfset var id6 = "" /><cfset var id7 = "" /><cfset var id8 = "" />
+		<cfset var st = "" />
+		<cfset var maxPending = 0 />
+		<cfset var i = 0 />
+		<cfset var uploadid = "" />
+		<cfset var bThrew = false />
+		<cfset var capMessage = "" />
+		<cfset var bIssuedAfterConsuming = false />
+
+		<!--- an isolated store, so a real upload in flight in this session is untouched --->
+		<cfset session.fc.directUploads = structnew() />
+		<cfset stStore = getStore() />
+
+		<cftry>
+			<cfset id1 = issue(bind=stBind, grant=stGrant) />
+			<cfset id2 = issue(bind=stBind, grant=stGrant) />
+			<cfset selfTestRecord(stOut, "issue returns a 32 char hex id", refindnocase("^[0-9a-f]{32}$", id1) gt 0, id1) />
+			<cfset selfTestRecord(stOut, "two authorizations get distinct ids", id1 neq id2) />
+
+			<cfset st = claim(uploadid="", expect=stBind) />
+			<cfset selfTestRecord(stOut, "omitted uploadid is refused as notfound", st.status eq "notfound", st.status) />
+
+			<cfset st = claim(uploadid=repeatstring("a",32), expect=stBind) />
+			<cfset selfTestRecord(stOut, "a guessed uploadid is refused as notfound", st.status eq "notfound", st.status) />
+
+			<cfset st = claim(uploadid=id1, expect=stBind) />
+			<cfset selfTestRecord(stOut, "matching context claims ok", st.status eq "ok", st.status) />
+			<cfset selfTestRecord(stOut, "the grant is read back off the record", structKeyExists(st.grant,"value") and st.grant.value eq stGrant.value) />
+
+			<cfset st = claim(uploadid=id1, expect=stBind) />
+			<cfset selfTestRecord(stOut, "a second claim is a replay, not a second ok", st.status eq "replay", st.status) />
+			<cfset selfTestRecord(stOut, "a replay before complete carries no result", not len(st.result)) />
+
+			<cfset complete(uploadid=id1, result='{"probe":1}') />
+			<cfset st = claim(uploadid=id1, expect=stBind) />
+			<cfset selfTestRecord(stOut, "a replay after complete returns the stored result verbatim", st.status eq "replay" and st.result eq '{"probe":1}', st.result) />
+
+			<cfset st = claim(uploadid=id2, expect={ "typename" = "dmFile", "property" = "OTHER", "location" = "selftestloc", "surface" = "file" }) />
+			<cfset selfTestRecord(stOut, "a changed bound key is refused as mismatch", st.status eq "mismatch", st.status) />
+			<cfset selfTestRecord(stOut, "a mismatched claim does not consume the record", structKeyExists(stStore,id2) and not stStore[id2].bConsumed) />
+
+			<cfset st = claim(uploadid=id2, expect={ "typename" = "dmFile", "location" = "selftestloc", "surface" = "file" }) />
+			<cfset selfTestRecord(stOut, "an omitted bound key is refused as mismatch", st.status eq "mismatch", st.status) />
+
+			<cfset id3 = issue(bind={ "typename" = "dmFile" }, grant=stGrant) />
+			<cfset st = claim(uploadid=id3, expect={ "typename" = "dmFile", "property" = "filename", "extra" = "x" }) />
+			<cfset selfTestRecord(stOut, "presenting extra keys is allowed", st.status eq "ok", st.status) />
+
+			<cfset id4 = issue(bind=stBind, grant=stGrant) />
+			<cfset stStore[id4].expires = dateadd("n", -1, now()) />
+			<cfset st = claim(uploadid=id4, expect=stBind) />
+			<cfset selfTestRecord(stOut, "a past expiry is refused as expired", st.status eq "expired", st.status) />
+			<cfset selfTestRecord(stOut, "an expired record is dropped when claimed", not structKeyExists(stStore,id4)) />
+
+			<cfset id5 = issue(bind=stBind, grant=stGrant) />
+			<cfset id6 = issue(bind=stBind, grant=stGrant) />
+			<cfset stStore[id5].expires = dateadd("n", -1, now()) />
+			<cfset prune() />
+			<cfset selfTestRecord(stOut, "prune removes an abandoned authorization", not structKeyExists(stStore,id5)) />
+			<cfset selfTestRecord(stOut, "prune keeps a live authorization", structKeyExists(stStore,id6)) />
+
+			<cfset id7 = issue(bind=stBind, grant=stGrant) />
+			<cfset claim(uploadid=id7, expect=stBind) />
+			<cfset prune() />
+			<cfset selfTestRecord(stOut, "prune keeps a claimed record inside its grace window", structKeyExists(stStore,id7)) />
+
+			<cfset id8 = issue(bind=stBind, grant=stGrant) />
+			<cfset complete(uploadid=id8, result='{"forged":1}') />
+			<cfset selfTestRecord(stOut, "complete on an unclaimed record stores nothing", structKeyExists(stStore,id8) and not stStore[id8].bHasResult) />
+
+			<!--- the ceiling bounds uploads in progress, so a consumed record must not count --->
+			<cfset maxPending = getNumericSetting("maxPending", this.defaultMaxPending, 1) />
+			<cfset session.fc.directUploads = structnew() />
+			<cfset stStore = getStore() />
+			<cfloop from="1" to="#maxPending#" index="i">
+				<cfset issue(bind=stBind, grant=stGrant) />
+			</cfloop>
+			<cftry>
+				<cfset issue(bind=stBind, grant=stGrant) />
+				<cfcatch type="any">
+					<cfset bThrew = true />
+					<cfset capMessage = cfcatch.message />
+				</cfcatch>
+			</cftry>
+			<cfset selfTestRecord(stOut, "issue is refused at the configured cap (#maxPending#)", bThrew, capMessage) />
+			<cfset selfTestRecord(stOut, "reaching the cap did not evict a live record", structcount(stStore) eq maxPending, structcount(stStore) & " records held") />
+
+			<cfloop collection="#stStore#" item="uploadid">
+				<cfset claim(uploadid=uploadid, expect=stBind) />
+			</cfloop>
+			<cftry>
+				<cfset issue(bind=stBind, grant=stGrant) />
+				<cfset bIssuedAfterConsuming = true />
+				<cfcatch type="any">
+					<cfset bIssuedAfterConsuming = false />
+				</cfcatch>
+			</cftry>
+			<cfset selfTestRecord(stOut, "consumed records do not count toward the cap", bIssuedAfterConsuming) />
+
+			<cfset selfTestRecord(stOut, "an expired authorization gets the retry wording", findnocase("took too long", statusMessage("expired")) gt 0, statusMessage("expired")) />
+			<cfset selfTestRecord(stOut, "notfound and mismatch are indistinguishable to the client", statusMessage("notfound") eq statusMessage("mismatch"), statusMessage("notfound")) />
+
+			<cfcatch type="any">
+				<cfset selfTestRecord(stOut, "self test threw", false, cfcatch.message) />
+			</cfcatch>
+		</cftry>
+
+		<!--- whatever this session was really holding --->
+		<cfset session.fc.directUploads = stSaved />
+
+		<cfreturn stOut />
+	</cffunction>
+
+	<cffunction name="selfTestRecord" access="private" output="false" returntype="void" hint="Appends a self test result">
+		<cfargument name="stOut" type="struct" required="true" />
+		<cfargument name="name" type="string" required="true" />
+		<cfargument name="pass" type="boolean" required="true" />
+		<cfargument name="detail" type="string" required="false" default="" />
+
+		<cfset arrayAppend(arguments.stOut.results, { name = arguments.name, pass = arguments.pass, detail = arguments.detail }) />
+		<cfif not arguments.pass>
+			<cfset arguments.stOut.pass = false />
+		</cfif>
+	</cffunction>
+
 </cfcomponent>

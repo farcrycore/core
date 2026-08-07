@@ -942,5 +942,137 @@
 		
 		<cfreturn this.cdns[config.cdn].ioGetDirectoryListing(config=config,dir=arguments.dir, listinfo=arguments.listinfo) />
 	</cffunction>
-	
+
+	<cffunction name="directUploadPathSelfTest" access="public" output="false" returntype="struct" hint="Exercises validateDirectUploadPath and getDirectUploadFilename against the forms that could retarget an upload, and against the ordinary ones that must still work. No storage is touched. Returns { pass, results }.">
+		<cfset var stOut = { pass = true, results = arraynew(1) } />
+		<cfset var aReject = [
+			{ v = "", n = "empty path" },
+			{ v = "images/a.jpg", n = "no leading slash" },
+			{ v = "/images/", n = "trailing slash" },
+			{ v = "/", n = "bare slash" },
+			{ v = "/images/../../etc/passwd", n = "relative .. segment" },
+			{ v = "/..", n = "bare .. segment" },
+			{ v = "/a/../b.jpg", n = ".. segment mid path" },
+			{ v = "/./a.jpg", n = "bare . segment" },
+			{ v = "/images//a.jpg", n = "doubled slash" },
+			{ v = "//server/share/a.jpg", n = "UNC form" },
+			{ v = "/images\a.jpg", n = "backslash separator" },
+			{ v = "C:/images/a.jpg", n = "drive letter, no leading slash" },
+			{ v = "/C:/images/a.jpg", n = "colon in path" },
+			{ v = "/images/a" & chr(1) & ".jpg", n = "SOH control character" },
+			{ v = "/images/a" & chr(9) & ".jpg", n = "tab control character" },
+			{ v = "/images/a" & chr(10) & ".jpg", n = "newline control character" },
+			{ v = "/images/a" & chr(31) & ".jpg", n = "unit separator control character" },
+			{ v = "/images/a" & chr(127) & ".jpg", n = "DEL control character" }
+		] />
+		<cfset var aAccept = [
+			{ v = "/a.jpg", n = "single segment" },
+			{ v = "/images/dmImage/SourceImage/photo.jpg", n = "typical derived destination" },
+			{ v = "/images/my folder/a file.jpg", n = "spaces in segments" },
+			{ v = "/images/a..b.jpg", n = "dots inside a name, not a segment" }
+		] />
+		<cfset var aBadName = [
+			{ v = "", n = "empty filename" },
+			{ v = "/etc/passwd", n = "absolute path" },
+			{ v = "../../etc/passwd", n = "relative traversal" },
+			{ v = "..\a.jpg", n = "backslash traversal" },
+			{ v = "C:\windows\a.jpg", n = "drive path" },
+			{ v = "a" & chr(1) & ".jpg", n = "SOH control character" },
+			{ v = "a" & chr(10) & ".jpg", n = "newline control character" },
+			{ v = "a" & chr(127) & ".jpg", n = "DEL control character" },
+			{ v = "$$$", n = "nothing survives the legacy filename rules" }
+		] />
+		<cfset var aGoodName = [
+			{ v = "photo.jpg", e = "photo.jpg", n = "plain name is unchanged" },
+			{ v = "subdir/photo.jpg", e = "photo.jpg", n = "subdirectory dropped, basename kept" },
+			{ v = "a/b/c/photo.jpg", e = "photo.jpg", n = "deep prefix dropped" },
+			{ v = "My Photo (1).JPG", e = "My Photo (1).JPG", n = "spaces, parens and case preserved" }
+		] />
+		<cfset var stCase = "" />
+		<cfset var nulPath = "/images/a" & chr(0) & ".jpg" />
+		<cfset var nulName = "a" & chr(0) & ".jpg" />
+		<cfset var actual = "" />
+
+		<cfloop array="#aReject#" index="stCase">
+			<cftry>
+				<cfset validateDirectUploadPath(stCase.v) />
+				<cfset selfTestRecord(stOut, "path rejects " & stCase.n, false, "accepted - a rejection was expected") />
+				<cfcatch type="any">
+					<cfset selfTestRecord(stOut, "path rejects " & stCase.n, true, cfcatch.message) />
+				</cfcatch>
+			</cftry>
+		</cfloop>
+
+		<cfloop array="#aAccept#" index="stCase">
+			<cftry>
+				<cfset validateDirectUploadPath(stCase.v) />
+				<cfset selfTestRecord(stOut, "path accepts " & stCase.n, true) />
+				<cfcatch type="any">
+					<cfset selfTestRecord(stOut, "path accepts " & stCase.n, false, "rejected: " & cfcatch.message) />
+				</cfcatch>
+			</cftry>
+		</cfloop>
+
+		<cfloop array="#aBadName#" index="stCase">
+			<cftry>
+				<cfset getDirectUploadFilename(stCase.v) />
+				<cfset selfTestRecord(stOut, "filename rejects " & stCase.n, false, "accepted - a rejection was expected") />
+				<cfcatch type="any">
+					<cfset selfTestRecord(stOut, "filename rejects " & stCase.n, true, cfcatch.message) />
+				</cfcatch>
+			</cftry>
+		</cfloop>
+
+		<cfloop array="#aGoodName#" index="stCase">
+			<cftry>
+				<cfset actual = getDirectUploadFilename(stCase.v) />
+				<cfset selfTestRecord(stOut, "filename " & stCase.n, actual eq stCase.e, "returned '" & actual & "'") />
+				<cfcatch type="any">
+					<cfset selfTestRecord(stOut, "filename " & stCase.n, false, "rejected: " & cfcatch.message) />
+				</cfcatch>
+			</cftry>
+		</cfloop>
+
+		<!--- chr(0) yields no character on some engines, so the NUL rows assert the input was
+		      actually built before judging the result - an unbuildable input is not a failure,
+		      and the control characters either side of it above cover the same branch --->
+		<cfif len(nulPath) eq 14>
+			<cftry>
+				<cfset validateDirectUploadPath(nulPath) />
+				<cfset selfTestRecord(stOut, "path rejects NUL control character", false, "accepted - a rejection was expected") />
+				<cfcatch type="any">
+					<cfset selfTestRecord(stOut, "path rejects NUL control character", true, cfcatch.message) />
+				</cfcatch>
+			</cftry>
+		<cfelse>
+			<cfset selfTestRecord(stOut, "path rejects NUL control character", true, "not asserted - this engine's chr(0) yields no character") />
+		</cfif>
+
+		<cfif len(nulName) eq 6>
+			<cftry>
+				<cfset getDirectUploadFilename(nulName) />
+				<cfset selfTestRecord(stOut, "filename rejects NUL control character", false, "accepted - a rejection was expected") />
+				<cfcatch type="any">
+					<cfset selfTestRecord(stOut, "filename rejects NUL control character", true, cfcatch.message) />
+				</cfcatch>
+			</cftry>
+		<cfelse>
+			<cfset selfTestRecord(stOut, "filename rejects NUL control character", true, "not asserted - this engine's chr(0) yields no character") />
+		</cfif>
+
+		<cfreturn stOut />
+	</cffunction>
+
+	<cffunction name="selfTestRecord" access="private" output="false" returntype="void" hint="Appends a self test result">
+		<cfargument name="stOut" type="struct" required="true" />
+		<cfargument name="name" type="string" required="true" />
+		<cfargument name="pass" type="boolean" required="true" />
+		<cfargument name="detail" type="string" required="false" default="" />
+
+		<cfset arrayAppend(arguments.stOut.results, { name = arguments.name, pass = arguments.pass, detail = arguments.detail }) />
+		<cfif not arguments.pass>
+			<cfset arguments.stOut.pass = false />
+		</cfif>
+	</cffunction>
+
 </cfcomponent>
