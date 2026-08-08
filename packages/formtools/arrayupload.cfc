@@ -1188,8 +1188,13 @@
 				<cfreturn editMessage("You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field.") />
 			</cfif>
 			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
-			<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=form.item, items=joinedItems)>
+			<cfif not isJoinItem(itemid=form.item, items=joinedItems)>
 				<cfreturn editMessage("That item is not attached to this record.") />
+			</cfif>
+			<!--- ft:object renders a new-object form for an id that names no row, and saving that
+			      would create rather than edit --->
+			<cfif not isPersistedItem(typename=arguments.stMetadata.ftJoin, objectid=form.item)>
+				<cfreturn editMessage("That item no longer exists.") />
 			</cfif>
 
 			<cfset request.mode.ajax = true />
@@ -1221,10 +1226,14 @@
 			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Edit")>
 				<cfreturn serializeJSON({ "error" = "You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field." }) />
 			</cfif>
-			<!--- fourq's setData creates when the id names no row, so a missing record is refused here --->
 			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
-			<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=form["_objectid"], items=joinedItems)>
+			<cfif not isJoinItem(itemid=form["_objectid"], items=joinedItems)>
 				<cfreturn serializeJSON({ "error" = "That item is not attached to this record." }) />
+			</cfif>
+			<!--- fourq's setData creates when the id names no row, so a missing record is refused
+			      here rather than being written as a new one --->
+			<cfif not isPersistedItem(typename=arguments.stMetadata.ftJoin, objectid=form["_objectid"])>
+				<cfreturn serializeJSON({ "error" = "That item no longer exists." }) />
 			</cfif>
 			
 			<!--- SETUP stActions --->
@@ -1282,7 +1291,7 @@
 
 			<!--- checked in full before anything is deleted: the batch is all or nothing --->
 			<cfloop from="1" to="#arraylen(aItems)#" index="i">
-				<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=aItems[i], items=joinedItems)>
+				<cfif not isJoinItem(itemid=aItems[i], items=joinedItems)>
 					<cfreturn serializeJSON({ "error" = "That item is not attached to this record." }) />
 				</cfif>
 			</cfloop>
@@ -1617,8 +1626,7 @@
 		</cftry>
 	</cffunction>
 
-	<cffunction name="isJoinItem" access="private" output="false" returntype="boolean" hint="True when the item is an existing record of the joined type and a current member of this parent's relationship. Existence is checked as well as membership because fourq's setData creates when the id names no row. Both give the same refusal.">
-		<cfargument name="joinTypename" required="true" type="string" />
+	<cffunction name="isJoinItem" access="private" output="false" returntype="boolean" hint="True when the item is one this parent's relationship holds. Membership only: whether the record still exists is a separate question, asked by the branches whose behaviour depends on the answer. A relationship can outlive the record it points at, and such a row has to stay removable.">
 		<cfargument name="itemid" required="true" type="string" />
 		<cfargument name="items" required="true" type="string" hint="the parent's relationship, from persistedJoinItems(); the caller resolves it once per request" />
 
@@ -1626,11 +1634,7 @@
 			<cfreturn false />
 		</cfif>
 
-		<cfif not listFindNoCase(arguments.items, trim(arguments.itemid))>
-			<cfreturn false />
-		</cfif>
-
-		<cfreturn isPersistedItem(typename=arguments.joinTypename, objectid=arguments.itemid) />
+		<cfreturn listFindNoCase(arguments.items, trim(arguments.itemid)) gt 0 />
 	</cffunction>
 
 	<cffunction name="persistedJoinItems" access="private" output="false" returntype="string" hint="The ids this parent's property holds according to the database. Read here rather than from stObject: the ajax facade merges posted properties into the loaded object before dispatch, so that copy of the relationship follows the request. bArraysAsStructs is what makes fourq skip the session temp store and the object broker; an extended array returns its elements as structs, so the id comes from the data column.">
