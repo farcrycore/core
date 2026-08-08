@@ -238,6 +238,9 @@
 		    			this.prefix = prefix;
 		    			this.property = property;
 		    			this.elements = {};
+		    			// The quick-edit modal this field opened, once it has. openModal appends it
+		    			// to body, so it is not inside the field and cannot be reached from it.
+		    			this.modal = $();
 		    			
 		    			function getBytesOutput(bytes){
 							bytes = Number(bytes) || 0;
@@ -614,6 +617,7 @@
 								success: function(data){
 		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
 									$fc.openModal(data,"auto","auto",true);
+									arrayuploadformtool.modal = $(".fc-overlaycontainer");
 								},
 								// A refusal comes back as markup and shows in the modal; this is for
 								// the request not arriving at all.
@@ -625,8 +629,11 @@
 		    			};
 		    			
 		    			this.saveItem = function(objectid,values){
-		    				// Held so the buttons can go back if the save is refused.
-		    				var buttons = $(".buttonHolder",$fc.lbContainer);
+		    				// Held so the buttons can go back if the save is refused. Taken from the
+		    				// modal this field opened, so it cannot reach another field's modal or a
+		    				// button panel on the page behind it. Empty until one is open, and empty
+		    				// again once it closes, both of which are no-ops here.
+		    				var buttons = arrayuploadformtool.modal.find(".buttonHolder");
 		    				var buttonsHTML = buttons.html();
 		    				buttons.html("<img src='#application.url.webtop#/images/indicator.gif' />");
 		    				var d = { "_objectid":objectid,"startindex":0 };
