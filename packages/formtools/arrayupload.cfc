@@ -103,6 +103,7 @@
 		<cfset var returnHTML = "" />
 		<cfset var factoryScript = "" />
 		<cfset var uploadAjaxURL = "" />
+		<cfset var fieldToken = "" />
 		<cfset var qArrayField = "" />
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 	    <cfset var uploadLocation = "" />
@@ -269,19 +270,14 @@
 		    				});
 		    			};
 
-		    			// These actions post outside ft:processform, so the enclosing form's
-		    			// token travels with them. Read at call time so a re-render is picked up.
-		    			function getFormToken(){
-		    				var d = {};
-		    				var f = $("##"+prefix+property).closest("form");
-		    				var token = f.find('input[name="FarcryFormToken"]').val();
-		    				var formname = f.find('input[name="FarcryFormSubmitted"]').val();
-		    				if (token) d.FarcryFormToken = token;
-		    				if (formname) d.FarcryFormSubmitted = formname;
-		    				return d;
+		    			// These actions post outside the enclosing form and carry the field's own
+		    			// token, issued by the render. Nothing is read out of the DOM, so it does
+		    			// not matter which tag drew the form or how the field was injected.
+		    			function getRequestToken(){
+		    				return arrayuploadformtool.token ? { FarcryFormToken: arrayuploadformtool.token } : {};
 		    			};
 		    			
-		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,allowRemove,removeType,quickEdit,view,tilewidth,tileheight,storage){
+		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,allowRemove,removeType,quickEdit,view,tilewidth,tileheight,storage,token){
 		    				var fieldname = prefix + property;
 							arrayuploadformtool.displaylist = $("##join-"+objectid+"-"+property);
 							arrayuploadformtool.fileInput = $("##"+fieldname+"UPLOAD");
@@ -297,6 +293,7 @@
 							arrayuploadformtool.pendingSelect = false;
 							arrayuploadformtool.quickEdit = quickEdit;
 							arrayuploadformtool.storage = storage;
+							arrayuploadformtool.token = token;
 		    				
 		    				if (view=="tiled")
 								arrayuploadformtool.displaylist.sortable({ items:'li.sort', forceHelperSize:true, forcePlaceholderSize:true, tolerance:"pointer" });
@@ -517,7 +514,7 @@
 						 			url: arrayuploadformtool.url+"/delete/1",
 									data: $.extend({
 										items:attached.join(",")
-									},getFormToken()),
+									},getRequestToken()),
 									dataType: "json",
 									// Rows come out when the server confirms the delete, not before.
 									success: function(data){
@@ -612,7 +609,7 @@
 					 			url: arrayuploadformtool.url+"/edit/1",
 								data: $.extend({
 									item:objectid
-								},getFormToken()),
+								},getRequestToken()),
 								dataType: "html",
 								success: function(data){
 		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
@@ -634,7 +631,7 @@
 		    				buttons.html("<img src='#application.url.webtop#/images/indicator.gif' />");
 		    				var d = { "_objectid":objectid,"startindex":0 };
 		    				for (var k in values) d["_"+k] = values[k];
-		    				$.extend(d,getFormToken());
+		    				$.extend(d,getRequestToken());
 							$.ajax({
 								cache: false,
 								type: "POST",
@@ -881,8 +878,13 @@
 				      Still carried in the URL as well, but only as a cross-check now - the
 				      session copy is the authority, because it is the value the server chose. --->
 				<cfset rememberJoinType(typename=arguments.typename, property=arguments.stMetadata.name, objectid=arguments.stObject.objectid, ftJoin=listFirst(arguments.stMetadata.ftJoin)) />
+				<!--- this field's own request token: these actions post outside the enclosing
+				      form, and that form is not always an ft:form - a wizard renders its own
+				      form tag and emits no token. Minted whether or not form tokens are on, so
+				      switching them on does not strand an open page. --->
+				<cfset fieldToken = csrfGenerateToken(fieldTokenKey(typename=arguments.typename, property=arguments.stMetadata.name, objectid=arguments.stObject.objectid)) />
 				<cfset uploadAjaxURL = application.formtools.field.oFactory.getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true) & "/ftjoin/" & listFirst(arguments.stMetadata.ftJoin) />
-				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#encodeForJavaScript(arguments.typename)#','#encodeForJavaScript(arguments.stObject.objectid)#','#uploadAjaxURL#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#',#len(arguments.stMetadata.ftEditableProperties) gt 0#,'#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#');</script></cfoutput>
+				<cfoutput><script type="text/javascript">$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').init('#encodeForJavaScript(arguments.typename)#','#encodeForJavaScript(arguments.stObject.objectid)#','#uploadAjaxURL#','#replace(rereplace(arguments.stMetadata.ftAllowedFileExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#',#arguments.stMetadata.ftSizeLimit#,#arguments.stMetadata.ftSimUploadLimit#,#stActions.ftAllowEdit#,#stActions.ftAllowRemove#,'#stActions.ftRemoveType#',#len(arguments.stMetadata.ftEditableProperties) gt 0#,'#arguments.stMetadata.ftView#',#arguments.stMetadata.ftTileWidth#,#arguments.stMetadata.ftTileHeight#,'#storageType#','#encodeForJavaScript(fieldToken)#');</script></cfoutput>
 
 			<!--- Width-constrained hover tooltip for the accepted-formats list. ft:form loads
 			      Tooltipster but the webtop only auto-inits tooltips in its header, so edit-form
@@ -1167,8 +1169,8 @@
 				<cfreturn editMessage("This field does not declare a related type") />
 			</cfif>
 			<!--- these branches dispatch through the ajax facade, not ft:processform, so they
-			      assert the form token themselves --->
-			<cfif not checkFormToken()>
+			      assert a request token themselves --->
+			<cfif not checkFormToken(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid)>
 				<cfreturn editMessage("There was a problem with the form submission. Please try again.") />
 			</cfif>
 			<cfif not structKeyExists(form, "item") or not len(form.item)>
@@ -1203,7 +1205,7 @@
 			<cfif bJoinRecovered>
 				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
 			</cfif>
-			<cfif not checkFormToken()>
+			<cfif not checkFormToken(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid)>
 				<cfreturn serializeJSON({ "error" = "There was a problem with the form submission. Please try again." }) />
 			</cfif>
 			<cfif not structKeyExists(form, "_objectid") or not len(form._objectid)>
@@ -1253,7 +1255,7 @@
 			<cfif bJoinRecovered>
 				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
 			</cfif>
-			<cfif not checkFormToken()>
+			<cfif not checkFormToken(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid)>
 				<cfreturn serializeJSON({ "error" = "There was a problem with the form submission. Please try again." }) />
 			</cfif>
 			<!--- the only branch that reaches the database. remove and detach are client side
@@ -1538,18 +1540,29 @@
 		<cfreturn '<div class="fc-arrayupload-message">' & encodeForHTML(arguments.message) & '</div>' />
 	</cffunction>
 
-	<cffunction name="checkFormToken" access="private" output="false" returntype="boolean" hint="True when the request carries a valid FarCry form token, or when the site has form tokens turned off. The same pair ft:form emits and ft:processform checks; these branches dispatch through the ajax facade rather than processform.">
+	<cffunction name="fieldTokenKey" access="private" output="false" returntype="string" hint="The key this field's request token is held under. Built from context the server resolves at both ends - the render and the ajax request - so the client carries the token and never the key. Stable for a given field on a given record, so repeated renders refresh one entry rather than adding one per render as a form name does.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
+
+		<cfreturn lcase("arrayupload_#arguments.typename#_#arguments.property#_#arguments.objectid#") />
+	</cffunction>
+
+	<cffunction name="checkFormToken" access="private" output="false" returntype="boolean" hint="True when the request carries this field's token, or when the site has form tokens turned off. The token is the field's own rather than the enclosing form's: these actions write a different record than the form they are launched from, and the form is not always an ft:form - a wizard renders its own form tag and emits no token at all.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
 
 		<cfif not application.fapi.getConfig("security", "bCSRFTokens", true)>
 			<cfreturn true />
 		</cfif>
 
-		<cfif not structKeyExists(form,"FarcryFormToken") or not structKeyExists(form,"FarcryFormSubmitted") or not len(form.FarcryFormSubmitted)>
+		<cfif not structKeyExists(form,"FarcryFormToken") or not len(form.FarcryFormToken)>
 			<cfreturn false />
 		</cfif>
 
 		<cftry>
-			<cfreturn csrfVerifyToken(form.FarcryFormToken, form.FarcryFormSubmitted) />
+			<cfreturn csrfVerifyToken(form.FarcryFormToken, fieldTokenKey(argumentCollection=arguments)) />
 
 			<cfcatch type="any">
 				<!--- a token that cannot be read is a token that does not verify --->
