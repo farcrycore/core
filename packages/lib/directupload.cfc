@@ -43,6 +43,7 @@
 			"bHasResult" = false,
 			"result" = ""
 		} />
+		<cfset commitStore() />
 
 		<cfreturn uploadid />
 	</cffunction>
@@ -98,6 +99,12 @@
 					</cfif>
 				</cfif>
 			</cflock>
+		</cfif>
+
+		<!--- ok consumed the record and expired dropped it; the other statuses left the
+		      store alone, so they do not force a session store --->
+		<cfif listfindnocase("ok,expired", stResult.status)>
+			<cfset commitStore() />
 		</cfif>
 
 		<!--- a refused finalize is the failure an operator gets asked about, and the message
@@ -185,6 +192,7 @@
 		<cfargument name="result" type="string" required="true" />
 
 		<cfset var stStore = getStore() />
+		<cfset var bStored = false />
 
 		<cflock name="directUpload_#arguments.uploadid#_#application.applicationname#" type="exclusive" timeout="#this.lockTimeout#">
 			<!--- only a record this request claimed can carry a result, so an unclaimed
@@ -196,8 +204,15 @@
 				      a slow finalize does not spend the retry window it is meant to protect -
 				      the image resize this cache exists for is exactly the slow case --->
 				<cfset stStore[arguments.uploadid].expires = dateadd("n", getNumericSetting("replayMinutes",this.defaultReplayMinutes,0), now()) />
+				<cfset bStored = true />
 			</cfif>
 		</cflock>
+
+		<!--- the stored result is what a repeated finalize is answered from, so it has to
+		      outlive this request for the same reason the record itself does --->
+		<cfif bStored>
+			<cfset commitStore() />
+		</cfif>
 	</cffunction>
 
 
@@ -205,12 +220,18 @@
 		<cfset var stStore = getStore() />
 		<cfset var uploadid = "" />
 		<cfset var checkedAt = now() />
+		<cfset var bDropped = false />
 
 		<cfloop list="#structKeyList(stStore)#" index="uploadid">
 			<cfif structKeyExists(stStore,uploadid) and datecompare(checkedAt, stStore[uploadid].expires) gt 0>
 				<cfset structDelete(stStore,uploadid) />
+				<cfset bDropped = true />
 			</cfif>
 		</cfloop>
+
+		<cfif bDropped>
+			<cfset commitStore() />
+		</cfif>
 	</cffunction>
 
 
@@ -291,7 +312,7 @@
 	      Internals
 	      ------------------------------------------------------------------ --->
 
-	<cffunction name="getStore" access="private" output="false" returntype="struct" hint="The session's pending authorization store, created on first use. Created once, under a lock: the create is a read then a write, so uploads signing at the same time in a session that has not signed anything yet would each build a store, and every record written into the ones that lost would be unreachable from the session by the time its finalize looked for it. The lock covers the create only - a store that already exists is returned without taking it - so it is contended once per session.">
+	<cffunction name="getStore" access="private" output="false" returntype="struct" hint="The session's pending authorization store, created on first use. Created once, under a lock: the create is a read then a write, so uploads signing at the same time in a session that has not signed anything yet would each build a store, and every record written into the ones that lost would be unreachable from the session by the time its finalize looked for it. The lock covers the create only - a store that already exists is returned without taking it - so it is contended once per session. Every write to what this returns must be followed by commitStore().">
 		<cfif structKeyExists(session,"fc") and structKeyExists(session.fc,"directUploads")>
 			<cfreturn session.fc.directUploads />
 		</cfif>
@@ -302,6 +323,17 @@
 		</cflock>
 
 		<cfreturn session.fc.directUploads />
+	</cffunction>
+
+
+	<cffunction name="commitStore" access="private" output="false" returntype="void" hint="Publishes a change made inside the store, by moving a counter the session scope holds directly. The store is nested under session.fc, and an engine that keeps sessions in an external store decides whether to write the scope out from whether the scope changed - which a change nested below it does not count as. Without this the authorization exists only in the request that issued it and is gone before the finalize presenting it arrives, which then reports an id it was legitimately issued as unknown. Same pairing Application.cfc describes for the request token, and for the same reason. A counter rather than a timestamp, so the value is a new one on every commit however close together two of them fall. Called after a write rather than inside getStore(), so reading the store does not force a session store.">
+		<cfset var revision = 0 />
+
+		<cfif structKeyExists(session,"fcDirectUploadsRevision") and isnumeric(session.fcDirectUploadsRevision)>
+			<cfset revision = val(session.fcDirectUploadsRevision) />
+		</cfif>
+
+		<cfset session.fcDirectUploadsRevision = revision + 1 />
 	</cffunction>
 
 
