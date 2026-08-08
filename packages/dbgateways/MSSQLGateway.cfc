@@ -9,7 +9,7 @@
 		<cfset var st = refind("\?(?=([^']*'[^']*')*[^']*$)",sql,1,true) />
 		<cfset var paramindex = 1 />
 		<cfset var sqlParam = "" />
-		<cfset var comment = "#### #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'hh:mm:ss')#" />
+		<cfset var comment = "#### #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'HH:mm:ss')#" />
 		
 		<cfif structkeyexists(request,"id")>
 			<cfset comment = comment & ", " & request.id />
@@ -129,8 +129,8 @@
 							<cfoutput>DEFAULT NULL </cfoutput>
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
 							<cfoutput>DEFAULT '#stVal.value#' </cfoutput>
-						<cfelseif stVal.cfsqltype eq "cf_sql_date">
-							<cfoutput>DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#' </cfoutput>
+						<cfelseif stVal.cfsqltype eq "cf_sql_timestamp">
+							<cfoutput>DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"HH:mm:s")#' </cfoutput>
 						<cfelseif isNumeric(stVal.value)>
 							<cfoutput>DEFAULT #stVal.value# </cfoutput>
 						</cfif>
@@ -250,8 +250,8 @@
 						DEFAULT NULL
 					<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
 						DEFAULT '#stVal.value#'
-					<cfelseif stVal.cfsqltype eq "cf_sql_date">
-						DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#'
+					<cfelseif stVal.cfsqltype eq "cf_sql_timestamp">
+						DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"HH:mm:s")#'
 					<cfelse>
 						DEFAULT #stVal.value#
 					</cfif>
@@ -395,8 +395,8 @@
 							DEFAULT NULL
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
 							DEFAULT '#stVal.value#'
-						<cfelseif stVal.cfsqltype eq "cf_sql_date">
-							DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#'
+						<cfelseif stVal.cfsqltype eq "cf_sql_timestamp">
+							DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"HH:mm:s")#'
 						<cfelse>
 							DEFAULT #stVal.value#
 						</cfif>
@@ -861,7 +861,11 @@
 			<!--- Handle weird null values --->
 			<cfset e = getValueFromDB(schema=arguments.expected,value=arguments.expected.default) />
 			<cfset a = getValueFromDB(schema=arguments.actual,value=arguments.actual.default) />
-			<cfset b = b or e neq a />
+			<cfif e eq "" or a eq "" >
+				<cfset b = b or e neq a />
+			<cfelse>
+				<cfset b = b or (dateCompare(e, a) neq 0) >
+			</cfif>
 		<cfelse>
 			<cfset b = b or arguments.expected.default neq arguments.actual.default />
 		</cfif>
