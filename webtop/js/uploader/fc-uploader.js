@@ -15,7 +15,7 @@
  *       allowedFileTypes:  "*.jpg;*.png" | ["jpg","png"] | "jpg,png",
  *       maxFileSize:       5242880,                  // bytes; 0 / falsy = no limit
  *       maxNumberOfFiles:  1,                        // null = unlimited
- *       simultaneousUploads: 1,                      // XHRUpload concurrency limit
+ *       simultaneousUploads: 1,                      // uploads in flight; applies to both transports
  *       autoProceed:       true,
  *       onSelect:          function(file){},
  *       onProgress:        function(file, percent){},
@@ -393,11 +393,16 @@
 		// ---------------------------------------------------------------------
 
 		if (isS3){
-			uppy.use(window.Uppy.AwsS3, {
+			var s3Opts = {
 				shouldUseMultipart:  false,               // presigned POST only; extension point for multipart later
 				getUploadParameters: fetchSignParams,
 				uploadPartBytes:     s3UploadPartBytes    // see comment above: 2xx = success, no ETag CORS exposure needed for POST
-			});
+			};
+			// AwsS3 runs its own rate-limited queue and defaults to 6 in flight. The limit on
+			// xhrOpts only reaches XHRUpload, so a field asking for one upload at a time was
+			// signing and uploading every file at once here.
+			if (simultaneous !== null) s3Opts.limit = simultaneous;
+			uppy.use(window.Uppy.AwsS3, s3Opts);
 		} else {
 			uppy.use(window.Uppy.XHRUpload, xhrOpts);
 		}

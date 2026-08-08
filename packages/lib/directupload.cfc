@@ -56,48 +56,49 @@
 		<cfset var stStore = getStore() />
 		<cfset var stRecord = "" />
 
-		<cfif not len(trim(arguments.uploadid)) or not structKeyExists(stStore,arguments.uploadid)>
-			<cfreturn stResult />
-		</cfif>
+		<!--- an id naming no record keeps the notfound this started as and falls through to
+		      the same reporting every other refusal goes through. returning here instead
+		      would make the commonest refusal the only one an operator cannot see --->
+		<cfif len(trim(arguments.uploadid)) and structKeyExists(stStore,arguments.uploadid)>
+			<!--- compare and consume under one lock so a repeated finalize cannot run the
+			      side effects twice. the lock is JVM local, as every other named lock in
+			      core is, so single use is not claimed across a cluster --->
+			<cflock name="directUpload_#arguments.uploadid#_#application.applicationname#" type="exclusive" timeout="#this.lockTimeout#">
+				<cfif structKeyExists(stStore,arguments.uploadid)>
+					<cfset stRecord = stStore[arguments.uploadid] />
 
-		<!--- compare and consume under one lock so a repeated finalize cannot run the
-		      side effects twice. the lock is JVM local, as every other named lock in
-		      core is, so single use is not claimed across a cluster --->
-		<cflock name="directUpload_#arguments.uploadid#_#application.applicationname#" type="exclusive" timeout="#this.lockTimeout#">
-			<cfif structKeyExists(stStore,arguments.uploadid)>
-				<cfset stRecord = stStore[arguments.uploadid] />
+					<cfif datecompare(now(), stRecord.expires) gt 0>
+						<cfset structDelete(stStore,arguments.uploadid) />
+						<cfset stResult["status"] = "expired" />
 
-				<cfif datecompare(now(), stRecord.expires) gt 0>
-					<cfset structDelete(stStore,arguments.uploadid) />
-					<cfset stResult["status"] = "expired" />
+					<cfelseif not sameActor(stRecord.actor) or not sameContext(stRecord.bind, arguments.expect)>
+						<cfset stResult["status"] = "mismatch" />
 
-				<cfelseif not sameActor(stRecord.actor) or not sameContext(stRecord.bind, arguments.expect)>
-					<cfset stResult["status"] = "mismatch" />
+					<cfelseif stRecord.bConsumed>
+						<cfset stResult["status"] = "replay" />
+						<cfset stResult["bind"] = duplicate(stRecord.bind) />
+						<cfset stResult["grant"] = duplicate(stRecord.grant) />
+						<cfif stRecord.bHasResult>
+							<cfset stResult["result"] = stRecord.result />
+						</cfif>
 
-				<cfelseif stRecord.bConsumed>
-					<cfset stResult["status"] = "replay" />
-					<cfset stResult["bind"] = duplicate(stRecord.bind) />
-					<cfset stResult["grant"] = duplicate(stRecord.grant) />
-					<cfif stRecord.bHasResult>
-						<cfset stResult["result"] = stRecord.result />
+					<cfelse>
+						<cfset stRecord.bConsumed = true />
+						<!--- from here the record is carrying a finalize that is still running, so it
+						      gets at least the shipped grace however short the retry window is set -
+						      including zero. complete() resets it to the retry window proper. The
+						      whole lifecycle lives in this one field: nothing else special cases a
+						      consumed record, so none of them can outlive their clock. --->
+						<cfset stRecord.expires = dateadd("n", max(getNumericSetting("replayMinutes",this.defaultReplayMinutes,0), this.defaultGraceMinutes), now()) />
+						<cfset stResult["status"] = "ok" />
+						<!--- copies, so a caller working with what it was granted cannot reach
+						      back into the stored record --->
+						<cfset stResult["bind"] = duplicate(stRecord.bind) />
+						<cfset stResult["grant"] = duplicate(stRecord.grant) />
 					</cfif>
-
-				<cfelse>
-					<cfset stRecord.bConsumed = true />
-					<!--- from here the record is carrying a finalize that is still running, so it
-					      gets at least the shipped grace however short the retry window is set -
-					      including zero. complete() resets it to the retry window proper. The
-					      whole lifecycle lives in this one field: nothing else special cases a
-					      consumed record, so none of them can outlive their clock. --->
-					<cfset stRecord.expires = dateadd("n", max(getNumericSetting("replayMinutes",this.defaultReplayMinutes,0), this.defaultGraceMinutes), now()) />
-					<cfset stResult["status"] = "ok" />
-					<!--- copies, so a caller working with what it was granted cannot reach
-					      back into the stored record --->
-					<cfset stResult["bind"] = duplicate(stRecord.bind) />
-					<cfset stResult["grant"] = duplicate(stRecord.grant) />
 				</cfif>
-			</cfif>
-		</cflock>
+			</cflock>
+		</cfif>
 
 		<!--- a refused finalize is the failure an operator gets asked about, and the message
 		      the uploader shows deliberately does not say which of the reasons applied. a
@@ -282,9 +283,15 @@
 	      Internals
 	      ------------------------------------------------------------------ --->
 
-	<cffunction name="getStore" access="private" output="false" returntype="struct" hint="The session's pending authorization store, created on first use. Same shape and same lazy creation as the session temp object store in fourq.">
-		<cfparam name="session.fc" default="#structNew()#" />
-		<cfparam name="session.fc.directUploads" default="#structNew()#" />
+	<cffunction name="getStore" access="private" output="false" returntype="struct" hint="The session's pending authorization store, created on first use. Created once, under a lock: the create is a read then a write, so uploads signing at the same time in a session that has not signed anything yet would each build a store, and every record written into the ones that lost would be unreachable from the session by the time its finalize looked for it. The lock covers the create only - a store that already exists is returned without taking it - so it is contended once per session.">
+		<cfif structKeyExists(session,"fc") and structKeyExists(session.fc,"directUploads")>
+			<cfreturn session.fc.directUploads />
+		</cfif>
+
+		<cflock name="directUploadStore_#application.applicationname#" type="exclusive" timeout="#this.lockTimeout#">
+			<cfparam name="session.fc" default="#structNew()#" />
+			<cfparam name="session.fc.directUploads" default="#structNew()#" />
+		</cflock>
 
 		<cfreturn session.fc.directUploads />
 	</cffunction>
