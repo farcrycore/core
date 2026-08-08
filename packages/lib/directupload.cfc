@@ -102,10 +102,18 @@
 
 		<!--- a refused finalize is the failure an operator gets asked about, and the message
 		      the uploader shows deliberately does not say which of the reasons applied. a
-		      replay that hands back its stored result succeeded, so it is not a refusal --->
+		      replay that hands back its stored result succeeded, so it is not a refusal.
+		      notfound has two quite different causes and the same wording, so the event
+		      carries what separates them: whether the request presented an id at all, and
+		      how many authorizations the session was holding when it was refused. no id
+		      means the sign never reached this client; an id with records present means the
+		      one it names is gone. the id itself is not logged - it is a live capability
+		      handle for as long as the record stands --->
 		<cfif stResult.status neq "ok" and not (stResult.status eq "replay" and len(stResult.result))>
 			<cfset application.fapi.logEvent("cdn", "warning", "direct upload finalize refused", {
 				reason = stResult.status,
+				bIdPresented = (len(trim(arguments.uploadid)) gt 0),
+				pending = structcount(stStore),
 				typename = structKeyExists(arguments.expect,"typename") ? arguments.expect.typename : "",
 				property = structKeyExists(arguments.expect,"property") ? arguments.expect.property : "",
 				surface = structKeyExists(arguments.expect,"surface") ? arguments.expect.surface : ""
