@@ -269,9 +269,8 @@
 		    				});
 		    			};
 
-		    			// The three form-encoded actions post outside ft:processform, so the
-		    			// enclosing form's token travels with them explicitly. Read at call time
-		    			// rather than cached, so a re-rendered form is picked up.
+		    			// These actions post outside ft:processform, so the enclosing form's
+		    			// token travels with them. Read at call time so a re-render is picked up.
 		    			function getFormToken(){
 		    				var d = {};
 		    				var f = $("##"+prefix+property).closest("form");
@@ -409,8 +408,7 @@
 		    			// A template value lands in markup, so it is escaped on the way in.
 		    			// displayhtml is the one exception: it IS the server-rendered webskin
 		    			// for the item, so it stays markup (see rawvars in getHTML).
-		    			// An objectid is only ever alphanumerics and dashes; every id that
-		    			// reaches markup or the unsaved map goes through this first.
+		    			// An objectid is only ever alphanumerics and dashes.
 		    			function itemKey(id){
 		    				return String(id).replace(/[^A-Za-z0-9_\-]/g,"");
 		    			};
@@ -435,12 +433,10 @@
 		    				// alphanumerics and dashes.
 		    				if ("itemid" in tempvars) tempvars.itemid = itemKey(tempvars.itemid);
 
-		    				// A row added since this form was rendered is not in the relationship
-		    				// yet - the join is written when the record is saved - so the two actions
-		    				// that go to the server for an attached item cannot run on it. Draw the
-		    				// controls that do work rather than ones that would be refused: no
-		    				// quick-edit pencil, and plain remove in place of delete. The library edit
-		    				// modal is unaffected, so the pencil stays when that is what it opens.
+		    				// A row added since this render is not in the relationship yet - the join
+		    				// is written on save - so it gets the controls that work on an unattached
+		    				// record: no quick-edit, no delete, plain remove. The library edit modal
+		    				// is unaffected.
 		    				var pending = ("itemid" in tempvars) && !!arrayuploadformtool.unsaved[tempvars.itemid];
 
 		    				$.extend(tempvars,{
@@ -505,9 +501,8 @@
 		    			};
 
 		    			this.removeItems = function(objectids){
-		    				// Rows this form attached but has not saved are not in the relationship,
-		    				// so there is nothing joined to delete and the server would refuse the
-		    				// attempt. They just come out of the list.
+		    				// An unsaved row is not in the relationship, so there is nothing joined
+		    				// to delete; it just comes out of the list.
 		    				var pending = [], attached = [];
 		    				for (var i=0;i<objectids.length;i++){
 		    					(arrayuploadformtool.unsaved[itemKey(objectids[i])] ? pending : attached).push(objectids[i]);
@@ -623,9 +618,8 @@
 		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
 									$fc.openModal(data,"auto","auto",true);
 								},
-								// A server-side refusal comes back as text and shows in the modal;
-								// this is for the request never arriving, so the pencil comes back
-								// rather than the row keeping a spinner.
+								// A refusal comes back as markup and shows in the modal; this is for
+								// the request not arriving at all.
 								error: function(){
 		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
 									showActionError("The item could not be opened for editing.");
@@ -634,8 +628,7 @@
 		    			};
 		    			
 		    			this.saveItem = function(objectid,values){
-		    				// The buttons are put back if the save is refused, so the modal stays
-		    				// usable rather than being left holding only the spinner.
+		    				// Held so the buttons can go back if the save is refused.
 		    				var buttons = $(".buttonHolder",$fc.lbContainer);
 		    				var buttonsHTML = buttons.html();
 		    				buttons.html("<img src='#application.url.webtop#/images/indicator.gif' />");
@@ -741,6 +734,8 @@
 				.fc-arrayupload-toolbar { padding:8px 10px; background:##f5f5f5; border-top:1px solid ##e5e5e5; text-align:left; }
 				/* Constraint caption sits just below the panel (outside its border). */
 				.fc-arrayupload-constraints { margin:6px 0 0; }
+				/* Modal-sized panel for a message returned in place of the edit form. */
+				.fc-arrayupload-message { padding:15px; background:##ffffff; border:1px solid ##dddddd; border-radius:3px; }
 					.fc-arrayupload-toolbar .btn { margin-right:4px; }
 				.fc-arrayupload-item { zoom:1; }
 				/* Drag handle: a quiet FontAwesome glyph (no image), tinted on row hover. */
@@ -1032,8 +1027,7 @@
 	    <cfset var maxsize = 0 />
 	    <cfset var uploadid = "" />
 	    <cfset var joinedItems = "" />
-	    <!--- the facade hands over an empty struct when the request names no parent, so the
-	          parent is read once here and the branches below refuse rather than fail --->
+	    <!--- the facade hands over an empty struct when the request names no parent --->
 	    <cfset var parentid = structKeyExists(arguments.stObject,"objectid") ? arguments.stObject.objectid : "" />
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
@@ -1167,26 +1161,26 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"edit")><!--- Edit an array item --->
+			<!--- this branch answers into fc.openModal, which parses what it gets as markup,
+			      so a message is returned as markup too --->
 			<cfif bJoinRecovered>
-				<cfreturn "This field does not declare a related type" />
+				<cfreturn editMessage("This field does not declare a related type") />
 			</cfif>
-			<!--- these three branches dispatch through the ajax facade rather than
-			      ft:processform, so they assert the form token themselves, before anything
-			      reads an id off the request --->
+			<!--- these branches dispatch through the ajax facade, not ft:processform, so they
+			      assert the form token themselves --->
 			<cfif not checkFormToken()>
-				<cfreturn "There was a problem with the form submission. Please try again." />
+				<cfreturn editMessage("There was a problem with the form submission. Please try again.") />
 			</cfif>
 			<cfif not structKeyExists(form, "item") or not len(form.item)>
-				<cfreturn "No item specified" />
+				<cfreturn editMessage("No item specified") />
 			</cfif>
-			<!--- returns an editable form for the joined record, so it needs the authority to
-			      edit one - and the record has to be one this field is actually holding --->
+			<!--- returns an editable form for the joined record, so it takes the authority to edit one --->
 			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Edit")>
-				<cfreturn "You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field." />
+				<cfreturn editMessage("You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field.") />
 			</cfif>
 			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
 			<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=form.item, items=joinedItems)>
-				<cfreturn "That item is not attached to this record." />
+				<cfreturn editMessage("That item is not attached to this record.") />
 			</cfif>
 
 			<cfset request.mode.ajax = true />
@@ -1218,8 +1212,7 @@
 			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Edit")>
 				<cfreturn serializeJSON({ "error" = "You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field." }) />
 			</cfif>
-			<!--- fourq's setData falls through to a create when the id names no row, so a
-			      missing record is refused here rather than being written as a new one --->
+			<!--- fourq's setData creates when the id names no row, so a missing record is refused here --->
 			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
 			<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=form["_objectid"], items=joinedItems)>
 				<cfreturn serializeJSON({ "error" = "That item is not attached to this record." }) />
@@ -1263,8 +1256,8 @@
 			<cfif not checkFormToken()>
 				<cfreturn serializeJSON({ "error" = "There was a problem with the form submission. Please try again." }) />
 			</cfif>
-			<!--- the only branch that reaches the database, and only for a field that declares
-			      it. remove and detach are client side and persist with the parent form --->
+			<!--- the only branch that reaches the database. remove and detach are client side
+			      and persist with the parent form --->
 			<cfif arguments.stMetadata.ftRemoveType neq "delete">
 				<cfreturn serializeJSON({ "error" = "This field does not delete items." }) />
 			</cfif>
@@ -1537,6 +1530,12 @@
 		</cfif>
 
 		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="editMessage" access="private" output="false" returntype="string" hint="Wraps a message for the edit branch, whose response is handed to fc.openModal. That parses its argument as markup, so a bare sentence is read as a selector rather than shown.">
+		<cfargument name="message" required="true" type="string" />
+
+		<cfreturn '<div class="fc-arrayupload-message">' & encodeForHTML(arguments.message) & '</div>' />
 	</cffunction>
 
 	<cffunction name="checkFormToken" access="private" output="false" returntype="boolean" hint="True when the request carries a valid FarCry form token, or when the site has form tokens turned off. The same pair ft:form emits and ft:processform checks; these branches dispatch through the ajax facade rather than processform.">
