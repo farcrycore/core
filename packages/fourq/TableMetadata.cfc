@@ -79,10 +79,15 @@
 		
 			
 		<cfif structKeyExists(arguments.md,'properties')>
+
+			<cfparam name="variables.tableDefinition" default="#structNew()#" >
 		
 			<!--- If we got to here there should be some properties to parse --->
 			<cfloop from="1" to="#arrayLen(arguments.md.properties)#" index="i">
-				<cfparam name="variables.tableDefinition[arguments.md.properties[i].name]" default="#structNew()#" />
+
+				<cfif not structKeyExists(variables.tableDefinition,arguments.md.properties[i].name)>
+					<cfset variables.tableDefinition[arguments.md.properties[i].name] = structNew() />
+				</cfif>
 
 				<cfset bSuccess = StructAppend(variables.tableDefinition[arguments.md.properties[i].name],parseProperty(arguments.md.properties[i]),false)>
 
