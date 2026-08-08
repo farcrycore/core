@@ -258,6 +258,29 @@
 		    			function showItemError(errorloc,message){
 		    				errorloc.empty().append($("<span></span>").addClass("fc-uploader-error-text").text(message));
 		    			};
+
+		    			// These rows carry no feedback area, so a server refusal goes in the
+		    			// same dialog the confirms use.
+		    			function showActionError(message){
+		    				$fc.uploader.confirm({
+		    					title: "Unable to complete",
+		    					message: message || "The request could not be completed.",
+		    					buttons: [ { label: "OK", value: "ok", style: "primary", isCancel: true } ]
+		    				});
+		    			};
+
+		    			// The three form-encoded actions post outside ft:processform, so the
+		    			// enclosing form's token travels with them explicitly. Read at call time
+		    			// rather than cached, so a re-rendered form is picked up.
+		    			function getFormToken(){
+		    				var d = {};
+		    				var f = $("##"+prefix+property).closest("form");
+		    				var token = f.find('input[name="FarcryFormToken"]').val();
+		    				var formname = f.find('input[name="FarcryFormSubmitted"]').val();
+		    				if (token) d.FarcryFormToken = token;
+		    				if (formname) d.FarcryFormSubmitted = formname;
+		    				return d;
+		    			};
 		    			
 		    			this.init = function initArrayUploadFormtool(typename,objectid,url,filetypes,sizeLimit,uploadLimit,allowEdit,allowRemove,removeType,quickEdit,view,tilewidth,tileheight,storage){
 		    				var fieldname = prefix + property;
@@ -288,6 +311,10 @@
 							// markup and CSS selectors (which assume short, selector-safe IDs) keep working.
 							arrayuploadformtool.idMap = {};
 							arrayuploadformtool.idCounter = 0;
+
+							// Items attached since this render, which the relationship does not
+							// hold yet. Cleared by the save, which re-renders the field.
+							arrayuploadformtool.unsaved = {};
 
 				    		arrayuploadformtool.uploader = $fc.uploader.create({
 								fileInput:           arrayuploadformtool.fileInput,
@@ -334,6 +361,7 @@
 										showItemError($("##join-item-#arguments.stMetadata.name#-"+ID+" .fc-arrayupload-feedback",arrayuploadformtool.displaylist),"Server error: "+results.error);
 									}
 									else {
+										arrayuploadformtool.unsaved[itemKey(results.objectid)] = true;
 										$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
 											itemid		: results.objectid,
 											displayhtml : results.html
@@ -381,6 +409,12 @@
 		    			// A template value lands in markup, so it is escaped on the way in.
 		    			// displayhtml is the one exception: it IS the server-rendered webskin
 		    			// for the item, so it stays markup (see rawvars in getHTML).
+		    			// An objectid is only ever alphanumerics and dashes; every id that
+		    			// reaches markup or the unsaved map goes through this first.
+		    			function itemKey(id){
+		    				return String(id).replace(/[^A-Za-z0-9_\-]/g,"");
+		    			};
+
 		    			function escapeTemplateValue(value){
 		    				if (value === null || value === undefined) return "";
 		    				return String(value)
@@ -399,7 +433,15 @@
 		    				// value and the inline handlers, so it is held to an identifier shape
 		    				// rather than escaped for one of them: an objectid is only ever
 		    				// alphanumerics and dashes.
-		    				if ("itemid" in tempvars) tempvars.itemid = String(tempvars.itemid).replace(/[^A-Za-z0-9_\-]/g,"");
+		    				if ("itemid" in tempvars) tempvars.itemid = itemKey(tempvars.itemid);
+
+		    				// A row added since this form was rendered is not in the relationship
+		    				// yet - the join is written when the record is saved - so the two actions
+		    				// that go to the server for an attached item cannot run on it. Draw the
+		    				// controls that do work rather than ones that would be refused: no
+		    				// quick-edit pencil, and plain remove in place of delete. The library edit
+		    				// modal is unaffected, so the pencil stays when that is what it opens.
+		    				var pending = ("itemid" in tempvars) && !!arrayuploadformtool.unsaved[tempvars.itemid];
 
 		    				$.extend(tempvars,{
 		    					typename 		: arrayuploadformtool.typename,
@@ -408,9 +450,9 @@
 		    					prefix 			: prefix,
 		    					property 		: property,
 		    					fieldname 		: prefix+property,
-								allowedit		: arrayuploadformtool.allowEdit,
-								allowremove		: arrayuploadformtool.allowRemove && arrayuploadformtool.removeType!="delete",
-								allowdelete		: arrayuploadformtool.allowRemove && arrayuploadformtool.removeType=="delete",
+								allowedit		: arrayuploadformtool.allowEdit && !(pending && arrayuploadformtool.quickEdit),
+								allowremove		: arrayuploadformtool.allowRemove && (arrayuploadformtool.removeType!="delete" || pending),
+								allowdelete		: arrayuploadformtool.allowRemove && arrayuploadformtool.removeType=="delete" && !pending,
 								quickedit		: arrayuploadformtool.quickEdit
 		    				});
 		    				
@@ -441,6 +483,9 @@
 								},
 								dataType: "json",
 								success: function(data){
+									for (var i=0;i<data.length;i++){
+										arrayuploadformtool.unsaved[itemKey(data[i].objectid)] = true;
+									}
 									for (var i=0;i<data.length;i++)
 										arrayuploadformtool.displaylist.append(arrayuploadformtool.getHTML("newitem",{
 											itemid		: data[i].objectid,
@@ -451,27 +496,44 @@
 							});
 		    			};
 		    			
+		    			function dropRows(objectids){
+		    				for (var i=0;i<objectids.length;i++){
+		    					$("##join-item-#arguments.stMetadata.name#-"+objectids[i],arrayuploadformtool.displaylist).remove();
+		    					delete arrayuploadformtool.unsaved[itemKey(objectids[i])];
+		    				}
+		    				if (objectids.length) arrayuploadformtool.displaylist.sortable("refresh");
+		    			};
+
 		    			this.removeItems = function(objectids){
+		    				// Rows this form attached but has not saved are not in the relationship,
+		    				// so there is nothing joined to delete and the server would refuse the
+		    				// attempt. They just come out of the list.
+		    				var pending = [], attached = [];
+		    				for (var i=0;i<objectids.length;i++){
+		    					(arrayuploadformtool.unsaved[itemKey(objectids[i])] ? pending : attached).push(objectids[i]);
+		    				}
+		    				dropRows(pending);
+		    				if (!attached.length) return;
+
 		    				if (arrayuploadformtool.removeType=="delete"){
 								$j.ajax({
 									cache: false,
 									type: "POST",
 						 			url: arrayuploadformtool.url+"/delete/1",
-									data: { 
-										items:objectids.join(",")
-									},
-									dataType: "html",
+									data: $.extend({
+										items:attached.join(",")
+									},getFormToken()),
+									dataType: "json",
+									// Rows come out when the server confirms the delete, not before.
 									success: function(data){
-										for (var i=0;i<objectids.length;i++) $("##join-item-#arguments.stMetadata.name#-"+objectids[i],arrayuploadformtool.displaylist).remove();
-										arrayuploadformtool.displaylist.sortable("refresh");
-									}
+										if (data && data.error){ showActionError(data.error); return; }
+										dropRows(attached);
+									},
+									error: function(){ showActionError("The item could not be deleted."); }
 								});
 		    				}
 		    				else {
-		    					for (var i=0;i<objectids.length;i++) {
-		    						$("##join-item-#arguments.stMetadata.name#-"+objectids[i],arrayuploadformtool.displaylist).remove();
-		    					}
-		    					arrayuploadformtool.displaylist.sortable("refresh");
+		    					dropRows(attached);
 		    				};
 		    			};
 		    			
@@ -483,7 +545,8 @@
 		    			// uploaders) in place of the old native confirm() prompt. The
 		    			// primary action is blue, not red.
 		    			this.confirmRemove = function(itemid){
-		    				var isDelete = arrayuploadformtool.removeType == "delete";
+		    				// an unsaved row is unlinked, not deleted, so it gets the unlink wording
+		    				var isDelete = arrayuploadformtool.removeType == "delete" && !arrayuploadformtool.unsaved[itemKey(itemid)];
 		    				$fc.uploader.confirm({
 		    					title: isDelete ? "Delete item" : "Remove item",
 		    					message: isDelete
@@ -552,21 +615,33 @@
 								cache: false,
 								type: "POST",
 					 			url: arrayuploadformtool.url+"/edit/1",
-								data: {
+								data: $.extend({
 									item:objectid
-								},
+								},getFormToken()),
 								dataType: "html",
 								success: function(data){
 		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
 									$fc.openModal(data,"auto","auto",true);
+								},
+								// A server-side refusal comes back as text and shows in the modal;
+								// this is for the request never arriving, so the pencil comes back
+								// rather than the row keeping a spinner.
+								error: function(){
+		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
+									showActionError("The item could not be opened for editing.");
 								}
 							});
 		    			};
 		    			
 		    			this.saveItem = function(objectid,values){
-		    				$(".buttonHolder",$fc.lbContainer).html("<img src='#application.url.webtop#/images/indicator.gif' />");
+		    				// The buttons are put back if the save is refused, so the modal stays
+		    				// usable rather than being left holding only the spinner.
+		    				var buttons = $(".buttonHolder",$fc.lbContainer);
+		    				var buttonsHTML = buttons.html();
+		    				buttons.html("<img src='#application.url.webtop#/images/indicator.gif' />");
 		    				var d = { "_objectid":objectid,"startindex":0 };
 		    				for (var k in values) d["_"+k] = values[k];
+		    				$.extend(d,getFormToken());
 							$.ajax({
 								cache: false,
 								type: "POST",
@@ -574,12 +649,21 @@
 								data: d,
 								dataType: "json",
 								success: function(data){
+									if (!data || data.error){
+										buttons.html(buttonsHTML);
+										showActionError(data && data.error);
+										return;
+									}
 									$("##join-item-#arguments.stMetadata.name#-"+data.objectid,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
 										itemid		: data.objectid,
 										displayhtml : data.html
 									}));
 									arrayuploadformtool.displaylist.sortable("refresh");
 									$fc.closeModal();
+								},
+								error: function(){
+									buttons.html(buttonsHTML);
+									showActionError("The item could not be saved.");
 								}
 							});
 		    			};
@@ -947,6 +1031,10 @@
 	    <cfset var stClaim = "" />
 	    <cfset var maxsize = 0 />
 	    <cfset var uploadid = "" />
+	    <cfset var joinedItems = "" />
+	    <!--- the facade hands over an empty struct when the request names no parent, so the
+	          parent is read once here and the branches below refuse rather than fail --->
+	    <cfset var parentid = structKeyExists(arguments.stObject,"objectid") ? arguments.stObject.objectid : "" />
 
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -1082,8 +1170,23 @@
 			<cfif bJoinRecovered>
 				<cfreturn "This field does not declare a related type" />
 			</cfif>
+			<!--- these three branches dispatch through the ajax facade rather than
+			      ft:processform, so they assert the form token themselves, before anything
+			      reads an id off the request --->
+			<cfif not checkFormToken()>
+				<cfreturn "There was a problem with the form submission. Please try again." />
+			</cfif>
 			<cfif not structKeyExists(form, "item") or not len(form.item)>
 				<cfreturn "No item specified" />
+			</cfif>
+			<!--- returns an editable form for the joined record, so it needs the authority to
+			      edit one - and the record has to be one this field is actually holding --->
+			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Edit")>
+				<cfreturn "You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field." />
+			</cfif>
+			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
+			<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=form.item, items=joinedItems)>
+				<cfreturn "That item is not attached to this record." />
 			</cfif>
 
 			<cfset request.mode.ajax = true />
@@ -1106,8 +1209,20 @@
 			<cfif bJoinRecovered>
 				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
 			</cfif>
+			<cfif not checkFormToken()>
+				<cfreturn serializeJSON({ "error" = "There was a problem with the form submission. Please try again." }) />
+			</cfif>
 			<cfif not structKeyExists(form, "_objectid") or not len(form._objectid)>
-				<cfreturn "No data specified" />
+				<cfreturn serializeJSON({ "error" = "No data specified" }) />
+			</cfif>
+			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Edit")>
+				<cfreturn serializeJSON({ "error" = "You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field." }) />
+			</cfif>
+			<!--- fourq's setData falls through to a create when the id names no row, so a
+			      missing record is refused here rather than being written as a new one --->
+			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
+			<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=form["_objectid"], items=joinedItems)>
+				<cfreturn serializeJSON({ "error" = "That item is not attached to this record." }) />
 			</cfif>
 			
 			<!--- SETUP stActions --->
@@ -1118,14 +1233,20 @@
 				<cfset stActions.ftRemoveType = "remove" />
 			</cfif>
 			
-			<cfset stSource = structnew() />
-			<cfset stSource.objectid = form["_objectid"] />
-			<cfset stSource.typename = arguments.stMetadata.ftJoin />
-			<cfloop list="#arguments.stMetadata.ftEditableProperties#" index="thisfield">
-				<cfset stSource[thisfield] = form["_#thisfield#"] />
-			</cfloop>
-			<cfset application.fapi.setData(stProperties=stSource) />
-			
+			<cftry>
+				<cfset stSource = structnew() />
+				<cfset stSource.objectid = form["_objectid"] />
+				<cfset stSource.typename = arguments.stMetadata.ftJoin />
+				<cfloop list="#arguments.stMetadata.ftEditableProperties#" index="thisfield">
+					<cfset stSource[thisfield] = form["_#thisfield#"] />
+				</cfloop>
+				<cfset application.fapi.setData(stProperties=stSource) />
+
+				<cfcatch type="any">
+					<cfreturn serializeJSON({ "error" = cfcatch.message }) />
+				</cfcatch>
+			</cftry>
+
 			<cfset stJSON = structnew() />
 			<cfset stJSON["objectid"] = stSource.objectid />
 			<skin:view objectid="#stSource.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" alternateHTML="OBJECT NO LONGER EXISTS" r_html="html" />
@@ -1139,18 +1260,36 @@
 			<cfif bJoinRecovered>
 				<cfreturn serializeJSON({ "error" = "This field does not declare a related type" }) />
 			</cfif>
+			<cfif not checkFormToken()>
+				<cfreturn serializeJSON({ "error" = "There was a problem with the form submission. Please try again." }) />
+			</cfif>
+			<!--- the only branch that reaches the database, and only for a field that declares
+			      it. remove and detach are client side and persist with the parent form --->
+			<cfif arguments.stMetadata.ftRemoveType neq "delete">
+				<cfreturn serializeJSON({ "error" = "This field does not delete items." }) />
+			</cfif>
 			<cfif not structKeyExists(form, "items") or not len(form.items)>
 				<cfreturn "[]" />
 			</cfif>
-			
-			<cfset aItems = listtoarray(form.items) />
-			<cfif arguments.stMetadata.ftRemoveType eq "delete">
-				<cfset source = application.fapi.getContentType(arguments.stMetadata.ftJoin) />
-				<cfloop from="1" to="#arraylen(aItems)#" index="i">
-					<cfset source.deleteData(aItems[i]) />
-				</cfloop>
+			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Delete")>
+				<cfreturn serializeJSON({ "error" = "You do not have permission to delete #arguments.stMetadata.ftJoin# records from this field." }) />
 			</cfif>
-			
+
+			<cfset aItems = listtoarray(form.items) />
+			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
+
+			<!--- checked in full before anything is deleted: the batch is all or nothing --->
+			<cfloop from="1" to="#arraylen(aItems)#" index="i">
+				<cfif not isJoinItem(joinTypename=arguments.stMetadata.ftJoin, itemid=aItems[i], items=joinedItems)>
+					<cfreturn serializeJSON({ "error" = "That item is not attached to this record." }) />
+				</cfif>
+			</cfloop>
+
+			<cfset source = application.fapi.getContentType(arguments.stMetadata.ftJoin) />
+			<cfloop from="1" to="#arraylen(aItems)#" index="i">
+				<cfset source.deleteData(aItems[i]) />
+			</cfloop>
+
 			<cfreturn serializeJSON(aItems) />
 		</cfif>
 		
@@ -1395,6 +1534,130 @@
 					and compareNoCase(stEntry.objectid,arguments.objectid) eq 0>
 				<cfreturn stEntry.ftJoin />
 			</cfif>
+		</cfif>
+
+		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="checkFormToken" access="private" output="false" returntype="boolean" hint="True when the request carries a valid FarCry form token, or when the site has form tokens turned off. The same pair ft:form emits and ft:processform checks; these branches dispatch through the ajax facade rather than processform.">
+
+		<cfif not application.fapi.getConfig("security", "bCSRFTokens", true)>
+			<cfreturn true />
+		</cfif>
+
+		<cfif not structKeyExists(form,"FarcryFormToken") or not structKeyExists(form,"FarcryFormSubmitted") or not len(form.FarcryFormSubmitted)>
+			<cfreturn false />
+		</cfif>
+
+		<cftry>
+			<cfreturn csrfVerifyToken(form.FarcryFormToken, form.FarcryFormSubmitted) />
+
+			<cfcatch type="any">
+				<!--- a token that cannot be read is a token that does not verify --->
+				<cfreturn false />
+			</cfcatch>
+		</cftry>
+	</cffunction>
+
+	<cffunction name="checkItemPermission" access="private" output="false" returntype="boolean" hint="The permission for an operation this field performs on an already joined record: the named permission on the joined type - Edit to read or write one, Delete to remove one - plus the parent's own authority, which is Edit on the parent type when the parent exists and Create on it when the parent is new or session only. Type scoped throughout, the same semantics the upload branches use.">
+		<cfargument name="typename" required="true" type="string" hint="the parent's type" />
+		<cfargument name="objectid" required="true" type="string" hint="the parent record" />
+		<cfargument name="joinTypename" required="true" type="string" hint="the joined type the operation acts on" />
+		<cfargument name="permission" required="true" type="string" hint="the permission the operation needs on the joined type" />
+
+		<cfif not len(arguments.typename) or not len(arguments.joinTypename)>
+			<cfreturn false />
+		</cfif>
+
+		<cfif not application.security.checkPermission(permission=arguments.permission, type=arguments.joinTypename)>
+			<cfreturn false />
+		</cfif>
+
+		<cfif isPersistedItem(typename=arguments.typename, objectid=arguments.objectid)>
+			<cfreturn application.security.checkPermission(permission="Edit", type=arguments.typename) />
+		</cfif>
+
+		<cfreturn application.security.checkPermission(permission="Create", type=arguments.typename) />
+	</cffunction>
+
+	<cffunction name="isPersistedItem" access="private" output="false" returntype="boolean" hint="True when the id names a record of this type in the database. isPersistedObject bypasses the session temp store and the object broker, so a session only id reports false.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
+
+		<cfif not len(trim(arguments.objectid)) or not structKeyExists(application.stCOAPI,arguments.typename)>
+			<cfreturn false />
+		</cfif>
+
+		<cftry>
+			<cfreturn application.fapi.getContentType(arguments.typename).isPersistedObject(objectid=arguments.objectid) />
+
+			<cfcatch type="any">
+				<!--- a malformed id names nothing --->
+				<cfreturn false />
+			</cfcatch>
+		</cftry>
+	</cffunction>
+
+	<cffunction name="isJoinItem" access="private" output="false" returntype="boolean" hint="True when the item is an existing record of the joined type and a current member of this parent's relationship. Existence is checked as well as membership because fourq's setData creates when the id names no row. Both give the same refusal.">
+		<cfargument name="joinTypename" required="true" type="string" />
+		<cfargument name="itemid" required="true" type="string" />
+		<cfargument name="items" required="true" type="string" hint="the parent's relationship, from persistedJoinItems(); the caller resolves it once per request" />
+
+		<cfif not len(trim(arguments.itemid))>
+			<cfreturn false />
+		</cfif>
+
+		<cfif not listFindNoCase(arguments.items, trim(arguments.itemid))>
+			<cfreturn false />
+		</cfif>
+
+		<cfreturn isPersistedItem(typename=arguments.joinTypename, objectid=arguments.itemid) />
+	</cffunction>
+
+	<cffunction name="persistedJoinItems" access="private" output="false" returntype="string" hint="The ids this parent's property holds according to the database. Read here rather than from stObject: the ajax facade merges posted properties into the loaded object before dispatch, so that copy of the relationship follows the request. bArraysAsStructs is what makes fourq skip the session temp store and the object broker; an extended array returns its elements as structs, so the id comes from the data column.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
+
+		<cfset var stParent = "" />
+		<cfset var value = "" />
+		<cfset var items = "" />
+		<cfset var i = 0 />
+
+		<cfif not structKeyExists(application.stCOAPI,arguments.typename)>
+			<cfreturn "" />
+		</cfif>
+
+		<cftry>
+			<!--- bArraysAsStructs must be numeric for fourq to honour it --->
+			<cfset stParent = application.fapi.getContentType(arguments.typename).getData(objectid=arguments.objectid, bUseInstanceCache=false, bArraysAsStructs=1) />
+
+			<cfcatch type="any">
+				<cfreturn "" />
+			</cfcatch>
+		</cftry>
+
+		<cfif not structKeyExists(stParent,arguments.property)>
+			<cfreturn "" />
+		</cfif>
+
+		<cfset value = stParent[arguments.property] />
+
+		<cfif isArray(value)>
+			<cfloop from="1" to="#arraylen(value)#" index="i">
+				<cfif isStruct(value[i])>
+					<cfif structKeyExists(value[i],"data") and isSimpleValue(value[i].data)>
+						<cfset items = listappend(items, trim(value[i].data)) />
+					</cfif>
+				<cfelseif isSimpleValue(value[i])>
+					<cfset items = listappend(items, trim(value[i])) />
+				</cfif>
+			</cfloop>
+			<cfreturn items />
+		</cfif>
+
+		<cfif isSimpleValue(value)>
+			<cfreturn value />
 		</cfif>
 
 		<cfreturn "" />
