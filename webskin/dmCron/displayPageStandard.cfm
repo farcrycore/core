@@ -30,7 +30,8 @@
 <cfset stTask = describeTemplate(stObj.template) />
 <cfset application.fapi.addLogContext({objectid=stObj.objectid, title=stObj.title, task=stTask.name, source=stTask.source}) />
 <!--- alarm is a per-line routing signal, not provenance: the harness stamps it on outcome lines only, so an incidental error a task logs does not trip the failure alarm - failing the task does --->
-<cfset taskAlarm = (structKeyExists(stObj, "bAlarm") ? stObj.bAlarm : false) />
+<!--- cast so the field logs as a boolean, not the 1/0 the property carries --->
+<cfset taskAlarm = javaCast("boolean", (structKeyExists(stObj, "bAlarm") and isBoolean(stObj.bAlarm)) ? stObj.bAlarm : false) />
 <cfset application.fapi.logEvent("cron", "debug", "scheduled task started") />
 
 <cfsavecontent variable="html">
