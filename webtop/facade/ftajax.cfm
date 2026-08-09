@@ -87,13 +87,16 @@
 <cfset stFieldPost = structnew() />
 <cfset stFieldPost.stSupporting = structnew() />
 <cfset stFieldPost.stSupporting.value = stMetadata.value />
+<cfset bStagedProperty = false />
 <cfif structkeyexists(form,"fieldnames")>
 	<cfloop list="#form.fieldnames#" index="key">
 		
 		<cfif application.fapi.getPropertyMetadata( typename=url.typename, property=key, md='type', default='string' ) EQ "array">
 			<cfset stObj[key] = listToArray(form[key]) />
+			<cfset bStagedProperty = true />
 		<cfelseif structkeyexists(application.stCOAPI[url.typename].stProps,key)>
 		<cfset stObj[key] = form[key] />
+			<cfset bStagedProperty = true />
 		<cfelseif refindnocase("^#url.property#",key)>
 			<cfset stFieldPost.stSupporting[mid(key,len(url.property)+1,len(key))] = form[key] />
 		</cfif>
@@ -101,8 +104,9 @@
 	</cfloop>
 </cfif>
 
-<!--- Save the updated object to the session --->
-<cfif structKeyExists(stobj, "objectid") AND len(stobj.objectid)>
+<!--- Save the updated object to the session. only when the loop above staged a property:
+      a request that changed nothing has nothing to save, and leaves the session alone --->
+<cfif bStagedProperty AND structKeyExists(stobj, "objectid") AND len(stobj.objectid)>
 	<cfset stResult = application.fapi.setData(stProperties="#stObj#", bSessionOnly="true") />
 </cfif>
 
