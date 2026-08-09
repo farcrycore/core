@@ -935,11 +935,6 @@
 				noun = "image"
 			) />
 
-			<!--- a repeat of a finalize that already reported a result gets that result back
-			      rather than rewriting the image a second time --->
-			<cfif stClaim.status eq "replay">
-				<cfreturn stClaim.result />
-			</cfif>
 			<cfif stClaim.status neq "ok">
 				<cfset stJSON["error"] = stClaim.message />
 				<cfset stJSON["value"] = "" />
@@ -992,9 +987,10 @@
 
 			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=value) />
 
-			<cfset json = serializeJSON(stJSON) />
-			<cfset application.fc.lib.directupload.complete(uploadid=uploadid,result=json) />
-			<cfreturn json />
+			<!--- no record is written here either: the resized value goes back to the form. A
+			      finalize arriving twice runs the resize again, which reads and rewrites the
+			      same object rather than producing a second one --->
+			<cfreturn serializeJSON(stJSON) />
 
 			<cfcatch type="any">
 				<cfreturn serializeJSON({ "error" = cfcatch.message, "value" = "" }) />

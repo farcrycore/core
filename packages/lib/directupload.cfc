@@ -1,10 +1,7 @@
-<cfcomponent displayname="Direct Upload" hint="Server held authorization for direct browser-to-bucket uploads. A sign request issues a short lived record describing one exact object key and the context it was issued for; a finalize request presents the id, the record is claimed once, and the accepted value is read back off the record rather than off the request. Records live in session scope, so an authorization only resolves for the session and user it was issued to." output="false" persistent="false">
+<cfcomponent displayname="Direct Upload" hint="Server held authorization for direct browser-to-bucket uploads. A sign request describes one exact object key and the context it was issued for, signs that description, and hands it back as an opaque token; a finalize request presents the token, the signature is verified, and the accepted value is read out of the verified description rather than off the request. Nothing is stored: the signature is what makes the description the server's word, so an authorization needs no state on any node and resolves the same on all of them. It carries the actor it was issued to and the record a finalize may create, so it does not resolve for another user and a finalize that arrives twice writes the same record rather than a second one." output="false" persistent="false">
 
-	<cfset this.defaultMaxPending = 32 />
 	<cfset this.defaultGraceMinutes = 10 />
-	<cfset this.defaultReplayMinutes = 10 />
 	<cfset this.defaultPolicyMinutes = 60 />
-	<cfset this.lockTimeout = 10 />
 
 	<cffunction name="init" access="public" output="false" returntype="any">
 		<cfreturn this />
@@ -12,115 +9,60 @@
 
 
 	<!--- ------------------------------------------------------------------
-	      Pending authorizations
+	      Upload authorizations
 	      ------------------------------------------------------------------ --->
 
-	<cffunction name="issue" access="public" output="false" returntype="string" hint="Issues a pending upload authorization and returns its opaque id. bind holds the server resolved facts a finalize request must re-present exactly; grant holds what the authorization confers and is only ever read back off the record. bind.location sizes the expiry against that location's signing policy window. Throws when the session is already at its live ceiling.">
+	<cffunction name="issue" access="public" output="false" returntype="string" hint="Signs an upload authorization and returns it as an opaque token. bind holds the server resolved facts a finalize request must re-present exactly; grant holds what the authorization confers. Both travel inside the token: the signature is what stops the browser editing either, which is the same guarantee holding them server side gave and needs nothing stored. bind.location sizes the expiry against that location's signing policy window. The token also names the record a finalize may create, so two finalizes of one upload write one record.">
 		<cfargument name="bind" type="struct" required="true" />
 		<cfargument name="grant" type="struct" required="true" />
 
-		<cfset var uploadid = newAuthorizationID() />
-		<cfset var stStore = getStore() />
-		<cfset var stActor = getActor() />
 		<cfset var location = structKeyExists(arguments.bind,"location") ? arguments.bind.location : "" />
-		<cfset var issuedAt = now() />
 		<cfset var minutes = getPolicyMinutes(location) + getNumericSetting("graceMinutes",this.defaultGraceMinutes,0) />
-		<cfset var maxPending = getNumericSetting("maxPending",this.defaultMaxPending,1) />
 
-		<cfset prune() />
-
-		<cfif countLive() gte maxPending>
-			<cfset application.fapi.throw(message="Too many uploads in progress. Wait for the current uploads to finish and try again.",type="uploaderror") />
-		</cfif>
-
-		<cfset stStore[uploadid] = {
-			"bind" = duplicate(arguments.bind),
-			"grant" = duplicate(arguments.grant),
-			"actor" = stActor,
-			"issued" = issuedAt,
-			"expires" = dateadd("n", minutes, issuedAt),
-			"bConsumed" = false,
-			"bHasResult" = false,
-			"result" = ""
-		} />
-		<cfset commitStore() />
-
-		<cfreturn uploadid />
+		<cfreturn signToken({
+			"bind" = arguments.bind,
+			"grant" = arguments.grant,
+			"actor" = getActor(),
+			"recordid" = application.fapi.getUUID(),
+			"expires" = getTickCount() + (minutes * 60000)
+		}) />
 	</cffunction>
 
 
-	<cffunction name="claim" access="public" output="false" returntype="struct" hint="Compares the stored context against expect and atomically marks the record consumed. Returns { status, bind, grant, result } where status is ok, replay, notfound, expired or mismatch. Only status ok authorises side effects; replay carries the completed result of the finalize that already ran.">
+	<cffunction name="claim" access="public" output="false" returntype="struct" hint="Verifies a presented token and returns what it authorises. Returns { status, bind, grant, recordid } where status is ok, notfound, expired or mismatch. Only status ok authorises side effects. notfound covers absent, malformed and unsigned tokens alike - a token that does not verify describes nothing, so there is no distinction to draw.">
 		<cfargument name="uploadid" type="string" required="false" default="" />
 		<cfargument name="expect" type="struct" required="true" />
 
-		<cfset var stResult = { "status" = "notfound", "bind" = structnew(), "grant" = structnew(), "result" = "" } />
-		<cfset var stStore = getStore() />
-		<cfset var stRecord = "" />
+		<cfset var stResult = { "status" = "notfound", "bind" = structnew(), "grant" = structnew(), "recordid" = "" } />
+		<cfset var stToken = verifyToken(arguments.uploadid) />
 
-		<!--- an id naming no record keeps the notfound this started as and falls through to
-		      the same reporting every other refusal goes through. returning here instead
-		      would make the commonest refusal the only one an operator cannot see --->
-		<cfif len(trim(arguments.uploadid)) and structKeyExists(stStore,arguments.uploadid)>
-			<!--- compare and consume under one lock so a repeated finalize cannot run the
-			      side effects twice. the lock is JVM local, as every other named lock in
-			      core is, so single use is not claimed across a cluster --->
-			<cflock name="directUpload_#arguments.uploadid#_#application.applicationname#" type="exclusive" timeout="#this.lockTimeout#">
-				<cfif structKeyExists(stStore,arguments.uploadid)>
-					<cfset stRecord = stStore[arguments.uploadid] />
+		<!--- a token that does not verify keeps the notfound this started as and falls
+		      through to the same reporting every other refusal goes through. returning here
+		      instead would make the commonest refusal the only one an operator cannot see --->
+		<cfif stToken.bValid>
+			<cfif getTickCount() gt val(stToken.payload.expires)>
+				<cfset stResult["status"] = "expired" />
 
-					<cfif datecompare(now(), stRecord.expires) gt 0>
-						<cfset structDelete(stStore,arguments.uploadid) />
-						<cfset stResult["status"] = "expired" />
+			<cfelseif not sameActor(stToken.payload.actor) or not sameContext(stToken.payload.bind, arguments.expect)>
+				<cfset stResult["status"] = "mismatch" />
 
-					<cfelseif not sameActor(stRecord.actor) or not sameContext(stRecord.bind, arguments.expect)>
-						<cfset stResult["status"] = "mismatch" />
-
-					<cfelseif stRecord.bConsumed>
-						<cfset stResult["status"] = "replay" />
-						<cfset stResult["bind"] = duplicate(stRecord.bind) />
-						<cfset stResult["grant"] = duplicate(stRecord.grant) />
-						<cfif stRecord.bHasResult>
-							<cfset stResult["result"] = stRecord.result />
-						</cfif>
-
-					<cfelse>
-						<cfset stRecord.bConsumed = true />
-						<!--- from here the record is carrying a finalize that is still running, so it
-						      gets at least the shipped grace however short the retry window is set -
-						      including zero. complete() resets it to the retry window proper. The
-						      whole lifecycle lives in this one field: nothing else special cases a
-						      consumed record, so none of them can outlive their clock. --->
-						<cfset stRecord.expires = dateadd("n", max(getNumericSetting("replayMinutes",this.defaultReplayMinutes,0), this.defaultGraceMinutes), now()) />
-						<cfset stResult["status"] = "ok" />
-						<!--- copies, so a caller working with what it was granted cannot reach
-						      back into the stored record --->
-						<cfset stResult["bind"] = duplicate(stRecord.bind) />
-						<cfset stResult["grant"] = duplicate(stRecord.grant) />
-					</cfif>
-				</cfif>
-			</cflock>
-		</cfif>
-
-		<!--- ok consumed the record and expired dropped it; the other statuses left the
-		      store alone, so they do not force a session store --->
-		<cfif listfindnocase("ok,expired", stResult.status)>
-			<cfset commitStore() />
+			<cfelse>
+				<cfset stResult["status"] = "ok" />
+				<cfset stResult["bind"] = stToken.payload.bind />
+				<cfset stResult["grant"] = stToken.payload.grant />
+				<cfset stResult["recordid"] = stToken.payload.recordid />
+			</cfif>
 		</cfif>
 
 		<!--- a refused finalize is the failure an operator gets asked about, and the message
-		      the uploader shows deliberately does not say which of the reasons applied. a
-		      replay that hands back its stored result succeeded, so it is not a refusal.
-		      notfound has two quite different causes and the same wording, so the event
-		      carries what separates them: whether the request presented an id at all, and
-		      how many authorizations the session was holding when it was refused. no id
-		      means the sign never reached this client; an id with records present means the
-		      one it names is gone. the id itself is not logged - it is a live capability
-		      handle for as long as the record stands --->
-		<cfif stResult.status neq "ok" and not (stResult.status eq "replay" and len(stResult.result))>
+		      the uploader shows deliberately does not say which of the reasons applied.
+		      whether a token was presented at all separates a client that never received one
+		      from one presenting a token this server will not accept. the token itself is not
+		      logged - it is a live capability for as long as it has left to run --->
+		<cfif stResult.status neq "ok">
 			<cfset application.fapi.logEvent("cdn", "warning", "direct upload finalize refused", {
 				reason = stResult.status,
-				bIdPresented = (len(trim(arguments.uploadid)) gt 0),
-				pending = structcount(stStore),
+				bTokenPresented = (len(trim(arguments.uploadid)) gt 0),
 				typename = structKeyExists(arguments.expect,"typename") ? arguments.expect.typename : "",
 				property = structKeyExists(arguments.expect,"property") ? arguments.expect.property : "",
 				surface = structKeyExists(arguments.expect,"surface") ? arguments.expect.surface : ""
@@ -131,32 +73,24 @@
 	</cffunction>
 
 
-	<cffunction name="claimAndVerify" access="public" output="false" returntype="struct" hint="The whole finalize precondition in one call: claims the authorization, takes the accepted value off the record, re-asserts the value's shape, and confirms the object is in the bucket within the size the server signed for - all before the caller has any side effect. Returns { status, value, message, result }: ok means proceed with value, replay means return result verbatim because the side effects already ran, failed means return message and do nothing. Every direct upload surface goes through this, so the sequence cannot drift between them.">
+	<cffunction name="claimAndVerify" access="public" output="false" returntype="struct" hint="The whole finalize precondition in one call: verifies the token, takes the accepted value out of it, re-asserts the value's shape, and confirms the object is in the bucket within the size the server signed for - all before the caller has any side effect. Returns { status, value, recordid, message }: ok means proceed with value and create at recordid, failed means return message and do nothing. Every direct upload surface goes through this, so the sequence cannot drift between them.">
 		<cfargument name="uploadid" type="string" required="false" default="" />
-		<cfargument name="expect" type="struct" required="true" hint="the context this surface resolved for the finalize request, compared against the record" />
+		<cfargument name="expect" type="struct" required="true" hint="the context this surface resolved for the finalize request, compared against the token" />
 		<cfargument name="clientValue" type="string" required="false" default="" hint="the value the request echoed back; compared as a consistency check and otherwise ignored" />
 		<cfargument name="noun" type="string" required="false" default="file" hint="what to call the object in a user facing message" />
 
 		<cfset var stClaim = claim(uploadid=arguments.uploadid, expect=arguments.expect) />
-		<cfset var stResult = { "status" = "failed", "value" = "", "message" = "", "result" = "" } />
+		<cfset var stResult = { "status" = "failed", "value" = "", "recordid" = "", "message" = "" } />
 		<cfset var location = "" />
 		<cfset var value = "" />
 		<cfset var maxsize = 0 />
-
-		<!--- a repeat of a finalize that already reported a result gets that result back
-		      rather than running the side effects a second time --->
-		<cfif stClaim.status eq "replay" and len(stClaim.result)>
-			<cfset stResult["status"] = "replay" />
-			<cfset stResult["result"] = stClaim.result />
-			<cfreturn stResult />
-		</cfif>
 
 		<cfif stClaim.status neq "ok">
 			<cfset stResult["message"] = statusMessage(stClaim.status) />
 			<cfreturn stResult />
 		</cfif>
 
-		<!--- everything from here is read off the record, never off the request --->
+		<!--- everything from here is read out of the verified token, never off the request --->
 		<cfset location = stClaim.bind.location />
 		<cfset value = stClaim.grant.value />
 		<cfset maxsize = val(stClaim.grant.maxsize) />
@@ -182,56 +116,9 @@
 
 		<cfset stResult["status"] = "ok" />
 		<cfset stResult["value"] = value />
+		<cfset stResult["recordid"] = stClaim.recordid />
 
 		<cfreturn stResult />
-	</cffunction>
-
-
-	<cffunction name="complete" access="public" output="false" returntype="void" hint="Stores a consumed record's serialized response so a repeated finalize within the replay window returns it verbatim instead of running the side effects again.">
-		<cfargument name="uploadid" type="string" required="true" />
-		<cfargument name="result" type="string" required="true" />
-
-		<cfset var stStore = getStore() />
-		<cfset var bStored = false />
-
-		<cflock name="directUpload_#arguments.uploadid#_#application.applicationname#" type="exclusive" timeout="#this.lockTimeout#">
-			<!--- only a record this request claimed can carry a result, so an unclaimed
-			      record cannot be given one to hand back --->
-			<cfif structKeyExists(stStore,arguments.uploadid) and stStore[arguments.uploadid].bConsumed>
-				<cfset stStore[arguments.uploadid].result = arguments.result />
-				<cfset stStore[arguments.uploadid].bHasResult = true />
-				<!--- restart the window here rather than leaving it running from the claim, so
-				      a slow finalize does not spend the retry window it is meant to protect -
-				      the image resize this cache exists for is exactly the slow case --->
-				<cfset stStore[arguments.uploadid].expires = dateadd("n", getNumericSetting("replayMinutes",this.defaultReplayMinutes,0), now()) />
-				<cfset bStored = true />
-			</cfif>
-		</cflock>
-
-		<!--- the stored result is what a repeated finalize is answered from, so it has to
-		      outlive this request for the same reason the record itself does --->
-		<cfif bStored>
-			<cfset commitStore() />
-		</cfif>
-	</cffunction>
-
-
-	<cffunction name="prune" access="public" output="false" returntype="void" hint="Removes expired records, on one plain expiry test. A claimed record carries a longer expiry while its finalize runs, so this needs no special case for it - which is what keeps a finalize that failed after claiming, and will therefore never complete, from lingering for the whole session.">
-		<cfset var stStore = getStore() />
-		<cfset var uploadid = "" />
-		<cfset var checkedAt = now() />
-		<cfset var bDropped = false />
-
-		<cfloop list="#structKeyList(stStore)#" index="uploadid">
-			<cfif structKeyExists(stStore,uploadid) and datecompare(checkedAt, stStore[uploadid].expires) gt 0>
-				<cfset structDelete(stStore,uploadid) />
-				<cfset bDropped = true />
-			</cfif>
-		</cfloop>
-
-		<cfif bDropped>
-			<cfset commitStore() />
-		</cfif>
 	</cffunction>
 
 
@@ -243,8 +130,9 @@
 				<cfreturn "This upload took too long to complete. Upload the file again." />
 			</cfcase>
 			<cfdefaultcase>
-				<!--- a replay with no stored result is a finalize that did not report one, so
-				      it is reported as used up rather than as a success --->
+				<!--- one wording for a token that will not verify and for one that verifies
+				      against a context this request does not present, so a caller learns that
+				      the upload was refused and not which of the two it was --->
 				<cfreturn "Upload authorization not found or already used" />
 			</cfdefaultcase>
 		</cfswitch>
@@ -312,49 +200,96 @@
 	      Internals
 	      ------------------------------------------------------------------ --->
 
-	<cffunction name="getStore" access="private" output="false" returntype="struct" hint="The session's pending authorization store, created on first use. Created once, under a lock: the create is a read then a write, so uploads signing at the same time in a session that has not signed anything yet would each build a store, and every record written into the ones that lost would be unreachable from the session by the time its finalize looked for it. The lock covers the create only - a store that already exists is returned without taking it - so it is contended once per session. Every write to what this returns must be followed by commitStore().">
-		<cfif structKeyExists(session,"fc") and structKeyExists(session.fc,"directUploads")>
-			<cfreturn session.fc.directUploads />
-		</cfif>
+	<cffunction name="signToken" access="private" output="false" returntype="string" hint="Renders an authorization as base64url payload plus a keyed digest of that payload. The digest covers the encoded form rather than the struct, so verification never has to reproduce a serialization byte for byte to agree.">
+		<cfargument name="payload" type="struct" required="true" />
 
-		<cflock name="directUploadStore_#application.applicationname#" type="exclusive" timeout="#this.lockTimeout#">
-			<cfparam name="session.fc" default="#structNew()#" />
-			<cfparam name="session.fc.directUploads" default="#structNew()#" />
-		</cflock>
+		<cfset var encoded = toBase64Url(serializeJSON(arguments.payload)) />
 
-		<cfreturn session.fc.directUploads />
+		<cfreturn encoded & "." & hmac(encoded, getSigningKey(), "HMACSHA256") />
 	</cffunction>
 
 
-	<cffunction name="commitStore" access="private" output="false" returntype="void" hint="Publishes a change made inside the store, by moving a counter the session scope holds directly. The store is nested under session.fc, and an engine that keeps sessions in an external store decides whether to write the scope out from whether the scope changed - which a change nested below it does not count as. Without this the authorization exists only in the request that issued it and is gone before the finalize presenting it arrives, which then reports an id it was legitimately issued as unknown. Same pairing Application.cfc describes for the request token, and for the same reason. A counter rather than a timestamp, so the value is a new one on every commit however close together two of them fall. Called after a write rather than inside getStore(), so reading the store does not force a session store.">
-		<cfset var revision = 0 />
+	<cffunction name="verifyToken" access="private" output="false" returntype="struct" hint="Returns { bValid, payload }. bValid is true only for a token this server signed and whose payload still reads as an authorization; a token that is absent, misshapen, re-signed or edited is simply not valid, with no distinction drawn between those. Nothing in the payload is trusted until this has passed.">
+		<cfargument name="token" type="string" required="true" />
 
-		<cfif structKeyExists(session,"fcDirectUploadsRevision") and isnumeric(session.fcDirectUploadsRevision)>
-			<cfset revision = val(session.fcDirectUploadsRevision) />
+		<cfset var stResult = { "bValid" = false, "payload" = structnew() } />
+		<cfset var token = trim(arguments.token) />
+		<cfset var encoded = "" />
+		<cfset var presented = "" />
+		<cfset var expected = "" />
+		<cfset var stPayload = "" />
+
+		<cfif not len(token) or listlen(token,".") neq 2>
+			<cfreturn stResult />
 		</cfif>
 
-		<cfset session.fcDirectUploadsRevision = revision + 1 />
-	</cffunction>
+		<cfset encoded = listfirst(token,".") />
+		<cfset presented = listlast(token,".") />
 
+		<cftry>
+			<cfset expected = hmac(encoded, getSigningKey(), "HMACSHA256") />
 
-	<cffunction name="countLive" access="private" output="false" returntype="numeric" hint="Number of records still awaiting their finalize. Consumed records are not counted, so the ceiling bounds upload concurrency rather than batch size.">
-		<cfset var stStore = getStore() />
-		<cfset var uploadid = "" />
-		<cfset var count = 0 />
-		<cfset var checkedAt = now() />
-
-		<cfloop list="#structKeyList(stStore)#" index="uploadid">
-			<cfif structKeyExists(stStore,uploadid) and not stStore[uploadid].bConsumed and datecompare(checkedAt, stStore[uploadid].expires) lte 0>
-				<cfset count = count + 1 />
+			<!--- compared as digests of the two strings rather than the strings themselves, so
+			      how soon they differ is not observable in how long the comparison takes --->
+			<cfif compare(hash(presented,"SHA-256"), hash(expected,"SHA-256")) neq 0>
+				<cfreturn stResult />
 			</cfif>
+
+			<cfset stPayload = deserializeJSON(fromBase64Url(encoded)) />
+
+			<!--- a payload that verifies but does not carry the parts an authorization is made
+			      of cannot be acted on, so it is refused here rather than further in --->
+			<cfif not isStruct(stPayload)
+					or not structKeyExists(stPayload,"bind") or not isStruct(stPayload.bind)
+					or not structKeyExists(stPayload,"grant") or not isStruct(stPayload.grant)
+					or not structKeyExists(stPayload,"actor") or not isStruct(stPayload.actor)
+					or not structKeyExists(stPayload,"recordid")
+					or not structKeyExists(stPayload,"expires") or not isnumeric(stPayload.expires)>
+				<cfreturn stResult />
+			</cfif>
+
+			<cfset stResult["bValid"] = true />
+			<cfset stResult["payload"] = stPayload />
+
+			<cfcatch type="any">
+				<!--- an unreadable token names nothing --->
+			</cfcatch>
+		</cftry>
+
+		<cfreturn stResult />
+	</cffunction>
+
+
+	<cffunction name="getSigningKey" access="private" output="false" returntype="string" hint="The key authorizations are signed with. Held in configuration so every node answering a finalize signs and verifies with the same one - the config form generates it on first use, and FARCRY_CONFIG_DIRECTUPLOAD_SIGNINGKEY overrides it for a deployment that would rather it did not sit in the database. Throws when it is empty: an unsigned authorization is one anyone could write, so this fails rather than issuing something that only looks signed.">
+		<cfset var key = getSetting("signingKey","") />
+
+		<cfif not isSimpleValue(key) or not len(trim(key))>
+			<cfset application.fapi.throw(message="Direct uploads have no signing key configured. Set the Upload Signing Key in the CDN Direct Upload Configuration.",type="uploaderror") />
+		</cfif>
+
+		<cfreturn trim(key) />
+	</cffunction>
+
+
+	<cffunction name="toBase64Url" access="private" output="false" returntype="string" hint="base64url of a UTF-8 string: the two characters standard base64 spends on + and / are the two a URL reads as something else, and the padding carries no information. Encoded through the charset explicitly so a payload is the same bytes whatever an engine's default happens to be.">
+		<cfargument name="text" type="string" required="true" />
+
+		<cfset var b64 = binaryEncode(charsetDecode(arguments.text,"utf-8"),"base64") />
+
+		<cfreturn replace(replace(replace(b64,"+","-","all"),"/","_","all"),"=","","all") />
+	</cffunction>
+
+
+	<cffunction name="fromBase64Url" access="private" output="false" returntype="string" hint="Reverses toBase64Url, restoring the padding base64 decoding needs.">
+		<cfargument name="encoded" type="string" required="true" />
+
+		<cfset var b64 = replace(replace(arguments.encoded,"-","+","all"),"_","/","all") />
+
+		<cfloop condition="len(b64) mod 4 neq 0">
+			<cfset b64 = b64 & "=" />
 		</cfloop>
 
-		<cfreturn count />
-	</cffunction>
-
-
-	<cffunction name="newAuthorizationID" access="private" output="false" returntype="string" hint="An unguessable opaque id: 128 bits drawn from the platform CSPRNG, hashed to fixed length hex so the id is url safe without any character stripping. generateSecretKey is the native cross-engine CSPRNG on both supported engines.">
-		<cfreturn lcase(left(hash(generateSecretKey("AES",256),"SHA-256"),32)) />
+		<cfreturn charsetEncode(binaryDecode(b64,"base64"),"utf-8") />
 	</cffunction>
 
 
@@ -464,111 +399,84 @@
 	      Self test
 	      ------------------------------------------------------------------ --->
 
-	<cffunction name="authorizationSelfTest" access="public" output="false" returntype="struct" hint="Exercises the whole pending authorization lifecycle in process, against an isolated store that is swapped in and restored: issue, single use, replay, context binding, expiry, pruning and the concurrency ceiling. Needs an authenticated request because an authorization is issued to an actor. Each refused claim emits a cdn warning event, as a real refusal does. Returns { pass, results }.">
+	<cffunction name="authorizationSelfTest" access="public" output="false" returntype="struct" hint="Exercises what an authorization rests on, in process and against no stored state: a token this server signed verifies and reports what it granted, and one that is absent, edited, re-signed, expired, issued to another user or bound to another field does not. Needs an authenticated request because an authorization is issued to an actor. Each refused claim emits a cdn warning event, as a real refusal does. Returns { pass, results }.">
 		<cfset var stOut = { pass = true, results = arraynew(1) } />
-		<cfset var stSaved = getStore() />
-		<cfset var stStore = "" />
 		<cfset var stBind = { "typename" = "dmFile", "property" = "filename", "location" = "selftestloc", "surface" = "file" } />
 		<cfset var stGrant = { "value" = "/dmfile/probe.pdf", "key" = "selftest/dmfile/probe.pdf", "maxsize" = 1000000 } />
-		<cfset var id1 = "" /><cfset var id2 = "" /><cfset var id3 = "" /><cfset var id4 = "" />
-		<cfset var id5 = "" /><cfset var id6 = "" /><cfset var id7 = "" /><cfset var id8 = "" />
+		<cfset var token1 = "" />
+		<cfset var token2 = "" />
+		<cfset var edited = "" />
 		<cfset var st = "" />
-		<cfset var maxPending = 0 />
-		<cfset var i = 0 />
-		<cfset var uploadid = "" />
-		<cfset var bThrew = false />
-		<cfset var capMessage = "" />
-		<cfset var bIssuedAfterConsuming = false />
-
-		<!--- an isolated store, so a real upload in flight in this session is untouched --->
-		<cfset session.fc.directUploads = structnew() />
-		<cfset stStore = getStore() />
+		<cfset var st2 = "" />
 
 		<cftry>
-			<cfset id1 = issue(bind=stBind, grant=stGrant) />
-			<cfset id2 = issue(bind=stBind, grant=stGrant) />
-			<cfset selfTestRecord(stOut, "issue returns a 32 char hex id", refindnocase("^[0-9a-f]{32}$", id1) gt 0, id1) />
-			<cfset selfTestRecord(stOut, "two authorizations get distinct ids", id1 neq id2) />
+			<cfset token1 = issue(bind=stBind, grant=stGrant) />
+			<cfset token2 = issue(bind=stBind, grant=stGrant) />
+
+			<cfset selfTestRecord(stOut, "a token is a payload and a digest", listlen(token1,".") eq 2, listlen(token1,".") & " parts") />
+			<cfset selfTestRecord(stOut, "a token carries no character needing url escaping", refind("[^A-Za-z0-9._-]", token1) eq 0) />
+			<cfset selfTestRecord(stOut, "two authorizations differ", token1 neq token2) />
+
+			<cfset st = claim(uploadid=token1, expect=stBind) />
+			<cfset selfTestRecord(stOut, "a token this server signed verifies", st.status eq "ok", st.status) />
+			<cfset selfTestRecord(stOut, "the grant is read out of the token", structKeyExists(st.grant,"value") and st.grant.value eq stGrant.value) />
+			<cfset selfTestRecord(stOut, "the token names a record to create", len(st.recordid) gt 0, st.recordid) />
+
+			<cfset st2 = claim(uploadid=token2, expect=stBind) />
+			<cfset selfTestRecord(stOut, "two authorizations name different records", st.recordid neq st2.recordid) />
+
+			<!--- nothing is consumed, so the same token verifying twice is the intended
+			      behaviour: what stops a second finalize writing a second record is that both
+			      write the record the token names --->
+			<cfset st2 = claim(uploadid=token1, expect=stBind) />
+			<cfset selfTestRecord(stOut, "verifying twice names the same record both times", st2.status eq "ok" and st2.recordid eq st.recordid, st2.status) />
 
 			<cfset st = claim(uploadid="", expect=stBind) />
-			<cfset selfTestRecord(stOut, "omitted uploadid is refused as notfound", st.status eq "notfound", st.status) />
+			<cfset selfTestRecord(stOut, "an omitted token is refused as notfound", st.status eq "notfound", st.status) />
 
-			<cfset st = claim(uploadid=repeatstring("a",32), expect=stBind) />
-			<cfset selfTestRecord(stOut, "a guessed uploadid is refused as notfound", st.status eq "notfound", st.status) />
+			<cfset st = claim(uploadid="not-a-token", expect=stBind) />
+			<cfset selfTestRecord(stOut, "a malformed token is refused as notfound", st.status eq "notfound", st.status) />
 
-			<cfset st = claim(uploadid=id1, expect=stBind) />
-			<cfset selfTestRecord(stOut, "matching context claims ok", st.status eq "ok", st.status) />
-			<cfset selfTestRecord(stOut, "the grant is read back off the record", structKeyExists(st.grant,"value") and st.grant.value eq stGrant.value) />
+			<!--- the payload of one token with the digest of another: each half is something
+			      this server produced, and neither is a signature of the other half --->
+			<cfset edited = listfirst(token1,".") & "." & listlast(token2,".") />
+			<cfset st = claim(uploadid=edited, expect=stBind) />
+			<cfset selfTestRecord(stOut, "a digest from another token is refused as notfound", st.status eq "notfound", st.status) />
 
-			<cfset st = claim(uploadid=id1, expect=stBind) />
-			<cfset selfTestRecord(stOut, "a second claim is a replay, not a second ok", st.status eq "replay", st.status) />
-			<cfset selfTestRecord(stOut, "a replay before complete carries no result", not len(st.result)) />
+			<!--- an edited payload: a grant naming a different object, presented with the
+			      digest of the grant that was actually issued --->
+			<cfset edited = toBase64Url(serializeJSON({
+				"bind" = stBind,
+				"grant" = { "value" = "/dmfile/somebodyelse.pdf", "key" = "selftest/dmfile/somebodyelse.pdf", "maxsize" = 1000000 },
+				"actor" = getActor(),
+				"recordid" = application.fapi.getUUID(),
+				"expires" = getTickCount() + 60000
+			})) & "." & listlast(token1,".") />
+			<cfset st = claim(uploadid=edited, expect=stBind) />
+			<cfset selfTestRecord(stOut, "an edited grant is refused as notfound", st.status eq "notfound", st.status) />
 
-			<cfset complete(uploadid=id1, result='{"probe":1}') />
-			<cfset st = claim(uploadid=id1, expect=stBind) />
-			<cfset selfTestRecord(stOut, "a replay after complete returns the stored result verbatim", st.status eq "replay" and st.result eq '{"probe":1}', st.result) />
+			<!--- signed by this server, so the digest is right, but it is not an authorization --->
+			<cfset edited = signToken({ "bind" = stBind, "actor" = getActor(), "recordid" = "x", "expires" = getTickCount() + 60000 }) />
+			<cfset st = claim(uploadid=edited, expect=stBind) />
+			<cfset selfTestRecord(stOut, "a signed payload that is not an authorization is refused", st.status eq "notfound", st.status) />
 
-			<cfset st = claim(uploadid=id2, expect={ "typename" = "dmFile", "property" = "OTHER", "location" = "selftestloc", "surface" = "file" }) />
+			<cfset edited = signToken({ "bind" = stBind, "grant" = stGrant, "actor" = getActor(), "recordid" = application.fapi.getUUID(), "expires" = getTickCount() - 1000 }) />
+			<cfset st = claim(uploadid=edited, expect=stBind) />
+			<cfset selfTestRecord(stOut, "a past expiry is refused as expired", st.status eq "expired", st.status) />
+
+			<cfset edited = signToken({ "bind" = stBind, "grant" = stGrant, "actor" = { "userid" = "someoneelse", "userdirectory" = "", "profileid" = "" }, "recordid" = application.fapi.getUUID(), "expires" = getTickCount() + 60000 }) />
+			<cfset st = claim(uploadid=edited, expect=stBind) />
+			<cfset selfTestRecord(stOut, "another user's authorization is refused as mismatch", st.status eq "mismatch", st.status) />
+
+			<cfset st = claim(uploadid=token1, expect={ "typename" = "dmFile", "property" = "OTHER", "location" = "selftestloc", "surface" = "file" }) />
 			<cfset selfTestRecord(stOut, "a changed bound key is refused as mismatch", st.status eq "mismatch", st.status) />
-			<cfset selfTestRecord(stOut, "a mismatched claim does not consume the record", structKeyExists(stStore,id2) and not stStore[id2].bConsumed) />
 
-			<cfset st = claim(uploadid=id2, expect={ "typename" = "dmFile", "location" = "selftestloc", "surface" = "file" }) />
+			<cfset st = claim(uploadid=token1, expect={ "typename" = "dmFile", "location" = "selftestloc", "surface" = "file" }) />
 			<cfset selfTestRecord(stOut, "an omitted bound key is refused as mismatch", st.status eq "mismatch", st.status) />
 
-			<cfset id3 = issue(bind={ "typename" = "dmFile" }, grant=stGrant) />
-			<cfset st = claim(uploadid=id3, expect={ "typename" = "dmFile", "property" = "filename", "extra" = "x" }) />
+			<cfset edited = signToken({ "bind" = { "typename" = "dmFile" }, "grant" = stGrant, "actor" = getActor(), "recordid" = application.fapi.getUUID(), "expires" = getTickCount() + 60000 }) />
+			<cfset st = claim(uploadid=edited, expect={ "typename" = "dmFile", "property" = "filename", "extra" = "x" }) />
 			<cfset selfTestRecord(stOut, "presenting extra keys is allowed", st.status eq "ok", st.status) />
-
-			<cfset id4 = issue(bind=stBind, grant=stGrant) />
-			<cfset stStore[id4].expires = dateadd("n", -1, now()) />
-			<cfset st = claim(uploadid=id4, expect=stBind) />
-			<cfset selfTestRecord(stOut, "a past expiry is refused as expired", st.status eq "expired", st.status) />
-			<cfset selfTestRecord(stOut, "an expired record is dropped when claimed", not structKeyExists(stStore,id4)) />
-
-			<cfset id5 = issue(bind=stBind, grant=stGrant) />
-			<cfset id6 = issue(bind=stBind, grant=stGrant) />
-			<cfset stStore[id5].expires = dateadd("n", -1, now()) />
-			<cfset prune() />
-			<cfset selfTestRecord(stOut, "prune removes an abandoned authorization", not structKeyExists(stStore,id5)) />
-			<cfset selfTestRecord(stOut, "prune keeps a live authorization", structKeyExists(stStore,id6)) />
-
-			<cfset id7 = issue(bind=stBind, grant=stGrant) />
-			<cfset claim(uploadid=id7, expect=stBind) />
-			<cfset prune() />
-			<cfset selfTestRecord(stOut, "prune keeps a claimed record inside its grace window", structKeyExists(stStore,id7)) />
-
-			<cfset id8 = issue(bind=stBind, grant=stGrant) />
-			<cfset complete(uploadid=id8, result='{"forged":1}') />
-			<cfset selfTestRecord(stOut, "complete on an unclaimed record stores nothing", structKeyExists(stStore,id8) and not stStore[id8].bHasResult) />
-
-			<!--- the ceiling bounds uploads in progress, so a consumed record must not count --->
-			<cfset maxPending = getNumericSetting("maxPending", this.defaultMaxPending, 1) />
-			<cfset session.fc.directUploads = structnew() />
-			<cfset stStore = getStore() />
-			<cfloop from="1" to="#maxPending#" index="i">
-				<cfset issue(bind=stBind, grant=stGrant) />
-			</cfloop>
-			<cftry>
-				<cfset issue(bind=stBind, grant=stGrant) />
-				<cfcatch type="any">
-					<cfset bThrew = true />
-					<cfset capMessage = cfcatch.message />
-				</cfcatch>
-			</cftry>
-			<cfset selfTestRecord(stOut, "issue is refused at the configured cap (#maxPending#)", bThrew, capMessage) />
-			<cfset selfTestRecord(stOut, "reaching the cap did not evict a live record", structcount(stStore) eq maxPending, structcount(stStore) & " records held") />
-
-			<cfloop collection="#stStore#" item="uploadid">
-				<cfset claim(uploadid=uploadid, expect=stBind) />
-			</cfloop>
-			<cftry>
-				<cfset issue(bind=stBind, grant=stGrant) />
-				<cfset bIssuedAfterConsuming = true />
-				<cfcatch type="any">
-					<cfset bIssuedAfterConsuming = false />
-				</cfcatch>
-			</cftry>
-			<cfset selfTestRecord(stOut, "consumed records do not count toward the cap", bIssuedAfterConsuming) />
 
 			<cfset selfTestRecord(stOut, "an expired authorization gets the retry wording", findnocase("took too long", statusMessage("expired")) gt 0, statusMessage("expired")) />
 			<cfset selfTestRecord(stOut, "notfound and mismatch are indistinguishable to the client", statusMessage("notfound") eq statusMessage("mismatch"), statusMessage("notfound")) />
@@ -577,9 +485,6 @@
 				<cfset selfTestRecord(stOut, "self test threw", false, cfcatch.message) />
 			</cfcatch>
 		</cftry>
-
-		<!--- whatever this session was really holding --->
-		<cfset session.fc.directUploads = stSaved />
 
 		<cfreturn stOut />
 	</cffunction>

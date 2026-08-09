@@ -1035,6 +1035,9 @@
 	    <cfset var stClaim = "" />
 	    <cfset var maxsize = 0 />
 	    <cfset var uploadid = "" />
+	    <!--- the id the authorization named for the record this finalize creates. empty on
+	          the local upload path, which mints its own as it always has --->
+	    <cfset var joinRecordID = "" />
 	    <cfset var joinedItems = "" />
 	    <!--- the facade hands over an empty struct when the request names no parent --->
 	    <cfset var parentid = structKeyExists(arguments.stObject,"objectid") ? arguments.stObject.objectid : "" />
@@ -1355,11 +1358,6 @@
 						clientValue = structKeyExists(stBody,"value") ? stBody.value : ""
 					) />
 
-					<!--- a repeat of a finalize that already reported a result gets that result
-					      back rather than creating a second joined record --->
-					<cfif stClaim.status eq "replay">
-						<cfreturn stClaim.result />
-					</cfif>
 					<cfif stClaim.status neq "ok">
 						<cfreturn serializeJSON({ "error" = stClaim.message, "value" = "" }) />
 					</cfif>
@@ -1368,6 +1366,10 @@
 					<cfset stResult.location = joinLocation />
 					<cfset stResult.value = stClaim.value />
 					<cfset stResult.bSuccess = true />
+					<!--- the joined record is created at the id the authorization names, so a
+					      finalize arriving twice for one upload writes that record twice rather
+					      than creating a second one alongside it --->
+					<cfset joinRecordID = stClaim.recordid />
 
 					<cfcatch type="any">
 						<cfreturn serializeJSON({ "error" = cfcatch.message, "value" = "" }) />
@@ -1402,6 +1404,9 @@
 					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location=stResult.location,file=stResult.value) />
 					
 					<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
+					<cfif len(joinRecordID)>
+						<cfset stNewObject.objectid = joinRecordID />
+					</cfif>
 					<cfset stNewObject.label = listfirst(listlast(stResult.value,"/"),".") />
 					<cfset stNewObject[arguments.stMetadata.ftFileProperty] = stResult.value />
 					<cfset application.fapi.setData(stProperties=stNewObject) />
@@ -1433,6 +1438,9 @@
 						<cfset stFixed = application.formtools.image.oFactory.fixImage(stResult.value,application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 						
 						<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
+						<cfif len(joinRecordID)>
+							<cfset stNewObject.objectid = joinRecordID />
+						</cfif>
 						<cfset stNewObject.label = listfirst(listlast(stResult.value,"/"),".") />
 						<cfif structkeyexists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps,"title")>
 							<cfset stNewObject.title = stNewObject.label />
@@ -1477,17 +1485,7 @@
 					
 				</cfif>
 
-				<cfset json = serializeJSON(stJSON) />
-
-				<!--- hold the completed response against the authorization so a repeated
-				      finalize returns it instead of creating a second joined record. only a
-				      clean run is held: after a failure the record stays consumed, so a retry
-				      is refused rather than re-running side effects that may have landed --->
-				<cfif len(uploadid) and not (structKeyExists(stJSON,"error") and len(stJSON.error))>
-					<cfset application.fc.lib.directupload.complete(uploadid=uploadid,result=json) />
-				</cfif>
-
-				<cfreturn json />
+				<cfreturn serializeJSON(stJSON) />
 
 			</cfif>
 		</cfif>

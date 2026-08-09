@@ -189,7 +189,6 @@
       final CDN location, so we queue the same background task as the local path
       but with directValue instead of a temp file, and return the same shape. --->
 <cfif structkeyexists(url,"action") and url.action eq "upload" and structkeyexists(url,"s3op") and url.s3op eq "finalize">
-	<cfset bulkReplay = "" />
 	<cftry>
 		<cfset stBody = deserializeJSON(toString(getHTTPRequestData().content)) />
 		<cfset bulkUploadID = structKeyExists(stBody,"uploadid") ? stBody.uploadid : "" />
@@ -211,11 +210,7 @@
 			clientValue = structKeyExists(stBody,"value") ? stBody.value : ""
 		) />
 
-		<!--- a repeat of a finalize that already reported a result gets that result back
-		      verbatim rather than queueing a second task for the same object --->
-		<cfif stBulkClaim.status eq "replay">
-			<cfset bulkReplay = stBulkClaim.result />
-		<cfelseif stBulkClaim.status neq "ok">
+		<cfif stBulkClaim.status neq "ok">
 			<cfthrow message="#stBulkClaim.message#" type="uploaderror" />
 		<cfelse>
 
@@ -234,8 +229,11 @@
 			      so the marker does not depend on the actor being non-empty. The task runs
 			      later, outside the request, and is not re-checked then - the bind is at
 			      enqueue, and addTask records the same actor as the task owner. --->
+			<!--- the task id is the id its record is created at (bulkupload.upload loads
+			      stObject by taskID), so taking it from the authorization means a finalize
+			      arriving twice queues work against one record rather than two --->
 			<cfset stTask = {
-				objectid = application.fapi.getUUID(),
+				objectid = stBulkClaim.recordid,
 				directValue = bulkValue,
 				directLocation = uploadLocationBulk,
 				bDirectAuthorized = true,
@@ -262,8 +260,6 @@
 			<cfset stResult["files"][1]["taskID"] = stTask.objectid />
 			<cfset stResult["files"][1]["objectid"] = fileObjectID />
 
-			<cfset application.fc.lib.directupload.complete(uploadid=bulkUploadID,result=serializeJSON(stResult)) />
-
 		</cfif>
 
 		<!--- A refusal is not a fault. uploaderror is what the permission checks, the claim
@@ -282,11 +278,7 @@
 		</cfcatch>
 	</cftry>
 
-	<cfif len(bulkReplay)>
-		<cfset application.fapi.stream(content=bulkReplay,type="json") />
-	<cfelse>
-		<cfset application.fapi.stream(content=stResult,type="json") />
-	</cfif>
+	<cfset application.fapi.stream(content=stResult,type="json") />
 </cfif>
 
 <!--- Handle upload request --->

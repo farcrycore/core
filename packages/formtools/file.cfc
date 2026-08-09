@@ -619,11 +619,6 @@
 					clientValue = structKeyExists(stBody,"value") ? stBody.value : ""
 				) />
 
-				<!--- a repeat of a finalize that already reported a result gets that result
-				      back rather than a second run --->
-				<cfif stClaim.status eq "replay">
-					<cfreturn stClaim.result />
-				</cfif>
 				<cfif stClaim.status neq "ok">
 					<cfreturn serializeJSON({ "objectid"=arguments.stObject.objectid, "value"="", "filename"="", "fullpath"="", "error"=stClaim.message }) />
 				</cfif>
@@ -641,9 +636,10 @@
 					<cfcatch type="any"></cfcatch>
 				</cftry>
 
-				<cfset json = serializeJSON(stJSON) />
-				<cfset application.fc.lib.directupload.complete(uploadid=uploadid, result=json) />
-				<cfreturn json />
+				<!--- nothing is recorded here: the value goes back to the form and the field is
+				      written when that form is saved, so a finalize arriving twice answers the
+				      same way both times --->
+				<cfreturn serializeJSON(stJSON) />
 
 				<cfcatch type="any">
 					<cfreturn serializeJSON({ "objectid"=arguments.stObject.objectid, "value"="", "filename"="", "fullpath"="", "error"=cfcatch.message }) />
