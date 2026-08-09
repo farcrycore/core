@@ -1190,7 +1190,7 @@
 			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Edit")>
 				<cfreturn editMessage("You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field.") />
 			</cfif>
-			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
+			<cfset joinedItems = currentJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
 			<cfif not isJoinItem(itemid=form.item, items=joinedItems)>
 				<cfreturn editMessage("That item is not attached to this record.") />
 			</cfif>
@@ -1229,7 +1229,7 @@
 			<cfif not checkItemPermission(typename=arguments.typename, objectid=parentid, joinTypename=arguments.stMetadata.ftJoin, permission="Edit")>
 				<cfreturn serializeJSON({ "error" = "You do not have permission to edit #arguments.stMetadata.ftJoin# records in this field." }) />
 			</cfif>
-			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
+			<cfset joinedItems = currentJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
 			<cfif not isJoinItem(itemid=form["_objectid"], items=joinedItems)>
 				<cfreturn serializeJSON({ "error" = "That item is not attached to this record." }) />
 			</cfif>
@@ -1290,7 +1290,7 @@
 			</cfif>
 
 			<cfset aItems = listtoarray(form.items) />
-			<cfset joinedItems = persistedJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
+			<cfset joinedItems = currentJoinItems(typename=arguments.typename, property=arguments.stMetadata.name, objectid=parentid) />
 
 			<!--- checked in full before anything is deleted: the batch is all or nothing --->
 			<cfloop from="1" to="#arraylen(aItems)#" index="i">
@@ -1626,7 +1626,7 @@
 
 	<cffunction name="isJoinItem" access="private" output="false" returntype="boolean" hint="True when the item is one this parent's relationship holds. Membership only: whether the record still exists is a separate question, asked by the branches whose behaviour depends on the answer. A relationship can outlive the record it points at, and such a row has to stay removable.">
 		<cfargument name="itemid" required="true" type="string" />
-		<cfargument name="items" required="true" type="string" hint="the parent's relationship, from persistedJoinItems(); the caller resolves it once per request" />
+		<cfargument name="items" required="true" type="string" hint="what this field is holding for this parent, from currentJoinItems(); the caller resolves it once per request" />
 
 		<cfif not len(trim(arguments.itemid))>
 			<cfreturn false />
@@ -1662,26 +1662,101 @@
 			<cfreturn "" />
 		</cfif>
 
-		<cfset value = stParent[arguments.property] />
+		<cfreturn normaliseJoinValue(stParent[arguments.property]) />
+	</cffunction>
 
-		<cfif isArray(value)>
-			<cfloop from="1" to="#arraylen(value)#" index="i">
-				<cfif isStruct(value[i])>
-					<cfif structKeyExists(value[i],"data") and isSimpleValue(value[i].data)>
-						<cfset items = listappend(items, trim(value[i].data)) />
+	<cffunction name="normaliseJoinValue" access="private" output="false" returntype="string" hint="A relationship property reduced to a list of ids, whichever shape it arrives in: an array of ids, an array of structs for an extended array (the id is the data column), or a list on a non-array property.">
+		<cfargument name="value" required="true" type="any" />
+
+		<cfset var items = "" />
+		<cfset var i = 0 />
+
+		<cfif isArray(arguments.value)>
+			<cfloop from="1" to="#arraylen(arguments.value)#" index="i">
+				<cfif isStruct(arguments.value[i])>
+					<cfif structKeyExists(arguments.value[i],"data") and isSimpleValue(arguments.value[i].data)>
+						<cfset items = listappend(items, trim(arguments.value[i].data)) />
 					</cfif>
-				<cfelseif isSimpleValue(value[i])>
-					<cfset items = listappend(items, trim(value[i])) />
+				<cfelseif isSimpleValue(arguments.value[i])>
+					<cfset items = listappend(items, trim(arguments.value[i])) />
 				</cfif>
 			</cfloop>
 			<cfreturn items />
 		</cfif>
 
-		<cfif isSimpleValue(value)>
-			<cfreturn value />
+		<cfif isSimpleValue(arguments.value)>
+			<cfreturn arguments.value />
 		</cfif>
 
 		<cfreturn "" />
+	</cffunction>
+
+	<cffunction name="currentJoinItems" access="private" output="false" returntype="string" hint="The ids this field is currently holding for this parent. Normally that is the relationship in the database, but while a wizard is editing the record it is the wizard's working copy - the field renders from that copy, so it is what the field's own actions have to be judged against. Both are server held state written by a form submit, so neither is more authoritative than the other; taking the union means an item counts as attached if either says so.">
+		<cfargument name="typename" required="true" type="string" hint="the parent's type" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" hint="the parent record" />
+
+		<cfset var persisted = persistedJoinItems(argumentCollection=arguments) />
+		<cfset var inwizard = wizardJoinItems(argumentCollection=arguments) />
+
+		<cfif not len(persisted)>
+			<cfreturn inwizard />
+		</cfif>
+		<cfif not len(inwizard)>
+			<cfreturn persisted />
+		</cfif>
+
+		<cfreturn persisted & "," & inwizard />
+	</cffunction>
+
+	<cffunction name="wizardJoinItems" access="private" output="false" returntype="string" hint="The ids this parent's property holds in an open wizard belonging to the current user, or an empty string when there is none. A wizard calls setData once, on the first submit for an object, and from then until it completes it keeps the object in dmWizard.Data and writes only that - so a step change persists the relationship to the wizard and not to the join table. Deliberately does not use dmWizard.Read(), which creates a wizard when it finds none: an authorization check must not have side effects.">
+		<cfargument name="typename" required="true" type="string" />
+		<cfargument name="property" required="true" type="string" />
+		<cfargument name="objectid" required="true" type="string" />
+
+		<cfset var qWizard = "" />
+		<cfset var stData = "" />
+		<cfset var items = "" />
+		<cfset var userlogin = "" />
+
+		<cfif not len(trim(arguments.objectid)) or not application.security.isLoggedIn()>
+			<cfreturn "" />
+		</cfif>
+
+		<cfset userlogin = application.security.getCurrentUserID() />
+
+		<cftry>
+			<!--- the user's own wizards only. PrimaryObjectID covers both ways a wizard starts:
+			      Create() sets it from ReferenceID, which is the objectid for an existing record
+			      and the freshly minted one for a new record. A record a wizard edits as a
+			      secondary object is not found this way and falls back to the relationship in
+			      the database, which is the behaviour this change exists to correct - so if that
+			      shape ever appears, it presents as an item that will not edit or delete --->
+			<cfquery datasource="#application.dsn#" name="qWizard">
+				select		data
+				from		dmWizard
+				where		UserLogin = <cfqueryparam cfsqltype="cf_sql_varchar" value="#userlogin#" />
+				and			PrimaryObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+			</cfquery>
+
+			<cfloop query="qWizard">
+				<cfif isWDDX(qWizard.data)>
+					<cfwddx action="WDDX2CFML" input="#qWizard.data#" output="stData" />
+
+					<cfif isStruct(stData) and structKeyExists(stData,arguments.objectid)
+							and structKeyExists(stData[arguments.objectid],arguments.property)>
+						<cfset items = listappend(items, normaliseJoinValue(stData[arguments.objectid][arguments.property])) />
+					</cfif>
+				</cfif>
+			</cfloop>
+
+			<cfcatch type="any">
+				<!--- an unreadable wizard describes no relationship --->
+				<cfreturn "" />
+			</cfcatch>
+		</cftry>
+
+		<cfreturn items />
 	</cffunction>
 
 	<cffunction name="directUploadBind" access="private" output="false" returntype="struct" hint="The facts an arrayupload direct upload is authorised against. Built identically at sign and at finalize, so a finalize presenting a different parent object, joined type or file property is refused.">
