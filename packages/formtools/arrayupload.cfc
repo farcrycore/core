@@ -552,13 +552,7 @@
 		    						{ label: "Cancel", value: "cancel", isCancel: true }
 		    					],
 		    					onSelect: function(value){
-		    						if (value != "remove") return;
-		    						// this dialog restored focus to the control that opened it, and that
-		    						// control is inside the row about to go. Let go of focus first, so
-		    						// the browser is not reassigning it out of a removed node - which
-		    						// lands it on whatever is focusable next and scrolls that into view.
-		    						if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-		    						arrayuploadformtool.removeItems([ itemid ]);
+		    						if (value == "remove") arrayuploadformtool.removeItems([ itemid ]);
 		    					}
 		    				});
 		    			};
@@ -579,9 +573,7 @@
 		    						{ label: "Cancel", value: "cancel", isCancel: true }
 		    					],
 		    					onSelect: function(value){
-		    						if (value != "remove") return;
-		    						if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-		    						arrayuploadformtool.removeAllItems();
+		    						if (value == "remove") arrayuploadformtool.removeAllItems();
 		    					}
 		    				});
 		    			};

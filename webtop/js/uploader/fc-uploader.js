@@ -700,7 +700,12 @@
 			document.removeEventListener("keydown", onKeyDown, true);
 			overlay.removeEventListener("click", onOverlayClick, false);
 			if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-			try { if (previousFocus && previousFocus.focus) previousFocus.focus(); } catch (e){}
+			// preventScroll: focus() scrolls its target into view, and the element that had
+			// focus before the dialog opened is often well away from whatever the dialog was
+			// about - a field at the top of a long form, say - so restoring it plainly yanks
+			// the page there. Ignored by browsers that predate the option, which just leaves
+			// today's behaviour.
+			try { if (previousFocus && previousFocus.focus) previousFocus.focus({ preventScroll: true }); } catch (e){}
 			try { onSelect(value); } catch (e){}
 		}
 
