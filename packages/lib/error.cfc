@@ -236,7 +236,7 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="scrubSessionTokens" access="private" output="false" returntype="void" hint="Removes session identifiers from an error report, in place, wherever they appear in it. Runs last in normalizeError because this struct has two destinations - callers render it and reporters transmit it - and a session identifier in either is a credential, whichever layer put it there.">
+	<cffunction name="scrubSessionTokens" access="private" output="false" returntype="void" hint="Removes session identifiers and key material from an error report, in place, wherever they appear in it. Runs last in normalizeError because this struct has two destinations - callers render it and reporters transmit it - and either is a credential, whichever layer put it there. Core's own report carries neither: it collects request facts and no scope. The names are here because the report is extensible and this is the one place that sees whatever an extension added.">
 		<cfargument name="data" type="any" required="true" />
 		<cfargument name="depth" type="numeric" required="false" default="0" />
 
@@ -259,7 +259,7 @@
 			<cfset aKeys = structKeyArray(arguments.data) />
 
 			<cfloop from="1" to="#arraylen(aKeys)#" index="i">
-				<cfif listfindnocase("cfid,cftoken,jsessionid,sessionid,urltoken",listlast(aKeys[i],"."))>
+				<cfif listfindnocase("cfid,cftoken,jsessionid,sessionid,urltoken,signingkey,mfaencryptkey,mfaencryptkeysold",listlast(aKeys[i],"."))>
 					<cfset structDelete(arguments.data,aKeys[i]) />
 				<cfelseif structKeyExists(arguments.data,aKeys[i]) and not isSimpleValue(arguments.data[aKeys[i]])>
 					<cfset scrubSessionTokens(arguments.data[aKeys[i]],arguments.depth+1) />
