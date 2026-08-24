@@ -145,29 +145,53 @@ FileView = Backbone.View.extend({
 		delete this.model;
 	},
 	saveFile : function FileView_saveFile(){
-		var formPrefix = this.$("input[name=FarcryFormPrefixes]").val(), 
-			formData = serializeFormByPrefix(formPrefix,this.options.collectionView.options.editableProperties,true)
-			self = this;
+		var self = this,
+			formPrefix = this.$("input[name=FarcryFormPrefixes]").val(),
+			formData = serializeFormByPrefix(formPrefix,this.options.collectionView.options.editableProperties,true),
+			$form = this.$el.closest("form");
+		
+		// The save endpoint runs ft:processform, which validates the CSRF token. These
+		// edit fields come from ft:object and carry no token of their own, so send the
+		// enclosing ft:form's name and token with the request.
+		formData.FarcryFormSubmitted = $form.find("input[name=FarcryFormSubmitted]").val() || "";
+		formData.FarcryFormToken = $form.find("input[name=FarcryFormToken]").val() || "";
 		
 		this.$el.block();
 		
 		Backbone.$.post(this.model.get("saveURL"), formData, function(result){
+			// Unblock before touching the model: a status change re-renders the row, and
+			// anything thrown there would otherwise leave the row blocked indefinitely.
+			self.$el.unblock();
+			
 			if (result.error){
-				self.model.set({
-					status : "error",
-					error : result.error
-				});
-			}
-			else{
-				self.model.set({
-					status : "saved",
-					teaserHTML : result.teaserHTML,
-					editHTML : result.editHTML
-				});
+				// The record itself is unaffected, so leave the row editable with the
+				// entered values intact and report the failure in the general error list.
+				self.reportSaveError(result.error);
+				return;
 			}
 			
+			self.model.set({
+				status : "saved",
+				teaserHTML : result.teaserHTML,
+				editHTML : result.editHTML
+			});
+		},"json").fail(function(jqXHR,textStatus){
 			self.$el.unblock();
-		},"json");
+			self.reportSaveError({ message : "The save did not complete (" + textStatus + ")" });
+		});
+	},
+	reportSaveError : function FileView_reportSaveError(error){
+		var errors = this.model.collection && this.model.collection.options ? this.model.collection.options.generalErrors : null;
+		
+		if (!errors)
+			return;
+		
+		// Name the file: the error list sits above the queue, away from the row that failed.
+		errors.add({
+			error : Backbone.$.extend({}, error, {
+				message : this.model.get("name") + ": " + (error && error.message ? error.message : "could not be saved")
+			})
+		});
 	},
 	showInfo : function FileView_showInfo(){
 		this.$(".info").toggle();
@@ -425,7 +449,7 @@ ErrorView = Backbone.View.extend({
 
 	removeError : function ErrorView_removeError(){
 		// remove the error bubble from memory and DOM
-		this.collection.remove(this.model);
+		this.model.collection.remove(this.model);
 		this.remove();
 		delete this.model;
 	},

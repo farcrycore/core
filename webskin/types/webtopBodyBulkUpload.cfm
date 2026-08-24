@@ -407,6 +407,9 @@
 <cfif structkeyexists(url,"action") and url.action eq "save">
 	<cftry>
 		<cfset stResult = structnew() />
+		<!--- ft:processformobjects only sets this once it has written a record, and it does
+		      not run at all when ft:processform declines the submission --->
+		<cfset lSavedObjectIDs = "" />
 		
 		<ft:processform>
 			<ft:processformobjects typename="#stObj.name#" />
@@ -420,6 +423,10 @@
 			<cfif len(lEditFields)>
 				<cfsavecontent variable="stResult.editHTML"><ft:object stObject="#stResult.stObject#" lFields="#lEditFields#" bIncludeFieldset="false" /></cfsavecontent>
 			</cfif>
+		<cfelse>
+			<!--- nothing was written, most likely a rejected form token. reported explicitly
+			      because an empty result would read as a successful save on the client. --->
+			<cfset stResult["error"] = { "message" = application.fapi.getResource(key="webtop.utilities.bulkupload.error.savedeclined@text", default="Your changes to this file were not saved. Use Save and Close at the bottom of the dialog to save them.") } />
 		</cfif>
 		
 		<cfcatch>
