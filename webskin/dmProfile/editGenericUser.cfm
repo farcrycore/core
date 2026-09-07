@@ -3,6 +3,7 @@
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <!--- check permissions --->
 <cfif NOT application.security.checkPermission(permission="SecurityManagement")>
