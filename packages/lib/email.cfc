@@ -51,6 +51,13 @@
 			</cfif>
 		</cfif>
 		
+		<!--- underlying mail engines pass header values through unsanitized; strip line breaks from all header-bound values --->
+		<cfset stSend.subject = reReplace(stSend.subject, "[\r\n]+", " ", "ALL") />
+		<cfset stSend.to = reReplace(stSend.to, "[\r\n]", "", "ALL") />
+		<cfset stSend.bcc = reReplace(stSend.bcc, "[\r\n]", "", "ALL") />
+		<cfset stSend.from = reReplace(stSend.from, "[\r\n]", "", "ALL") />
+		<cfset stSend.replyto = reReplace(stSend.replyto, "[\r\n]", "", "ALL") />
+
 		<cftry>
 			<cfmail to="#trim(stSend.to)#" bcc="#trim(stSend.bcc)#" from="#trim(stSend.from)#" replyto="#trim(stSend.replyto)#" subject="#stSend.subject#" type="#stSend.type#">
 				<cfloop from="1" to="#arraylen(stSend.attachments)#" index="i">
