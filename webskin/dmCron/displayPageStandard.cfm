@@ -43,7 +43,7 @@
 			<cfset taskFailed = true />
 			<!--- surface failures instead of swallowing: exception lane (error logging + credential scrub) plus a cron event, but the fire still completes so a manual run is never blocked --->
 			<cfset application.fc.lib.error.logData(application.fc.lib.error.normalizeError(cfcatch)) />
-			<cfset application.fapi.logEvent("cron", "error", "scheduled task failed", {alarm=taskAlarm, durationMs=getTickCount()-taskStartTick, error=cfcatch.message}) />
+			<cfset application.fapi.logEvent("cron", "error", "scheduled task failed", {alarm=taskAlarm, durationMs=getTickCount()-taskStartTick, status="failed", error=cfcatch.message}) />
 			<cfoutput>FAILED: #encodeForHTML(cfcatch.message)#</cfoutput>
 		</cfcatch>
 	</cftry>
@@ -57,7 +57,7 @@
 		<cfset application.fapi.logEvent("cron", request.cronOutcome.level, "scheduled task finished", stCronFields) />
 	<cfelse>
 		<!--- task said nothing: honest neutral 'completed without an uncaught error', not a success claim --->
-		<cfset application.fapi.logEvent("cron", "information", "scheduled task finished", {alarm=taskAlarm, durationMs=getTickCount()-taskStartTick}) />
+		<cfset application.fapi.logEvent("cron", "information", "scheduled task finished", {alarm=taskAlarm, durationMs=getTickCount()-taskStartTick, status="completed"}) />
 	</cfif>
 </cfif>
 
