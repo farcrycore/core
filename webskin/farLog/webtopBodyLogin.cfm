@@ -6,17 +6,17 @@
 
 <cfset stFilterMetaData = structnew() />
 
-<cfset stFilterMetaData.userid.ftType = "list" />
-<cfset stFilterMetaData.userid.ftListData = "getUserList" />
-<cfset stFilterMetaData.userid.ftListDataTypeName = "farLog" />
-<cfset stFilterMetaData.userid.ftRenderType = "dropdown" />
-<cfset stFilterMetaData.userid.ftselectmultiple = "false" />
+<!--- free-text userid: a dropdown needs "select distinct userid" over the whole farLog table on every page load --->
+<cfset stFilterMetaData.userid.ftType = "string" />
+<cfset stFilterMetaData.userid.ftFilterMatch = "exact" />
 
 <cfset stFilterMetaData.event.ftType = "list" />
 <cfset stFilterMetaData.event.ftListData = "getEventList_Security" />
 <cfset stFilterMetaData.event.ftListDataTypeName = "farLog" />
 <cfset stFilterMetaData.event.ftRenderType = "dropdown" />
 <cfset stFilterMetaData.event.ftselectmultiple = "false" />
+<!--- exact, so "login" doesn't also match "loginfailed" --->
+<cfset stFilterMetaData.event.ftFilterMatch = "exact" />
 
 <cfset stFilterMetaData.datetimecreatedby.default = "" />
 
