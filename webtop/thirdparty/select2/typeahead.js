@@ -30,7 +30,9 @@
 				pagesize : 15
 			},config);
 			thisconfig.multiple = stringtruthyness[thisconfig.multiple];
-			thisconfig.watch = thisconfig.watch.split ? thisconfig.watch.split(",") : [];
+			// an empty watch list must stay [] - "".split(",") gives [""], which sends an
+			// empty-named param (&=) that strict query parsing (Lucee 6) rejects with a 400
+			thisconfig.watch = thisconfig.watch.split && thisconfig.watch.length ? thisconfig.watch.split(",") : [];
 			self.data("typeahead-config",thisconfig);
 
 			var propertyname = fieldname.slice(thisconfig.prefix.length);
