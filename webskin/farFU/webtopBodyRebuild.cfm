@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+<cfsetting enablecfoutputonly="true" requesttimeout="10000">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
