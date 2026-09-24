@@ -84,7 +84,9 @@
 			<cfset st = o.getData(objectID = attributes.objectid) />	
 		<cfelseif len(attributes.key)>
 			<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
-			<cfparam name="session.stTempObjectStoreKeys[attributes.typename]" default="#structNew()#" />
+			<cfif not structKeyExists(session.stTempObjectStoreKeys, attributes.typename) >
+				<cfset session.stTempObjectStoreKeys[attributes.typename] = structNew() >
+			</cfif>
 			
 			<cfif structKeyExists(session.stTempObjectStoreKeys[attributes.typename], attributes.key)>
 				<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[attributes.typename][attributes.key])>

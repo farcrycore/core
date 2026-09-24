@@ -191,10 +191,19 @@
 			
 			<!--- Get default values --->
 			<cfloop collection="#application.stCOAPI[variables.typename].stProps#" item="prop">
-				
-				<cfparam name="application.stCOAPI[variables.typename].stProps[prop].metadata.Default" default="">
-				<cfparam name="application.stCOAPI[variables.typename].stProps[prop].metadata.ftDefaultType" default="value">
-				<cfparam name="application.stCOAPI[variables.typename].stProps[prop].metadata.ftDefault" default="#application.stCOAPI[variables.typename].stProps[prop].metadata.Default#">
+
+				<cfif not structKeyExists(application.stCOAPI[variables.typename].stProps[prop], "metadata") >
+					<cfset application.stCOAPI[variables.typename].stProps[prop].metadata = structNew() >
+				</cfif>
+				<cfif not structKeyExists(application.stCOAPI[variables.typename].stProps[prop].metadata, "Default") >
+					<cfset application.stCOAPI[variables.typename].stProps[prop].metadata.Default = "" >
+				</cfif>
+				<cfif not structKeyExists(application.stCOAPI[variables.typename].stProps[prop].metadata, "ftDefaultType") >
+					<cfset application.stCOAPI[variables.typename].stProps[prop].metadata.ftDefaultType = "value" >
+				</cfif>
+				<cfif not structKeyExists(application.stCOAPI[variables.typename].stProps[prop].metadata, "ftDefault") >
+					<cfset application.stCOAPI[variables.typename].stProps[prop].metadata.ftDefault = application.stCOAPI[variables.typename].stProps[prop].metadata.Default >
+				</cfif>
 				
 				<cfif application.stCOAPI[variables.typename].stProps[prop].metadata.type eq "array"> 
 					<!--- set to the default if it is not already defined above --->
