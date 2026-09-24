@@ -64,6 +64,7 @@ object methods
 		<cfset var propertyFormat = '' />
 		<cfset var stMeta = structNew() />
 		<cfset var stPropValues = structnew() />
+		<cfset var fieldsHTML = "" />
 
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -140,8 +141,42 @@ object methods
 						<cfset legend = "" />
 						<cfset IncludeFieldSet = false />
 					</cfif>
-					<ft:object stObject="#stObj#" lExcludeFields="label" Legend="#legend#" IncludeFieldSet="#IncludeFieldSet#"  />
-					
+
+					<!--- render per property so read-only config (e.g. set from the environment) is displayed, not editable, as in the fieldset branch above --->
+					<cfquery dbtype="query" name="qFieldset">
+						SELECT 		*
+						FROM 		qMetadata
+						WHERE 		lower(propertyname) NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="label,objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionid,status">)
+						ORDER BY 	ftSeq
+					</cfquery>
+
+					<cfsavecontent variable="fieldsHTML">
+						<cfloop query="qFieldset">
+
+							<cfset propertyFormat = "edit">
+							<cfif structKeyExists(application, "config_readonly") AND structKeyExists(application.config_readonly, arguments.stObject.configkey) AND structKeyExists(application.config_readonly[arguments.stObject.configkey], qFieldset.propertyname)>
+								<cfset propertyFormat = "display">
+								<cfset stMeta = structNew()>
+								<cfset stMeta[qFieldset.propertyname] = structNew()>
+								<cfset stMeta[qFieldset.propertyname].ftHint = "This field is read only and cannot be edited via the webtop">
+								<cfset stPropValues[qFieldset.propertyname] = application.config_readonly[arguments.stObject.configkey][qFieldset.propertyname]>
+								<!--- override display method for read-only properties flagged as secret --->
+								<cfif application.fapi.getPropertyMetadata(qFieldset.typename, qFieldset.propertyname, "ftSecret") eq "true">
+									<cfset stMeta[qFieldset.propertyname].ftDisplayMethod = "displaySecret">
+								</cfif>
+							</cfif>
+
+							<ft:object stObject="#stObj#" format="#propertyFormat#" lExcludeFields="label" lFields="#qFieldset.propertyname#" stPropMetadata="#stMeta#" stPropValues="#stPropValues#" inTable="false" IncludeFieldSet="false" />
+
+						</cfloop>
+					</cfsavecontent>
+
+					<cfif IncludeFieldSet>
+						<ft:fieldset Legend="#legend#"><cfoutput>#fieldsHTML#</cfoutput></ft:fieldset>
+					<cfelse>
+						<cfoutput>#fieldsHTML#</cfoutput>
+					</cfif>
+
 				</cfif>
 					
 				</ft:form>
