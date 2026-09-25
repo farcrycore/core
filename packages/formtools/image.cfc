@@ -145,6 +145,7 @@
 	    <cfset var stAltMeta = structnew() />
 	    <cfset var location = resolveUploadLocation(arguments.stMetadata) />
 	    <cfset var bFileExists = getFileExists(file=arguments.stMetadata.value,location=location) />
+	    <cfset var bExternalImage = false />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
 	    <cfset var readImageError = "" />
@@ -223,8 +224,9 @@
 
 	    <cfif len(arguments.stMetadata.value)>
 			<cfif not bFileExists and refindnocase("^(https?:)?//", arguments.stMetadata.value)>
-				<!--- external image URL (e.g. googleud avatar): not in the CDN, but keep the value so saving doesn't wipe it --->
-				<cfset error = application.fapi.getResource("formtools.image.message.imageexternal@text","This image is hosted externally. Upload a new image to replace it.") />
+				<!--- external image URL (e.g. googleud avatar): not in the CDN, but keep the value so saving doesn't wipe it, and preview it straight from the URL --->
+				<cfset bExternalImage = true />
+				<cfset imagePath = arguments.stMetadata.value />
 			<cfelseif not bFileExists>
 				<cfset arguments.stMetadata.value = "" />
 				<cfset error = application.fapi.getResource("formtools.image.message.imagenotfound@text","The previous image can't be found in the file system. You should upload a new image or talk to your administrator before saving.") />
@@ -295,7 +297,7 @@
 							<span class="image-status fc-uploader-working-icon"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i></span>
 							<span class="fc-uploader-working-text">Generating image&hellip;</span>
 						</div>
-						<cfif bFileExists>
+						<cfif bFileExists or bExternalImage>
 							<cfset filename = listLast(arguments.stMetadata.value, "/") />
 							<cfif reFindNoCase("^http%3A%2F%2F", filename)>
 								<cfset filename = listLast(urlDecode(filename), "/") />
@@ -307,7 +309,7 @@
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
 										<div class="fc-uploader-details-name" title="#encodeForHTMLAttribute(filename)#"><span class="image-filename">#encodeForHTML(filename)#</span></div>
-										<cfif arguments.stMetadata.ftShowMetadata>
+										<cfif arguments.stMetadata.ftShowMetadata and not bExternalImage>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
 										</cfif>
 									</div>
@@ -319,7 +321,7 @@
 								</div>
 								<div class="fc-uploader-details-actions">
 									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#'<cfif imageMaxWidth gt 0> width='#imageMaxWidth#'</cfif><cfif imageMaxHeight gt 0> height='#imageMaxHeight#'</cfif> style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
-									<cfif arguments.stMetadata.ftAllowResize><span class="image-recrop-link"><a href="##recrop" class="image-recrop-button fc-uploader-action"><i class="fa fa-crop"></i> Re-crop image</a></span></cfif>
+									<cfif arguments.stMetadata.ftAllowResize and not bExternalImage><span class="image-recrop-link"><a href="##recrop" class="image-recrop-button fc-uploader-action"><i class="fa fa-crop"></i> Re-crop image</a></span></cfif>
 									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
 								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>
@@ -395,14 +397,14 @@
 							</div>
 							<div class="image-cancel-upload"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>><a href="##back" class="select-view fc-uploader-cancel-replace">Cancel &mdash; I don't want to replace this image</a></div>
 						</div>
-						<cfif bFileExists>
+						<cfif bFileExists or bExternalImage>
 							<div id="#arguments.fieldname#_complete" class="complete-view fc-uploader-details">
 		    					<cfif len(readImageError)><div id="#arguments.fieldname#_readImageError" class="fc-uploader-error alert-error-readimg">#readImageError#</div></cfif>
 								<div class="fc-uploader-details-row">
 									<span class="fc-uploader-details-icon image-status" title=""><i class="fa fa-file-image-o"></i></span>
 									<div class="fc-uploader-details-body">
 										<div class="fc-uploader-details-name" title="#encodeForHTMLAttribute(listfirst(listlast(arguments.stMetadata.value,"/"),"?"))#"><span class="image-filename">#encodeForHTML(listfirst(listlast(arguments.stMetadata.value,"/"),"?"))#</span></div>
-										<cfif arguments.stMetadata.ftShowMetadata>
+										<cfif arguments.stMetadata.ftShowMetadata and not bExternalImage>
 											<div class="fc-uploader-details-meta">Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB &middot; <span class="image-width">#stImage.width#</span> &times; <span class="image-height">#stImage.height#</span>px</div>
 										</cfif>
 									</div>
