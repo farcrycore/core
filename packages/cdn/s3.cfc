@@ -143,11 +143,16 @@
 			<cfset st.apiEndpointPrefix = "/#st.bucket#">
 		</cfif>
 
-		<!--- domainHost is the bucket's virtual-hosted S3 host (used to sign custom-domain serving).
-		      Dotted buckets cannot be virtual-hosted over HTTPS, so they fall back to the apiEndpoint
-		      (path-style) host. Both forms reuse the single regional host from getS3EndpointHost. --->
-		<cfif find(".", st.bucket)>
-			<cfset st.domainHost = st.apiEndpoint>
+		<!--- domainHost is the host signed into custom-domain URLs (getCanonicalRequest). It must match
+		      the Host header S3 receives, i.e. the CloudFront origin domain, so a value passed in the
+		      location config wins. Dotted buckets default to the global virtual-hosted host, matching what
+		      core signed before domainHost existed (domain + ".s3.amazonaws.com", for a bucket named after
+		      its domain). domainHost is only signed, never connected to, so the TLS limit on dotted
+		      virtual-hosted names does not apply (that is what apiEndpoint's path-style is for). --->
+		<cfif structKeyExists(st, "domainHost") and len(trim(st.domainHost))>
+			<cfset st.domainHost = trim(st.domainHost)>
+		<cfelseif find(".", st.bucket)>
+			<cfset st.domainHost = "#st.bucket#.s3.amazonaws.com">
 		<cfelse>
 			<cfset st.domainHost = "#st.bucket#.#s3host#">
 		</cfif>
