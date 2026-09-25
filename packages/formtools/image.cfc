@@ -222,7 +222,14 @@
 		</cfif>
 
 	    <cfif len(arguments.stMetadata.value)>
-			<cfif not bFileExists>
+			<cfif not bFileExists and refindnocase("^(https?:)?//", arguments.stMetadata.value)>
+				<!--- an externally hosted image (e.g. a user directory avatar) is shown read-only; the hidden field keeps the value on save --->
+				<cfsavecontent variable="html"><cfoutput>
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#encodeForHTMLAttribute(arguments.stMetadata.value)#" />
+					<img src="#encodeForHTMLAttribute(arguments.stMetadata.value)#" alt="" height="96" />
+				</cfoutput></cfsavecontent>
+				<cfreturn html />
+			<cfelseif not bFileExists>
 				<cfset arguments.stMetadata.value = "" />
 				<cfset error = application.fapi.getResource("formtools.image.message.imagenotfound@text","The previous image can't be found in the file system. You should upload a new image or talk to your administrator before saving.") />
 			<cfelse>
@@ -315,7 +322,8 @@
 									</cfif>
 								</div>
 								<div class="fc-uploader-details-actions">
-									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#'<cfif imageMaxWidth gt 0> width='#imageMaxWidth#'</cfif><cfif imageMaxHeight gt 0> height='#imageMaxHeight#'</cfif> style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<!--- the title is markup that tooltipster parses again, so the url inside it is encoded twice --->
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#encodeForHTMLAttribute(encodeForHTMLAttribute(imagePath))#'<cfif imageMaxWidth gt 0> width='#imageMaxWidth#'</cfif><cfif imageMaxHeight gt 0> height='#imageMaxHeight#'</cfif> style='max-width:400px; max-height:400px;' />" href="#encodeForHTMLAttribute(imagePath)#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
 									<cfif arguments.stMetadata.ftAllowResize><span class="image-recrop-link"><a href="##recrop" class="image-recrop-button fc-uploader-action"><i class="fa fa-crop"></i> Re-crop image</a></span></cfif>
 									<cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a></cfif>
 								</div>
@@ -408,7 +416,8 @@
 									</div>
 								</div>
 								<div class="fc-uploader-details-actions">
-									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#'<cfif imageMaxWidth gt 0> width='#imageMaxWidth#'</cfif><cfif imageMaxHeight gt 0> height='#imageMaxHeight#'</cfif> style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
+									<!--- the title is markup that tooltipster parses again, so the url inside it is encoded twice --->
+									<a class="image-preview fc-uploader-action fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#encodeForHTMLAttribute(encodeForHTMLAttribute(imagePath))#'<cfif imageMaxWidth gt 0> width='#imageMaxWidth#'</cfif><cfif imageMaxHeight gt 0> height='#imageMaxHeight#'</cfif> style='max-width:400px; max-height:400px;' />" href="#encodeForHTMLAttribute(imagePath)#" target="_blank"><i class="fa fa-eye"></i> Preview</a>
 									<a href="##upload" class="select-view fc-uploader-action"><i class="fa fa-upload"></i> Upload</a>
 								</div>
 								<cfif arguments.stMetadata.ftShowMetadata>

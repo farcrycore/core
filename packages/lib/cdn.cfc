@@ -190,6 +190,11 @@
 
 		<cfset var config = this.locations[arguments.location] />
 
+		<!--- an absolute URL (e.g. a Google avatar) is never a file in a CDN location --->
+		<cfif refindnocase("^(https?:)?//", arguments.file)>
+			<cfreturn false />
+		</cfif>
+
 		<cfset arguments.file = normalizePath(arguments.file) />
 
 		<cfreturn this.cdns[config.cdn].ioFileExists(config=config,argumentCollection=arguments) />
