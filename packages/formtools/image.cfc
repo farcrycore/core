@@ -222,7 +222,10 @@
 		</cfif>
 
 	    <cfif len(arguments.stMetadata.value)>
-			<cfif not bFileExists>
+			<cfif not bFileExists and refindnocase("^(https?:)?//", arguments.stMetadata.value)>
+				<!--- external image URL (e.g. googleud avatar): not in the CDN, but keep the value so saving doesn't wipe it --->
+				<cfset error = application.fapi.getResource("formtools.image.message.imageexternal@text","This image is hosted externally. Upload a new image to replace it.") />
+			<cfelseif not bFileExists>
 				<cfset arguments.stMetadata.value = "" />
 				<cfset error = application.fapi.getResource("formtools.image.message.imagenotfound@text","The previous image can't be found in the file system. You should upload a new image or talk to your administrator before saving.") />
 			<cfelse>
