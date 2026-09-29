@@ -44,6 +44,7 @@ jQuery.fn.unblock = function(){
 	$fc = window.$fc || {};
 	$fc.tree = {
 		newid : "",
+		newparentid : "",
 		entered : false,
 		
 		CustomError : CustomError,
@@ -153,7 +154,8 @@ jQuery.fn.unblock = function(){
 				
 			$tree.trigger("treeupdate-start");
 			$fc.tree.newid = "";
-			
+			$fc.tree.newparentid = "";
+
 			promise = $.getJSON($tree.data("url")+'&add='+objectid+'&to='+parentid).pipe(function(data){
 				if (data.error){
 					var deferred = $.Deferred();
@@ -182,7 +184,7 @@ jQuery.fn.unblock = function(){
 			$tree.trigger("treeupdate-start");
 			
 			if (objectid === $fc.tree.newid)
-				promise = $fc.tree.addChild($tree,objectid,$tree.tree("getSelectedNode").id);
+				promise = $fc.tree.addChild($tree,objectid,$fc.tree.newparentid || $tree.tree("getSelectedNode").id);
 			else
 				promise = $fc.tree.reloadBranch($tree,objectid,includechildren);
 			
@@ -480,7 +482,9 @@ jQuery.fn.unblock = function(){
 				if ($fc.tree.newid === "") 
 					return;
 				
-				options.onAddNode.call($this.get(0), $(this).parents("li").first().data("node"), $fc.tree.newid);
+				var parentnode = $(this).parents("li").first().data("node");
+				$fc.tree.newparentid = parentnode.id;
+				options.onAddNode.call($this.get(0), parentnode, $fc.tree.newid);
 			});
 		}
 		if (options.allowRemove) {
