@@ -2532,9 +2532,7 @@
 	<cffunction name="dateToISO8601" access="public" returntype="string" output="false">
 		<cfargument name="dt" type="date" required="yes" default="#now()#" />
 
-		<cfset var utcDate = DateConvert("Local2UTC", arguments.dt) />
-
-		<cfreturn dateFormat(utcDate, "YYYYmmdd") & "T" & timeFormat(utcDate, "HHmmss") & "Z" />
+		<cfreturn dateFormat(arguments.dt, "yyyymmdd", "UTC") & "T" & timeFormat(arguments.dt, "HHmmss", "UTC") & "Z" />
 	</cffunction>
 
 	<!--- @@description: 
