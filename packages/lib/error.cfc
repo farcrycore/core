@@ -259,7 +259,8 @@
 			<cfset aKeys = structKeyArray(arguments.data) />
 
 			<cfloop from="1" to="#arraylen(aKeys)#" index="i">
-				<cfif listfindnocase("cfid,cftoken,jsessionid,sessionid,urltoken,signingkey,mfaencryptkey,mfaencryptkeysold",listlast(aKeys[i],"."))>
+				<!--- matches any segment of a dotted key, for reports that flatten nested data --->
+				<cfif reFindNoCase("(^|\.)(cfid|cftoken|jsessionid|sessionid|urltoken|signingkey|mfaencryptkey|mfaencryptkeysold|stmfaenrol|mfapending|enrolsecret|arecoverycodes|passkeychallenge|emailotp|enrolemailotp)(\.|\[|$)",aKeys[i])>
 					<cfset structDelete(arguments.data,aKeys[i]) />
 				<cfelseif structKeyExists(arguments.data,aKeys[i]) and not isSimpleValue(arguments.data[aKeys[i]])>
 					<cfset scrubSessionTokens(arguments.data[aKeys[i]],arguments.depth+1) />
