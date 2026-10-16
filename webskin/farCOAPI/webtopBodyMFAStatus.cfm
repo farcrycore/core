@@ -32,6 +32,7 @@
 
 	// configuration (read-only; no secrets)
 	mfaMode = application.fapi.getConfig("security", "mfaMode", "off");
+	passkeysOn = oUD.isPasskeyAvailable();
 	uvPolicy = application.fapi.getConfig("security", "mfaPasskeyUserVerification", "preferred");
 	challengeTimeout = application.fapi.getConfig("security", "mfaChallengeTimeout", 10);
 	keyConfigured = oCrypto.isKeyConfigured();
@@ -132,6 +133,7 @@
 				<tr><td class="mfa-key"><strong>Encryption key</strong></td><td><cfif keyConfigured><span class="label label-success">Configured</span><cfelse><span class="label label-important">Not set</span> <span class="text-muted">enrolment and migration are unavailable</span></cfif></td></tr>
 				<tr><td class="mfa-key"><strong>Current key id</strong></td><td><code>#encodeForHTML(currentKeyId)#</code></td></tr>
 				<tr><td class="mfa-key"><strong>Retained keys</strong></td><td>#retainedKeys#<cfif retainedKeys gt 0> <span class="text-muted">held for decryption during a rotation</span></cfif></td></tr>
+				<tr><td class="mfa-key"><strong>Passkeys</strong></td><td><cfif passkeysOn><span class="label label-info">On</span><cfelse><span class="label label-default">Off</span> <span class="text-muted">set-up and sign-in hidden and refused; passkeys users already hold are kept and can still be removed</span></cfif></td></tr>
 				<tr><td class="mfa-key"><strong>Passkey verification</strong></td><td><code>#encodeForHTML(uvPolicy)#</code></td></tr>
 				<tr><td class="mfa-key"><strong>Challenge timeout</strong></td><td>#val(challengeTimeout)# minutes</td></tr>
 			</tbody>

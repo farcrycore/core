@@ -40,7 +40,12 @@ VIEW
 <cfif qFactors.recordcount>
 
 	<cfoutput>
-		<p><admin:resource key="security.mfa.admin.resetintro">Review this user's multi-factor authentication below. Resetting removes their passkeys, authenticator and recovery codes; verify their identity out of band first.</admin:resource></p>
+		<!--- name passkeys only when the site offers them or this user holds one (a stored passkey is removed by the reset even while passkeys are off) --->
+		<cfif oUD.isPasskeyAvailable() or listFindNoCase(valueList(qFactors.factorType), "passkey") gt 0>
+			<p><admin:resource key="security.mfa.admin.resetintro">Review this user's multi-factor authentication below. Resetting removes their passkeys, authenticator and recovery codes; verify their identity out of band first.</admin:resource></p>
+		<cfelse>
+			<p><admin:resource key="security.mfa.admin.resetintronopasskey">Review this user's multi-factor authentication below. Resetting removes their authenticator and recovery codes; verify their identity out of band first.</admin:resource></p>
+		</cfif>
 
 		<dl class="dl-horizontal">
 			<dt><admin:resource key="security.mfa.admin.col.user">User</admin:resource></dt>

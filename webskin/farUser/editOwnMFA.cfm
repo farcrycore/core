@@ -26,14 +26,16 @@
 <cfset userid = application.factory.oUtils.listSlice(session.security.userid, 1, -2, "_") />
 <cfset setupFactor = structKeyExists(url, "setup") ? url.setup : "" /><!--- factor type the user chose to set up (totp / passkey) --->
 <cfset bRemoveConfirm = structKeyExists(url, "removeconfirm") and url.removeconfirm eq "1" /><!--- two-step confirm before turning MFA off entirely (the one destructive action that warrants it) --->
+<cfset bPasskeyAvailable = oUD.isPasskeyAvailable() /><!--- site-level: passkeys can be turned off (mfaPasskeys). An existing passkey stays listed with Remove regardless - that manages a stored record, it is not a ceremony --->
 
-<!--- second-factor methods a user can set up: passkey first (recommended), then authenticator app. The seam for email OTP etc. later - add a row here plus a setup branch below to offer a new method. --->
-<cfset aFactorMethods = [
-	{ type = "passkey", icon = "fa-key", name = "Passkey", description = "Use your device's fingerprint, face or screen lock, or a security key. The most phishing resistant option, and nothing to type at login." },
-	{ type = "totp", icon = "fa-mobile", name = "Authenticator app", description = "Use an app such as Google Authenticator, 1Password or Authy to generate a 6 digit code at each login." }
-] />
+<!--- second-factor methods a user can set up: passkey first (recommended, when the site offers it), then authenticator app. The seam for email OTP etc. later - add a row here plus a setup branch below to offer a new method. --->
+<cfset aFactorMethods = arraynew(1) />
+<cfif bPasskeyAvailable>
+	<cfset arrayAppend(aFactorMethods, { type = "passkey", icon = "fa-key", name = "Passkey", description = "Use your device's fingerprint, face or screen lock, or a security key. The most phishing resistant option, and nothing to type at login." }) />
+</cfif>
+<cfset arrayAppend(aFactorMethods, { type = "totp", icon = "fa-mobile", name = "Authenticator app", description = "Use an app such as Google Authenticator, 1Password or Authy to generate a 6 digit code at each login." }) />
 <cfif oUD.emailEnrolAvailable(userid=userid)>
-	<cfset arrayAppend(aFactorMethods, { type = "email", icon = "fa-envelope", name = "Email", description = "Get a one-time code sent to your email address at each login. The least secure option - best only if you can't use an authenticator app or passkey." }) />
+	<cfset arrayAppend(aFactorMethods, { type = "email", icon = "fa-envelope", name = "Email", description = "Get a one-time code sent to your email address at each login. The least secure option - best only if you can't use an authenticator app#bPasskeyAvailable ? ' or passkey' : ''#." }) />
 </cfif>
 
 <!--- icon for each factor type shown in the status / admin tables --->
@@ -277,8 +279,14 @@ VIEW
 
 <cfelseif stStatus.bEnrolled and bRemoveConfirm>
 
+	<!--- name passkeys only when the site offers them or this user holds one (a stored passkey is removed by this even while passkeys are off) --->
+	<cfset bMentionPasskeys = bPasskeyAvailable or application.fapi.getContentType("farMFAFactor").getFactors(userKey=stStatus.userKey, userDirectory="CLIENTUD", factorType="passkey", status="active").recordcount gt 0 />
 	<cfoutput>
-		<div class="alert alert-warning"><admin:resource key="security.mfa.manage.removeconfirmwarn"><strong>Turn off multi-factor authentication?</strong> This removes your passkeys, your authenticator app and your recovery codes. You will sign in with just your password until you set it up again.</admin:resource></div>
+		<cfif bMentionPasskeys>
+			<div class="alert alert-warning"><admin:resource key="security.mfa.manage.removeconfirmwarn"><strong>Turn off multi-factor authentication?</strong> This removes your passkeys, your authenticator app and your recovery codes. You will sign in with just your password until you set it up again.</admin:resource></div>
+		<cfelse>
+			<div class="alert alert-warning"><admin:resource key="security.mfa.manage.removeconfirmwarnnopasskey"><strong>Turn off multi-factor authentication?</strong> This removes your authenticator app and your recovery codes. You will sign in with just your password until you set it up again.</admin:resource></div>
+		</cfif>
 	</cfoutput>
 
 	<ft:form>
@@ -342,9 +350,11 @@ VIEW
 			</table>
 
 			<p>
-				<a class="btn btn-primary" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=passkey"><i class="fa fa-plus"></i> <admin:resource key="security.mfa.manage.addpasskey">Add a passkey</admin:resource></a>
+				<cfif bPasskeyAvailable>
+					<a class="btn btn-primary" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=passkey"><i class="fa fa-plus"></i> <admin:resource key="security.mfa.manage.addpasskey">Add a passkey</admin:resource></a>
+				</cfif>
 				<cfif not bHasTOTP>
-					<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><i class="fa fa-mobile"></i> <admin:resource key="security.mfa.manage.addtotp">Set up an authenticator app</admin:resource></a>
+					<a class="btn#bPasskeyAvailable ? '' : ' btn-primary'#" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=totp"><i class="fa fa-mobile"></i> <admin:resource key="security.mfa.manage.addtotp">Set up an authenticator app</admin:resource></a>
 				</cfif>
 				<cfif oUD.emailEnrolAvailable(userid=userid)>
 					<a class="btn" href="#application.url.webtop#/?id=dashboard&typename=farUser&bodyView=editOwnMFA&setup=email"><i class="fa fa-envelope"></i> <admin:resource key="security.mfa.manage.addemail">Set up email verification</admin:resource></a>
