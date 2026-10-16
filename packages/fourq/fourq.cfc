@@ -671,6 +671,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif stDefaultProperties[propertie].metadata.type eq "array"> 
 					<!--- set to the default if it is not already defined above --->
 					<cfset stProps[propertie] = arrayNew(1)>
+
+				<cfelseif stDefaultProperties[propertie].metadata.type eq "identity">
+					<!--- identity is DB-generated (savable=false), so set empty rather than a default; keeps the key present for readers --->
+					<cfset stProps[propertie] = "" />
+
 				<cfelse>
 					
 					<cfswitch expression="#stDefaultProperties[propertie].metadata.ftDefaultType#">
@@ -866,7 +871,16 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfreturn stObj>
 	</cffunction>
-	
+
+	<cffunction name="isPersistedObject" access="public" output="false" returntype="boolean" hint="Returns true if a database record exists for this objectid. Unlike fapi.isDefaultObject, this bypasses the session TempObjectStore and object broker, so the answer is reliable even when stale session copies exist.">
+		<cfargument name="objectid" type="UUID" required="true" hint="The objectid to check for in the database." />
+
+		<!--- bArraysAsStructs must be numeric (getData ignores boolean values for this argument); it forces a direct db read with no temp store or broker involvement --->
+		<cfset var stObj = getData(objectid=arguments.objectid, bUseInstanceCache=false, bArraysAsStructs=1) />
+
+		<cfreturn NOT (structKeyExists(stObj, "bDefaultObject") AND stObj.bDefaultObject) />
+	</cffunction>
+
 	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
 		<cfargument name="dsn" type="string" required="false" default="">
@@ -1103,6 +1117,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- set status here... if something goes wrong expect a thrown error --->
 		<cfset var stResult = structNew()>
 		<cfset var stobj = structNew() />
+		<cfset var typename = getTypeName() />
 		<cfset var stProps = structNew() />
 		<cfset var prop = "" />
 		<cfset var tablename = "" />
@@ -1112,6 +1127,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.message = "Object deleted successfully">
 		
+		<!--- Find the object by objectid only so that the type can be checked before refobjects/farFU cleanup --->
 		<cfset stobj = getData(objectid=arguments.objectid)>
 		
 			
@@ -1121,22 +1137,26 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	   	</cfif>
 	   				
 	    <!--- Make sure we remove the object from the objectBroker if we update something --->
-	    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.ObjectID,typename=getTypeName())>
+	    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.ObjectID,typename=typename)>
 	    
 		<cfset application.fc.lib.db.deleteData(typename=getTypePath(),objectid=arguments.objectid,dsn=arguments.dsn) />
 		
-		<!--- TODO: convert this to use gateways --->
-		<cfquery datasource="#application.dsn_write#" name="qdeleteRefData">
-		DELETE FROM #arguments.dbowner#refObjects
-		WHERE objectID = '#arguments.objectID#'
-		</cfquery>
+		<!--- Delete from refObjects and farFU only if the current typename matches the found object --->
+		<cfif stobj.typename eq typename>
+			<!--- TODO: convert this to use gateways --->
+			<cfquery datasource="#application.dsn_write#" name="qdeleteRefData">
+			DELETE FROM #arguments.dbowner#refObjects
+			WHERE objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#">
+				AND typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#">
+			</cfquery>
+			
+			<cfquery datasource="#application.dsn_write#" name="qdeleteFUs">
+			DELETE FROM #arguments.dbowner#farFU
+			WHERE refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#">
+			</cfquery>
+		</cfif>
 		
-		<cfquery datasource="#application.dsn_write#" name="qdeleteFUs">
-		DELETE FROM #arguments.dbowner#farFU
-		WHERE refObjectID = '#arguments.objectID#'
-		</cfquery>
-		
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=getTypeName()) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=typename) />
 		
 		<cfreturn stResult>
 	</cffunction>

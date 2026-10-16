@@ -187,6 +187,13 @@ It just ignores the inner ones.
 				<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.Name#" class="fc-server-side-validation" value="#attributes.Validation#" #tagEnding#><!--- Let the form submission know if it to perform serverside validation --->
 
 				<cfif attributes.bGenerateCSRFToken>
+					<!--- this top-level session write marks the session as changed so that engines
+						which only persist changed sessions to external session storage (Lucee 6.x
+						with this.sessioncluster=true) store the freshly generated token at request
+						end. csrfGenerateToken() alone does not mark the session as changed, and
+						neither do nested writes such as keys inside session.fc - this must remain
+						a write to a top-level session variable. --->
+					<cfset session.fcCSRFTokenLastUpdated = now()>
 					<input type="hidden" name="FarcryFormToken" value="#csrfGenerateToken(attributes.Name)#">
 				</cfif>
 

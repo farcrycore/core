@@ -22,15 +22,17 @@
 </ft:processform>
 
 <ft:processform action="Disable Task" url="refresh">
-	<cfset removeJob(form.selectedobjectid)>
 	<cfset stTask = getData(objectid=form.selectedobjectid)>
-	<skin:bubble title="#stTask.title# Disabled" message="The task has been removed from the app servers jobs list." tags="info" />
+	<cfset stTask.bAutoStart = 0>
+	<cfset setData(stProperties=stTask)>
+	<skin:bubble title="#stTask.title# Disabled" message="The task is disabled and will not run until it is enabled." tags="info" />
 </ft:processform>
 
 <ft:processform action="Enable Task" url="refresh">
-	<cfset addJob(form.selectedobjectid)>
 	<cfset stTask = getData(objectid=form.selectedobjectid)>
-	<skin:bubble title="#stTask.title# Enabled" message="The task has been added to the app servers jobs list." tags="success" />
+	<cfset stTask.bAutoStart = 1>
+	<cfset setData(stProperties=stTask)>
+	<skin:bubble title="#stTask.title# Enabled" message="The task is enabled and will run on its schedule." tags="success" />
 </ft:processform>
 
 <ft:processform action="Last Run Output">

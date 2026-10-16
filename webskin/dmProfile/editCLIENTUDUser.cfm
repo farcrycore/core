@@ -48,7 +48,7 @@ ACTION
 VIEW	
 ------------------------------>
 <cfoutput>
-	<h2>User <cfif listlen(stObj.username,"_")> #listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")#<cfelse>#stObj.username#</cfif> <small>Directory #stObj.userdirectory#</small></h2>
+	<h2>User <cfif listlen(stObj.username,"_")> #encodeForHTML(listdeleteat(stObj.username,listlen(stObj.username,"_"),"_"))#<cfelse>#encodeForHTML(stObj.username)#</cfif> <small>Directory #encodeForHTML(stObj.userdirectory)#</small></h2>
 </cfoutput>
 
 <ft:form>

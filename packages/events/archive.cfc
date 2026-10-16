@@ -158,7 +158,7 @@
 			<cfset stArchive.typename = "dmArchive" />
 			<cfset stArchive.objectid = q.objectid />
 			<cfset stArchive.bDeleted = true />
-			<cfset application.fapi.setData(stProperties=stNew) />
+			<cfset application.fapi.setData(stProperties=stArchive) />
 		</cfif>
 	</cffunction>
 	

@@ -9,10 +9,9 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfparam name="arguments.stParam" default="#url#">
-<cfparam name="arguments.stParam.view" default="">
-<cfparam name="arguments.stParam.bodyView" default="">
-
+<cfparam name="stParam" default="#url#">
+<cfparam name="stParam.view" default="">
+<cfparam name="stParam.bodyView" default="">
 
 <!--- If the url points to a type webskin, we need to determine the content type. --->
 <cfif stObj.typename eq "farCOAPI">
@@ -48,11 +47,11 @@
 	</tr>
 	<tr>
 		<th><admin:resource key='tray.summary.pageview@label'>Page View</admin:resource></th>
-		<td>#application.fc.lib.esapi.encodeForHTML(application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.view))# (#application.fc.lib.esapi.encodeForHTML(arguments.stParam.view)#)</td>
+		<td>#application.fc.lib.esapi.encodeForHTML(application.fapi.getWebskinDisplayName(stobj.typename, stParam.view))# (#application.fc.lib.esapi.encodeForHTML(stParam.view)#)</td>
 	</tr>
 	<tr>
 		<th><admin:resource key='tray.summary.bodyview@label'>Body View</admin:resource></th>
-		<td>#application.fc.lib.esapi.encodeForHTML(application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.bodyView))# (#application.fc.lib.esapi.encodeForHTML(arguments.stParam.bodyView)#)</td>
+		<td>#application.fc.lib.esapi.encodeForHTML(application.fapi.getWebskinDisplayName(stobj.typename, stParam.bodyView))# (#application.fc.lib.esapi.encodeForHTML(stParam.bodyView)#)</td>
 	</tr>
 	</table>
 

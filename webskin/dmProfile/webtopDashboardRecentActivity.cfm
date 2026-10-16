@@ -44,8 +44,8 @@
 								<tr>
 									<td nowrap="true"><i class="fa #application.fapi.getContentTypeMetadata(typename="#stActivityObject.Typename#", md="icon", default="fa-file-text")# fa-lg" title="#application.fapi.getContentTypeMetadata(typename="#stActivityObject.Typename#", md="displayname", default="Unknown")#"></i> #stActivityObject.Typename#</td>
 									<td><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm?objectid=#qActivity.object#&typename=#stActivityObject.Typename#" bmodal="true" linktext="#stActivityObject.label#" title="Editing: #stActivityObject.label#" /></td>
-									<td><cfif len(qactivity.notes)>#qActivity.notes#<cfelse>-</cfif></td>
-									<td>#stProfile.label#</td>
+									<td><cfif len(qactivity.notes)>#encodeForHTML(qActivity.notes)#<cfelse>-</cfif></td>
+									<td>#encodeForHTML(stProfile.label)#</td>
 									<td nowrap="true">#application.fapi.prettyDate(qactivity.datetimelastupdated)#</td>
 								</tr>
 							</cfif>
@@ -54,7 +54,7 @@
 								<tr>
 									<td>#eventTypename#</td>
 									<td><strong>Error</strong> for objectid '#qActivity.object#'<br />#CFCATCH.Message#. #CFCATCH.Detail#</td>
-									<td><cfif len(qactivity.notes)>#qActivity.notes#<cfelse>-</cfif></td>
+									<td><cfif len(qactivity.notes)>#encodeForHTML(qActivity.notes)#<cfelse>-</cfif></td>
 									<td nowrap="true">-</td>
 									<td nowrap="true">#application.fapi.prettyDate(qactivity.datetimelastupdated)#</td>
 								</tr>

@@ -71,7 +71,7 @@ FARCRY IMPORT FILES
 	<cfloop query="qSessions">
 		<cfset queryaddrow(qExtraOptions) />
 		<cfset querysetcell(qExtraOptions,"label","#qSessions.user# (last used #timeformat(qSessions.lastAccessed, 'h:mmtt')#)") />
-		<cfset querysetcell(qExtraOptions,"url",application.fapi.fixURL(url=arguments.stParam.loginReturnURL, addvalues='switchsession=#qSessions.sessionID#')) />
+		<cfset querysetcell(qExtraOptions,"url",application.fapi.fixURL(url=stParam.loginReturnURL, addvalues='switchsession=#qSessions.sessionID#')) />
 		<cfset querysetcell(qExtraOptions,"selected",false) />
 	</cfloop>
 </cfif>
@@ -86,8 +86,8 @@ FARCRY IMPORT FILES
 		</div>
 	</cfoutput></skin:pop>
 	
-	<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#">#encodeForHTML(arguments.stParam.message)#</admin:resource></div></cfoutput>
+	<cfif isdefined("stParam.message") and len(stParam.message)>
+		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(stParam.message,'[^\w]','','ALL')#">#encodeForHTML(stParam.message)#</admin:resource></div></cfoutput>
 	</cfif>
 	
 	<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" focusField="username" r_stFields="stFields" />
@@ -111,9 +111,9 @@ FARCRY IMPORT FILES
 						<cfif qExtraOptions.url eq "divider">
 							<li class="divider"></li>
 						<cfelseif qExtraOptions.url eq "nav-header">
-							<li class="nav-header" style="padding-left:15px;">#qExtraOptions.label#</li>
+							<li class="nav-header" style="padding-left:15px;">#encodeForHTML(qExtraOptions.label)#</li>
 						<cfelse>
-							<li <cfif qExtraOptions.selected> class="active"</cfif>><a href="#qExtraOptions.url#">#qExtraOptions.label#</a></li>
+							<li <cfif qExtraOptions.selected> class="active"</cfif>><a href="#encodeForHTMLAttribute(qExtraOptions.url)#">#encodeForHTML(qExtraOptions.label)#</a></li>
 						</cfif>
 					</cfloop>
 				</ul><!-- /.dropdown-menu -->

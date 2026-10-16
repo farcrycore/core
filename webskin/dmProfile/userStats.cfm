@@ -1,3 +1,3 @@
 <cfoutput>
-	<a href="#stobj.username#" class="user-stats"/>#stobj.username#</a>
+	<a href="#encodeForHTMLAttribute(stobj.username)#" class="user-stats"/>#encodeForHTML(stobj.username)#</a>
 </cfoutput>

@@ -25,7 +25,7 @@
 
 <ft:processForm action="Rebuild Ref Archive Triggers" url="refresh">
 
-	<cfquery name="qAudit" result="sqlResult">
+	<cfquery name="qAudit" result="sqlResult" datasource="#application.dsn#">
 	CREATE TABLE IF NOT EXISTS `refArchive`
 	  (
 	    `auditaction` ENUM ('INSERT', 'UPDATE', 'DELETE'),
@@ -43,7 +43,7 @@
 
 	<cfloop collection="#application.stCoapi#" item="iTable">
 
-		<cfquery name="qAudit" result="sqlResult">
+		<cfquery name="qAudit" result="sqlResult" datasource="#application.dsn#">
 	 	DROP TRIGGER IF EXISTS `#iTable#_inserts`;
 	 	DROP TRIGGER IF EXISTS `#iTable#_updates`;
 	 	DROP TRIGGER IF EXISTS `#iTable#_deletes`;
@@ -54,7 +54,7 @@
 		<cfif application.stCoapi[iTable].isArchived?:false>
 			
 
-			<cfquery name="qAudit" result="sqlResult">
+			<cfquery name="qAudit" result="sqlResult" datasource="#application.dsn#">
 		 	<!--- INSERTS --->
 		 	CREATE TRIGGER `#iTable#_inserts`
 			AFTER INSERT ON `#iTable#`

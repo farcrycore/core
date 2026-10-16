@@ -39,7 +39,7 @@ START WEBSKIN
 	<cfif getPageTo() GT 1>
 		<cfoutput>
 		<div class="pagination">
-			<cfif arguments.stParam.bDisplayTotalRecords>
+			<cfif stParam.bDisplayTotalRecords>
 				<div class="pull-right pagination-totals"><admin:resource key="coapi.farPagination.displaying@html" var1="#getRecordFrom()#" var2="#getRecordTo()#" var3="#getTotalRecords()#">Displaying <span class="numberCount">{1}</span> - <span class="numberCount">{2}</span> of <span class="numberCount">{3}</span> result(s)</admin:resource></div>
 			</cfif> 
 			<ul>
@@ -77,7 +77,7 @@ START WEBSKIN
 
 	<!--- INCLUDE THE CSS IN THE HEADER --->
 	<skin:loadCSS id="farcry-pagination" />
-	<cfparam name="arguments.stParam.bDisplayTotalRecords" default="0">
+	<cfparam name="stParam.bDisplayTotalRecords" default="0">
 
 	<!--- OUTPUT THE MARKUP FOR THE PAGINATOR --->
 	<cfif getPageTo() GT 1>
@@ -93,7 +93,7 @@ START WEBSKIN
 				
 				#renderLink(linkid="next", linkText=application.fapi.getResource('coapi.farPagination.next@label',"next &gt;"))#
 				#renderLink(linkid="last", linkText=application.fapi.getResource('coapi.farPagination.last@label',"last"))#
-				<cfif arguments.stParam.bDisplayTotalRecords>
+				<cfif stParam.bDisplayTotalRecords>
 					<span class="resultCount"><admin:resource key="coapi.farPagination.displaying@html" var1="#getRecordFrom()#" var2="#getRecordTo()#" var3="#getTotalRecords()#">Displaying <span class="numberCount">{1}</span> - <span class="numberCount">{2}</span> of <span class="numberCount">{3}</span> result/s</admin:resource></span>
 				</cfif> 
 			</div>

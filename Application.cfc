@@ -37,8 +37,24 @@
 	<!--- run the active project's constructor --->
 	<cfinclude template="/farcryConstructor.cfm" />
 
-	<!--- lucee session cluster should be false and sticky sessions are required to avoid session rotate / csrf token bugs --->
-	<cfset this.sessioncluster = "false">
+	<!---
+		Force sessioncluster=true on Lucee 5.3.8+ (LDEV-784; inert for in-memory sessions and ACF).
+		Required for Lucee to persist its built-in CSRF tokens - and migrate them on sessionRotate() -
+		when sessions live in an external store (e.g. memcached); also removes the sticky-session need.
+		PAIRED with the per-render session write in tags/formtools/form.cfm
+		(session.fcCSRFTokenLastUpdated): on 6.x a session is only stored if it changed, so without
+		that write the token is never flushed - don't remove one without the other.
+		Set after the farcryConstructor include so it overrides the legacy false most projects carry.
+	--->
+	<cfif NOT structKeyExists(server, "farcrySessionCluster")>
+		<!--- emergency valve to override sessioncluster behaviour (should not be used generally) --->
+		<cfif isBoolean(server.system.environment["FARCRY_OVERRIDE_SESSIONCLUSTER"] ?: "")>
+			<cfset server.farcrySessionCluster = server.system.environment["FARCRY_OVERRIDE_SESSIONCLUSTER"] />
+		<cfelse>
+			<cfset server.farcrySessionCluster = luceeVersionAtLeast("5.3.8") />
+		</cfif>
+	</cfif>
+	<cfset this.sessioncluster = server.farcrySessionCluster>
 
 	<!--- set up jar paths --->
 	<cfset setupJARPaths()>
@@ -330,6 +346,22 @@
 	</cffunction>
 
 
+	<cffunction name="luceeVersionAtLeast" access="private" output="false" returntype="boolean" hint="Returns true when running on Lucee at or above the given major.minor.patch version">
+		<cfargument name="version" type="string" required="true" hint="Three part version, e.g. 5.3.8" />
+
+		<cfset var want = listToArray(arguments.version, ".") />
+		<cfset var have = "" />
+
+		<cfif NOT structKeyExists(server, "lucee")>
+			<cfreturn false />
+		</cfif>
+
+		<cfset have = listToArray(server.lucee.version, ".") />
+
+		<cfreturn (have[1] * 1000000 + have[2] * 1000 + have[3]) gte (want[1] * 1000000 + want[2] * 1000 + want[3]) />
+	</cffunction>
+
+
 	<cffunction name="healthcheckReady" output="false">
 		<!---
 			readiness indicates that the application has been initialised and is ready to handle requests
@@ -452,7 +484,7 @@
 			- only picks up tasks that are set to auto-start
 		-------------------------------------------------------->
 		<cftry>
-			<cfset application.fapi.getContentType(typename="dmcron").addMissingJobs()>
+			<cfset application.fapi.getContentType(typename="dmcron").reassertJobs()>
 			<cfcatch>
 			<!--- fails if bAutoStart property has not been deployed; remove legacy entries --->
 			<cfset application.fapi.getContentType(typename="dmcron").removeLegacyJobs()>			

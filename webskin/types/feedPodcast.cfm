@@ -7,48 +7,48 @@
 
 <cfoutput>
 	<item>
-		<title>#stObj[arguments.stParam.title]#</title>
+		<title>#stObj[stParam.title]#</title>
 		<link>#objecturl#</link>
 		<guid>#objecturl#</guid>
-		<pubDate>#lsdateformat(stObj[arguments.stParam.date],"ddd, dd mmm yyyy")# #lstimeformat(stObj[arguments.stParam.date],"HH:mm:ss")# GMT</pubDate>
-		<description><![CDATA[#stObj[arguments.stParam.content]#]]></description>
+		<pubDate>#lsdateformat(stObj[stParam.date],"ddd, dd mmm yyyy")# #lstimeformat(stObj[stParam.date],"HH:mm:ss")# GMT</pubDate>
+		<description><![CDATA[#stObj[stParam.content]#]]></description>
 </cfoutput>
 
-<cfif arguments.stParam.bAuthor>
-	<cfset arguments.stParam.author = createobject("component",application.stCOAPI.dmProfile.packagepath).getProfile(username=stObj.createdby) />
+<cfif stParam.bAuthor>
+	<cfset stParam.author = createobject("component",application.stCOAPI.dmProfile.packagepath).getProfile(username=stObj.createdby) />
 	
-	<cfif not structisempty(arguments.stParam.author) and len(arguments.stParam.author.emailAddress)>
-		<cfoutput><author>#encodeForXML(arguments.stParam.author.emailAddress)#<cfif len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname)> (#arguments.stParam.author.firstname# #encodeForXML(arguments.stParam.author.lastname)#)</cfif></author></cfoutput>
-	<cfelseif len(arguments.stParam.author.firstname) or len(arguments.stparam.author.lastname)>
-		<cfoutput><dc:creator>#encodeForXML(arguments.stParam.author.firstname)# #encodeForXML(arguments.stParam.author.lastname)#</dc:creator></cfoutput>
+	<cfif not structisempty(stParam.author) and len(stParam.author.emailAddress)>
+		<cfoutput><author>#encodeForXML(stParam.author.emailAddress)#<cfif len(stParam.author.firstname) or len(stParam.author.lastname)> (#stParam.author.firstname# #encodeForXML(stParam.author.lastname)#)</cfif></author></cfoutput>
+	<cfelseif len(stParam.author.firstname) or len(stparam.author.lastname)>
+		<cfoutput><dc:creator>#encodeForXML(stParam.author.firstname)# #encodeForXML(stParam.author.lastname)#</dc:creator></cfoutput>
 	</cfif>
 </cfif>
 
-<cfif len(arguments.stParam.media)>
-	<cfset stFileInfo = createobject("component","farcry.core.packages.farcry.file").getFileProperties("#application.fapi.getFileWebRoot()##stObj[arguments.stParam.media]#") />
+<cfif len(stParam.media)>
+	<cfset stFileInfo = createobject("component","farcry.core.packages.farcry.file").getFileProperties("#application.fapi.getFileWebRoot()##stObj[stParam.media]#") />
 
-	<cfoutput><enclosure url="http://#cgi.http_host##application.fapi.getFileWebRoot()##stObj[arguments.stParam.media]#" length="#stFileInfo.size#" type="#stFileInfo.mimetype#" /></cfoutput>
+	<cfoutput><enclosure url="http://#cgi.http_host##application.fapi.getFileWebRoot()##stObj[stParam.media]#" length="#stFileInfo.size#" type="#stFileInfo.mimetype#" /></cfoutput>
 	
-	<cfif len(arguments.stParam.itunessubtitle)>
-		<cfoutput><itunes:subtitle>#stObj[arguments.stParam.itunessubtitle]#</itunes:subtitle></cfoutput>
+	<cfif len(stParam.itunessubtitle)>
+		<cfoutput><itunes:subtitle>#stObj[stParam.itunessubtitle]#</itunes:subtitle></cfoutput>
 	</cfif>
 	
 	<!--- iTunes elements --->
-	<cfif arguments.stParam.bAuthor and not len(arguments.stParam.itunesauthor) and not structisempty(arguments.stParam.author) and len(arguments.stParam.author.emailAddress)>
+	<cfif stParam.bAuthor and not len(stParam.itunesauthor) and not structisempty(stParam.author) and len(stParam.author.emailAddress)>
 		<cfoutput>
-			<itunes:author>#arguments.stParam.author.firstname# #arguments.stParam.author.lastname#<cfif len(arguments.stParam.author.firstname) or len(arguments.stParam.author.lastname)> (#encodeForXML(arguments.stParam.author.emailAddress)#)</cfif></itunes:author>
+			<itunes:author>#stParam.author.firstname# #stParam.author.lastname#<cfif len(stParam.author.firstname) or len(stParam.author.lastname)> (#encodeForXML(stParam.author.emailAddress)#)</cfif></itunes:author>
 		</cfoutput>
 	</cfif>
-	<cfif arguments.stParam.bAuthor and len(arguments.stParam.itunesauthor)>
-		<cfoutput><itunes:author>#stObj[arguments.stParam.itunesauthor]#</itunes:author></cfoutput>
+	<cfif stParam.bAuthor and len(stParam.itunesauthor)>
+		<cfoutput><itunes:author>#stObj[stParam.itunesauthor]#</itunes:author></cfoutput>
 	</cfif>
 	
-	<cfif len(arguments.stParam.keywords)>
-		<cfoutput><itunes:keywords>#stObj[arguments.stParam.ituneskeywords]#</itunes:keywords></cfoutput>
+	<cfif len(stParam.keywords)>
+		<cfoutput><itunes:keywords>#stObj[stParam.ituneskeywords]#</itunes:keywords></cfoutput>
 	</cfif>
 	
-	<cfif len(arguments.stParam.itunesduration)>
-		<cfoutput><itunes:duration>#stObj[arguments.stParam.itunesduration]#</itunes:duration></cfoutput>
+	<cfif len(stParam.itunesduration)>
+		<cfoutput><itunes:duration>#stObj[stParam.itunesduration]#</itunes:duration></cfoutput>
 	</cfif>
 </cfif>
 

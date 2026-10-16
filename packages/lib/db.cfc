@@ -336,8 +336,8 @@
 		<cfset stResult.generatedAlways = arguments.generatedAlways />
 		<cfset stResult.virtualType = arguments.virtualType />
 		
-		<cfif len(trim(arguments.generatedAlways))>
-			<cfset stResult.savable = false /> <!--- Never savable --->
+		<cfif len(trim(arguments.generatedAlways)) OR arguments.type EQ "identity">
+			<cfset stResult.savable = false /> <!--- Never savable (generated column or identity) --->
 			<cfset stResult.default = "" /> <!--- Cant be used --->
 		</cfif>
 		<cfif stResult.index eq "true">

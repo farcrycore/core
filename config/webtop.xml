@@ -46,6 +46,7 @@
 			</menu>
 			<menu id="systemstatus" sequence="220" label="System Status">
 				<menuitem id="systeminfo" sequence="40" label="System Information" typename="farCOAPI" bodyview="webtopBodySystemInfo" />
+				<menuitem id="sessionstatus" sequence="45" label="Session Status" typename="farCOAPI" bodyview="webtopBodySessionStatus" />
 				<menuitem id="objbrokersummary" sequence="50" label="Object Broker Status" typename="farCOAPI" bodyview="webtopBodyObjectBrokerReport" />
 			</menu>
 		</subsection>

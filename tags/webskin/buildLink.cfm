@@ -115,7 +115,7 @@
 			<!--- IF WE DONT HAVE ANY GENERATED CONTENT, GO FIND THE LABEL OF THE OBJECT --->
 			<cfif not len(thistag.GeneratedContent) and len(attributes.objectid)>
 				<cfset stLinkObject = application.fapi.getContentObject(objectid="#attributes.objectid#", typename="#attributes.type#") />
-				<cfset thistag.GeneratedContent=stLinkObject.label />
+				<cfset thistag.GeneratedContent=encodeForHTML(stLinkObject.label) />
 			</cfif>		
 		
 			<cfset tagoutput = tagoutput & trim(thistag.generatedcontent) & '</a>'>

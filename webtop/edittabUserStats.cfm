@@ -31,7 +31,7 @@
 
 
 <cfoutput>
-	<h3>#application.rb.getResource("workflow.headings.auditTrace@text","Audit Trace")# for #qUser.label#</h3>
+	<h3>#application.rb.getResource("workflow.headings.auditTrace@text","Audit Trace")# for #encodeForHTML(qUser.label)#</h3>
 </cfoutput>
 
 <skin:pagination query="#qAudit#" typename="farLog" r_stObject="stLog" paginationID="farLog" recordsPerPage="10" pageLinks="10">

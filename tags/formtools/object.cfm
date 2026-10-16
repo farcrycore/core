@@ -176,9 +176,12 @@
 
 			<cfif structKeyExists(session.stTempObjectStoreKeys[attributes.typename], attributes.key)>
 				<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[attributes.typename][attributes.key])>
-					<cfset attributes.objectid = session.stTempObjectStoreKeys[attributes.typename][attributes.key] />
+					<!--- only reuse the keyed object if it has not been saved to the database --->
+					<cfif NOT oType.isPersistedObject(objectid=session.stTempObjectStoreKeys[attributes.typename][attributes.key])>
+						<cfset attributes.objectid = session.stTempObjectStoreKeys[attributes.typename][attributes.key] />
+					</cfif>
 				</cfif>
-			</cfif>	
+			</cfif>
 				
 			
 			<cfif not len(attributes.objectid)>

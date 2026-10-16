@@ -8,6 +8,14 @@
 	<cfexit>
 </cfif>
 
+<!--- in-process self-heal for the Lucee end-date bug: if this task should no longer be on the live
+	schedule, re-assert its job so addJob neutralises it (past-dated "once") and it stops auto-firing.
+	This fire is allowed to finish, since a manual "Run Task" reaches the same code and we must not block
+	that; at worst one auto-fire leaks after expiry before the job is sealed. --->
+<cfif not shouldAutoFire(stObj)>
+	<cfset addJob(stObj.objectid) />
+</cfif>
+
 <cfloop list="#stObj.parameters#" index="thisparam" delimiters="&">
 	<cfset url[listfirst(thisparam,"=")] = listlast(thisparam,"=") />
 </cfloop>
