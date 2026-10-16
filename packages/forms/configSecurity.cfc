@@ -72,56 +72,60 @@
 		ftType="string"
 		ftHint="The label shown in users' authenticator apps. Leave blank to use the site title, with the environment label appended outside production so staging and development entries stay distinct from production.">
 
+	<cfproperty name="mfaPasskeys" type="boolean" ftType="boolean" default="1"
+		ftSeq="43" ftFieldset="Multi-factor Authentication" ftLabel="Passkeys"
+		ftHint="Whether users can set up and use passkeys. Off hides passkey set-up and passkey sign-in everywhere and refuses them server-side; a passkey a user already holds stays listed on their MFA page so they can remove it. Users whose only usable factor is a passkey then sign in with a recovery code or need an admin reset. That includes users who hold a passkey plus email under the 'only as a sole factor' email setting. Their passkeys are kept, and work again if this is turned back on. Env: FARCRY_CONFIG_SECURITY_MFAPASSKEYS, accepted values true/false, yes/no, 1/0. Blank or unset means on. Any other value turns passkeys off.">
+
 	<cfproperty name="mfaRpId" type="string" default=""
-		ftSeq="43" ftFieldset="Multi-factor Authentication" ftLabel="Passkey relying party ID"
+		ftSeq="44" ftFieldset="Multi-factor Authentication" ftLabel="Passkey relying party ID"
 		ftType="string"
 		ftHint="The domain passkeys are bound to (an effective domain, e.g. example.gov.au). Leave blank to use the request host. Set a shared parent domain to let one passkey work across sub-domains (dev., staging., www.). A passkey enrolled under one value will not verify under another, so changing this invalidates existing passkeys.">
 
 	<cfproperty name="mfaRpName" type="string" default=""
-		ftSeq="44" ftFieldset="Multi-factor Authentication" ftLabel="Passkey display name"
+		ftSeq="45" ftFieldset="Multi-factor Authentication" ftLabel="Passkey display name"
 		ftType="string"
 		ftHint="The site name shown in the browser and operating system passkey prompt. Leave blank to use the issuer label above (the site title).">
 
 	<cfproperty name="mfaOrigin" type="string" default=""
-		ftSeq="45" ftFieldset="Multi-factor Authentication" ftLabel="Passkey allowed origin(s)"
+		ftSeq="46" ftFieldset="Multi-factor Authentication" ftLabel="Passkey allowed origin(s)"
 		ftType="string"
 		ftHint="The https origin(s) passkey ceremonies are accepted from, comma separated (e.g. https://www.example.gov.au). Leave blank to derive https://[request host]. Set this only when the request host is not the browser-facing address (some reverse-proxy setups).">
 
 	<cfproperty name="mfaPasskeyUserVerification" type="string" default="preferred"
-		ftSeq="46" ftFieldset="Multi-factor Authentication" ftLabel="Passkey user verification (second factor)"
+		ftSeq="47" ftFieldset="Multi-factor Authentication" ftLabel="Passkey user verification (second factor)"
 		ftType="list" ftList="discouraged:Touch only (no PIN or biometric),preferred:Verify when the device offers it (default),required:Always require a PIN or biometric"
 		ftHint="How hard a passkey verifies the user when it is a second factor (behind a password). 'Touch only' matches the typical security-key experience: a roaming key like a YubiKey needs only a tap, no PIN, because the password is the other factor. 'Verify when offered' uses the device PIN or biometric if it has one. 'Always require' insists on it. Platform authenticators (Windows Hello, Touch ID, Android) always verify regardless of this setting. This does NOT apply when a passkey is the primary sign-in method (passwordless): user verification is always required there.">
 
 	<cfproperty name="mfaChallengeTimeout" type="integer" ftType="integer" default="10"
-		ftSeq="47" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
+		ftSeq="48" ftFieldset="Multi-factor Authentication" ftLabel="Challenge timeout (minutes)"
 		ftHint="How long a pending second factor challenge remains valid before the user must log in again.">
 
 	<cfproperty name="mfaEncryptKeyId" type="string" default="1" required="false"
-		ftSeq="48" ftFieldset="Multi-factor Authentication" ftLabel="Encryption key id"
+		ftSeq="49" ftFieldset="Multi-factor Authentication" ftLabel="Encryption key id"
 		ftType="string"
 		ftHint="Identifier stamped into newly sealed MFA secrets so the right key can be found again later. Set via FARCRY_CONFIG_SECURITY_MFAENCRYPTKEYID alongside the key, and bump it (e.g. 1 to 2) each time you rotate the encryption key. Alphanumeric; defaults to 1.">
 
 	<cfproperty name="mfaEncryptKeysOld" type="string" default="" required="false"
-		ftSeq="49" ftFieldset="Multi-factor Authentication" ftLabel="Retired encryption keys"
+		ftSeq="50" ftFieldset="Multi-factor Authentication" ftLabel="Retired encryption keys"
 		ftType="string"
 		ftHint="Previous encryption keys kept only so secrets sealed under them can still be decrypted during a rotation, given as id:base64key pairs (comma separated). Set only via the FARCRY_CONFIG_SECURITY_MFAENCRYPTKEYSOLD environment variable; it is shown here as a count only and cannot be entered or stored through the webtop. Remove a key here once no stored secret still uses it.">
 
 	<cfproperty name="mfaEmailOTP" type="string" default="off"
-		ftSeq="50" ftFieldset="Multi-factor Authentication" ftLabel="Email one-time-code factor"
+		ftSeq="51" ftFieldset="Multi-factor Authentication" ftLabel="Email one-time-code factor"
 		ftType="list" ftList="off:Off,soleFactor:On - only as a sole factor,anyFactor:On - allowed with a stronger factor"
 		ftHint="Whether users may use a one-time code emailed to them as a second factor. Email is the weakest factor - its security is only as strong as the user's mailbox - so it is off by default and best reserved for users who cannot use an authenticator app or passkey. 'Only as a sole factor' offers email only to a user who has no stronger factor, keeping a strong factor strong. 'Allowed with a stronger factor' is a deliberate downgrade: an attacker who has the password and the mailbox can then bypass a stronger factor by choosing email, so enable it only where that trade-off is acceptable.">
 
 	<cfproperty name="mfaEmailResendSeconds" type="integer" ftType="integer" default="60"
-		ftSeq="51" ftFieldset="Multi-factor Authentication" ftLabel="Email code resend interval (seconds)"
+		ftSeq="52" ftFieldset="Multi-factor Authentication" ftLabel="Email code resend interval (seconds)"
 		ftHint="Minimum seconds between emailed one-time codes for a single login, to throttle resends. Default 60.">
 
 	<cfproperty name="mfaGraceUntil" type="string" default=""
-		ftSeq="52" ftFieldset="Multi-factor Authentication" ftLabel="Enrolment grace period until"
+		ftSeq="53" ftFieldset="Multi-factor Authentication" ftLabel="Enrolment grace period until"
 		ftType="string"
 		ftHint="Optional date (yyyy-mm-dd). While it is set to a future date, a user who is required to use MFA but has not yet enrolled is prompted to set it up but may skip and continue; on and after the date, enrolment is enforced. Blank enforces enrolment immediately. Applies wherever MFA is mandatory (Required mode, or a role in the list above); already-enrolled users are always challenged regardless.">
 
 	<cfproperty name="mfaEmailMaxSendsPerHour" type="integer" ftType="integer" default="20"
-		ftSeq="53" ftFieldset="Multi-factor Authentication" ftLabel="Email codes per hour (per user)"
+		ftSeq="54" ftFieldset="Multi-factor Authentication" ftLabel="Email codes per hour (per user)"
 		ftHint="Hard ceiling on emailed one-time codes a single user can be sent per hour, counted per application instance across every login attempt, so re-authenticating does not reset it (server-scope; in a multi-instance cluster the effective ceiling is this value times the number of front-end instances). This bounds guessing of the 6 digit email code by someone who already knows the password, and prevents mailbox flooding. Applies to both challenge and enrolment sends. Default 20; 0 disables the cap (not recommended while email OTP is enabled).">
 
 

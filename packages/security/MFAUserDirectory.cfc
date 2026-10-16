@@ -1351,6 +1351,35 @@
 		<cfreturn stResult />
 	</cffunction>
 
+	<cffunction name="isPasskeyAvailable" access="public" output="false" returntype="boolean" hint="Whether passkeys are offered on this site right now. This is the single place that decides it: the login enrol interstitial, the challenge screen, the self-service and admin pages and the engine's own enrol / verify gates all read it, so a caller never needs to know what goes into the answer and nothing changes for them when it grows. Today it is only the mfaPasskeys setting. Any later condition (for example whether the request host falls within the configured relying party domain) belongs here and nowhere else, and any future passwordless (passkey as the primary factor) sign-in must go through it too. Deliberately site-level: it does not read mfaMode, because a project may drive MFA from its own policy overrides with the global mode off, and it does not depend on the user.">
+		<cfreturn getPasskeysEnabled() />
+	</cffunction>
+
+	<cffunction name="getPasskeysEnabled" access="private" output="false" returntype="boolean" hint="The mfaPasskeys setting as a boolean. Blank or unset means on (the core default, so a site that never sets it is unaffected); true/false, yes/no and 1/0 are taken as given; anything else fails closed to off, with a warning logged once per application start. A disable switch that cannot be parsed must not silently leave passkeys on, so MFAPASSKEYS=off (a likely slip, given MFAMODE=off) means off. The accepted values are an explicit list rather than isBoolean(), which would also accept any number and turn 2 or -1 into on.">
+		<cfset var v = lcase(trim(application.fapi.getConfig("security", "mfaPasskeys", "1"))) />
+
+		<cfif not len(v)>
+			<cfreturn true />
+		</cfif>
+
+		<cfif listFind("true,yes,1", v)>
+			<cfreturn true />
+		</cfif>
+		<cfif listFind("false,no,0", v)>
+			<cfreturn false />
+		</cfif>
+
+		<!--- unrecognised value: warn once per application start rather than on every request, then treat as off --->
+		<cfif not (structKeyExists(application, "fc") and structKeyExists(application.fc, "bMFAPasskeysWarned"))>
+			<cfset application.fapi.logEvent("mfa", "warning", "mfaPasskeys has an unrecognised value; passkeys treated as off", { value = v }) />
+			<cfif structKeyExists(application, "fc")>
+				<cfset application.fc.bMFAPasskeysWarned = true />
+			</cfif>
+		</cfif>
+
+		<cfreturn false />
+	</cffunction>
+
 	<cffunction name="getRpId" access="private" output="false" returntype="string" hint="The WebAuthn relying party id (an effective domain). Config mfaRpId, else the request host. Passkeys are cryptographically bound to this - a credential registered under one rp id will not verify under another.">
 		<cfset var rpId = trim(application.fapi.getConfig("security", "mfaRpId", "")) />
 		<cfreturn len(rpId) ? rpId : cgi.server_name />
