@@ -434,9 +434,10 @@
 					<cfset stResult.mfaPending = true />
 
 					<!--- these are not failed attempts: noSubmission (just rendering the form), recoveryCodes
-					      (post-enrolment display step), mfaUnavailable (infrastructure fault) and noCandidate
-					      (the enrolment session expired) - none should count toward lockout --->
-					<cfif not listFindNoCase("noSubmission,recoveryCodes,mfaUnavailable,noCandidate,emailCodeSent,codeExpired", stMFA.reason)>
+					      (post-enrolment display step), mfaUnavailable (infrastructure fault), noCandidate
+					      (the enrolment session expired) and passkeyUnavailable (passkeys turned off for the
+					      site mid-login; nothing was verified) - none should count toward lockout --->
+					<cfif not listFindNoCase("noSubmission,recoveryCodes,mfaUnavailable,noCandidate,emailCodeSent,codeExpired,passkeyUnavailable", stMFA.reason)>
 						<cfset session.fc.mfaPending.attempts = session.fc.mfaPending.attempts + 1 />
 						<cfset logSecurityEvent(event="mfaFailed", level="warning", message="second factor failed", userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#", stFields={ reason=stMFA.reason, method=(structKeyExists(stMFA, "method") ? stMFA.method : "unknown") }) />
 						<farcry:logevent type="security" event="mfaFailed" userid="#session.fc.mfaPending.userid#_#session.fc.mfaPending.ud#" notes="#stMFA.reason#" />

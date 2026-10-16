@@ -548,14 +548,22 @@
 
 	<!--- passkey (WebAuthn) engine: called by the contract methods above and by self-service / login webskins. Public key material only, so unlike TOTP these never touch the encryption key. --->
 
-	<cffunction name="startPasskeyEnrolment" access="public" output="false" returntype="struct" hint="Builds the registration options for a create() ceremony and stashes a fresh challenge for confirmPasskeyEnrolment. Does not require the encryption key.">
+	<cffunction name="startPasskeyEnrolment" access="public" output="false" returntype="struct" hint="Builds the registration options for a create() ceremony and stashes a fresh challenge for confirmPasskeyEnrolment. Does not require the encryption key. bSuccess is false with reason 'disabled' when passkeys are turned off for the site (isPasskeyAvailable).">
 		<cfargument name="userid" type="string" required="true" />
 
-		<cfset var stResult = { bSuccess = true, message = "", stOptions = structnew() } />
+		<cfset var stResult = { bSuccess = true, reason = "", message = "", stOptions = structnew() } />
 		<cfset var stContext = getEnrolContext() />
 		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var aExclude = arraynew(1) />
 		<cfset var stPk = "" />
+
+		<!--- site-level gate: with passkeys off no registration challenge is ever minted, so confirmPasskeyEnrolment can only ever see noCandidate. This also hides the passkey option on the login enrol interstitial, and gives a direct ?setup=passkey URL on the self-service page its message. --->
+		<cfif not isPasskeyAvailable()>
+			<cfset stResult.bSuccess = false />
+			<cfset stResult.reason = "disabled" />
+			<cfset stResult.message = "Passkeys are not available on this site." />
+			<cfreturn stResult />
+		</cfif>
 
 		<cfif not len(userKey)>
 			<cfset stResult.bSuccess = false />
@@ -608,6 +616,14 @@
 			<cfreturn stResult />
 		</cfif>
 
+		<!--- only reachable when passkeys were turned off after this challenge was minted (with them off, none is minted and the post is noCandidate above): refuse and consume the challenge so it cannot be retried --->
+		<cfif not isPasskeyAvailable()>
+			<cfset structDelete(stContext, "passkeyChallenge") />
+			<cfset stResult.reason = "passkeyUnavailable" />
+			<cfset stResult.message = "Passkeys are not available on this site. Please choose another method." />
+			<cfreturn stResult />
+		</cfif>
+
 		<cfset stReg = variables.oWebAuthn.verifyRegistration(
 			clientDataJSON = arguments.clientDataJSON,
 			attestationObject = arguments.attestationObject,
@@ -656,14 +672,20 @@
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="getPasskeyAssertionOptions" access="public" output="false" returntype="struct" hint="Builds the assertion options for a get() ceremony and stashes a fresh challenge for verify. bSuccess is false when the user has no passkey to offer.">
+	<cffunction name="getPasskeyAssertionOptions" access="public" output="false" returntype="struct" hint="Builds the assertion options for a get() ceremony and stashes a fresh challenge for verify. bSuccess is false when the user has no passkey to offer, or (reason 'disabled') when passkeys are turned off for the site.">
 		<cfargument name="userid" type="string" required="true" />
 
-		<cfset var stResult = { bSuccess = false, stOptions = structnew() } />
+		<cfset var stResult = { bSuccess = false, reason = "", stOptions = structnew() } />
 		<cfset var stContext = getEnrolContext() />
 		<cfset var userKey = getUserKey(arguments.userid) />
 		<cfset var aAllow = arraynew(1) />
 		<cfset var stPk = "" />
+
+		<!--- site-level gate, before any passkey is loaded or a challenge minted: the challenge page then falls back to its code wording, and a stored passkey is simply not offered (it is kept, and works again when passkeys are turned back on) --->
+		<cfif not isPasskeyAvailable()>
+			<cfset stResult.reason = "disabled" />
+			<cfreturn stResult />
+		</cfif>
 
 		<cfif not len(userKey)>
 			<cfreturn stResult />
@@ -1309,6 +1331,14 @@
 		<cfif not structKeyExists(stContext, "passkeyChallenge")>
 			<cfset stResult.reason = "noCandidate" />
 			<cfset stResult.message = "Your sign in attempt has expired. Please try again." />
+			<cfreturn stResult />
+		</cfif>
+
+		<!--- only reachable for a challenge minted just before passkeys were turned off (with them off none is minted, so a cold post is noCandidate above). Nothing has been verified, so the refusal reveals nothing and is not a failed attempt: no recordMFAFailure here, and security.cfc exempts the reason from the session attempt cap. The challenge is consumed all the same. --->
+		<cfif not isPasskeyAvailable()>
+			<cfset structDelete(stContext, "passkeyChallenge") />
+			<cfset stResult.reason = "passkeyUnavailable" />
+			<cfset stResult.message = "Passkeys are not available on this site. Enter a code to finish signing in." />
 			<cfreturn stResult />
 		</cfif>
 
