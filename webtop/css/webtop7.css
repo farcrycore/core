@@ -1545,3 +1545,10 @@ br[style*="clear:both"] {
 /* webtop role visibility: individual-mode legend above the permission tree */
 .webtop-visibility-legend { margin: 0 0 8px; font-size: 13px; font-style: italic; color: #555; }
 .webtop-visibility-legend.is-hidden { display: none; }
+
+/* webtop role visibility: per-user preview columns (webtopBodyWebtopSecurity) */
+.webtop-preview-col { float: right; width: 100px; text-align: center; }
+.webtop-preview-head { font-weight: bold; }
+.webtop-preview-shown { color: #006600; }
+.webtop-preview-hidden { color: #FF8080; }
+.webtop-preview-clear { clear: both; }

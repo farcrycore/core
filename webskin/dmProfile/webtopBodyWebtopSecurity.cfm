@@ -7,7 +7,7 @@
 
 
 
-<!--- 
+<!---
 ENVIRONMENT VARIABLES
  --->
 
@@ -26,33 +26,19 @@ ENVIRONMENT VARIABLES
 <cfoutput>
 	<h1>
 		#encodeForHTML(stobj.firstName)# #encodeForHTML(stobj.lastname)# Webtop Security
-		
+
 		<ft:button value="Print" type="button" onClick="window.print();" class="hidden-print" />
 	</h1>
 </cfoutput>
 
 <cfif len(lRoleIDs)>
-	
-	<cfset form.selectPermission = application.security.factory.permission.getID(name="viewWebtopItem") />
 
-	<cfparam name="request.stWebtopPermissions" default="#structNew()#">
-	<cfparam name="request.stWebtopPermissions['#form.selectPermission#']" default="#structNew()#" />
-	
-	
 	<skin:loadJS id="fc-jquery" />
 	<skin:loadJS id="fc-jquery-ui" />
 	<skin:loadCSS id="jquery-ui" />
-	
+
 	<skin:htmlHead><cfoutput>
 		<style type="text/css">
-			##webtopTree a.permission-explicit:hover, ##webtopTree a.permission-inherit:hover { text-decoration:none; }
-			##webtopTree a.permission-explicit .fa-check-circle { color:##006600; }
-			##webtopTree a.permission-inherit .fa-check-circle { color:##8bd68b; }
-			##webtopTree a.permission-explicit .fa-times-circle { color:##FF0000; }
-			##webtopTree a.permission-inherit .fa-times-circle { color:##FF8080; }
-			##webtopTree a.permButton, ##webtopTree a.permButton:hover, ##bAllowAccess, ##bAllowAccess:hover { cursor:pointer; text-decoration:none;font-size:14px;}
-			##bAllowAccess .fa-check-circle { color:##006600; }
-			##bAllowAccess .fa-times-circle { color:##FF0000; }
 			##webtopTree .fa { position:relative; font-size: 16px; line-height: 14px; top: -2px; }
 			##webtopTree .nodelabel { font-size: 13px; line-height: 14px; color: inherit; }
 		</style>
@@ -60,449 +46,70 @@ ENVIRONMENT VARIABLES
 		  @page { size: landscape; }
 		</style>
 	</cfoutput></skin:htmlHead>
-	
-			
-	<!--- WEBTOP PERMISSIONS --->
-	<cfset stCurrentPermissionSet = request.stWebtopPermissions['#form.selectPermission#']>
-	
-	
-	
+
+
+	<!--- the full webtop tree (structure, rbkeys and labels), security ignored, for the rows --->
 	<cfset stWebtop = application.factory.oWebtop.getItem(honoursecurity="false") />
-	<cfset barnacleID = hash(stWebtop.rbKey)>
-	
-	
-	<cfquery datasource="#application.dsn#" name="qBarnacles">
-		SELECT 	farBarnacle.referenceID, farBarnacle.barnacleValue, farBarnacle.roleid, farBarnacle.permissionID
-		FROM 	farBarnacle
-		WHERE 	objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
-				AND farBarnacle.roleid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRoleIDs#">)
-				AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#encodeForHTMLAttribute(form.selectPermission)#">
+
+	<!--- this user's roles, for the column order and headers --->
+	<cfquery datasource="#application.dsn#" name="qRoles">
+		SELECT 	objectid, title
+		FROM 	#application.dbowner#farRole
+		WHERE 	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRoleIDs#">)
+		ORDER BY title
 	</cfquery>
 
-	<cfquery datasource="#application.dsn#" name="qRoles">
-	SELECT *
-	FROM farRole
-	WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRoleIDs#">)
-	ORDER BY title
-	</cfquery>
-	
-	
-	
-	<ft:field label="Webtop Access">
-		<cfset accessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
-		
-		<cfif application.security.checkPermission(permission="admin",role="#lRoleIDs#")>
-			<cfset allowAccess = 1>
-		<cfelse>
-			<cfset allowAccess = -1>
-		</cfif>
-		
-		
-		<cfif allowAccess EQ 1>
-			<cfset icon = "fa-check-circle">
-		<cfelse>
-			<cfset icon = "fa-times-circle">
-		</cfif>
-		
-		<cfoutput><a id="bAllowAccess" class="permButton" value="#allowAccess#" ftpermissionid="#accessPermissionID#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="fa #icon# fa-fw"></i></a></cfoutput>
-		
-	</ft:field>
-	
-	<cfoutput>
-		<input type="hidden" name="permissionID" value="#encodeForHTMLAttribute(form.selectPermission)#" />
-		<div id="webtopTreeWrap" <cfif allowAccess EQ -1>style="display:none;"</cfif>>
-	</cfoutput>
-	
-	<ft:field label="Access Permissions" bMultiField="true">
-	
-		
-		<cfoutput>
-		<div>
-		<cfloop query="qRoles">
-			<div style="float:right;width:100px;text-align:center;">
-				<strong>#encodeForHTML(qRoles.title)#</strong>
-			</div>
+	<!--- what each role actually sees, from the resolver (honours each role's visibility mode), plus the combined set the user gets --->
+	<cfset aRoles = arrayNew(1) />
+	<cfset stVisible = structNew() />
+	<cfset stCombined = structNew() />
+	<cfloop query="qRoles">
+		<cfset arrayAppend(aRoles, { id = qRoles.objectid, title = qRoles.title }) />
+		<cfset stRoleKeys = structNew() />
+		<cfloop list="#application.factory.oWebtop.getVisibleItemKeys(role=qRoles.objectid)#" index="thisKey">
+			<cfset stRoleKeys[thisKey] = true />
+			<cfset stCombined[thisKey] = true />
 		</cfloop>
-		</div>	
-		<br style="clear:both;" />
-		</cfoutput>	
-		
-		
+		<cfset stVisible[qRoles.objectid] = stRoleKeys />
+	</cfloop>
+
+
+	<ft:field label="Webtop Access">
+		<cfif application.security.checkPermission(permission="admin",role="#lRoleIDs#")>
+			<cfoutput><i class="fa fa-check-circle fa-fw webtop-preview-shown"></i></cfoutput>
+		<cfelse>
+			<cfoutput><i class="fa fa-times-circle fa-fw webtop-preview-hidden"></i></cfoutput>
+		</cfif>
+		<ft:fieldHint><cfoutput>Green shows the page is visible to the role, red that it is hidden. The Combined column is what this user actually sees.</cfoutput></ft:fieldHint>
+	</ft:field>
+
+	<ft:field label="Access Permissions" bMultiField="true">
 		<cfoutput>
+		<div id="webtopPreview">
+			<div>
+				<cfloop array="#aRoles#" index="thisRole"><div class="webtop-preview-col webtop-preview-head">#encodeForHTML(thisRole.title)#</div></cfloop>
+				<div class="webtop-preview-col webtop-preview-head">Combined</div>
+			</div>
+			<div class="webtop-preview-clear"></div>
 			<ul id="webtopTree">
 				<li>
+					<span class="nodelabel">Webtop</span>
+					<cfloop array="#aRoles#" index="thisRole"><div class="webtop-preview-col">#previewCell(true)#</div></cfloop>
+					<div class="webtop-preview-col">#previewCell(true)#</div>
 		</cfoutput>
-		
-		<cfif structKeyExists(stCurrentPermissionSet, barnacleID)>
-			<cfset currentBarnacleValue = stCurrentPermissionSet[barnacleID] >
-		<cfelse>
-			<cfquery dbtype="query" name="qNodeBarnacle">
-			SELECT max(barnacleValue) as maxBarnacleValue
-			FROM qBarnacles
-			WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
-			AND roleID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRoleIDs#">)
-			</cfquery>
-			
-			<cfif isNumeric(qNodeBarnacle.maxBarnacleValue)>
-				<cfset currentBarnacleValue = qNodeBarnacle.maxBarnacleValue />
-			<cfelse>
-				<cfset currentBarnacleValue = -1 />
-			</cfif>
-		</cfif>
-		
-		<cfset currentWebtopValue = currentBarnacleValue />
-		
-		<!--- We always have webtop permission as checked --->
-		<cfoutput>
-			<a id="webtopRoot" class="permButton permission-explicit"><i class="fa fa-check-circle fa-fw"></i></a>
-			<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="1">
-			<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="1">
-			<span style="font-size:10px;">&nbsp;Webtop</span>
-			
-			<cfloop query="qRoles">
-				<div style="float:right;width:100px;text-align:center;">
-					<cfif application.security.checkPermission(permission="admin",role="#qRoles.objectid#")>
-						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
-					<cfelse>
-						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
-					</cfif>
-				</div>
-			</cfloop>
-		
-		
-		</cfoutput>
-		
-		<cfif listLen(stWebtop.CHILDORDER)>
-			<cfoutput><ul class="zebra"></cfoutput>
-		</cfif>
-		
-		<cfloop list="#stWebtop.CHILDORDER#" index="i">
-			
-			<cfset stLevel1 = stWebtop.children[i] />
-			<cfset barnacleID = hash(stLevel1.rbKey)>
-			
-			<cfoutput><li class="closed"></cfoutput>
-			
-			<cfif structKeyExists(stCurrentPermissionSet, barnacleID)>
-				<cfset currentBarnacleValue = stCurrentPermissionSet[barnacleID] >
-			<cfelse>
-			
-				<cfset currentBarnacleValue = -1 />
-				
-				<cfloop list="#lRoleIDs#" index="iRole">
-					<cfif application.security.checkPermission(permission="admin",role="#iRole#")>
-						<cfquery dbtype="query" name="qNodeBarnacle">
-						SELECT max(barnacleValue) as maxBarnacleValue
-						FROM qBarnacles
-						WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
-						AND roleID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iRole#">
-						</cfquery>
-						
-						<cfif not isNumeric(qNodeBarnacle.maxBarnacleValue) OR qNodeBarnacle.maxBarnacleValue EQ 0><!--- Inherited --->
-							<cfset currentBarnacleValue = 0>
-						<cfelseif qNodeBarnacle.maxBarnacleValue EQ 1>
-							<cfset currentBarnacleValue = 1>
-							<cfbreak>
-						</cfif>
-					</cfif>
-				</cfloop>
-			</cfif>
-			
-			<cfif currentBarnacleValue eq 0>
-				<cfset priority = "permission-inherit">
-				<cfset currentSectionValue = currentWebtopValue />
-			<cfelse>
-				<cfset priority = "permission-explicit">
-				<cfset currentSectionValue = currentBarnacleValue />
-			</cfif>
-			
-			<cfif currentSectionValue EQ 1>
-				<cfset icon = "fa-check-circle">
-			<cfelseif currentSectionValue EQ -1>
-				<cfset icon = "fa-times-circle">
-			</cfif>
-			
-			<cfoutput>
-				<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
-				<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
-				<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentWebtopValue#">
-				<span style="font-size:10px;">&nbsp;#stLevel1.label#</span>
-				
-				#roleListBarnacles(barnacleID=barnacleID)#
-				
-			</cfoutput>
-			
-			
-			<cfif listLen(stLevel1.CHILDORDER)>
-				<cfoutput><ul></cfoutput>
-				
-				<cfloop list="#stLevel1.CHILDORDER#" index="j">
-				
-					<cfset stLevel2 = stLevel1.children[j] />
-					<cfset barnacleID = hash(stLevel2.rbKey)>
-				
-					<cfoutput><li></cfoutput>
-						
-					<cfif structKeyExists(stCurrentPermissionSet, barnacleID)>
-						<cfset currentBarnacleValue = stCurrentPermissionSet[barnacleID] >
-					<cfelse>
-					
-						<cfset currentBarnacleValue = -1 />
-						
-						<cfloop list="#lRoleIDs#" index="iRole">
-							<cfif application.security.checkPermission(permission="admin",role="#iRole#")>
-								<cfquery dbtype="query" name="qNodeBarnacle">
-								SELECT max(barnacleValue) as maxBarnacleValue
-								FROM qBarnacles
-								WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
-								AND roleID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iRole#">
-								</cfquery>
-								
-								<cfif not isNumeric(qNodeBarnacle.maxBarnacleValue) OR qNodeBarnacle.maxBarnacleValue EQ 0><!--- Inherited --->
-									<cfset currentBarnacleValue = 0>
-								<cfelseif qNodeBarnacle.maxBarnacleValue EQ 1>
-									<cfset currentBarnacleValue = 1>
-									<cfbreak>
-								</cfif>
-							</cfif>
-						</cfloop>
-					</cfif>
-					
-					<cfif currentBarnacleValue eq 0>
-						<cfset priority = "permission-inherit">
-						<cfset currentSubsectionValue = currentSectionValue />
-					<cfelse>
-						<cfset priority = "permission-explicit">
-						<cfset currentSubsectionValue = currentBarnacleValue />
-					</cfif>
-					
-					<cfif currentSubsectionValue EQ 1>
-						<cfset icon = "fa-check-circle">
-					<cfelseif currentSubsectionValue EQ -1>
-						<cfset icon = "fa-times-circle">
-					</cfif>
-					
-					<cfoutput>
-						<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
-						<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
-						<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentSectionValue#">
-						<span style="font-size:10px;">&nbsp;#stLevel2.label#</span>
-				
-						#roleListBarnacles(barnacleID=barnacleID)#
-					</cfoutput>
-					
-					
-					<cfif listLen(stLevel2.CHILDORDER)>
-						<cfoutput><ul></cfoutput>
-						
-						<cfloop list="#stLevel2.CHILDORDER#" index="k">
-						
-							<cfset stLevel3 = stLevel2.children[k] />
-							<cfset barnacleID = hash(stLevel3.rbKey)>
-							
-							<cfoutput><li></cfoutput>
-							
-							<cfif structKeyExists(stCurrentPermissionSet, barnacleID)>
-								<cfset currentBarnacleValue = stCurrentPermissionSet[barnacleID] >
-							<cfelse>
-							
-								<cfset currentBarnacleValue = -1 />
-								
-								<cfloop list="#lRoleIDs#" index="iRole">
-									<cfif application.security.checkPermission(permission="admin",role="#iRole#")>
-										<cfquery dbtype="query" name="qNodeBarnacle">
-										SELECT max(barnacleValue) as maxBarnacleValue
-										FROM qBarnacles
-										WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
-										AND roleID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iRole#">
-										</cfquery>
-										
-										<cfif not isNumeric(qNodeBarnacle.maxBarnacleValue) OR qNodeBarnacle.maxBarnacleValue EQ 0><!--- Inherited --->
-											<cfset currentBarnacleValue = 0>
-										<cfelseif qNodeBarnacle.maxBarnacleValue EQ 1>
-											<cfset currentBarnacleValue = 1>
-											<cfbreak>
-										</cfif>
-									</cfif>
-								</cfloop>
-							</cfif>
-							
-							<cfif currentBarnacleValue eq 0>
-								<cfset priority = "permission-inherit">
-								<cfset currentMenuValue = currentSubsectionValue />
-							<cfelse>
-								<cfset priority = "permission-explicit">
-								<cfset currentMenuValue = currentBarnacleValue />
-							</cfif>
-							
-							<cfif currentMenuValue EQ 1>
-								<cfset icon = "fa-check-circle">
-							<cfelseif currentMenuValue EQ -1>
-								<cfset icon = "fa-times-circle">
-							</cfif>
-							
-							<cfoutput>
-								<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
-								<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
-								<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentSubsectionValue#" />
-								<span style="font-size:10px;">&nbsp;#stLevel3.label#</span>
-				
-								#roleListBarnacles(barnacleID=barnacleID)#
-							</cfoutput>
-							
-							<cfif listLen(stLevel3.CHILDORDER)>
-								<cfoutput><ul></cfoutput>
-								
-								<cfloop list="#stLevel3.CHILDORDER#" index="l">
-								
-									<cfset stLevel4 = stLevel3.children[l] />
-									<cfset barnacleID = hash(stLevel4.rbKey)>
-									
-									
-									<cfoutput><li></cfoutput>
-										
-	
-									<cfif structKeyExists(stCurrentPermissionSet, barnacleID)>
-										<cfset currentBarnacleValue = stCurrentPermissionSet[barnacleID] >
-									<cfelse>
-									
-										<cfset currentBarnacleValue = -1 />
-										
-										<cfloop list="#lRoleIDs#" index="iRole">
-											<cfif application.security.checkPermission(permission="admin",role="#iRole#")>
-												<cfquery dbtype="query" name="qNodeBarnacle">
-												SELECT max(barnacleValue) as maxBarnacleValue
-												FROM qBarnacles
-												WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
-												AND roleID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iRole#">
-												</cfquery>
-												
-												<cfif not isNumeric(qNodeBarnacle.maxBarnacleValue) OR qNodeBarnacle.maxBarnacleValue EQ 0><!--- Inherited --->
-													<cfset currentBarnacleValue = 0>
-												<cfelseif qNodeBarnacle.maxBarnacleValue EQ 1>
-													<cfset currentBarnacleValue = 1>
-													<cfbreak>
-												</cfif>
-											</cfif>
-										</cfloop>
-									</cfif>
-									
-									<cfif currentBarnacleValue eq 0>
-										<cfset priority = "permission-inherit">
-										<cfset currentMenuItemValue = currentMenuValue />
-									<cfelse>
-										<cfset priority = "permission-explicit">
-										<cfset currentMenuItemValue = currentBarnacleValue />
-									</cfif>
-									
-									<cfif currentMenuItemValue EQ 1>
-										<cfset icon = "fa-check-circle">
-									<cfelseif currentMenuItemValue EQ -1>
-										<cfset icon = "fa-times-circle">
-									</cfif>
-									
-									<cfoutput>
-											<a class="permButton #priority#"><i class="fa #icon# fa-fw"></i></a>
-											<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
-											<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentMenuValue#">
-											<span style="font-size:10px;">&nbsp;#stLevel4.label#</span>
-				
-											#roleListBarnacles(barnacleID=barnacleID)#
-											
-											
-										</li>
-									</cfoutput>
-									
-								</cfloop>
-								
-								<cfoutput></ul></cfoutput>
-							</cfif>
-							
-							<cfoutput></li></cfoutput>
-							
-						</cfloop>
-						
-						<cfoutput></ul></cfoutput>
-					</cfif>
-					
-					<cfoutput></li></cfoutput>
-				
-				</cfloop>
-				
-				<cfoutput></ul></cfoutput>
-			</cfif>
-			
-			<cfoutput></li></cfoutput>
-		
-		</cfloop>
-		
-		<cfif listLen(stWebtop.CHILDORDER)>
-			<cfoutput></ul></cfoutput>
-		</cfif>
-		
+		<cfset renderPreviewNodes(stWebtop) />
 		<cfoutput>
 				</li>
 			</ul>
-			<input type="hidden" name="webtopPermissionsSubmitted" value="true">
+		</div>
 		</cfoutput>
 	</ft:field>
-	
-	<cfoutput></div></cfoutput>	
-	
-	
-	
-<skin:onReady id="fixDescendants"><cfoutput>
-	$fc.fixDescendants = function(elParent,clearRedundant) {
-		
-		elParent = elParent.closest("li");
-		clearRedundant = clearRedundant || false;
-		
-		var thisVal = elParent.find("> .barnacleValue").val(), thisInheritedVal = elParent.find("> .inheritBarnacleValue").val(), effectiveVal = thisVal==0 ? thisInheritedVal : thisVal;
-		
-		elParent.find("> ul > li").each(function(){ 
-			
-			var elDescendant = $j(this), descendantValue = elDescendant.find('> .barnacleValue').val();
-			
-			elDescendant.find("> .inheritBarnacleValue").val(effectiveVal);
-			
-			if (descendantValue==0){
-				if (effectiveVal==1){
-					elDescendant.find('> .permButton .fa-times-circle').removeClass('fa-times-circle').addClass('fa-check-circle');
-				}
-				else if (effectiveVal==-1){
-					elDescendant.find('> .permButton .fa-check-circle').removeClass('fa-check-circle').addClass('fa-times-circle');
-				}
-			}
-			else if (descendantValue==effectiveVal && clearRedundant){
-				elDescendant.find("> .barnacleValue").val(0);
-				elDescendant.find("> .permission-explicit").removeClass('permission-explicit').addClass('permission-inherit');
-			}
-			
-			$fc.fixDescendants(elDescendant);
-		});
-	};
-</cfoutput></skin:onReady>
 
-	
+
 	<skin:onReady><cfoutput>
-		
-		$fc.fixDescendants ( $j('##webtopRoot'), true );
-			
-		$j("##webtopTree input.barnacleValue[value='1'],##webtopTree input.barnacleValue[value='-1']").each(function (i) {
-			$j(this).parent('li').parents('li').removeClass("closed").addClass("open");
-		});
-		
-		$j("##webtopTree").treeview({
-			animated: "fast",
-			collapsed: true
-		});
-		
-		
+		$j("##webtopTree").treeview({ animated: "fast" });
 	</cfoutput></skin:onReady>
-	
-	
-	
-	
+
 
 <cfelse>
 	<cfoutput><div class="alert alert-error">NO ROLES ASSIGNED TO THIS USER.</div></cfoutput>
@@ -515,40 +122,43 @@ ENVIRONMENT VARIABLES
 
 
 
-<cffunction name="roleListBarnacles" output="true" returntype="void">
-	<cfargument name="barnacleID">
+<cffunction name="renderPreviewNodes" output="true" returntype="void" hint="Recursively renders the webtop tree rows with a visible/hidden cell per role plus a combined cell">
+	<cfargument name="node" required="true" />
 
+	<cfset var childid = "" />
+	<cfset var child = "" />
+	<cfset var rbkey = "" />
+	<cfset var thisRole = "" />
 
-	<cfloop query="qRoles">
-		
+	<cfif NOT (structKeyExists(arguments.node, "childorder") AND listLen(arguments.node.childorder))>
+		<cfreturn />
+	</cfif>
+
+	<cfoutput><ul></cfoutput>
+	<cfloop list="#arguments.node.childorder#" index="childid">
+		<cfset child = arguments.node.children[childid] />
+		<cfset rbkey = child.rbkey />
 		<cfoutput>
-		<div style="float:right;width:100px;text-align:center;">
-			<cfif application.security.checkPermission(permission="admin",role="#qRoles.objectid#")>
-						
-				<cfquery dbtype="query" name="qNodeBarnacle">
-				SELECT *
-				FROM qBarnacles
-				WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.barnacleID#">
-				AND roleID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qRoles.objectid#">
-				</cfquery>
-				
-				<cfif qNodeBarnacle.recordCount>
-					<cfif qNodeBarnacle.barnacleValue EQ 1>
-						<i class="fa fa-check-circle fa-fw" style="color:green;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
-					<cfelseif qNodeBarnacle.barnacleValue EQ -1>
-						<i class="fa fa-times-circle fa-fw" style="color:red;font-size:14px" title="#encodeForHTMLAttribute(qRoles.title)#"></i>
-					<cfelse>
-						&nbsp;
-					</cfif>
-				<cfelse>
-					&nbsp;
-				</cfif>
-			<cfelse>
-				&nbsp;
-			</cfif>
-		</div>
+			<li>
+				<span class="nodelabel">#encodeForHTML(child.label)#</span>
+				<cfloop array="#aRoles#" index="thisRole"><div class="webtop-preview-col">#previewCell(structKeyExists(stVisible[thisRole.id], rbkey))#</div></cfloop>
+				<div class="webtop-preview-col">#previewCell(structKeyExists(stCombined, rbkey))#</div>
+		</cfoutput>
+		<cfset renderPreviewNodes(child) />
+		<cfoutput>
+			</li>
 		</cfoutput>
 	</cfloop>
-	
-	
+	<cfoutput></ul></cfoutput>
+</cffunction>
+
+
+<cffunction name="previewCell" output="false" returntype="string" hint="Returns a solid-green visible icon or a faded-red hidden icon">
+	<cfargument name="shown" type="boolean" required="true" />
+
+	<cfif arguments.shown>
+		<cfreturn '<i class="fa fa-check-circle fa-fw webtop-preview-shown" title="visible"></i>' />
+	<cfelse>
+		<cfreturn '<i class="fa fa-times-circle fa-fw webtop-preview-hidden" title="hidden"></i>' />
+	</cfif>
 </cffunction>
