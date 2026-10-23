@@ -475,7 +475,7 @@ ENVIRONMENT VARIABLES
 		if (v === 1) {
 			// removing an allow also removes it from any allowed pages inside, after confirmation
 			var allowedDesc = li.find('ul li').filter(function() { return parseInt($j(this).children('.barnacleValue').val()) === 1; });
-			if (allowedDesc.length && !confirm('Allow is also removed from the pages inside this menu. Continue?')) return;
+			if (allowedDesc.length && !confirm('The pages inside this menu will be hidden too. Continue?')) return;
 			allowedDesc.each(function() { $j(this).children('.barnacleValue').val(0); webtopIndividualIcon(this); });
 			el.siblings('.barnacleValue').val(0);
 		} else {
