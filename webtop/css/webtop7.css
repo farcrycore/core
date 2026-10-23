@@ -1541,3 +1541,7 @@ br[style*="clear:both"] {
 		margin: 0;
 	}
 }
+
+/* webtop role visibility: individual-mode legend above the permission tree */
+.webtop-visibility-legend { margin: 0 0 8px; font-size: 13px; font-style: italic; color: #555; }
+.webtop-visibility-legend.is-hidden { display: none; }

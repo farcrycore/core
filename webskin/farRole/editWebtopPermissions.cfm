@@ -38,6 +38,13 @@ ENVIRONMENT VARIABLES
 <!--- WEBTOP PERMISSIONS --->
 <cfset stCurrentPermissionSet = request.stWebtopPermissions['#form.selectPermission#']>
 
+<!--- individual mode: the role sees only items with an explicit allow; any other stored value is inherit --->
+<cfset visibilityMode = "inherit">
+<cfif structKeyExists(stobj, "webtopVisibilityMode") AND stobj.webtopVisibilityMode EQ "individual">
+	<cfset visibilityMode = "individual">
+</cfif>
+<cfset bIndividualMode = (visibilityMode EQ "individual")>
+
 
 
 <cfset stWebtop = application.factory.oWebtop.getItem(honoursecurity="false") />
@@ -74,11 +81,20 @@ ENVIRONMENT VARIABLES
 	<ft:fieldHint><cfoutput>Should this role be allowed to access the webtop?</cfoutput></ft:fieldHint>
 </ft:field>
 
+<ft:field label="Visibility inheritance">
+	<cfoutput>
+	<label class="radio inline"><input type="radio" name="webtopVisibilityMode" value="inherit"<cfif visibilityMode EQ "inherit"> checked="checked"</cfif> /> Inherit from parent</label>
+	<label class="radio inline"><input type="radio" name="webtopVisibilityMode" value="individual"<cfif visibilityMode EQ "individual"> checked="checked"</cfif> /> Allow each page individually</label>
+	</cfoutput>
+	<ft:fieldHint><cfoutput>Inherit from parent: a page is allowed unless it, or a menu above it, is denied. Allow each page individually: a page is shown only when it is allowed itself. Pages added later are hidden until someone allows them.</cfoutput></ft:fieldHint>
+</ft:field>
+
 <ft:field label="Access Permissions" bMultiField="true">
 	<cfoutput>
 	<div id="webtopTreeWrap" <cfif allowAccess EQ -1>style="display:none;"</cfif>>
 		<input type="hidden" name="permissionID" value="#encodeForHTMLAttribute(form.selectPermission)#" />
-		<ul id="webtopTree">
+		<p id="webtopVisibilityLegend" class="webtop-visibility-legend<cfif visibilityMode NEQ "individual"> is-hidden</cfif>">Only allowed pages are shown to this role.</p>
+		<ul id="webtopTree" data-mode="#visibilityMode#">
 			<li>
 	</cfoutput>
 	
@@ -100,6 +116,11 @@ ENVIRONMENT VARIABLES
 	
 	<cfset currentWebtopValue = currentBarnacleValue />
 	
+	<!--- individual mode: nothing inherits, so sections see a denied parent; the root icon stays explicitly allowed --->
+	<cfif bIndividualMode>
+		<cfset currentWebtopValue = -1 />
+	</cfif>
+
 	<!--- We always have webtop permission as checked --->
 	<cfoutput>
 		<a id="webtopRoot" class="permButton permission-explicit" onClick="alert('Use the webtop access permission above to turn off access to the webtop.');return false;"><i class="fa fa-check-circle fa-fw"></i></a>
@@ -136,7 +157,11 @@ ENVIRONMENT VARIABLES
 			</cfif>
 		</cfif>
 		
-		<cfif currentBarnacleValue eq 0>
+		<cfif bIndividualMode>
+			<!--- icon from this item's own record; children never inherit --->
+			<cfset priority = (currentBarnacleValue EQ 1) ? "permission-explicit" : "permission-inherit" />
+			<cfset currentSectionValue = -1 />
+		<cfelseif currentBarnacleValue eq 0>
 			<cfset priority = "permission-inherit">
 			<cfset currentSectionValue = currentWebtopValue />
 		<cfelse>
@@ -144,7 +169,9 @@ ENVIRONMENT VARIABLES
 			<cfset currentSectionValue = currentBarnacleValue />
 		</cfif>
 		
-		<cfif currentSectionValue EQ 1>
+		<cfif bIndividualMode>
+			<cfset icon = (currentBarnacleValue EQ 1) ? "fa-check-circle" : "fa-times-circle" />
+		<cfelseif currentSectionValue EQ 1>
 			<cfset icon = "fa-check-circle">
 		<cfelseif currentSectionValue EQ -1>
 			<cfset icon = "fa-times-circle">
@@ -184,7 +211,10 @@ ENVIRONMENT VARIABLES
 					</cfif>
 				</cfif>
 				
-				<cfif currentBarnacleValue eq 0>
+				<cfif bIndividualMode>
+					<cfset priority = (currentBarnacleValue EQ 1) ? "permission-explicit" : "permission-inherit" />
+					<cfset currentSubsectionValue = -1 />
+				<cfelseif currentBarnacleValue eq 0>
 					<cfset priority = "permission-inherit">
 					<cfset currentSubsectionValue = currentSectionValue />
 				<cfelse>
@@ -192,7 +222,9 @@ ENVIRONMENT VARIABLES
 					<cfset currentSubsectionValue = currentBarnacleValue />
 				</cfif>
 				
-				<cfif currentSubsectionValue EQ 1>
+				<cfif bIndividualMode>
+					<cfset icon = (currentBarnacleValue EQ 1) ? "fa-check-circle" : "fa-times-circle" />
+				<cfelseif currentSubsectionValue EQ 1>
 					<cfset icon = "fa-check-circle">
 				<cfelseif currentSubsectionValue EQ -1>
 					<cfset icon = "fa-times-circle">
@@ -232,7 +264,10 @@ ENVIRONMENT VARIABLES
 							</cfif>
 						</cfif>
 						
-						<cfif currentBarnacleValue eq 0>
+						<cfif bIndividualMode>
+							<cfset priority = (currentBarnacleValue EQ 1) ? "permission-explicit" : "permission-inherit" />
+							<cfset currentMenuValue = -1 />
+						<cfelseif currentBarnacleValue eq 0>
 							<cfset priority = "permission-inherit">
 							<cfset currentMenuValue = currentSubsectionValue />
 						<cfelse>
@@ -240,7 +275,9 @@ ENVIRONMENT VARIABLES
 							<cfset currentMenuValue = currentBarnacleValue />
 						</cfif>
 						
-						<cfif currentMenuValue EQ 1>
+						<cfif bIndividualMode>
+							<cfset icon = (currentBarnacleValue EQ 1) ? "fa-check-circle" : "fa-times-circle" />
+						<cfelseif currentMenuValue EQ 1>
 							<cfset icon = "fa-check-circle">
 						<cfelseif currentMenuValue EQ -1>
 							<cfset icon = "fa-times-circle">
@@ -281,7 +318,10 @@ ENVIRONMENT VARIABLES
 									</cfif>
 								</cfif>
 								
-								<cfif currentBarnacleValue eq 0>
+								<cfif bIndividualMode>
+									<cfset priority = (currentBarnacleValue EQ 1) ? "permission-explicit" : "permission-inherit" />
+									<cfset currentMenuItemValue = -1 />
+								<cfelseif currentBarnacleValue eq 0>
 									<cfset priority = "permission-inherit">
 									<cfset currentMenuItemValue = currentMenuValue />
 								<cfelse>
@@ -289,7 +329,9 @@ ENVIRONMENT VARIABLES
 									<cfset currentMenuItemValue = currentBarnacleValue />
 								</cfif>
 								
-								<cfif currentMenuItemValue EQ 1>
+								<cfif bIndividualMode>
+									<cfset icon = (currentBarnacleValue EQ 1) ? "fa-check-circle" : "fa-times-circle" />
+								<cfelseif currentMenuItemValue EQ 1>
 									<cfset icon = "fa-check-circle">
 								<cfelseif currentMenuItemValue EQ -1>
 									<cfset icon = "fa-times-circle">
@@ -353,6 +395,11 @@ ENVIRONMENT VARIABLES
 		if (el.attr('id') == 'webtopRoot'){
 			return false;
 		}
+
+		if (webtopCurrentMode() === 'individual') {
+			webtopIndividualClick(el);
+			return false;
+		}
 		
 		if (barnacleValue===0)
 			newValue = inheritBarnacleValue===1 ? -1 : 1;
@@ -385,7 +432,78 @@ ENVIRONMENT VARIABLES
 	});
 	
 		
-	$fc.fixDescendants ( $j('##webtopRoot'), true );
+	// --- visibility mode helpers (individual vs inherit); function declarations hoist, so the click handler above can call them ---
+	function webtopCurrentMode() { return $j('##webtopTree').attr('data-mode'); }
+	function webtopIsRoot(li) { return $j(li).children('a.permButton').attr('id') === 'webtopRoot'; }
+
+	// set one node's icon from its own stored value: solid green allow when 1, faded red otherwise
+	function webtopIndividualIcon(li) {
+		var v = parseInt($j(li).children('.barnacleValue').val());
+		var a = $j(li).children('a.permButton');
+		a.removeClass('permission-inherit permission-explicit').addClass(v === 1 ? 'permission-explicit' : 'permission-inherit');
+		a.find('.fa').removeClass('fa-check-circle fa-times-circle').addClass(v === 1 ? 'fa-check-circle' : 'fa-times-circle');
+	}
+
+	function webtopRenderIndividual() {
+		$j('##webtopTree li').each(function() { if (!webtopIsRoot(this)) webtopIndividualIcon(this); });
+	}
+
+	function webtopIndividualClick(el) {
+		var li = el.closest('li');
+		var v = parseInt(el.siblings('.barnacleValue').val());
+		if (v === 1) {
+			// removing an allow also removes it from any allowed pages inside, after confirmation
+			var allowedDesc = li.find('ul li').filter(function() { return parseInt($j(this).children('.barnacleValue').val()) === 1; });
+			if (allowedDesc.length && !confirm('Allow is also removed from the pages inside this menu. Continue?')) return;
+			allowedDesc.each(function() { $j(this).children('.barnacleValue').val(0); webtopIndividualIcon(this); });
+			el.siblings('.barnacleValue').val(0);
+		} else {
+			// allowing a page allows every menu above it, so it can be reached
+			el.siblings('.barnacleValue').val(1);
+			li.parents('li').each(function() { if (!webtopIsRoot(this)) { $j(this).children('.barnacleValue').val(1); webtopIndividualIcon(this); } });
+		}
+		webtopIndividualIcon(li);
+	}
+
+	// switching the mode radio re-renders the tree in place and records the choice
+	$j('input[name=webtopVisibilityMode]').change(function() {
+		var mode = $j(this).val();
+		$j('##webtopTree').attr('data-mode', mode);
+
+		if (mode === 'individual') {
+			// keep what the role can see today: any node whose effective value is 1 becomes an explicit allow
+			$j('##webtopTree li').each(function() {
+				if (webtopIsRoot(this)) return;
+				var bv = parseInt($j(this).children('.barnacleValue').val());
+				var iv = parseInt($j(this).children('.inheritBarnacleValue').val());
+				if ((bv !== 0 ? bv : iv) === 1) $j(this).children('.barnacleValue').val(1);
+				$j(this).children('.inheritBarnacleValue').val(-1);
+			});
+			webtopRenderIndividual();
+			$j('##webtopVisibilityLegend').removeClass('is-hidden');
+		} else {
+			// back to inherit: recompute the cascade and strip the now-redundant explicit allows
+			$j('##webtopVisibilityLegend').addClass('is-hidden');
+			$fc.fixDescendants($j('##webtopRoot'), true);
+		}
+
+		$j.ajax({
+			type: 'POST',
+			url: '/index.cfm?ajaxmode=1&type=farRole&objectid=#stobj.objectid#&view=editAjaxSaveVisibilityMode',
+			dataType: 'html',
+			cache: false,
+			timeout: 15000,
+			data: { webtopVisibilityMode: mode },
+			error: function() { alert('change unsuccessful. The page will be refreshed.'); location = location; }
+		});
+	});
+
+	// initial tree render depends on the mode: individual renders from each node's own record, inherit cascades as before
+	if (webtopCurrentMode() === 'individual') {
+		webtopRenderIndividual();
+	} else {
+		$fc.fixDescendants ( $j('##webtopRoot'), true );
+	}
 		
 	$j("##webtopTree input.barnacleValue[value='1'],##webtopTree input.barnacleValue[value='-1']").each(function (i) {
 		$j(this).parent('li').parents('li').removeClass("closed").addClass("open");
