@@ -86,14 +86,14 @@ ENVIRONMENT VARIABLES
 	<label class="radio inline"><input type="radio" name="webtopVisibilityMode" value="inherit"<cfif visibilityMode EQ "inherit"> checked="checked"</cfif> /> Inherit from parent</label>
 	<label class="radio inline"><input type="radio" name="webtopVisibilityMode" value="individual"<cfif visibilityMode EQ "individual"> checked="checked"</cfif> /> Allow each page individually</label>
 	</cfoutput>
-	<ft:fieldHint><cfoutput>Inherit from parent: a page is allowed unless it, or a menu above it, is denied. Allow each page individually: a page is shown only when it is allowed itself. Pages added later are hidden until someone allows them.</cfoutput></ft:fieldHint>
+	<ft:fieldHint><cfoutput>Inherit from parent: a page is shown unless it, or a menu above it, is denied. Allow each page individually: a page is shown only if it is allowed, and pages added later stay hidden until you allow them.</cfoutput></ft:fieldHint>
 </ft:field>
 
 <ft:field label="Access Permissions" bMultiField="true">
 	<cfoutput>
 	<div id="webtopTreeWrap" <cfif allowAccess EQ -1>style="display:none;"</cfif>>
 		<input type="hidden" name="permissionID" value="#encodeForHTMLAttribute(form.selectPermission)#" />
-		<p id="webtopVisibilityLegend" class="webtop-visibility-legend<cfif visibilityMode NEQ "individual"> is-hidden</cfif>">Only allowed pages are shown to this role.</p>
+		<p id="webtopVisibilityLegend" class="webtop-visibility-legend<cfif visibilityMode NEQ "individual"> is-hidden</cfif>">This role sees only the pages you allow.</p>
 		<ul id="webtopTree" data-mode="#visibilityMode#">
 			<li>
 	</cfoutput>
@@ -436,6 +436,27 @@ ENVIRONMENT VARIABLES
 	function webtopCurrentMode() { return $j('##webtopTree').attr('data-mode'); }
 	function webtopIsRoot(li) { return $j(li).children('a.permButton').attr('id') === 'webtopRoot'; }
 
+	// switching mode rewrites each node so its effective visibility (shown or hidden) is preserved in the new mode, and renders it.
+	// individual is an allow-list (shown iff own value 1); inherit is a deny-list (shown unless own or an ancestor is -1). walk top down so each node knows if its parent is shown.
+	function webtopConvertMode(li, parentShown, fromMode, toMode) {
+		$j(li).children('ul').children('li').each(function() {
+			var node = $j(this), bv = parseInt(node.children('.barnacleValue').val());
+			var shown = parentShown && (fromMode === 'individual' ? (bv === 1) : (bv !== -1));
+			var newVal = (toMode === 'individual') ? (shown ? 1 : (bv === -1 ? -1 : 0)) : (shown ? 0 : (parentShown ? -1 : 0));
+			node.children('.barnacleValue').val(newVal);
+			node.children('.inheritBarnacleValue').val(parentShown ? 1 : -1);
+			var a = node.children('a.permButton');
+			a.removeClass('permission-inherit permission-explicit');
+			a.find('.fa').removeClass('fa-check-circle fa-times-circle');
+			if (toMode === 'individual') {
+				a.addClass(newVal === 1 ? 'permission-explicit' : 'permission-inherit').find('.fa').addClass(newVal === 1 ? 'fa-check-circle' : 'fa-times-circle');
+			} else {
+				a.addClass(newVal === -1 ? 'permission-explicit' : 'permission-inherit').find('.fa').addClass(shown ? 'fa-check-circle' : 'fa-times-circle');
+			}
+			webtopConvertMode(this, shown, fromMode, toMode);
+		});
+	}
+
 	// set one node's icon from its own stored value: solid green allow when 1, faded red otherwise
 	function webtopIndividualIcon(li) {
 		var v = parseInt($j(li).children('.barnacleValue').val());
@@ -468,23 +489,16 @@ ENVIRONMENT VARIABLES
 	// switching the mode radio re-renders the tree in place and records the choice
 	$j('input[name=webtopVisibilityMode]').change(function() {
 		var mode = $j(this).val();
+		var fromMode = webtopCurrentMode();
 		$j('##webtopTree').attr('data-mode', mode);
 
+		// rewrite each page's record so its effective visibility is preserved in the new mode; any toggle, including a round-trip, is then non-destructive
+		webtopConvertMode($j('##webtopRoot').closest('li'), true, fromMode, mode);
+
 		if (mode === 'individual') {
-			// keep what the role can see today: any node whose effective value is 1 becomes an explicit allow
-			$j('##webtopTree li').each(function() {
-				if (webtopIsRoot(this)) return;
-				var bv = parseInt($j(this).children('.barnacleValue').val());
-				var iv = parseInt($j(this).children('.inheritBarnacleValue').val());
-				if ((bv !== 0 ? bv : iv) === 1) $j(this).children('.barnacleValue').val(1);
-				$j(this).children('.inheritBarnacleValue').val(-1);
-			});
-			webtopRenderIndividual();
 			$j('##webtopVisibilityLegend').removeClass('is-hidden');
 		} else {
-			// back to inherit: recompute the cascade and strip the now-redundant explicit allows
 			$j('##webtopVisibilityLegend').addClass('is-hidden');
-			$fc.fixDescendants($j('##webtopRoot'), true);
 		}
 
 		$j.ajax({
