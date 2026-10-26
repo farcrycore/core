@@ -68,6 +68,14 @@ PREPARE WEBTOP PERMISSIONS
 									objectid="#stobj.objectid#",
 									webtopPermissions="#wddxWebtopPermissions#", 
 									bSessionOnly="true")>
+
+	<!--- carry the visibility mode into the session object like the permissions above; the radio only posts when the webtop step was rendered --->
+	<cfif structKeyExists(form, "webtopVisibilityMode") AND listFindNoCase("inherit,individual", form.webtopVisibilityMode)>
+		<cfset application.fapi.setData(typename="farRole",
+										objectid="#stobj.objectid#",
+										webtopVisibilityMode="#form.webtopVisibilityMode#",
+										bSessionOnly="true")>
+	</cfif>
 </cfif>
 
 
@@ -124,6 +132,10 @@ PREPARE TYPE PERMISSIONS
 	
 	<!--- Need to update the aPermissions field with the one from the session because it is the session object that we are managing permissions with. --->
 	<cfset stwizard.data[stobj.objectid].aPermissions = stobj.aPermissions />
+
+	<cfif structKeyExists(stobj, "webtopVisibilityMode")>
+		<cfset stwizard.data[stobj.objectid].webtopVisibilityMode = stobj.webtopVisibilityMode />
+	</cfif>
 	
 
 

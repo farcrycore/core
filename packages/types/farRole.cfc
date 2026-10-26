@@ -28,6 +28,7 @@ type properties
 	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftWizardStep="Groups" ftLabel="Title" ftType="string" />
 	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftLabel="Default Role" ftType="boolean" />
 	<cfproperty name="aGroups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
+	<cfproperty name="webtopVisibilityMode" type="string" default="inherit" hint="How webtop visibility is resolved for this role. inherit: an item is visible unless it or an ancestor is denied. individual: only items with an explicit allow are visible; items added later stay hidden until allowed." ftLabel="Visibility inheritance" ftType="list" ftList="inherit:Inherit from parent,individual:Allow each page individually" ftHint="Inherit from parent: a page is shown unless it, or a menu above it, is denied. Allow each page individually: a page is shown only if it is allowed, and pages added later stay hidden until you allow them." />
 	<cfproperty name="aPermissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
 	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="longchar" ftHint="Filters should be in the form: [type.][prefix*|webskin]<br />e.g. display* grants access to all webskins prefixed with display<br />dmNews.stats grants access to the stats dmNews webskin<br />dmEvent.* grants access to all event webskins" />
 	
@@ -543,6 +544,58 @@ object methods
 		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 	</cffunction>
 
+	<cffunction name="materialiseWebtopVisibility" access="public" output="false" returntype="numeric" hint="Writes an explicit allow (barnaclevalue 1) for every webtop item the role can currently see under inherit semantics, skipping items that already carry a record. Preserves the role's visibility when it is switched to individual mode. Idempotent; returns the number of records written.">
+		<cfargument name="objectid" type="uuid" required="true" hint="The role to materialise" />
+
+		<cfset var webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem") />
+		<cfset var lVisibleKeys = application.factory.oWebtop.getVisibleItemKeys(role=arguments.objectid, visibilityMode="inherit") />
+		<cfset var qExisting = "" />
+		<cfset var stExisting = structNew() />
+		<cfset var key = "" />
+		<cfset var barnacleID = "" />
+		<cfset var written = 0 />
+		<cfset var stBarnacle = structNew() />
+
+		<!--- existing webtop records for this role, so materialisation only fills the gaps --->
+		<cfquery datasource="#application.dsn#" name="qExisting">
+			select	referenceid, barnaclevalue
+			from	#application.dbowner#farBarnacle
+			where	objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop" />
+					and roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+					and permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#webtopPermissionID#" />
+		</cfquery>
+		<cfloop query="qExisting">
+			<cfset stExisting[qExisting.referenceid] = true />
+			<!--- the role already carries an allow record, so it has been materialised (and possibly curated) by the wizard or a prior call; do not re-add, which would undo an un-allow --->
+			<cfif qExisting.barnaclevalue EQ 1>
+				<cfreturn 0 />
+			</cfif>
+		</cfloop>
+
+		<cfloop list="#lVisibleKeys#" index="key">
+			<cfset barnacleID = hash(key) />
+			<cfif NOT structKeyExists(stExisting, barnacleID)>
+				<!--- createData, not fapi.setData, so each row does not trigger a full application.security.initCache(); the batch is flushed once below --->
+				<cfset stBarnacle = structNew() />
+				<cfset stBarnacle.roleid = arguments.objectid />
+				<cfset stBarnacle.permissionid = webtopPermissionID />
+				<cfset stBarnacle.referenceid = barnacleID />
+				<cfset stBarnacle.objecttype = "webtop" />
+				<cfset stBarnacle.barnaclevalue = 1 />
+				<cfset application.security.factory.barnacle.createData(stBarnacle) />
+				<cfset stExisting[barnacleID] = true />
+				<cfset written = written + 1 />
+			</cfif>
+		</cfloop>
+
+		<!--- one cache reset for the whole batch instead of one per row (initCache rebuilds the whole security scope) --->
+		<cfif written>
+			<cfset application.security.initCache() />
+		</cfif>
+
+		<cfreturn written />
+	</cffunction>
+
 	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
 		<cfargument name="stProperties" required="true">
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
@@ -601,6 +654,12 @@ object methods
 						</cfloop>
 					</cfif>
 				</cfloop>
+			</cfif>
+
+			<!--- switching this role to individual: preserve what it can see today by writing explicit allows, before the save persists the new mode --->
+			<cfif structKeyExists(arguments.stProperties, "webtopVisibilityMode") AND arguments.stProperties.webtopVisibilityMode EQ "individual"
+					AND NOT (structKeyExists(stOld, "webtopVisibilityMode") AND stOld.webtopVisibilityMode EQ "individual")>
+				<cfset materialiseWebtopVisibility(arguments.stProperties.objectid) />
 			</cfif>
 		</cfif>
 		

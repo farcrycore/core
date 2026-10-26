@@ -354,7 +354,8 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfargument name="webtopPermissionID" type="string" required="false" default="" hint="The permission ID to use for determining webtop view permissions" />
 		<cfargument name="currentRoles" type="string" required="false" default="" hint="A list of the roles of the current user" />
 		<cfargument name="oBarnacle" required="false" default="" hint="A farBarnacle object used for rights lookups" />
-		
+		<cfargument name="visibilityMode" type="string" required="false" default="" hint="Overrides the stored visibility mode (inherit or individual) of every role evaluated; used for one-off evaluations such as materialising a role's current visibility" />
+
 		<cfset var stResult = this.stWebtop />
 		<cfset var id = "" />
 		<cfset var stTempResult = structnew() />
@@ -366,6 +367,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var webtopAccessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
 		<cfset var oRole = application.fapi.getContentType("farRole")>
 		<cfset var stCurrentRole = "">
+		<cfset var stIndividual = structNew() />
+		<cfset var bIndividual = false />
+		<cfset var bDynamicParent = false />
 		
 		<cfif NOT len(arguments.webtopPermissionID)>
 			<cfset arguments.webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
@@ -375,6 +379,15 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		</cfif>
 		<cfif NOT isObject(arguments.oBarnacle)>
 			<cfset arguments.oBarnacle = application.fapi.getContentType("farBarnacle")>
+		</cfif>
+
+		<!--- several roles: evaluate each role on its own and union the results, so one role's mode cannot change what another role shows --->
+		<cfif arguments.honoursecurity AND listLen(arguments.currentRoles) GT 1>
+			<cfset stResult = structNew() />
+			<cfloop list="#arguments.currentRoles#" index="iRole">
+				<cfset stResult = mergeWebtopRoleStruct(stResult, getItem(parent=arguments.parent, honoursecurity=true, duplicated=false, webtopPermissionID=arguments.webtopPermissionID, currentRoles=iRole, oBarnacle=arguments.oBarnacle, visibilityMode=arguments.visibilityMode)) />
+			</cfloop>
+			<cfreturn stResult />
 		</cfif>
 		
 		<cfif isstruct(arguments.parent)>
@@ -386,6 +399,8 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 				<cfinvoke component="#application.stCOAPI[listfirst(stResult.dynamicmenu,'.')].packagepath#" method="#listlast(stResult.dynamicmenu,'.')#" returnvariable="stTempResult" />
 				<cfset structappend(stResult,stTempResult,true) />
 				<cfset structdelete(stResult,"dynamicmenu") />
+				<!--- flag the node: items a dynamic menu produces are data with their own filter and keep inherit semantics in every mode --->
+				<cfset stResult.dynamicChildren = true />
 			</cfif>
 		<cfelseif issimplevalue(arguments.parent)>
 			<!--- Traverse the webtop struct using the ids specified --->
@@ -398,6 +413,8 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 						<cfinvoke component="#application.stCOAPI[listfirst(stResult.dynamicmenu,'.')].packagepath#" method="#listlast(stResult.dynamicmenu,'.')#" returnvariable="stTempResult" />
 						<cfset structappend(stResult,stTempResult,true) />
 						<cfset structdelete(stResult,"dynamicmenu") />
+						<!--- same flag as the struct branch above --->
+						<cfset stResult.dynamicChildren = true />
 					</cfif>
 				<cfelse>
 					<cfthrow message="The parent argument must be a webtop struct or an id path specifying an existing webtop struct" />
@@ -420,14 +437,24 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 			<cfif NOT structKeyExists(request.webtopCacheCurrentRole, iRole)>
 				<cfset request.webtopCacheCurrentRole[iRole] = application.fapi.getContentObject(typename="farRole", objectid=iRole)>
 			</cfif>
+			<!--- individual mode: the role sees only items it has been allowed explicitly; any other stored value, including none, is inherit --->
+			<cfif len(arguments.visibilityMode)>
+				<cfset stIndividual[iRole] = (arguments.visibilityMode EQ "individual") />
+			<cfelse>
+				<cfset stIndividual[iRole] = (structKeyExists(request.webtopCacheCurrentRole[iRole], "webtopVisibilityMode") AND request.webtopCacheCurrentRole[iRole].webtopVisibilityMode EQ "individual") />
+			</cfif>
 		</cfloop>
+
+		<!--- items a dynamic menu produced keep inherit semantics in every mode --->
+		<cfset bDynamicParent = structKeyExists(stResult, "dynamicChildren") />
 
 		<cfloop collection="#stResult.children#" item="id">
 			
 			<cfset bPermitted = -1 />
 			<cfset hashKey = hash("#webtopPermissionID#-#currentRoles#-#stResult.children[id].rbKey#") />
 
-			<cfif structKeyExists(application.security.stPermissions, "#hashKey#")>
+			<!--- a mode override is a one-off evaluation and stays out of the shared cache --->
+			<cfif NOT len(arguments.visibilityMode) AND structKeyExists(application.security.stPermissions, "#hashKey#")>
 				<cfset bPermitted = application.security.stPermissions[hashKey] />
 			<cfelse>
 				<cfset barnacleID = hash(stResult.children[id].rbKey)>
@@ -435,24 +462,28 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 				<cfloop list="#currentRoles#" index="iRole">
 					
 					<cfset stCurrentRole = request.webtopCacheCurrentRole[iRole]>
+					<cfset bIndividual = stIndividual[iRole] AND NOT bDynamicParent />
 					
 					<cfif application.fapi.arrayFind(stCurrentRole.aPermissions, webtopAccessPermissionID)>
 						<cfset bRight = arguments.oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
 						
-						<cfif bRight GTE 0>
+						<!--- individual mode: an item with no allow record stays hidden --->
+						<cfif bRight EQ 1 OR (bRight EQ 0 AND NOT bIndividual)>
 							<cfset bPermitted = 1>
 							<cfbreak>
 						</cfif>
 					</cfif>
 				</cfloop>
 
-				<cfset application.security.stPermissions[hashKey] = bPermitted />
+				<cfif NOT len(arguments.visibilityMode)>
+					<cfset application.security.stPermissions[hashKey] = bPermitted />
+				</cfif>
 
 			</cfif>
 
 			
 			<cfif not arguments.honoursecurity or bPermitted GTE 0>
-				<cfset getItem(parent=stResult.children[id], honoursecurity=arguments.honoursecurity, duplicated=true, webtopPermissionID=arguments.webtopPermissionID, currentRoles=arguments.currentRoles, oBarnacle=arguments.oBarnacle) />
+				<cfset getItem(parent=stResult.children[id], honoursecurity=arguments.honoursecurity, duplicated=true, webtopPermissionID=arguments.webtopPermissionID, currentRoles=arguments.currentRoles, oBarnacle=arguments.oBarnacle, visibilityMode=arguments.visibilityMode) />
 			<cfelse>
 				<!--- Remove restricted child --->
 				<cfset structdelete(stResult.children,id) />
@@ -468,6 +499,35 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset translateWebtop(stResult,true) />
 		
 		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getVisibleItemKeys" access="public" output="false" returntype="string" hint="Returns the rbkey list of every webtop item the role can see, root excluded. visibilityMode overrides the role's stored mode (inherit or individual) for this evaluation only.">
+		<cfargument name="role" type="uuid" required="true" hint="The objectid of the role to evaluate" />
+		<cfargument name="visibilityMode" type="string" required="false" default="" hint="Overrides the role's stored visibility mode: inherit or individual" />
+
+		<cfset var stItems = getItem(honoursecurity=true, currentRoles=arguments.role, visibilityMode=arguments.visibilityMode) />
+
+		<cfreturn getDescendantKeys(stItems) />
+	</cffunction>
+
+	<cffunction name="getDescendantKeys" access="private" output="false" returntype="string" hint="Returns the rbkey list of every descendant of a webtop item, depth first in child order">
+		<cfargument name="item" type="struct" required="true" hint="The webtop item to walk" />
+
+		<cfset var id = "" />
+		<cfset var childKeys = "" />
+		<cfset var result = "" />
+
+		<cfif structKeyExists(arguments.item, "childorder")>
+			<cfloop list="#arguments.item.childorder#" index="id">
+				<cfset result = listAppend(result, arguments.item.children[id].rbkey) />
+				<cfset childKeys = getDescendantKeys(arguments.item.children[id]) />
+				<cfif len(childKeys)>
+					<cfset result = listAppend(result, childKeys) />
+				</cfif>
+			</cfloop>
+		</cfif>
+
+		<cfreturn result />
 	</cffunction>
 
 	<cffunction name="translateWebtop" access="public" output="false" returntype="struct" hint="Returns a translated version of the specified webtop struct">
