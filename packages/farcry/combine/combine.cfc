@@ -91,6 +91,8 @@
 		var sFilePath = '';
 		var sCorrectedFiles = '';
 		var sExpandedFilePath = '';
+		var sPrepend = '';
+		var sAppend = '';
 		var i = 0;
 		var sDelimiter = arguments.delimiter;
 		
@@ -164,23 +166,25 @@
 				
 			 </cfif>
 			 
+			<!--- minify per file; *.min.js is passed through (JSMin mangles some pre-minified bundles) --->
+			<cfif sType EQ "js" AND variables.bJsMin AND NOT reFindNoCase("\.min\.js$", sFilePath)>
+				<cfset sFileContent = compressJsWithJSMin(sFileContent) />
+			</cfif>
+
 			<cfset sOutput = sOutput & variables.sOutputDelimiter & sFileContent />
 		</cfloop>
 		
-		<cfif len(trim(arguments.prepend))>
-			<cfset sOutput = trim(arguments.prepend) & sOutput />
+		<cfset sPrepend = trim(arguments.prepend) />
+		<cfset sAppend = trim(arguments.append) />
+		<cfif sType EQ "js" AND variables.bJsMin>
+			<cfif len(sPrepend)><cfset sPrepend = compressJsWithJSMin(sPrepend) /></cfif>
+			<cfif len(sAppend)><cfset sAppend = compressJsWithJSMin(sAppend) /></cfif>
 		</cfif>
-		<cfif len(trim(arguments.append))>
-			<cfset sOutput = sOutput & trim(arguments.append) />
-		</cfif>
+		<cfset sOutput = sPrepend & sOutput & sAppend />
 		<cftry>
 		<cfscript>
-		// 'Minify' the javascript with jsmin
-		if(variables.bJsMin and sType eq 'js')
-		{
-			sOutput = compressJsWithJSMin(sOutput);
-		}
-		else if(variables.bYuiCss and sType eq 'css')
+		// 'Minify' the CSS with YUI (JS is minified per file above)
+		if(variables.bYuiCss and sType eq 'css')
 		{
 			sOutput = compressCssWithYUI(sOutput);
 		}
