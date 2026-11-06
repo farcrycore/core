@@ -42,7 +42,7 @@
 							lFiles="backbone.js" />
 		<skin:registerJS 	id="backbone" aliasof="fc-backbone" core="false" />
 		
-		<skin:registerJS 	id="fc-handlebars" core="true" bCombine="false"
+		<skin:registerJS 	id="fc-handlebars" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/handlebars"
 							lFiles="handlebars.min.js" />
 		<skin:registerJS 	id="handlebars" aliasof="fc-handlebars" core="false" />
@@ -97,17 +97,17 @@
 							lFiles="uppy.min.js" />
 
 		<!--- QR renderer for MFA enrolment (loaded on demand by the enrolment fragment) --->
-		<skin:registerJS	id="fc-qrcode" core="false" bCombine="false"
+		<skin:registerJS	id="fc-qrcode" core="false"
 							baseHREF="#application.url.webtop#/thirdparty/qrcode"
 							lFiles="qrcode.min.js" />
 
 		<!--- WebAuthn (passkey) ceremony helper for MFA (loaded on demand by the passkey fragments) --->
-		<skin:registerJS	id="fc-webauthn" core="false" bCombine="false"
+		<skin:registerJS	id="fc-webauthn" core="false"
 							baseHREF="#application.url.webtop#/js/mfa"
 							lFiles="webauthn.js" />
 
 		<!--- QR renderer init for MFA enrolment (draws the code from the container's data attribute; loaded on demand alongside fc-qrcode) --->
-		<skin:registerJS	id="fc-qrcode-init" core="false" bCombine="false"
+		<skin:registerJS	id="fc-qrcode-init" core="false"
 							baseHREF="#application.url.webtop#/js/mfa"
 							lFiles="qrcode-init.js" />
 
