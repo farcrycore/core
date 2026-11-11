@@ -485,7 +485,7 @@ type properties
 		</cfcase>
 
 		<cfdefaultcase>
-			<cfreturn false>
+			<cfreturn {}><!--- Unknown frequency: no window --->
 		</cfdefaultcase>
 	</cfswitch>
 
@@ -515,6 +515,9 @@ type properties
 	<cfset var nextStart = currentDate />
 	<cfset var diff = 0 />
 	<cfswitch expression="#arguments.stCron.frequency#">
+		<cfcase value="Once">
+			<cfreturn {}><!--- Start date has passed, so the single run is in the past --->
+		</cfcase>
 		<cfcase value="Daily">
 			<cfset diff = dateDiff("d", arguments.stCron.startDate, nextStart) />
 			<cfset nextStart = dateAdd("d", diff + 1, arguments.stCron.startDate) />
@@ -545,7 +548,7 @@ type properties
 		</cfcase>
 
 		<cfdefaultcase>
-			<cfreturn false>
+			<cfreturn {}><!--- Unknown frequency: no window --->
 		</cfdefaultcase>
 	</cfswitch>
 
